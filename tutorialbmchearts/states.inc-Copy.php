@@ -55,58 +55,22 @@ $machinestates = array(
     // The initial state. Please do not modify.
     1 => array(
         "name" => "gameSetup",
-        "description" => clienttranslate("Game setup"),
+        "description" => "",
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array( "" => 20 )
+        "transitions" => array( "" => 2 )
     ),
     
-    /// New hand
-    20 => array(
-        "name" => "newHand",
-        "description" => "",
-        "type" => "game",
-        "action" => "stNewHand",
-        "updateGameProgression" => true,   
-        "transitions" => array( "" => 30 )
-    ),    
+    // Note: ID=2 => your first state
 
-      
-    
-    // Trick
-    
-    30 => array(
-        "name" => "newTrick",
-        "description" => "",
-        "type" => "game",
-        "action" => "stNewTrick",
-        "transitions" => array( "" => 31 )
-    ),       
-    31 => array(
-        "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must play a card'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card'),
-        "type" => "activeplayer",
-        "possibleactions" => array( "playCard" ),
-        "transitions" => array( "playCard" => 32 )
-    ), 
-    32 => array(
-        "name" => "nextPlayer",
-        "description" => "",
-        "type" => "game",
-        "action" => "stNextPlayer",
-        "transitions" => array( "nextPlayer" => 31, "nextTrick" => 30, "endHand" => 40 )
-    ), 
-    
-    
-    // End of the hand (scoring, etc...)
-    40 => array(
-        "name" => "endHand",
-        "description" => "",
-        "type" => "game",
-        "action" => "stEndHand",
-        "transitions" => array( "nextHand" => 20, "endGame" => 99 )
-    ),     
+    2 => array(
+    		"name" => "playerTurn",
+    		"description" => clienttranslate('${actplayer} must play a card or pass'),
+    		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
+    		"type" => "activeplayer",
+    		"possibleactions" => array( "playCard", "pass" ),
+    		"transitions" => array( "playCard" => 2, "pass" => 2 )
+    ),
     
 /*
     Examples:
