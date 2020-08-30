@@ -31,7 +31,7 @@ $this->colors = array(
 );
 
 $this->values_label = array(
-    2 =>'2',
+    2 => '2',
     3 => '3',
     4 => '4',
     5 => '5',
@@ -46,8 +46,6 @@ $this->values_label = array(
     14 => clienttranslate('A')
 );
 
-
-
 /*
 
 Example:
@@ -59,7 +57,3 @@ $this->card_types = array(
 );
 
 */
-
-
-
-

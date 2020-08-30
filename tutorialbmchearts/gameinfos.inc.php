@@ -36,7 +36,6 @@ $gameinfos = array(
 // Board game geek ID of the game
 'bgg_id' => 0,
 
-
 // Players configuration that can be played (ex: 2 to 4 players)
 'players' => array( 4 ),    
 

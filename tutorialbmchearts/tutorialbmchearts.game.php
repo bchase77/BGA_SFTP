@@ -126,7 +126,6 @@ class TutorialBMCHearts extends Table
         } 
 
 
-
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
 
@@ -261,9 +260,9 @@ class TutorialBMCHearts extends Table
         game state.
     */
 
-    function argGiveCards() {
-        return array ();
-    }
+//    function argGiveCards() {
+//        return array ();
+//    }
 
     function stNewHand() {
         // Take back all cards (from any location => null) to deck
@@ -508,7 +507,6 @@ class TutorialBMCHearts extends Table
 //        // Please add your future database scheme changes here
 //
 //
-
 
     }    
 }

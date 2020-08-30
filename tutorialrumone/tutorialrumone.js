@@ -1,7 +1,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * TutorialRumOne implementation : © <Your name here> <Your email address here>
+ * TutorialRumOne implementation : © Bryan Chase <bryanchase@yahoo.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -18,7 +18,8 @@
 define([
     "dojo","dojo/_base/declare",
     "ebg/core/gamegui",
-    "ebg/counter"
+    "ebg/counter",
+    "ebg/stock"
 ],
 function (dojo, declare) {
     return declare("bgagame.tutorialrumone", ebg.core.gamegui, {
@@ -28,6 +29,9 @@ function (dojo, declare) {
             // Here, you can init the global variables of your user interface
             // Example:
             // this.myGlobalValue = 0;
+
+            this.cardwidth = 72;
+            this.cardheight = 96;
 
         },
         
@@ -56,9 +60,67 @@ function (dojo, declare) {
                 // TODO: Setting up players boards if needed
             }
             
-            // TODO: Set up your game interface here, according to "gamedatas"
-            
- 
+            // Player hand
+console.log( "playerHand" );
+            this.playerHand = new ebg.stock(); // new stock object for hand
+console.log(this.playerHand)
+console.log($('myhand'))
+
+            this.playerHand.create( this, $('myhand'), this.cardwidth, this.cardheight );            
+            this.playerHand.image_items_per_row = 13; // 13 images per row in the sprite file
+
+console.log( "Creating cards" );
+
+            // Create 52 cards types:
+            for (var color = 1; color <= 4; color++) {
+                for (var value = 1; value <= 13; value++) {
+                    // Build card type id. Only create 52 here, 2 jokers below
+				
+						var card_type_id = this.getCardUniqueId(color, value);
+console.log( card_type_id );
+//                   	 this.playerHand.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/cards.jpg', card_type_id);
+						this.playerHand.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
+                }
+            }
+console.log("this.playerHand Before Jokers");
+console.log(this.playerHand);
+
+            // Add 2 jokers to the card types
+//            this.playerHand.addItemType(52, 52, g_gamethemeurl + 'img/cards.jpg', 52) // Color 5 Value 2
+//            this.playerHand.addItemType(53, 53, g_gamethemeurl + 'img/cards.jpg', 53) // Color 5 Value 3
+            this.playerHand.addItemType(52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+            this.playerHand.addItemType(53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+console.log("this.playerHand After Jokers");
+console.log(this.playerHand);
+
+console.log("Cards in player's hand");
+
+console.log(this.gamedatas.hand);
+
+
+            // Cards in player's hand
+            for ( var i in this.gamedatas.hand) {
+console.log( "i: " + i);
+                var card = this.gamedatas.hand[i];
+                var color = card.type;
+                var value = card.type_arg;
+console.log( "CCV: " + card.id + " / " + color + " / " + value );
+//console.log(card);
+
+                this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
+            }
+
+            // Cards played on table
+            for (i in this.gamedatas.cardsontable) {
+                var card = this.gamedatas.cardsontable[i];
+                var color = card.type;
+                var value = card.type_arg;
+                var player_id = card.location_arg;
+                this.playCardOnTable(player_id, color, value, card.id);
+            }
+
+            dojo.connect( this.playerHand, 'onChangeSelection', this, 'onPlayerHandSelectionChanged' );
+
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -158,19 +220,54 @@ function (dojo, declare) {
         
         */
 
+        // Get card unique identifier based on its color and value
+        getCardUniqueId : function(color, value) {
+            console.log("getCardUniqueId color: " + color)
+            console.log("getCardUniqueId value: " + value)
+			var bob = (color - 1) * 13 + (value - 1);
+			console.log("return: " + bob)
+            //return (color - 1) * 13 + (value - 2);
+            return bob;
+        },
+
+        playCardOnTable : function(player_id, color, value, card_id) {
+console.log("playCardOnTable");
+console.log( player_id + " / " + color + " / " + value + " / " + card_id);
+            // player_id => direction
+            dojo.place(this.format_block('jstpl_cardontable', {
+                x : this.cardwidth * (value - 1),
+                y : this.cardheight * (color - 1),
+                player_id : player_id
+            }), 'playertablecard_' + player_id);
+
+            if (player_id != this.player_id) {
+                // Some opponent played a card
+                // Move card from player panel
+                this.placeOnObject('cardontable_' + player_id, 'overall_player_board_' + player_id);
+            } else {
+                // You played a card. If it exists in your hand, move card from there and remove
+                // corresponding item
+
+                if ($('myhand_item_' + card_id)) {
+                    this.placeOnObject('cardontable_' + player_id, 'myhand_item_' + card_id);
+                    this.playerHand.removeFromStockById(card_id);
+                }
+            }
+
+            // In any case: move it to its final destination
+            this.slideToObject('cardontable_' + player_id, 'playertablecard_' + player_id).play();
+        },
 
         ///////////////////////////////////////////////////
         //// Player's action
         
         /*
-        
             Here, you are defining methods to handle player's action (ex: results of mouse click on 
             game objects).
             
             Most of the time, these methods:
             _ check the action is possible at this game state.
             _ make a call to the game server
-        
         */
         
         /* Example:
@@ -207,6 +304,33 @@ function (dojo, declare) {
         
         */
 
+        onPlayerHandSelectionChanged : function() {
+            var items = this.playerHand.getSelectedItems();
+
+            if (items.length > 0) {
+                var action = 'playCard';
+                if (this.checkAction(action, true)) {
+                    // Can play a card
+                    var card_id = items[0].id;                    
+
+console.log("[bmc]card_id: " + card_id);
+
+                    this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+                        id : card_id,
+                        lock : true
+                    }, this, function(result) {
+                    }, function(is_error) {
+                    });
+
+                    this.playerHand.unselectAll();
+                } else if (this.checkAction('giveCards')) {
+                    // Can give cards => let the player select some cards
+                } else {
+                    this.playerHand.unselectAll();
+                }
+            }
+        },
+
         
         ///////////////////////////////////////////////////
         //// Reaction to cometD notifications
@@ -224,6 +348,16 @@ function (dojo, declare) {
         {
             console.log( 'notifications subscriptions setup' );
             
+            dojo.subscribe('newHand', this, "notif_newHand");
+            dojo.subscribe('playCard', this, "notif_playCard");
+
+            dojo.subscribe( 'trickWin', this, "notif_trickWin" );
+            this.notifqueue.setSynchronous( 'trickWin', 1000 );
+            dojo.subscribe( 'giveAllCardsToPlayer', this, "notif_giveAllCardsToPlayer" );
+
+            dojo.subscribe( 'newScores', this, "notif_newScores" );
+
+
             // TODO: here, associate your game notifications with local methods
             
             // Example 1: standard notification handling
@@ -235,6 +369,45 @@ function (dojo, declare) {
             // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
             // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
             // 
+        },  
+        
+        notif_newScores : function(notif) {
+            // Update players' scores
+            for ( var player_id in notif.args.newScores) {
+                this.scoreCtrl[player_id].toValue(notif.args.newScores[player_id]);
+            }
+        },
+
+        notif_newHand : function(notif) {
+            // We received a new full hand of cards.
+            this.playerHand.removeAll();
+
+            for ( var i in notif.args.cards) {
+                var card = notif.args.cards[i];
+                var color = card.type;
+                var value = card.type_arg;
+                this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
+            }
+        },
+
+        notif_playCard : function(notif) {
+            // Play a card on the table
+            this.playCardOnTable(notif.args.player_id, notif.args.color, notif.args.value, notif.args.card_id);
+        },
+
+        notif_trickWin : function(notif) {
+            // We do nothing here (just wait in order players can view the 4 cards played before they're gone.
+        },
+        notif_giveAllCardsToPlayer : function(notif) {
+            // Move all cards on table to given table, then destroy them
+            var winner_id = notif.args.player_id;
+            for ( var player_id in this.gamedatas.players) {
+                var anim = this.slideToObject('cardontable_' + player_id, 'overall_player_board_' + winner_id);
+                dojo.connect(anim, 'onEnd', function(node) {
+                    dojo.destroy(node);
+                });
+                anim.play();
+            }
         },  
         
         // TODO: from this point and below, you can write your game notifications handling methods

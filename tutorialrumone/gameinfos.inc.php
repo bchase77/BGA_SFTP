@@ -13,35 +13,34 @@
 $gameinfos = array( 
 
 // Name of the game in English (will serve as the basis for translation) 
-'game_name' => "My Great Game",
+'game_name' => "Cozy Oaks Rummy First Try",
 
 // Game designer (or game designers, separated by commas)
-'designer' => 'John Doe',       
+'designer' => 'Bryan Chase',
 
 // Game artist (or game artists, separated by commas)
-'artist' => 'Jane Doe',         
+'artist' => 'Dody Oaks',         
 
 // Year of FIRST publication of this game. Can be negative.
-'year' => 2000,                 
+'year' => 2020,
 
 // Game publisher (use empty string if there is no publisher)
-'publisher' => 'My Publishing Company',                     
+'publisher' => 'Sevron L Publishing',
 
 // Url of game publisher website
-'publisher_website' => 'http://www.mypublishingcompany.com/',   
+'publisher_website' => 'http://www.sevronlpublishing.com/',   
 
 // Board Game Geek ID of the publisher
-'publisher_bgg_id' => 1234,
+'publisher_bgg_id' => 171,
 
 // Board game geek ID of the game
 'bgg_id' => 0,
-
 
 // Players configuration that can be played (ex: 2 to 4 players)
 'players' => array( 2,3,4 ),    
 
 // Suggest players to play with this number of players. Must be null if there is no such advice, or if there is only one possible player configuration.
-'suggest_player_number' => null,
+'suggest_player_number' => 4,
 
 // Discourage players to play with these numbers of players. Must be null if there is no such advice.
 'not_recommend_player_number' => null,
@@ -75,7 +74,7 @@ $gameinfos = array(
 // Game is "beta". A game MUST set is_beta=1 when published on BGA for the first time, and must remains like this until all bugs are fixed.
 'is_beta' => 1,                     
 
-// Is this game cooperative (all players wins together or loose together)
+// Is this game cooperative (all players wins together or lose together)
 'is_coop' => 0, 
 
 
@@ -126,6 +125,7 @@ $gameinfos = array(
 //    totranslate("This wonderful game is about geometric shapes!"),
 //    totranslate("It was awarded best triangle game of the year in 2005 and nominated for the Spiel des Jahres."),
 //    ...
+totranslate("This is my first implementation of a rummy game on BGA!")
 ),
 
 // Games categories

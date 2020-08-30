@@ -2,7 +2,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * TutorialRumOne implementation : © <Your name here> <Your email address here>
+ * TutorialRumOne implementation : © Bryan Chase <bryanchase@yahoo.com>
  * 
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -19,6 +19,35 @@
  *
  */
 
+$this->colors = array(
+    1 => array( 'name' => clienttranslate('club'),
+                'nametr' => self::_('club') ),
+    2 => array( 'name' => clienttranslate('spade'),
+                'nametr' => self::_('spade') ),
+    3 => array( 'name' => clienttranslate('heart'),
+                'nametr' => self::_('heart') ),
+    4 => array( 'name' => clienttranslate('diamond'),
+                'nametr' => self::_('diamond') ),
+	5 => array( 'name' => clienttranslate('joker'),
+                'nametr' => self::_('wild') )
+);
+
+$this->values_label = array(
+    1 => clienttranslate('A'),
+    2 => '2',
+    3 => '3',
+    4 => '4',
+    5 => '5',
+    6 => '6',
+    7 => '7',
+    8 => '8',
+    9 => '9',
+    10 => '10',
+    11 => clienttranslate('J'),
+    12 => clienttranslate('Q'),
+    13 => clienttranslate('K')
+);
+
 
 /*
 
@@ -31,7 +60,3 @@ $this->card_types = array(
 );
 
 */
-
-
-
-

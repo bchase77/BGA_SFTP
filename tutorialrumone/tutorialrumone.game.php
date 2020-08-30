@@ -2,7 +2,7 @@
  /**
   *------
   * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
-  * TutorialRumOne implementation : © <Your name here> <Your email address here>
+  * TutorialRumOne implementation : © Bryan Chase <bryanchase@yahoo.com>
   * 
   * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
   * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -16,12 +16,30 @@
   *
   */
 
-
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
-
 
 class TutorialRumOne extends Table
 {
+//	function spew($txt) // better not contain single quotes
+//	{
+//		if ($this->inStudio)
+//		self::trace("SEVLECT '" . $txt . "!' AS SPEW1");
+//		self::debug("SEVLECT '" . $txt . "!' AS SPEW2");
+//		self::debug_backtrace("SEVLECT '" . $txt . "!' AS SPEW3");
+//		self::debug_print_backtrace("SEVLECT '" . $txt . "!' AS SPEW4");
+//		self::information("SEVLECT '" . $txt . "!' AS SPEW5");
+//	}
+	protected function dd($var, $die = false)
+	{
+		echo '<pre>';
+		echo $var;
+		echo '</pre>';
+			
+		if ($die) {
+			die();
+		}
+	}
+	
 	function __construct( )
 	{
         // Your global variables labels:
@@ -39,7 +57,13 @@ class TutorialRumOne extends Table
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-        ) );        
+            "currentHandType" => 10
+
+
+        ) );
+        $this->cards = self::getNew( "module.common.deck" );
+        $this->cards->init( "card" );
+
 	}
 	
     protected function getGameName( )
@@ -56,8 +80,11 @@ class TutorialRumOne extends Table
         the game is ready to be played.
     */
     protected function setupNewGame( $players, $options = array() )
-    {    
-        // Set the colors of the players with HTML color code
+    {
+		self::trace("Sev|setupNewGame");
+
+        // Don't do a lot here since server side hasn't been set up yet and so it's hard to debug.
+		// Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
         $gameinfos = self::getGameinfos();
@@ -87,11 +114,7 @@ class TutorialRumOne extends Table
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
-        // TODO: setup the initial game situation here
-       
-
-        // Activate first player (which is in general a good idea :) )
-        $this->activeNextPlayer();
+        self::setGameStateInitialValue( 'currentHandType', 0 );
 
         /************ End of the game initialization *****/
     }
@@ -105,8 +128,87 @@ class TutorialRumOne extends Table
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
+	
+	function stDeckSetup()
+	{
+		self::trace("Sev|setupNewDeck");
+        // The game is played with multiple standard 52-pack plus the jokers.
+        // 2 decks for three to five players. 3 decks for more players. 
+
+        // NOTE: Hand Types: 0 = 2 sets
+        //                   1 = 1 set 1 run
+        //                   2 = 2 runs
+        //                   3 = 3 sets
+        //                   4 = 2 sets 1 run
+        //                   6 = 1 set 2 runs
+        //                   7 = 3 runs
+        // Variants:
+        //   3 runs: Go down with no remaining cards in hand, no final discard (12 cards)
+        //   First one to click BUY gets it, not the first in line
+        //   Runs must include at least 3 non-wildcards in an original 4 card grouping.
+        //   Sets must include at least 2 non-wildcards.
+        //   Replace that other player's laid Joker from within a run (or a set)
+        //   Discard must not fit into either their own or any other player's laid cards.
+        //     (or else draw extra card and whoever called Liverpool can discard a card)
+		
+		        // Create cards
+        $cards = array ();
+
+//        foreach ( $this->colors as $color_id => $color ) {
+		for ($colors = 1; $colors <=4; $colors ++) {
+			$color_id = $colors;
+            // spade, heart, diamond, club
+            foreach ( $this->values_label as $value => $type_arg ) {
+//            for ($value = 1; $value <= 13; $value ++) {
+                //  A, 2, 3, 4, ... K
+				if ( !array_key_exists("51", $cards)) {
+					$cards [] = array ('type' => $color_id, 'type_arg' => $value, 'nbr' => 1 );
+				}
+            }
+        }
+
+		self::trace("Sev|makingCards");
+		
+        // Add jokers
+        $jokers = array ();
+		$color = 5;
+		for ($value = 1; $value <= 2; $value ++) {
+			//$jokers [] = array ('type' => $color, 'type_arg' => $value, 'nbr' => 1 );
+			array_push( $cards, array ('type' => $color, 'type_arg' => $value, 'nbr' => 1 ));
+		}
+
+        $this->cards->createCards( $cards, 'deck' );
+
+        // Shuffle deck
+        $this->cards->shuffle('deck');
+		
+        // Deal some cards to each players
+		
+		//bmc deal cards to all players
+//		$players = self::loadPlayersBasicInfos();
+
+//        $current_player_id = array_values($players)[0]["player_id"];
+
+//        $cards = $this->cards->pickCards(11, 'deck', $current_player_id);
+
+//var_dump( array_values($players)[0]["player_id"] );
+//var_dump($cards);
+//die('okSev');
+
+        $players = self::loadPlayersBasicInfos();
+        foreach ( $players as $player_id => $player ) {
+            $cards = $this->cards->pickCards(11, 'deck', $player_id);
+        } 
+
+        // Activate first player (which is in general a good idea :) )
+        $this->activeNextPlayer();
+		
+	}
+	
     protected function getAllDatas()
     {
+		self::trace("Sev|getAllDatas");
+
         $result = array();
     
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
@@ -117,6 +219,17 @@ class TutorialRumOne extends Table
         $result['players'] = self::getCollectionFromDb( $sql );
   
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
+
+        // Cards in player hand
+        $result['hand'] = $this->cards->getCardsInLocation( 'hand', $current_player_id );
+
+// 54 cards looks good up to here! [bmc 8/29/2020]
+//var_dump($result);
+//die('okSev');
+
+        
+        // Cards played on the table
+        $result['cardsontable'] = $this->cards->getCardsInLocation( 'cardsontable' );
   
         return $result;
     }
@@ -158,6 +271,41 @@ class TutorialRumOne extends Table
         (note: each method below must match an input method in tutorialrumone.action.php)
     */
 
+// Possible actions for current active player:
+//   Draw card
+//   Discard card
+//   Play card (only if already gone down)
+//   Go down
+//
+// Possible actions for other players:
+//   Buy discarded card
+//   Call Liverpool on another player
+
+    function playCard($card_id)
+    {
+		self::trace("Sev|playCard");
+
+        self::checkAction("playCard");
+        $player_id = self::getActivePlayerId();
+        $this->cards->moveCard($card_id, 'cardsontable', $player_id);
+        // XXX check rules here
+        $currentCard = $this->cards->getCard($card_id);
+
+        $currentTrickColor = self::getGameStateValue( 'trickColor' ) ;
+        if( $currentTrickColor == 0 )
+            self::setGameStateValue( 'trickColor', $currentCard['type'] );
+
+        // And notify
+        self::notifyAllPlayers('playCard', clienttranslate('${player_name} plays ${value_displayed} ${color_displayed}'), array (
+                'i18n' => array ('color_displayed','value_displayed' ),'card_id' => $card_id,'player_id' => $player_id,
+                'player_name' => self::getActivePlayerName(),'value' => $currentCard ['type_arg'],
+                'value_displayed' => $this->values_label [$currentCard ['type_arg']],'color' => $currentCard ['type'],
+                'color_displayed' => $this->colors [$currentCard ['type']] ['name'] ));
+        // Next player
+        $this->gamestate->nextState('playCard');
+    }
+
+
     /*
     
     Example:
@@ -168,6 +316,8 @@ class TutorialRumOne extends Table
         self::checkAction( 'playCard' ); 
         
         $player_id = self::getActivePlayerId();
+
+        throw new BgaUserException(self::_("Not implemented: ") . "$player_id plays $card_id");
         
         // Add your game logic to play a card there 
         ...
@@ -195,6 +345,137 @@ class TutorialRumOne extends Table
         game state.
     */
 
+// Below is all copied from the HEARTS tutorial (which did work):
+
+    function stNewHand() {
+		self::trace("Sev|stNewHand");
+        // Take back all cards (from any location => null) to deck
+        $this->cards->moveAllCardsInLocation(null, "deck");
+        $this->cards->shuffle('deck');
+        // Deal 11 cards to each players
+        // Create deck, shuffle it and give 11 initial cards
+        $players = self::loadPlayersBasicInfos();
+        foreach ( $players as $player_id => $player ) {
+            $cards = $this->cards->pickCards(13, 'deck', $player_id);
+            // Notify player about his cards
+            self::notifyPlayer($player_id, 'newHand', '', array ('cards' => $cards ));
+        }
+//        self::setGameStateValue('alreadyPlayedHearts', 0);
+        $this->gamestate->nextState("");
+    }
+
+    function stNewTrick() {
+		self::trace("Sev|stNewTrick");
+        // New trick: active the player who wins the last trick, or the player who own the club-2 card
+        // Reset trick color to 0 (= no color)
+        self::setGameStateInitialValue('trickColor', 0);
+        $this->gamestate->nextState();
+    }
+
+//TODO: This is no longer appropriate (to move to the next player after 4 cards played)
+    function stNextPlayer() {
+		self::trace("Sev|stNextPlayer");
+        // Active next player OR end the trick and go to the next trick OR end the hand
+        if ($this->cards->countCardInLocation('cardsontable') == 4) {
+            // This is the end of the trick
+            $cards_on_table = $this->cards->getCardsInLocation('cardsontable');
+            $best_value = 0;
+            $best_value_player_id = null;
+            $currentTrickColor = self::getGameStateValue('trickColor');
+            foreach ( $cards_on_table as $card ) {
+                // Note: type = card color
+                if ($card ['type'] == $currentTrickColor) {
+                    if ($best_value_player_id === null || $card ['type_arg'] > $best_value) {
+                        $best_value_player_id = $card ['location_arg']; // Note: location_arg = player who played this card on table
+                        $best_value = $card ['type_arg']; // Note: type_arg = value of the card
+                    }
+                }
+            }
+            
+            // Active this player => he's the one who starts the next trick
+            $this->gamestate->changeActivePlayer( $best_value_player_id );
+            
+            // Move all cards to "cardswon" of the given player
+            $this->cards->moveAllCardsInLocation('cardsontable', 'cardswon', null, $best_value_player_id);
+ 
+            // Notify
+            // Note: we use 2 notifications here in order we can pause the display during the first notification
+            //  before we move all cards to the winner (during the second)
+            $players = self::loadPlayersBasicInfos();
+            self::notifyAllPlayers( 'trickWin', clienttranslate('${player_name} wins the trick'), array(
+                'player_id' => $best_value_player_id,
+                'player_name' => $players[ $best_value_player_id ]['player_name']
+            ) );            
+            self::notifyAllPlayers( 'giveAllCardsToPlayer','', array(
+                'player_id' => $best_value_player_id
+            ) );
+        
+            if ($this->cards->countCardInLocation('hand') == 0) {
+                // End of the hand
+                $this->gamestate->nextState("endHand");
+            } else {
+                // End of the trick
+                $this->gamestate->nextState("nextTrick");
+            }
+        } else {
+            // Standard case (not the end of the trick)
+            // => just active the next player
+            $player_id = self::activeNextPlayer();
+            self::giveExtraTime($player_id);
+            $this->gamestate->nextState('nextPlayer');
+        }
+    }
+
+    function stEndHand() {
+		self::trace("Sev|stEndHand");
+        // Count and score points, then end the game or go to the next hand.
+        $players = self::loadPlayersBasicInfos();
+        // Gets all "hearts" + queen of spades
+
+        $player_to_points = array ();
+        foreach ( $players as $player_id => $player ) {
+            $player_to_points [$player_id] = 0;
+        }
+        $cards = $this->cards->getCardsInLocation("cardswon");
+        foreach ( $cards as $card ) {
+            $player_id = $card ['location_arg'];
+            // Note: 2 = heart
+            if ($card ['type'] == 2) {
+                $player_to_points [$player_id] ++;
+            }
+        }
+        // Apply scores to player
+        foreach ( $player_to_points as $player_id => $points ) {
+            if ($points != 0) {
+                $sql = "UPDATE player SET player_score=player_score-$points  WHERE player_id='$player_id'";
+                self::DbQuery($sql);
+                $heart_number = $player_to_points [$player_id];
+                self::notifyAllPlayers("points", clienttranslate('${player_name} gets ${nbr} hearts and looses ${nbr} points'), array (
+                        'player_id' => $player_id,'player_name' => $players [$player_id] ['player_name'],
+                        'nbr' => $heart_number ));
+            } else {
+                // No point lost (just notify)
+                self::notifyAllPlayers("points", clienttranslate('${player_name} did not get any hearts'), array (
+                        'player_id' => $player_id,'player_name' => $players [$player_id] ['player_name'] ));
+            }
+        }
+        $newScores = self::getCollectionFromDb("SELECT player_id, player_score FROM player", true );
+        self::notifyAllPlayers( "newScores", '', array( 'newScores' => $newScores ) );
+
+        ///// Test if this is the end of the game
+        foreach ( $newScores as $player_id => $score ) {
+            if ($score <= -100) {
+                // Trigger the end of the game !
+                $this->gamestate->nextState("endGame");
+                return;
+            }
+        }
+
+        
+        $this->gamestate->nextState("nextHand");
+    }
+
+// End all copied from the HEARTS tutorial.
     /*
     
     Example for game state "MyGameState":
@@ -314,7 +595,6 @@ class TutorialRumOne extends Table
 //        // Please add your future database scheme changes here
 //
 //
-
 
     }    
 }

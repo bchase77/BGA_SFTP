@@ -38,7 +38,7 @@
             self::trace( "Complete reinitialization of board game" );
             }
   	} 
-  	
+
   	// TODO: defines your action entry points there
 
         public function playCard()
@@ -71,5 +71,3 @@
     */
 
   }
-  
-

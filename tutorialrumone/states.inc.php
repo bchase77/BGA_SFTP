@@ -2,7 +2,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * TutorialRumOne implementation : © <Your name here> <Your email address here>
+ * TutorialRumOne implementation : © Bryan Chase <bryanchase@yahoo.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -55,23 +55,87 @@ $machinestates = array(
     // The initial state. Please do not modify.
     1 => array(
         "name" => "gameSetup",
-        "description" => "",
+        "description" => clienttranslate("Game setup"),
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array( "" => 2 )
+        "transitions" => array( "" => 10 )
     ),
     
-    // Note: ID=2 => your first state
+    // Create new deck
+    10 => array(
+        "name" => "deckSetup",
+        "description" => clienttranslate("Deckss setup"),
+        "type" => "manager",
+        "action" => "stDeckSetup",
+        "transitions" => array( "" => 20 )
+    ),
 
-    2 => array(
-    		"name" => "playerTurn",
-    		"description" => clienttranslate('${actplayer} must play a card or pass'),
-    		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "playCard", "pass" ),
-    		"transitions" => array( "playCard" => 2, "pass" => 2 )
-    ),
+    /// New hand
+    20 => array(
+        "name" => "newHand",
+        "description" => "This is machinestates 20fs",
+        "type" => "game",
+        "action" => "stNewHand",
+        "updateGameProgression" => true,   
+        "transitions" => array( "" => 31 )
+    ),    
+
+      
     
+    // I don't think we need Trick. Players just play until someone goes out.
+    
+/*
+    30 => array(
+        "name" => "newTrick",
+        "description" => "",
+        "type" => "game",
+        "action" => "stNewTrick",
+        "transitions" => array( "" => 31 )
+    ),       
+*/
+    31 => array(
+        "name" => "playerTurnDraw",
+        "description" => clienttranslate('${actplayer} must draw a card. Others can buy.'),
+        "descriptionmyturn" => clienttranslate('${you} must draw a card.'),
+        "type" => "multipleactiveplayer",
+        "possibleactions" => array( "drawCard", "buyCard", "pass" ),
+        "transitions" => array( "drawCard" => 33, "buyCard" => 50, "pass" => 33 )
+    ), 
+    33 => array(
+        "name" => "playerTurnPlay",
+        "description" => clienttranslate('${actplayer} must play a card.'),
+        "descriptionmyturn" => clienttranslate('${you} must play a card.'),
+        "type" => "activeplayer",
+        "possibleactions" => array( "playCard" ),
+        "transitions" => array( "playCard" => 35 )
+    ), 
+    35 => array(
+        "name" => "nextPlayer",
+        "description" => "",
+        "type" => "activeplayer",
+        "action" => "stNextPlayer",
+        "transitions" => array( "nextPlayer" => 31, "endHand" => 40 )
+    ), 
+    
+    
+    // End of the hand (scoring, etc...)
+    40 => array(
+        "name" => "endHand",
+        "description" => "",
+        "type" => "game",
+        "action" => "stEndHand",
+        "transitions" => array( "nextHand" => 20, "endGame" => 99 )
+    ),     
+    
+    // Someone wants to buy a discarded card
+    50 => array(
+        "name" => "buyCard",
+        "description" => "Someone has bought the discard.",
+        "type" => "game",
+        "action" => "stBuyCard",
+        "transitions" => array( "" => 33 )
+    ),     
+
 /*
     Examples:
     
@@ -106,6 +170,3 @@ $machinestates = array(
     )
 
 );
-
-
-

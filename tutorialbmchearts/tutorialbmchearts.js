@@ -61,13 +61,20 @@ function (dojo, declare) {
             }
             
             // TODO: Set up your game interface here, according to "gamedatas"
+            console.log( "Starting game setup" );
 
             // Player hand
+console.log( "playerHand" );
             this.playerHand = new ebg.stock(); // new stock object for hand
+console.log(this.playerHand)
+console.log(this.cardwidth)
+console.log(this.cardheight)
+console.log($('myhand'))
+console.log( "playerHand.create" );
+
             this.playerHand.create( this, $('myhand'), this.cardwidth, this.cardheight );            
  
             this.playerHand.image_items_per_row = 13; // 13 images per row
-
 
             // Create cards types:
             for (var color = 1; color <= 4; color++) {
@@ -301,7 +308,6 @@ console.log("[bmc]card_id: " + card_id);
                 }
             }
         },
-
 
         
         ///////////////////////////////////////////////////
