@@ -24,7 +24,7 @@ define([
 function (dojo, declare) {
     return declare("bgagame.tutorialrumone", ebg.core.gamegui, {
         constructor: function(){
-            console.log('tutorialrumone constructor');
+console.log('bmc: tutorialrumone constructor');
               
             // Here, you can init the global variables of your user interface
             // Example:
@@ -50,26 +50,27 @@ function (dojo, declare) {
         
         setup: function( gamedatas )
         {
-            console.log( "Starting game setup" );
-            
+console.log( "bmc: Starting game setup" );
+
             // Setting up player boards
-            for( var player_id in gamedatas.players )
-            {
-                var player = gamedatas.players[player_id];
-                         
-                // TODO: Setting up players boards if needed
-            }
+//            for( var player_id in gamedatas.players )
+//            {
+//                var player = gamedatas.players[player_id];
+//                         
+//                // TODO: Setting up each players boards if needed
+//            }
             
             // Player hand
-console.log( "playerHand" );
+
             this.playerHand = new ebg.stock(); // new stock object for hand
-console.log(this.playerHand)
-console.log($('myhand'))
+//console.log(this.playerHand)
+console.log("bmc: myhand:");
+console.log($('myhand'));
 
             this.playerHand.create( this, $('myhand'), this.cardwidth, this.cardheight );            
             this.playerHand.image_items_per_row = 13; // 13 images per row in the sprite file
 
-console.log( "Creating cards" );
+console.log( "bmc: Creating cards" );
 
             // Create 52 cards types:
             for (var color = 1; color <= 4; color++) {
@@ -77,38 +78,90 @@ console.log( "Creating cards" );
                     // Build card type id. Only create 52 here, 2 jokers below
 				
 						var card_type_id = this.getCardUniqueId(color, value);
-console.log( card_type_id );
-//                   	 this.playerHand.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/cards.jpg', card_type_id);
 						this.playerHand.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
                 }
             }
-console.log("this.playerHand Before Jokers");
-console.log(this.playerHand);
 
             // Add 2 jokers to the card types
-//            this.playerHand.addItemType(52, 52, g_gamethemeurl + 'img/cards.jpg', 52) // Color 5 Value 2
-//            this.playerHand.addItemType(53, 53, g_gamethemeurl + 'img/cards.jpg', 53) // Color 5 Value 3
-            this.playerHand.addItemType(52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
-            this.playerHand.addItemType(53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
-console.log("this.playerHand After Jokers");
-console.log(this.playerHand);
+            this.playerHand.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+            this.playerHand.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+//console.log("this.playerHand After Jokers");
+//console.log(this.playerHand);
 
-console.log("Cards in player's hand");
+console.log("bmc: Cards in gamedatas and in player's hand");
 
 console.log(this.gamedatas.hand);
+console.log(this.playerHand);
 
+            //this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
+            this.playerHand.setOverlap( 50, 0 );
 
             // Cards in player's hand
             for ( var i in this.gamedatas.hand) {
-console.log( "i: " + i);
+//console.log( "i: " + i);
                 var card = this.gamedatas.hand[i];
                 var color = card.type;
                 var value = card.type_arg;
-console.log( "CCV: " + card.id + " / " + color + " / " + value );
+//console.log( "CCV: " + card.id + " / " + color + " / " + value );
 //console.log(card);
 
                 this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
             }
+
+
+
+
+
+//[bmc] 8/31/2020 Adding Draw and Discard areas. Want to show N cards overlapped a little bit in each.
+            // Cards for drawing and discard
+            this.drawPile = new ebg.stock(); // new stock object for draw pile
+//console.log(this.playerHand)
+//console.log("myhand");
+//console.log($('myhand'));
+
+            this.drawPile.create( this, $('drawPile'), this.cardwidth, this.cardheight );            
+            this.drawPile.image_items_per_row = 13; // 13 images per row in the sprite file
+            this.drawPile.setOverlap( 1, 0 );
+
+console.log("bmc: drawPile");
+console.log(this.drawPile);
+
+            this.drawPile.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54); // Color 5 Value 3 is red back of the card
+            this.drawPile.addItemType( 2, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 55); // Color 5 Value 4 is blue back of the card
+            this.drawPile.addToStock(1);
+console.log("bmc: drawPile");
+console.log(this.drawPile);
+
+            // Add 10 cardbacks to the draw pile randomly colored
+            for ( var i=1 ; i < 10; i++) { 
+                this.drawPile.addToStock(Math.floor(Math.random() * 2 ) + 1);
+			}
+
+//exit(0);
+
+//[bmc] HERE. IT DOESN'T LIKE THE ADDTOSTOCK LINE:
+/*            for ( var i=1 ; i < 10; i++) {
+                this.drawPile.addToStock(0);
+			}
+
+            this.discardPile = new ebg.stock(); // new stock object for discard pile
+            this.discardPile.create( this, $('discardPile'), this.cardwidth, this.cardheight );
+*/
+//console.log("drawDiscard");
+//console.log($('drawDiscard'));
+			
+			
+//            for ( var i in this.gamedatas.hand) {
+//                var card = this.gamedatas.hand[i];
+//                var color = card.type;
+//                var value = card.type_arg;
+//console.log(card);
+
+//                this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
+//            }
+
+
+// Not sure what I need from below:
 
             // Cards played on table
             for (i in this.gamedatas.cardsontable) {
@@ -124,7 +177,7 @@ console.log( "CCV: " + card.id + " / " + color + " / " + value );
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
-            console.log( "Ending game setup" );
+            console.log( "bmc: Ending game setup" );
         },
        
 
@@ -222,11 +275,11 @@ console.log( "CCV: " + card.id + " / " + color + " / " + value );
 
         // Get card unique identifier based on its color and value
         getCardUniqueId : function(color, value) {
-            console.log("getCardUniqueId color: " + color)
-            console.log("getCardUniqueId value: " + value)
+//            console.log("getCardUniqueId color: " + color)
+//            console.log("getCardUniqueId value: " + value)
 			var bob = (color - 1) * 13 + (value - 1);
-			console.log("return: " + bob)
-            //return (color - 1) * 13 + (value - 2);
+//			console.log("return: " + bob)
+            //return (color - 1) * 13 + (value - 2); // Offset depending upon the image sprite file
             return bob;
         },
 
@@ -305,6 +358,7 @@ console.log( player_id + " / " + color + " / " + value + " / " + card_id);
         */
 
         onPlayerHandSelectionChanged : function() {
+console.log("[bmc]onPlayerHandSelectionChanged");
             var items = this.playerHand.getSelectedItems();
 
             if (items.length > 0) {
@@ -313,6 +367,7 @@ console.log( player_id + " / " + color + " / " + value + " / " + card_id);
                     // Can play a card
                     var card_id = items[0].id;                    
 
+console.log("[bmc]Playing card!");
 console.log("[bmc]card_id: " + card_id);
 
                     this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
@@ -330,7 +385,6 @@ console.log("[bmc]card_id: " + card_id);
                 }
             }
         },
-
         
         ///////////////////////////////////////////////////
         //// Reaction to cometD notifications
@@ -387,7 +441,7 @@ console.log("[bmc]card_id: " + card_id);
                 var color = card.type;
                 var value = card.type_arg;
                 this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
-            }
+			}
         },
 
         notif_playCard : function(notif) {
@@ -398,6 +452,7 @@ console.log("[bmc]card_id: " + card_id);
         notif_trickWin : function(notif) {
             // We do nothing here (just wait in order players can view the 4 cards played before they're gone.
         },
+		
         notif_giveAllCardsToPlayer : function(notif) {
             // Move all cards on table to given table, then destroy them
             var winner_id = notif.args.player_id;

@@ -30,6 +30,10 @@ Dody Oaks Rummy First Implementation
 
 This is your game interface. You can edit this HTML in your ".tpl" file.
 
+
+Target hand: <div>{CURRENT_HAND_TYPE}</div>
+
+
 <div id="playertables">
 
     <!-- BEGIN player -->
@@ -42,6 +46,18 @@ This is your game interface. You can edit this HTML in your ".tpl" file.
     </div>
     <!-- END player -->
 
+</div>
+
+<div id="drawPile_wrap" class="whiteblock drawPile">
+    <h3>{DRAW}</h3>
+    <div id="drawPile">
+    </div>
+</div>
+
+<div id="discardPile_wrap" class="whiteblock drawPile">
+    <h3>{DISCARD}</h3>
+    <div id="discardPile">
+    </div>
 </div>
 
 <div id="myhand_wrap" class="whiteblock">

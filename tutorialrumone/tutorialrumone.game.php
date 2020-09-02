@@ -20,26 +20,6 @@ require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
 class TutorialRumOne extends Table
 {
-//	function spew($txt) // better not contain single quotes
-//	{
-//		if ($this->inStudio)
-//		self::trace("SEVLECT '" . $txt . "!' AS SPEW1");
-//		self::debug("SEVLECT '" . $txt . "!' AS SPEW2");
-//		self::debug_backtrace("SEVLECT '" . $txt . "!' AS SPEW3");
-//		self::debug_print_backtrace("SEVLECT '" . $txt . "!' AS SPEW4");
-//		self::information("SEVLECT '" . $txt . "!' AS SPEW5");
-//	}
-	protected function dd($var, $die = false)
-	{
-		echo '<pre>';
-		echo $var;
-		echo '</pre>';
-			
-		if ($die) {
-			die();
-		}
-	}
-	
 	function __construct( )
 	{
         // Your global variables labels:
@@ -57,13 +37,33 @@ class TutorialRumOne extends Table
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-            "currentHandType" => 10
+          // NOTE: Hand Types Order: 2 sets
+          //                         1 set 1 run
+          //                         2 runs
+          //                         3 sets
+          //                         2 sets 1 run
+          //                         1 set 2 runs
+          //                         3 runs
 
+            "currentHandType" => "2 sets",
+			"bob" => 11
 
         ) );
+		
+	
+//		Not sure where to put this:
+//      $handTypes = array(
+//		  0 => "2 Sets",
+//		  1 => "1 Set and 1 Run",
+//		  2 => "2 Runs",
+//		  3 => "3 Sets",
+//		  4 => "2 Sets and 1 Run",
+//		  5 => "1 Set and 2 Runs",
+//		  6 => "3 Runs"
+//		);
+		  
         $this->cards = self::getNew( "module.common.deck" );
         $this->cards->init( "card" );
-
 	}
 	
     protected function getGameName( )
@@ -103,7 +103,10 @@ class TutorialRumOne extends Table
         self::DbQuery( $sql );
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
-        
+
+        // Activate first player (which is in general a good idea :) )
+        $this->activeNextPlayer();
+		
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
@@ -113,8 +116,6 @@ class TutorialRumOne extends Table
         // (note: statistics used in this file must be defined in your stats.inc.php file)
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
-
-        self::setGameStateInitialValue( 'currentHandType', 0 );
 
         /************ End of the game initialization *****/
     }
@@ -135,13 +136,6 @@ class TutorialRumOne extends Table
         // The game is played with multiple standard 52-pack plus the jokers.
         // 2 decks for three to five players. 3 decks for more players. 
 
-        // NOTE: Hand Types: 0 = 2 sets
-        //                   1 = 1 set 1 run
-        //                   2 = 2 runs
-        //                   3 = 3 sets
-        //                   4 = 2 sets 1 run
-        //                   6 = 1 set 2 runs
-        //                   7 = 3 runs
         // Variants:
         //   3 runs: Go down with no remaining cards in hand, no final discard (12 cards)
         //   First one to click BUY gets it, not the first in line
@@ -196,13 +190,30 @@ class TutorialRumOne extends Table
 //die('okSev');
 
         $players = self::loadPlayersBasicInfos();
+		
+//var_dump($players);
+//die('okSev');
+		
+//var_dump($drawPileCards);
+//var_dump($player_id);
+//die('okSev');
+
         foreach ( $players as $player_id => $player ) {
             $cards = $this->cards->pickCards(11, 'deck', $player_id);
         } 
+//var_dump($cards);
+//die('okSev');
 
-        // Activate first player (which is in general a good idea :) )
-        $this->activeNextPlayer();
-		
+		// Make a draw pile of the other cards. Try to get 1000 to cover the largest possible deck. Set drawpile ID to 99.
+		$drawPileCards = $this->cards->pickCards(100, 'deck', 99);
+//var_dump($drawPileCards);
+//die('okSev');
+
+        // Set the first hand target
+        self::setGameStateValue( 'currentHandType', "2 sets.." ); // 0 is 2 Sets
+
+		// Go to the next game state
+        $this->gamestate->nextState();	
 	}
 	
     protected function getAllDatas()
@@ -226,13 +237,25 @@ class TutorialRumOne extends Table
 // 54 cards looks good up to here! [bmc 8/29/2020]
 //var_dump($result);
 //die('okSev');
-
         
         // Cards played on the table
         $result['cardsontable'] = $this->cards->getCardsInLocation( 'cardsontable' );
   
         return $result;
     }
+
+// BMC JUST ADDED THIS, working on it
+	    function argPlayerTurn()   {
+           return array(
+//	            '_private' => array(  // Using "_private" keyword, all data inside this array will be made private
+//
+//                    'active' => array(    // Using "active" keyword inside "_private", you select active player(s)
+//                      'somePrivateData' => self::getSomePrivateData()   // will be send only to active player(s)
+//                    )
+//                )
+//,            'possibleMoves' => self::getPossibleMoves()
+            );
+       }
 
     /*
         getGameProgression:
@@ -283,24 +306,38 @@ class TutorialRumOne extends Table
 
     function playCard($card_id)
     {
-		self::trace("Sev|playCard");
+		self::trace("Sev!!playCard!!");
 
         self::checkAction("playCard");
         $player_id = self::getActivePlayerId();
+
         $this->cards->moveCard($card_id, 'cardsontable', $player_id);
+
         // XXX check rules here
         $currentCard = $this->cards->getCard($card_id);
 
-        $currentTrickColor = self::getGameStateValue( 'trickColor' ) ;
-        if( $currentTrickColor == 0 )
-            self::setGameStateValue( 'trickColor', $currentCard['type'] );
+//        $currentTrickColor = self::getGameStateValue( 'trickColor' ) ;
+//        if( $currentTrickColor == 0 )
+//            self::setGameStateValue( 'trickColor', $currentCard['type'] );
 
         // And notify
-        self::notifyAllPlayers('playCard', clienttranslate('${player_name} plays ${value_displayed} ${color_displayed}'), array (
-                'i18n' => array ('color_displayed','value_displayed' ),'card_id' => $card_id,'player_id' => $player_id,
-                'player_name' => self::getActivePlayerName(),'value' => $currentCard ['type_arg'],
-                'value_displayed' => $this->values_label [$currentCard ['type_arg']],'color' => $currentCard ['type'],
-                'color_displayed' => $this->colors [$currentCard ['type']] ['name'] ));
+        self::notifyAllPlayers(
+			'playCard',
+			clienttranslate('${player_name} plays ${value_displayed} ${color_displayed}'),
+			array (
+				'i18n' => array ('color_displayed',
+								 'value_displayed' ),
+				'card_id' => $card_id,
+				'player_id' => $player_id,
+				'player_name' => self::getActivePlayerName(),'value' => $currentCard ['type_arg'],
+				'value_displayed' => $this->values_label [$currentCard ['type_arg']],
+				'color' => $currentCard ['type'],
+				'color_displayed' => $this->colors [$currentCard ['type']] ['name']
+			)
+		);
+var_dump($card_id);
+die('okSev');
+
         // Next player
         $this->gamestate->nextState('playCard');
     }
@@ -356,7 +393,7 @@ class TutorialRumOne extends Table
         // Create deck, shuffle it and give 11 initial cards
         $players = self::loadPlayersBasicInfos();
         foreach ( $players as $player_id => $player ) {
-            $cards = $this->cards->pickCards(13, 'deck', $player_id);
+            $cards = $this->cards->pickCards(11, 'deck', $player_id);
             // Notify player about his cards
             self::notifyPlayer($player_id, 'newHand', '', array ('cards' => $cards ));
         }

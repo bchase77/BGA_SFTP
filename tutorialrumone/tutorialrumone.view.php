@@ -35,11 +35,25 @@
   	{		
   	    // Get players & players number
         $players = $this->game->loadPlayersBasicInfos();
-        $players_nbr = count( $players );
+		$sevdebug = $this->game->gamestate_labels["currentHandType"];
+//var_dump($sevdebug);
+//die('okSev');
+
+        $players_nbr = count( $players ) + 12;
 
         /*********** Place your code below:  ************/
 
+//		$number_to_display = 4;
+//        $this->tpl['CURRENT_HAND_TYPE'] = $number_to_display;
 
+//works		$to_display = "bob";
+//doesn't work        $to_display = self::getGameStateValue('currentHandType');
+        $to_display = $sevdebug;
+        $this->tpl['CURRENT_HAND_TYPE'] = "Go Down target: " . $to_display;
+
+/*		$to_display = $currentHandType;
+        $this->tpl['CURRENT_HAND_TYPE'] = $to_display;
+*/
         /*
         
         // Examples: set the value of some element defined in your tpl file like this: {MY_VARIABLE_ELEMENT}

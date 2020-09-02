@@ -64,23 +64,21 @@ $machinestates = array(
     // Create new deck
     10 => array(
         "name" => "deckSetup",
-        "description" => clienttranslate("Deckss setup"),
-        "type" => "manager",
+        "description" => clienttranslate("Deck setup"),
+        "type" => "game",
         "action" => "stDeckSetup",
         "transitions" => array( "" => 20 )
     ),
 
-    /// New hand
+    /// New hand This one will increment through the types of goals: 2 sets, 1 run 1 set...
     20 => array(
         "name" => "newHand",
-        "description" => "This is machinestates 20fs",
+        "description" => clienttranslate('Go down target: ${currentHandType}.'),
         "type" => "game",
         "action" => "stNewHand",
         "updateGameProgression" => true,   
         "transitions" => array( "" => 31 )
     ),    
-
-      
     
     // I don't think we need Trick. Players just play until someone goes out.
     
@@ -95,23 +93,24 @@ $machinestates = array(
 */
     31 => array(
         "name" => "playerTurnDraw",
-        "description" => clienttranslate('${actplayer} must draw a card. Others can buy.'),
-        "descriptionmyturn" => clienttranslate('${you} must draw a card.'),
-        "type" => "multipleactiveplayer",
-        "possibleactions" => array( "drawCard", "buyCard", "pass" ),
-        "transitions" => array( "drawCard" => 33, "buyCard" => 50, "pass" => 33 )
+        "description" => clienttranslate('State 31: ${actplayer} must draw a card. Others can buy.'),
+        "descriptionmyturn" => clienttranslate('State 31: ${you} must draw a card.'),
+        "type" => "activeplayer", //multipleactiveplayer
+		"args" => "argPlayerTurn", 
+        "possibleactions" => array( "drawCard", "buyCard", "pass", "playCard" ),
+        "transitions" => array( "drawCard" => 33, "buyCard" => 50, "pass" => 33, "playCard" => 35 )
     ), 
     33 => array(
         "name" => "playerTurnPlay",
-        "description" => clienttranslate('${actplayer} must play a card.'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card.'),
+        "description" => clienttranslate('State 33: ${actplayer} must play a card.'),
+        "descriptionmyturn" => clienttranslate('State 33: ${you} must play a card.'),
         "type" => "activeplayer",
         "possibleactions" => array( "playCard" ),
         "transitions" => array( "playCard" => 35 )
     ), 
     35 => array(
         "name" => "nextPlayer",
-        "description" => "",
+        "description" => "clienttranslate('End of hand.')",
         "type" => "activeplayer",
         "action" => "stNextPlayer",
         "transitions" => array( "nextPlayer" => 31, "endHand" => 40 )
