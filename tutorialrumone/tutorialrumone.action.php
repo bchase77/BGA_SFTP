@@ -49,6 +49,13 @@
             self::ajaxResponse();
         }
 
+        public function drawCard()
+        {
+            self::setAjaxMode();
+            $card_id = self::getArg("id", AT_posint, true);
+            $this->game->drawCard($card_id);
+            self::ajaxResponse();
+        }
     /*
     
     Example:

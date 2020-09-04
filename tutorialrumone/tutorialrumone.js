@@ -61,6 +61,8 @@ console.log( "bmc: Starting game setup" );
 //            }
             
             // Player hand
+			
+			// TODO: Change the card weight to change the order in the hand left to right
 
             this.playerHand = new ebg.stock(); // new stock object for hand
 //console.log(this.playerHand)
@@ -77,7 +79,7 @@ console.log( "bmc: Creating cards" );
                 for (var value = 1; value <= 13; value++) {
                     // Build card type id. Only create 52 here, 2 jokers below
 				
-						var card_type_id = this.getCardUniqueId(color, value);
+						let card_type_id = this.getCardUniqueId(color, value);
 						this.playerHand.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
                 }
             }
@@ -85,16 +87,17 @@ console.log( "bmc: Creating cards" );
             // Add 2 jokers to the card types
             this.playerHand.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
             this.playerHand.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+            this.playerHand.setOverlap( 50, 0 );
+
 //console.log("this.playerHand After Jokers");
 //console.log(this.playerHand);
 
 console.log("bmc: Cards in gamedatas and in player's hand");
 
-console.log(this.gamedatas.hand);
+console.log(this.gamedatas);
 console.log(this.playerHand);
 
             //this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
-            this.playerHand.setOverlap( 50, 0 );
 
             // Cards in player's hand
             for ( var i in this.gamedatas.hand) {
@@ -107,13 +110,11 @@ console.log(this.playerHand);
 
                 this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
             }
+            // Cards for drawing
+			// Find it in the data structure
+//console.log("bmc: !!this.gamedatas");
+//console.log(this.gamedatas);
 
-
-
-
-
-//[bmc] 8/31/2020 Adding Draw and Discard areas. Want to show N cards overlapped a little bit in each.
-            // Cards for drawing and discard
             this.drawPile = new ebg.stock(); // new stock object for draw pile
 //console.log(this.playerHand)
 //console.log("myhand");
@@ -123,46 +124,64 @@ console.log(this.playerHand);
             this.drawPile.image_items_per_row = 13; // 13 images per row in the sprite file
             this.drawPile.setOverlap( 1, 0 );
 
-console.log("bmc: drawPile");
-console.log(this.drawPile);
-
             this.drawPile.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54); // Color 5 Value 3 is red back of the card
-            this.drawPile.addItemType( 2, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 55); // Color 5 Value 4 is blue back of the card
-            this.drawPile.addToStock(1);
-console.log("bmc: drawPile");
-console.log(this.drawPile);
 
-            // Add 10 cardbacks to the draw pile randomly colored
-            for ( var i=1 ; i < 10; i++) { 
-                this.drawPile.addToStock(Math.floor(Math.random() * 2 ) + 1);
+            // if need to add 10 cardbacks to the draw pile randomly colored then do this:
+//            for ( var i=1 ; i < 10; i++) { 
+//                this.drawPile.addToStock(Math.floor(Math.random() * 2 ) + 1);
+//			}
+            for ( var i=0 ; i < this.gamedatas.deckCount; i++) { 
+                this.drawPile.addToStock(1);
 			}
 
+console.log("bmc: drawPile after");
+console.log(this.drawPile);
+console.log("bmc: discardPile before");
+console.log(this.discardPile);
 //exit(0);
 
-//[bmc] HERE. IT DOESN'T LIKE THE ADDTOSTOCK LINE:
-/*            for ( var i=1 ; i < 10; i++) {
-                this.drawPile.addToStock(0);
-			}
+// DRAWPILE is the rest of the 'deck'
+// DISCARD PILE is the cards on table perhaps? So I need to merge the DISCARD pile and TABLE Concepts.
 
-            this.discardPile = new ebg.stock(); // new stock object for discard pile
-            this.discardPile.create( this, $('discardPile'), this.cardwidth, this.cardheight );
-*/
-//console.log("drawDiscard");
-//console.log($('drawDiscard'));
-			
-			
-//            for ( var i in this.gamedatas.hand) {
-//                var card = this.gamedatas.hand[i];
-//                var color = card.type;
-//                var value = card.type_arg;
+//[bmc] 8/31/2020 Adding Draw and Discard areas. Want to show N cards overlapped a little bit in each.
+
+			// Create stock for the discard pile (could be any card)
+            this.discardPile = new ebg.stock(); // new stock object for hand
+            this.discardPile.create( this, $('discardPile'), this.cardwidth, this.cardheight );            
+            this.discardPile.image_items_per_row = 13; // 13 images per row in the sprite file
+            for (var color = 1; color <= 4; color++) {
+                for (var value = 1; value <= 13; value++) {
+                    // Build card type id. Only create 52 here, 2 jokers below
+				
+						let card_type_id = this.getCardUniqueId(color, value);
+						this.discardPile.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
+                }
+            }
+            this.discardPile.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+            this.discardPile.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+            this.discardPile.setOverlap( 50, 0 );
+
+
+            // Show the cards actutally in the discard pile
+            for ( var i in this.gamedatas.discardPile) {
+console.log( "i: " + i);
+                var card = this.gamedatas.discardPile[i];
+                var color = card.type;
+                var value = card.type_arg;
+console.log( "CCV: " + card.id + " / " + color + " / " + value );
 //console.log(card);
 
-//                this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
-//            }
+                this.discardPile.addToStockWithId(this.getCardUniqueId(color, value), card.id);
+            }
 
+console.log("bmc: $(discardPile)");
+console.log($('discardPile'));
+			
+console.log("bmc: discardPile");
+console.log(this.discardPile);
 
 // Not sure what I need from below:
-
+/*
             // Cards played on table
             for (i in this.gamedatas.cardsontable) {
                 var card = this.gamedatas.cardsontable[i];
@@ -171,8 +190,11 @@ console.log(this.drawPile);
                 var player_id = card.location_arg;
                 this.playCardOnTable(player_id, color, value, card.id);
             }
-
+*/
             dojo.connect( this.playerHand, 'onChangeSelection', this, 'onPlayerHandSelectionChanged' );
+            dojo.connect( this.drawPile, 'onChangeSelection', this, 'onDrawPileSelectionChanged' );
+            dojo.connect( this.discardPile, 'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
+
 
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -357,8 +379,24 @@ console.log( player_id + " / " + color + " / " + value + " / " + card_id);
         
         */
 
+
+        onDrawPileSelectionChanged : function() {
+console.log("bmc: !!onDrawPileSelectionChanged!!");
+            var items = this.drawPile.getSelectedItems();
+console.log(items);
+		
+		},
+
+		onDiscardPileSelectionChanged: function() {
+console.log("bmc: !!onDrawPileSelectionChanged!!");
+            var items = this.drawPile.getSelectedItems();
+console.log(items);
+		
+		},
+
+
         onPlayerHandSelectionChanged : function() {
-console.log("[bmc]onPlayerHandSelectionChanged");
+console.log("bmc: !!onPlayerHandSelectionChanged!!");
             var items = this.playerHand.getSelectedItems();
 
             if (items.length > 0) {

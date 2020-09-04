@@ -39,15 +39,14 @@
 //var_dump($sevdebug);
 //die('okSev');
 
-        $players_nbr = count( $players ) + 12;
+        $players_nbr = count( $players );
 
         /*********** Place your code below:  ************/
 
-//		$number_to_display = 4;
+//		This works
+//        $number_to_display = 4;
 //        $this->tpl['CURRENT_HAND_TYPE'] = $number_to_display;
 
-//works		$to_display = "bob";
-//doesn't work        $to_display = self::getGameStateValue('currentHandType');
         $to_display = $sevdebug;
         $this->tpl['CURRENT_HAND_TYPE'] = "Go Down target: " . $to_display;
 

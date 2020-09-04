@@ -74,7 +74,7 @@ $machinestates = array(
     20 => array(
         "name" => "newHand",
         "description" => clienttranslate('Go down target: ${currentHandType}.'),
-        "type" => "game",
+        "type" => "game", // game
         "action" => "stNewHand",
         "updateGameProgression" => true,   
         "transitions" => array( "" => 31 )
