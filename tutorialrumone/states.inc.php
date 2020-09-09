@@ -73,11 +73,11 @@ $machinestates = array(
     /// New hand This one will increment through the types of goals: 2 sets, 1 run 1 set...
     20 => array(
         "name" => "newHand",
-        "description" => clienttranslate('Go down target: ${currentHandType}.'),
+        "description" => clienttranslate('State20: Go down target: ${currentHandType}.'),
         "type" => "game", // game
         "action" => "stNewHand",
         "updateGameProgression" => true,   
-        "transitions" => array( "" => 31 )
+        "transitions" => array( "" => 33 ) // For now just let 1 player play cards
     ),    
     
     // I don't think we need Trick. Players just play until someone goes out.
@@ -91,15 +91,17 @@ $machinestates = array(
         "transitions" => array( "" => 31 )
     ),       
 */
+/*
     31 => array(
         "name" => "playerTurnDraw",
-        "description" => clienttranslate('State 31: ${actplayer} must draw a card. Others can buy.'),
+        "description" => clienttranslate('State 31: ${actplayer} must draw a card. Others can buy, some day.'),
         "descriptionmyturn" => clienttranslate('State 31: ${you} must draw a card.'),
         "type" => "activeplayer", //multipleactiveplayer
-		"args" => "argPlayerTurn", 
-        "possibleactions" => array( "drawCard", "buyCard", "pass", "playCard" ),
-        "transitions" => array( "drawCard" => 33, "buyCard" => 50, "pass" => 33, "playCard" => 35 )
+		"args" => "argPlayerTurn", // Not sure i need this argPlayerTurn
+        "possibleactions" => array( "drawCard" ),
+        "transitions" => array( "drawCard" => 33 )
     ), 
+*/
     33 => array(
         "name" => "playerTurnPlay",
         "description" => clienttranslate('State 33: ${actplayer} must play a card.'),
@@ -108,12 +110,14 @@ $machinestates = array(
         "possibleactions" => array( "playCard" ),
         "transitions" => array( "playCard" => 35 )
     ), 
+	
+//	"buyCard" => 50, "pass" => 33, "playCard" => 35
     35 => array(
         "name" => "nextPlayer",
-        "description" => "clienttranslate('End of hand.')",
-        "type" => "activeplayer",
+        "description" => "",
+        "type" => "game",
         "action" => "stNextPlayer",
-        "transitions" => array( "nextPlayer" => 31, "endHand" => 40 )
+        "transitions" => array( "nextPlayer" => 33, "endHand" => 40 )
     ), 
     
     

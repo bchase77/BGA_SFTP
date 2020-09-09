@@ -221,13 +221,19 @@ console.log( "playerHand.create" );
             if (player_id != this.player_id) {
                 // Some opponent played a card
                 // Move card from player panel
+				console.log("bmc: Someone else played!");
+				console.log('cardontable_' + player_id);
+				console.log('overall_player_board_' + player_id);
                 this.placeOnObject('cardontable_' + player_id, 'overall_player_board_' + player_id);
             } else {
                 // You played a card. If it exists in your hand, move card from there and remove
                 // corresponding item
 
                 if ($('myhand_item_' + card_id)) {
-                    this.placeOnObject('cardontable_' + player_id, 'myhand_item_' + card_id);
+					console.log("bmc: WHAT?? MOVING TO HAND???");
+					console.log('cardontable_' + player_id);
+					console.log('myhand_item_' + card_id);
+                    //this.placeOnObject('cardontable_' + player_id, 'myhand_item_' + card_id);
                     this.playerHand.removeFromStockById(card_id);
                 }
             }
@@ -326,8 +332,8 @@ console.log("[bmc]card_id: " + card_id);
         {
             console.log( 'notifications subscriptions setup' );
             
-            dojo.subscribe('newHand', this, "notif_newHand");
-            dojo.subscribe('playCard', this, "notif_playCard");
+            dojo.subscribe( 'newHand', this, "notif_newHand");
+            dojo.subscribe( 'playCard', this, "notif_playCard");
 
             dojo.subscribe( 'trickWin', this, "notif_trickWin" );
             this.notifqueue.setSynchronous( 'trickWin', 1000 );

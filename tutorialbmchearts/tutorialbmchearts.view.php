@@ -55,8 +55,6 @@
         // this will make our My Hand text translatable
         $this->tpl['MY_HAND'] = self::_("My hand");
 
-
-
         /*
         
         // Examples: set the value of some element defined in your tpl file like this: {MY_VARIABLE_ELEMENT}

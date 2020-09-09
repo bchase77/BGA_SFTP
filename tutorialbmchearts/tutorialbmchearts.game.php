@@ -221,6 +221,30 @@ class TutorialBMCHearts extends Table
         $this->gamestate->nextState('playCard');
     }
 
+	function drawCard($card_id) {
+		self::checkAction("drawCard");
+		$player_id = self::getActivePlayerId();
+		$this->cards->moveCard($card_id, 'myhand', $player_id);
+		$currentCard = $this->cards->getCard($card_id);
+        // And notify
+        self::notifyAllPlayers('playCard',
+			clienttranslate('${player_name} plays ${value_displayed} ${color_displayed}'),
+			array (
+                'i18n' => array ('color_displayed','value_displayed' ),
+				'card_id' => $card_id,
+				'player_id' => $player_id,
+                'player_name' => self::getActivePlayerName(),
+				'value' => $currentCard ['type_arg'],
+                'value_displayed' => $this->values_label [$currentCard ['type_arg']],
+				'color' => $currentCard ['type'],
+                'color_displayed' => $this->colors [$currentCard ['type']] ['name']
+			)
+		);
+        // Next player
+        $this->gamestate->nextState('playCard');
+	}
+
+
     /*
     
     Example:

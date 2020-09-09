@@ -26,42 +26,31 @@
 -->
 
 
-Dody Oaks Rummy First Implementation
-
-This is your game interface. You can edit this HTML in your ".tpl" file.
-
+Dody Oaks Rummy First Implementation. This is your game interface. You can edit this HTML in the ".tpl" file.
 
 Target hand: <div>{CURRENT_HAND_TYPE}</div>
 
-
-<div id="playertables">
-
-    <!-- BEGIN player -->
-    <div class="playertable whiteblock playertable_{DIR}">
-        <div class="playertablename" style="color:#{PLAYER_COLOR}">
-            {PLAYER_NAME}
-        </div>
-        <div class="playertablecard" id="playertablecard_{PLAYER_ID}">
-        </div>
-    </div>
-    <!-- END player -->
-
+<div id="boxes">
+	<div id = "leftbox">
+		<h3>Draw Deck</h3>
+		<div id="deck">
+		</div>
+	</div>
+	<div id = "rightbox">
+		<h3>Discard Pile</h3>
+		<div id="discardPile">
+		</div>
+	</div>
 </div>
 
-<div id="drawPile_wrap" class="whiteblock drawPile">
-    <h3>{DRAW}</h3>
-    <div id="drawPile">
-    </div>
-</div>
-
-<div id="discardPile_wrap" class="whiteblock drawPile">
-    <h3>{DISCARD}</h3>
-    <div id="discardPile">
-    </div>
+<div id="downArea_wrap" class="whiteblock downArea">
+	<h3>Down Area</h3>
+	<div id="downArea">
+	</div>
 </div>
 
 <div id="myhand_wrap" class="whiteblock">
-    <h3>{MY_HAND}</h3>
+    <h3>My Hand</h3>
     <div id="myhand">
     </div>
 </div>
@@ -74,11 +63,11 @@ Target hand: <div>{CURRENT_HAND_TYPE}</div>
 // Example:
 var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_ID}"></div>';
 
-*/
+
 
 var jstpl_cardontable = '<div class="cardontable" id="cardontable_${player_id}" style="background-position:-${x}px -${y}px">\
                         </div>';
-
+*/
 </script>  
 
 {OVERALL_GAME_FOOTER}

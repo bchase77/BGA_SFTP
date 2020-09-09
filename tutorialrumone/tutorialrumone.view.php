@@ -33,22 +33,32 @@
     }    
   	function build_page( $viewArgs )
   	{		
-  	    // Get players & players number
+        // Get players & players number
         $players = $this->game->loadPlayersBasicInfos();
-		$sevdebug = $this->game->gamestate_labels["currentHandType"];
-//var_dump($sevdebug);
-//die('okSev');
-
         $players_nbr = count( $players );
-
+		
         /*********** Place your code below:  ************/
 
 //		This works
 //        $number_to_display = 4;
 //        $this->tpl['CURRENT_HAND_TYPE'] = $number_to_display;
+		//$sevdebug = $this->game->gamestate_labels["currentHandType"];
 
-        $to_display = $sevdebug;
-        $this->tpl['CURRENT_HAND_TYPE'] = "Go Down target: " . $to_display;
+		$gameMethods = get_class_methods($this->game);
+
+		$debug = $gameMethods;
+
+		self::trace("bmc: build_page: ");
+		//self::trace($debug);
+		
+//var_dump($debug);
+//die('okSev');
+//        $to_display = $sevdebug;
+
+		//$to_display = getGameStateValue( 'currentHandType' );
+		$bob = $this->game->getGameStateValue( 'currentHandType' );
+		
+        $this->tpl['CURRENT_HAND_TYPE'] = "view.php: Go Down Target: " . $bob;
 
 /*		$to_display = $currentHandType;
         $this->tpl['CURRENT_HAND_TYPE'] = $to_display;

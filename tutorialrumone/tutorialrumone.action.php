@@ -43,6 +43,7 @@
 
         public function playCard()
         {
+			self::trace("bmc: ajaxcall for playCard");
             self::setAjaxMode();
             $card_id = self::getArg("id", AT_posint, true);
             $this->game->playCard($card_id);

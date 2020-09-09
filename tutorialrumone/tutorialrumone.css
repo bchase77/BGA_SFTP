@@ -50,67 +50,32 @@
 
 /** Table layout **/
 
-#playertables {
+/*#playertables {
     position: relative;
     width: 930px;
     height: 200px;
 }
+*/
 
-.drawPile {
-    position: relative;
-    text-align: center;
-    width: 190px;
-    height: 140px;
-}
-
-.playertablename {
-    font-weight: normal;
+#leftbox {
+	float: left;
+	background: Red;
+	width: 50%;
+	height: 140px;
 }
 
-.playertable {
-    position: absolute;
-    text-align: center;
-    width: 180px;
-    height: 130px;
+#rightbox {
+	float: right;
+	background: Green;
+	width: 50%;
+	height: 140px;
 }
 
-.playertable_1 {
-    left: 0px;
-    top: 0px;
-    margin-left: -90px; /* half of 180 */
+/*
+.downArea {
+	height: 200px;
 }
-.playertable_2 {
-    left: 0px;
-    top: 25%;
-    margin-left: -90px; /* half of 180 */
-}
-.playertable_3 {
-    left: 0px;
-    top: 50%;
-    margin-top: -55px; /* half of 130 */
-}
-.playertable_4 {
-    left: 0px;
-    top: 75%;
-    margin-top: -55px; /* half of 130 */
-}
-
-.playertablecard {
-    display: inline-block;
-    position: relative;
-    margin-top: 5px;
-    width: 72px;
-    height: 96px;
-}
-
-/*** cards on table ***/
-
-.cardontable {
-    position: absolute;
-    width: 72px;
-    height: 96px;
-    background-image: url('img/4ColorCardsx5.jpg'); 
-}
+*/
 
 /*
     Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
