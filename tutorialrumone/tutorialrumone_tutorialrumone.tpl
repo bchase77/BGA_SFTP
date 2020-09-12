@@ -25,7 +25,6 @@
     Please REMOVE this comment before publishing your game on BGA
 -->
 
-
 Dody Oaks Rummy First Implementation. This is your game interface. You can edit this HTML in the ".tpl" file.
 
 Target hand: <div>{CURRENT_HAND_TYPE}</div>
@@ -57,17 +56,20 @@ Target hand: <div>{CURRENT_HAND_TYPE}</div>
 
 <script type="text/javascript">
 
-// Javascript HTML templates
+	/* Javascript HTML templates */
 
+var jstpl_playerPlayButton = '<a href="#" id="currentPlayerPlayButton_id" class="bgabutton bgabutton_blue">\
+<span>Play Card</span></a>';
+
+/*var jstpl_hometown = '<div id="player_hometown" class="hometown hometown_${town_name}"></div>';
+*/
 /*
 // Example:
 var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_ID}"></div>';
 
-
-
 var jstpl_cardontable = '<div class="cardontable" id="cardontable_${player_id}" style="background-position:-${x}px -${y}px">\
                         </div>';
 */
-</script>  
 
+</script>  
 {OVERALL_GAME_FOOTER}

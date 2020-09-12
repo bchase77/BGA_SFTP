@@ -104,9 +104,10 @@ $machinestates = array(
 */
     33 => array(
         "name" => "playerTurnPlay",
-        "description" => clienttranslate('State 33: ${actplayer} must play a card.'),
-        "descriptionmyturn" => clienttranslate('State 33: ${you} must play a card.'),
-        "type" => "activeplayer",
+        "description" => clienttranslate('State 33a: ${actplayer} ${currentPlayer} must play a card.'),
+        "descriptionmyturn" => clienttranslate('State 33b: ${you} must play a card.'),
+        "type" => "multipleactiveplayer",
+		"args" => "argMyArgumentMethod",
         "possibleactions" => array( "playCard" ),
         "transitions" => array( "playCard" => 35 )
     ), 

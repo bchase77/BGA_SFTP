@@ -24,7 +24,6 @@ define([
 function (dojo, declare) {
     return declare("bgagame.tutorialrumone", ebg.core.gamegui, {
         constructor: function(){
-console.log('bmc: tutorialrumone constructor');
               
             // Here, you can init the global variables of your user interface
             // Example:
@@ -32,6 +31,7 @@ console.log('bmc: tutorialrumone constructor');
 
             this.cardwidth = 72;
             this.cardheight = 96;
+			this.handlers = {};
 
         },
         
@@ -50,20 +50,18 @@ console.log('bmc: tutorialrumone constructor');
         
         setup: function( gamedatas )
         {
-console.log( "bmc: Starting game setup" );
+//console.log( "bmc: Starting game setup" );
 
             // Setting up player boards
 //            for( var player_id in gamedatas.players )
 //            {
 //                var player = gamedatas.players[player_id];
 //                         
-//                // TODO: Setting up each players boards if needed
+//                // TODO: Set up each players down area
 //            }
             
             // Player hand
 			
-			// TODO: Change the card weight to change the order in the hand left to right
-
             this.playerHand = new ebg.stock(); // new stock object for hand
 //console.log(this.playerHand)
 console.log("bmc: myhand:");
@@ -71,8 +69,6 @@ console.log($('myhand'));
 
             this.playerHand.create( this, $('myhand'), this.cardwidth, this.cardheight );            
             this.playerHand.image_items_per_row = 13; // 13 images per row in the sprite file
-
-console.log( "bmc: Creating cards" );
 
             // Create 52 cards types:
             for (var color = 1; color <= 4; color++) {
@@ -108,9 +104,9 @@ console.log("bmc: Add cards to hand");
                 var value = card.type_arg;
 //console.log( "CCV: " + card.id + " / " + color + " / " + value );
 //console.log(card);
-console.log("bmc: getCardUnique and card.id:");
-console.log(this.getCardUniqueId(color, value));
-console.log(card.id);
+//console.log("bmc: getCardUnique and card.id:");
+//console.log(this.getCardUniqueId(color, value));
+//console.log(card.id);
 
                 this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
             }
@@ -121,54 +117,17 @@ console.log(card.id);
 			this.deck.image_items_per_row = 13;
 			this.deck.setOverlap( 1, 0 );
 			this.deck.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54); // Color 5 Value 3 is red back of the card
-console.log("bmc: deckIDs");
-console.log(this.gamedatas.deckIDs);
+//console.log("bmc: deckIDs");
+//console.log(this.gamedatas.deckIDs);
 
 			for ( let i = 0 ; i < this.gamedatas.deckIDs.length; i++) {
-console.log(i + " / " + this.gamedatas.deckIDs[i]);
+//console.log(i + " / " + this.gamedatas.deckIDs[i]);
 				this.deck.addToStockWithId(1, this.gamedatas.deckIDs[i]);
 			}
 console.log("bmc: this.deck");			
 console.log(this.deck);
 //exit(0);			
 			
-			
-/*
-            // Cards for drawing
-			// Find it in the data structure
-console.log("bmc: !!playerHand");
-console.log(this.playerHand);
-
-            this.drawPile = new ebg.stock(); // new stock object for draw pile
-//console.log(this.playerHand)
-//console.log("myhand");
-//console.log($('myhand'));
-
-            this.drawPile.create( this, $('drawPile'), this.cardwidth, this.cardheight );            
-            this.drawPile.image_items_per_row = 13; // 13 images per row in the sprite file
-            this.drawPile.setOverlap( 1, 0 );
-
-            this.drawPile.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54); // Color 5 Value 3 is red back of the card
-
-            // if need to add 10 cardbacks to the draw pile randomly colored then do this:
-//            for ( var i=1 ; i < 10; i++) { 
-//                this.drawPile.addToStock(Math.floor(Math.random() * 2 ) + 1);
-//			}
-            for ( var i = 0 ; i < this.gamedatas.deckCount; i++) { 
-                this.drawPile.addToStock(1);
-			}
-
-console.log("bmc: drawPile after");
-console.log(this.drawPile);
-console.log("bmc: discardPile before");
-console.log(this.discardPile);
-//exit(0);
-*/
-// DRAWPILE is the rest of the 'deck'
-// DISCARD PILE is the cards on table perhaps? So I need to merge the DISCARD pile and TABLE Concepts.
-
-//[bmc] 8/31/2020 Adding Draw and Discard areas. Want to show N cards overlapped a little bit in each.
-
 			// Create stock for the discard pile (could be any card)
             this.discardPile = new ebg.stock(); // new stock object for hand
             this.discardPile.create( this, $('discardPile'), this.cardwidth, this.cardheight );            
@@ -186,7 +145,6 @@ console.log(this.discardPile);
             this.discardPile.setOverlap( 50, 0 );
 
 			var discardPileWeights = new Array();
-			//var firstWeight = 200;
 			
             // Show the cards actually in the discard pile
             for ( var i in this.gamedatas.discardPile) {
@@ -199,22 +157,14 @@ console.log( "CCV: " + card.id + " / " + color + " / " + value );
 
                 this.discardPile.addToStockWithId(this.getCardUniqueId(color, value), card.id);
 console.log(card.id);
-//console.log(firstWeight);
-				let location_arg = this.gamedatas.discardPile[i]['location_arg'];
+				let location_arg = parseInt(this.gamedatas.discardPile[i]['location_arg']);
 console.log('bmc: location_arg:');
 console.log(location_arg);
 
-//				discardPileWeights[card.id] = firstWeight;
 				discardPileWeights[this.getCardUniqueId(color, value)] = location_arg;
-//				discardPileWeights.splice(card.id, 0, firstWeight);
 console.log(discardPileWeights);
-				//firstWeight++;
             }
 			
-//			weightChange[cardUniqueId] = this.discardPile.items.length; // might be > by 1
-//			this.discardPile.addToStockWithId(cardUniqueId, card_id);
-			
-
 console.log("bmc: $(discardPile)");
 console.log($('discardPile'));
 			
@@ -224,39 +174,29 @@ console.log(this.discardPile);
 console.log("bmc: discardPileWeights RAW");
 console.log(discardPileWeights);
 
-//			discardPileWeights = ({12: 1, 17:0});
-//console.log("bmc: discardPileWeights FORCED");
-//console.log(discardPileWeights);
-
 			// Set the weights in the discard pile
-//			let weightChange = {};
-//			weightChange[this.getCardUniqueId(color, value)] = 0;
-//			this.discardPile.changeItemsWeight(weightChange);
 			this.discardPile.changeItemsWeight(discardPileWeights);
-
-//			this.discardPile.changeItemsWeight({ 20: 1, 15: 28, 6: 3});
 
 console.log("bmc: discardPile After");
 console.log(this.discardPile);
 
+console.log(this.gamedatas.activePlayerId);
+console.log(this.player_id);
 
+//var up = document.documentElement.innerHTML;
+//console.log(up);
 
-// Not sure what I need from below:
-/*
-            // Cards played on table
-            for (i in this.gamedatas.cardsontable) {
-                var card = this.gamedatas.cardsontable[i];
-                var color = card.type;
-                var value = card.type_arg;
-                var player_id = card.location_arg;
-                this.playCardOnTable(player_id, color, value, card.id);
-            }
-*/
+			if (this.gamedatas.activePlayerId == this.player_id) {
+				console.log("bmc: YOU CAN PLAY SHOW THE BUTTON");
+				dojo.place(this.format_block('jstpl_playerPlayButton', {}), $('myhand_wrap'));
+			} else {
+				console.log("bmc: NOT YOU!");
+			}
+
             dojo.connect( this.playerHand,  'onChangeSelection', this, 'onPlayerHandSelectionChanged' );
             dojo.connect( this.deck,    'onChangeSelection', this, 'onDeckSelectionChanged' );
-            //dojo.connect( this.drawPile,    'onChangeSelection', this, 'onDrawPileSelectionChanged' );
             dojo.connect( this.discardPile, 'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
-
+			//dojo.connect($('currentPlayerPlayButton_id'), 'onChange', this, 'onPlayerPlayButton' );
 
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -274,12 +214,19 @@ console.log(this.discardPile);
         onEnteringState: function( stateName, args )
         {
             console.log( 'Entering state: '+stateName );
-            
+            console.log(stateName);
             switch( stateName )
             {
+				case 'playerTurnPlay':
+					console.log("bmc: OnEnteringState PTP");
+					if (this.gamedatas.activePlayerId == this.player_id) {
+						this.handlers.currentPlayerPlayButton = this.onPlayerPlayButton.bind(this);
+						$('currentPlayerPlayButton_id').addEventListener('click', this.handlers.currentPlayerPlayButton);
+					}
+					break;
             
             /* Example:
-            
+           
             case 'myGameState':
             
                 // Show some HTML block at this game state
@@ -288,9 +235,8 @@ console.log(this.discardPile);
                 break;
            */
            
-           
-            case 'dummmy':
-                break;
+				case 'dummmy':
+					break;
             }
         },
 
@@ -331,6 +277,11 @@ console.log(this.discardPile);
             {            
                 switch( stateName )
                 {
+					case 'playerTurnPlay':
+					//TODO: Only show the button to the player who can play
+					console.log("bmc: BUTTON!");
+					this.addActionButton('buttonPlayerPlay', _("Play Card"), 'onPlayerPlayButton');
+
 /*               
                  Example:
  
@@ -367,46 +318,28 @@ console.log(this.discardPile);
             return bob;
         },
 
+
+
         playCardOnTable : function(player_id, color, value, card_id) {
+			// Purpose is to show the played cards on the table, not really to play the card.
+			// Playing of the card is done on the server side (PHP).
 console.log("[bmc]playCardOnTable");
-
-/*
-console.log( player_id + " / " + color + " / " + value + " / " + card_id);
-			let x = this.cardwidth * (value - 1);
-			let y = this.cardheight * (color - 1);
-console.log("bmc: x and y:" + x + ' / ' + y );
-
-console.log(this.format_block('jstpl_cardontable', {
-				x : this.cardwidth * (value - 1),
-				y : this.cardheight * (color - 1),
-				player_id : player_id
-			}));
-*/
-/*			
-			dojo.place(this.format_block('jstpl_cardontable', {
-				x : this.cardwidth * (value - 1),
-				y : this.cardheight * (color - 1),
-				player_id : player_id
-			}), 'playertablecard_' + player_id);
-*/
 
 			let cardUniqueId = this.getCardUniqueId(color, value);
 			let weightChange = {};
 			weightChange[cardUniqueId] = this.discardPile.items.length + 300; // might be > by 1
-			//weightChange[card_id] = this.discardPile.items.length + 100; // might be > by 1
 			this.discardPile.addToStockWithId(cardUniqueId, card_id);
 
 console.log("bmc: Change weight of new card");
 //console.log(this.getCardUniqueId(color, value));
+console.log(player_id);
+console.log(color);
+console.log(value);
 console.log(card_id);
 console.log(cardUniqueId);
 console.log(this.discardPile.items.length);
 console.log([weightChange]);
 console.log(this.discardPile);
-
-// 25, 45, 21, 29
-//  6, 15, 20, 28
-//			this.discardPile.changeItemsWeight({ 20: 1, 15: 28, 6: 3});
 			
 			// Get the id of the last card in the discard
 			this.discardPile.changeItemsWeight(weightChange);
@@ -433,12 +366,11 @@ console.log("bmc: Card played by me");
                 // corresponding item
 
                 if ($('myhand_item_' + card_id)) {
-//                    this.placeOnObject('cardontable_' + player_id, 'myhand_item_' + card_id);
+console.log("bmc:Was in hand");
                     this.placeOnObject('myhand_item_' + card_id, 'discardPile');
                     this.playerHand.removeFromStockById(card_id);
 					// Slide to it's final destination
 					this.slideToObject('myhand_item_' + card_id, 'discardPile', 1000).play();
-//					this.slideToObject('cardontable_' + player_id,'discardPile_item_' + card_id, 1000).play();
                 }
 				
             }
@@ -448,46 +380,14 @@ console.log("bmc: Card played by me");
 			//this.slideToObject('myhand_item_' + card_id, 'deck_item_' + card_id).play();
 			//this.slideToObject('discardPile', 'myhand_item_' + card_id).play();
         },
+		
+		arraymove : function (arr, fromIndex, toIndex) {
+			var element = arr[fromIndex];
+			arr.splice(fromIndex, 1);
+			console.log("::"+arr);
+			arr.splice(toIndex, 0, element);
+		},
 
-/*
-        playCardOnTable : function(player_id, color, value, card_id) {
-console.log("[bmc]playCardOnTable");
-console.log( player_id + " / " + color + " / " + value + " / " + card_id);
-            // player_id => direction
-			let x = this.cardwidth * (value - 1);
-			let y = this.cardheight * (color - 1);
-console.log("bmc: x and y:" + x + ' / ' + y );
-			
-			dojo.place(this.format_block('jstpl_discardPile', {
-				x : this.cardwidth * (value - 1),
-				y : this.cardheight * (color - 1)
-			}), 'discardPile');
-			
-//            dojo.place(this.format_block('jstpl_discardPile', {
-//                x : this.cardwidth * (value - 1),
-//                y : this.cardheight * (color - 1)
-//            }), 'discardPile');
-
-            if (player_id != this.player_id) {
-console.log("bmc: Card played not by me");
-                // Some opponent played a card
-                // Move card from player panel
-                this.placeOnObject('discardPile_' + player_id, 'overall_player_board_' + player_id);
-            } else {
-console.log("bmc: Card played by  me");
-                // You played a card. If it exists in your hand, move card from there and remove
-                // corresponding item
-
-                if ($('myhand_item_' + card_id)) {
-                    this.placeOnObject('discardPile', 'myhand_item_' + card_id);
-                    this.playerHand.removeFromStockById(card_id);
-                }
-            }
-
-            // In any case: move it to its final destination
-            this.slideToObject('myhand_item_' + card_id, 'discardPile').play();
-        },
-*/
         ///////////////////////////////////////////////////
         //// Player's action
         
@@ -556,6 +456,56 @@ console.log("bmc: Card played by  me");
 				}
 			}
 		},
+		
+		onPlayerPlayButton : function() {
+			console.log("bmc: BUTTON IN THE CALL!");
+			console.log(this.player_id)
+			var card = this.playerHand.getSelectedItems()[0]; // It must be just 1!
+			console.log(card);
+			console.log(this.gamedatas.activePlayerId);
+			console.log(this.gamedatas.hand);
+			
+			let color = this.gamedatas.hand[card.id].type; // Suit
+			let value = this.gamedatas.hand[card.id].type_arg; // Ace through King
+			
+			// MAYBE: No need to check if there is just 1 card selected because we
+			// could not get here otherwise.
+			// Also: If they got the button then they are the only player who could play.
+			
+//console.log("bmc: checkAction1: " + action);
+//console.log("bmc: checkAction2: " + this.checkAction(action, true));
+			var card_id = card.id;                    
+
+console.log("bmc: Playing card!");
+
+			let action = 'playCard';
+			
+			this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+				id : card_id,
+				lock : true
+			}, this, function(result) {
+			}, function(is_error) {
+			});
+ console.log("bmc: Did ajaxcall.");
+
+			this.playerHand.unselectAll();
+			
+//			if (this.gamedatas.activePlayerId == this.player_id) {
+			this.playCardOnTable(this.player_id, color, value, card.type);
+//			}
+		},
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 /*		
 		// This next function seems to work!
@@ -684,30 +634,25 @@ console.log("[bmc]card_id: " + card_id);
 console.log("bmc: !!onDiscardPileSelectionChanged!!");
             var items = this.discardPile.getSelectedItems();
 console.log(items);
-            var items = this.playerHand.getSelectedItems();
-console.log("bmc: onDiscard: items in OPHSC: " + items);
-
-		
 		},
 
 
         onPlayerHandSelectionChanged : function() {
-console.log("bmc: !!onPlayerHandSelectionChanged!!");
+			console.log("bmc: !!onPlayerHandSelectionChanged!!");
             var items = this.playerHand.getSelectedItems();
-console.log("bmc: on PlayerHand: items in OPHSC: " + items);
+//console.log("bmc: on PlayerHand: items in OPHSC: ");
+console.log(items);
+//			let location_arg = parseInt(this.gamedatas.discardPile[i]['location_arg']);
 
-			var debug =  Object.keys(this.playerHand);
-//console.log("bmc playerHand1: " + debug );
-			var debug =  Object.values(this.playerHand);
-//console.log("bmc playerHand2: " + debug );
-			var debug =  Object.getOwnPropertyNames(this.playerHand);
-//console.log("bmc playerHand3: " + debug );
+console.log("bmc: gamedatas");
+console.log(this.gamedatas);
 
-// TODO: Allow player to change the position of each card in their hand
+			var thisPlayerHand = this.playerHand.getAllItems();
+			console.log(thisPlayerHand);
 
             if (items.length > 0) {
                 var action = 'playCard';
-console.log("bmc: checkAction1: " + this.checkAction);
+console.log("bmc: checkAction1: " + action);
 console.log("bmc: checkAction2: " + this.checkAction(action, true));
                 if (this.checkAction(action, true)) {
                     // Can play a card
@@ -722,17 +667,50 @@ console.log("[bmc]card_id: " + card_id);
 					}, this, function(result) {
 					}, function(is_error) {
 					});
-
-console.log("[bmc]Did ajaxcall.");
+// console.log("[bmc]Did ajaxcall.");
 
                     this.playerHand.unselectAll();
-console.log("[bmc]playerHand.unselectAll.");
-                } else if (this.checkAction('giveCards')) {
-                    // Can give cards => let the player select some cards
-                } else {
-                    this.playerHand.unselectAll();
-                }
-            }
+
+                } else if (items.length === 2) {
+					// Swap the order if necessary to keep player's 1st selection 1st
+					if (this.playerHand.firstSelected != items[0].type) {
+						//console.log("bmc: swap");
+						let temp = items[0];
+						items[0] = items[1];
+						items[1] = temp;
+					}
+// console.log("bmc: Move cards around");
+				// If two cards have been selected, change the weights
+				// Find the indices of the 1st and 2nd cards and move them around
+
+					for ( const [i, card] of thisPlayerHand.entries()) {
+						if (items[0].type === card.type) {
+							var spotFrom = i;
+						}
+						if (items[1].type === card.type) {
+							var spotTo = i;
+						}
+					}
+					
+					this.arraymove(thisPlayerHand, spotFrom, spotTo);
+
+					// Make a change array from the result
+					let weightChange = {};
+					for (let i in thisPlayerHand) {
+						weightChange[thisPlayerHand[i].type] = parseInt(i);
+					}
+// console.log("bmc: WC");
+// console.log(weightChange);
+					this.playerHand.changeItemsWeight(weightChange);
+					this.playerHand.unselectAll();
+                } else if (items.length === 1) {
+console.log("bmc: Store the first");
+					this.playerHand.firstSelected = items[0].type;
+				} else {
+// console.log("bmc: unselectAll");
+			    this.playerHand.unselectAll();
+				}
+			}
         },
         
         ///////////////////////////////////////////////////
@@ -754,10 +732,6 @@ console.log("[bmc]playerHand.unselectAll.");
             dojo.subscribe( 'newHand'  , this, "notif_newHand");
             dojo.subscribe( 'playCard' , this, "notif_playCard");
             dojo.subscribe( 'drawCard' , this, "notif_drawCard");
-
-            dojo.subscribe( 'trickWin' , this, "notif_trickWin" );
-            this.notifqueue.setSynchronous( 'trickWin', 1000 );
-//            dojo.subscribe( 'giveAllCardsToPlayer', this, "notif_giveAllCardsToPlayer" );
 
             dojo.subscribe( 'newScores', this, "notif_newScores" );
 
