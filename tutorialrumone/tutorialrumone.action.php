@@ -41,6 +41,15 @@
 
   	// TODO: defines your action entry points there
 
+        public function discardCard()
+        {
+			self::trace("bmc: ajaxcall for discardCard");
+            self::setAjaxMode();
+            $card_id = self::getArg("id", AT_posint, true);
+            $this->game->discardCard($card_id);
+            self::ajaxResponse();
+        }
+
         public function playCard()
         {
 			self::trace("bmc: ajaxcall for playCard");
@@ -53,6 +62,7 @@
         public function drawCard()
         {
             self::setAjaxMode();
+			self::trace("bmc: ajaxcall for drawCard");
             $card_id = self::getArg("id", AT_posint, true);
             $this->game->drawCard($card_id);
             self::ajaxResponse();

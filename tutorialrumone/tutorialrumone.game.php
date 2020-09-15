@@ -268,35 +268,6 @@ class TutorialRumOne extends Table
 		
 		$result['currentHandType'] = self::getGameStateValue( 'currentHandType' );
 
-		// TODO: Order discarded cards in time-order discarded. for now, just show them.
-		// I think this works now and the sorting doesn't matter. The JS looks up the location_arg.
-        //this works but doesn't order the cards according to time discarded:
-		//$result['discardPile'] = $this->cards->getCardsInLocation( 'discard' );
-//        $result['discardPile'] = $this->cards->getCardsInLocation( 'discard', $order_by = '`card_location_arg` ASC');
-        //$result['discardPile'] = $this->cards->getCardsInLocation( 'discard', $order_by = 'ASC');
-
-//var_dump("<div>bmc: 1</div>");
-//		$toBeSortedDiscard = $this->cards->getCardsInLocation( 'discard' );
-//var_dump($toBeSortedDiscard);
-
-//		$result['discardPileRaw'] = $toBeSortedDiscard;
-
-//		$sortOneWay = $toBeSortedDiscard;
-//		uasort($sortOneWay, function($aa, $ba) {
-//			return strcmp($aa['location_arg'], $ba['location_arg']);
-//		});
-		
-//var_dump("<div>bmc: 2</div>");
-//var_dump($sortOneWay);
-
-//		$discardKeys = array_column($toBeSortedDiscard, 'location_arg');
-
-//var_dump($discardKeys);
-//		array_multisort($discardKeys, SORT_ASC, $toBeSortedDiscard);
-//var_dump("bmc: 3");
-//var_dump($discardKeys);
-		
-//		$result['discardPile'] = $sortOneWay;
 		$result['discardPile'] = $this->cards->getCardsInLocation( 'discardPile' );
 		
 		self::trace("bmc:discardPile:");
@@ -304,12 +275,6 @@ class TutorialRumOne extends Table
 //print_r($result['discardPile']);
 //die('okSev');
 		//self::trace(implode("}", $result['discardPile']));
-
-
-
-//        $result['deckCards'] = $this->cards->getCardsInLocation( 'deck' );
-
-// 54 cards looks good up to here! [bmc 8/29/2020]
 //var_dump($result);
 //die('okSev');
         
@@ -323,7 +288,6 @@ class TutorialRumOne extends Table
         return $result;
     }
 
-// BMC JUST ADDED THIS, working on it
 	function argPlayerTurn()
 	{
         return array(
@@ -365,12 +329,10 @@ class TutorialRumOne extends Table
 
     function argMyArgumentMethod()
     {
-//         $currentPlayer = array_search($this; // $this->getCurrentPlayerId();
 		$currentPlayer = $this->getActivePlayerName();
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 
 		return array(
-//            'currentPlayer' => $this->getCurrentPlayerId() //2 //$currentPlayer  // In this case ${nbr} in the description will be replaced by "2"
             'currentPlayer' => $currentPlayer,
 			'handTarget' => $this->handTypes[$currentHandType]
         );    
@@ -401,27 +363,22 @@ class TutorialRumOne extends Table
 // AT the end, disable all players and go to the next state with this:
 //     $this->gamestate->setAllPlayersNonMultiactive( $next_state )
 
-    function playCard($card_id) {
-		self::trace("bmc: !!playCard!!");
+//    function discardCard($player_id) {
+	function discardCard($card_id) {
+		self::trace("bmc: !!discardCard!!");
         $thisPlayerId = self::getActivePlayerId();
 		$currentPlayerId = self::getCurrentPlayerId();
-		self::trace("bmc: <div>");
-		self::trace($thisPlayerId);
-		self::trace($currentPlayerId);
-		self::trace("</div>");
+		//self::trace("bmc: <div>");
+		//self::trace($thisPlayerId);
+		//self::trace($currentPlayerId);
+		//self::trace("</div>");
 		
-		if ($thisPlayerId == $currentPlayerId) { // Allow play if it's that player's turn
+		if ($thisPlayerId == $currentPlayerId) { // Allow discard if it's that player's turn
 			$discardWeight = $this->cards->countCardInLocation('discardPile') + 100;
 			$this->cards->moveCard($card_id, 'discardPile', $discardWeight);
 
 //var_dump($thisPlayerId);
 //die('okSev');
-
-//        self::checkAction("playCard");
-		
-//		self::trace("bmc: discardWeight<div>");
-//		self::trace($discardWeight);
-//		self::trace("</div>");
 		
         // XXX check rules here
 			$currentCard = $this->cards->getCard($card_id);
@@ -431,8 +388,9 @@ class TutorialRumOne extends Table
 
         // And notify
 			self::notifyAllPlayers(
-				'playCard',
-				clienttranslate('${player_name} plays ${value_displayed} ${color_displayed}'),
+				'discardCard',
+//				clienttranslate('${player_name} discards ${value_displayed} ${color_displayed}'),
+				clienttranslate('${player_name} discards '),
 				array (
 					'i18n' => array ('color_displayed',
 									 'value_displayed' ),
@@ -447,30 +405,53 @@ class TutorialRumOne extends Table
 			);
 		}
 		// Next state
-        $this->gamestate->nextState('playCard');
+        $this->gamestate->nextState('discardCard');
     }
+
+
+// TODO: THIS DRAW CSARD IS THE NEXT THING TO FIX
+// IT still fails on the weight of the card, but at least the discard works! 
 
     function drawCard($card_id)
 	{
-		self::trace("bmc: !! drawCard!!");
+		self::trace("[bmc] STAND-IN: Draw Card "); // Just see that we got here.
+		self::dump("card id:", $card_id);
+		$this->drawCard2($card_id);
+	}
+	
+    function drawCard2($card_id)
+	{
+		self::trace("[bmc] !! drawCard!!");
         self::checkAction("drawCard");
         $player_id = self::getActivePlayerId();
+		self::dump("[bmc]player_id", $player_id);
+		
+		$countCardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
+		self::dump("[bmc] CCBL:", $countCardsByLocation);
 
-        $this->cards->moveCard($card_id, 'myhand', $player_id);
+        $this->cards->moveCard($card_id, 'hand', $player_id);
 
-		self::trace($card_id);
+		$countCardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
+		self::dump("[bmc] CCBL aftermove:", $countCardsByLocation);
 
         $currentCard = $this->cards->getCard($card_id);
+		
+		self::dump("[bmc] currentCard:", $currentCard);
+		
+		$dbg = array_keys($currentCard);
+		self::dump("[bmc]currentCard KEYS", $dbg);
+		
+		$dbg = array_values($currentCard);
+		self::dump("[bmc]currentCard VALUES", $dbg);
 
-        // And notify
-        self::notifyAllPlayers('drawCard',
-			clienttranslate('${player_name} draws a card.'),
-			array (
-				'i18n' => array ('color_displayed',
-								 'value_displayed' ),
-				'card_id' => $card_id,
+		// Notify the player
+		self::notifyPlayer(
+			$player_id,
+			'drawCard',
+			clienttranslate('You drew a card.'),
+			array(
 				'player_id' => $player_id,
-				'player_name' => self::getActivePlayerName(),
+				'card_id' => $card_id,
 				'value' => $currentCard ['type_arg'],
 				'value_displayed' => $this->values_label [$currentCard ['type_arg']],
 				'color' => $currentCard ['type'],
@@ -478,13 +459,21 @@ class TutorialRumOne extends Table
 			)
 		);
 
-// CHECK HOW THINGS WORK:
-//      //self::setGameStateInitialValue('currentHandType', 1);
-//		self::incGameStateValue( 'currentHandType', 6 );
-//		//self::setGameStateValue( 'currentHandType', 5 ); // 0 is 2 Sets
 		
+        // And notify the other players
+        self::notifyAllPlayers('drawCard',
+			clienttranslate('${player_name} draws a card.'),
+			array (
+				'i18n' => array ('color_displayed',
+								 'value_displayed' ),
+				'card_id' => $card_id,
+				'player_id' => $player_id,
+				'player_name' => self::getActivePlayerName()
+			)
+		);
+	
 		// Next State
-        $this->gamestate->nextState('playCard');
+        $this->gamestate->nextState('');
 	}
 
     /*
@@ -525,18 +514,14 @@ class TutorialRumOne extends Table
         These methods function is to return some additional information that is specific to the current
         game state.
     */
-
-
-//TODO: I messed up the states and transitions somehow, so it wont go through always playing cards.
-
-
+/*
     function stPassThrough() {
         // New trick: active the player who wins the last trick, or the player who own the club-2 card
         // Reset trick color to 0 (= no color)
         self::trace("bmc: stPassThrough");
         $this->gamestate->nextState("");
     }
-
+*/
     function stNewHand() {
 		self::debug("bmc: !!stNewHand!!");
 		
@@ -545,7 +530,7 @@ class TutorialRumOne extends Table
 
 		$bob = $this->cards->countCardInLocation( 'deck' );
 		
-		self::debug("<div>");
+		self::debug("<div>bmc:");
 		self::debug($bob);
 		self::debug("</div>");
 		//die("bmc: BAAAAA");
@@ -581,19 +566,19 @@ class TutorialRumOne extends Table
 		
 		// The rest of the cards are in 'deck'
 		
-		// TODO: This returns all the cards in the deck. Instead it should show
-		//   show those cards as type 1 (red backs).
-		
 		//Notify all players of their cards plus the deck and the discard pile
+		$currentHandType = $this->getGameStateValue( 'currentHandType' );
+		$handTarget = $this->handTypes[$currentHandType];
 		foreach ( $players as $player_id => $player ) {
 			self::notifyPlayer(
 				$player_id,
 				'newHand',
-				clienttranslate('Dealing cards'),
+				clienttranslate('New Hand! Dealing cards. New target is ${handTarget}.'),
 				array(
 					'hand' => $this->cards->getPlayerHand($player_id),
 					'deck' => array_keys($this->cards->getCardsInLocation('deck')),
-					'discardPile' => $this->cards->getCardsInLocation('discardPile')
+					'discardPile' => $this->cards->getCardsInLocation('discardPile'),
+					'handTarget' => $handTarget
 				)
 			);
 		}
@@ -603,19 +588,6 @@ var_dump("<div>bmc:");
 var_dump($players);
 var_dump("</div>");
 
-		$dbg1st = 0;
-        foreach ( $players as $player_id => $player ) {
-			if ($dbg1st == 0) {
-				$dbg1st = 1;
-				$cards = $this->cards->pickCards( 5, 'deck', $player_id );
-			} else {
-				$cards = $this->cards->pickCards( 1, 'deck', $player_id );
-			}
-        } 
-
-		// Put 1 card from the deck into the discard pile and give it a starting weight of 100
-		$this->cards->moveCard( $this->cards->getCardOnTop ( 'deck' )[ 'id' ], 'discard', 100); 
-
 		$GSV = self::getGameStateValue('currentHandType');
 		self::trace("bmc: GSV");
 		self::trace($GSV);
@@ -624,12 +596,6 @@ var_dump(implode ("{", $cards));
 var_dump("</div>");
 die("bmc:OK Sev");
 */
-		// Notify players
-//        self::notifyAllPlayers( "newHand", '', $this->cards) );
-//        foreach ( $players as $player_id => $player ) {
-//			self::notif	$cards = $this->cards->pickCards( 5, 'deck', $player_id );
-//				$cards = $this->cards->pickCards( 1, 'deck', $player_id );
-//        } 
 
 		// Go to the next game state
         $this->gamestate->nextState("");	
@@ -637,10 +603,20 @@ die("bmc:OK Sev");
 
     function stNextPlayer() {
 		self::trace("bmc: !!stNextPlayer!!");
-		$countCardsByLocation = count($this->cards->countCardsByLocationArgs( 'hand' ));
+		$countCardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
+		$countCCBL = count($this->cards->countCardsByLocationArgs( 'hand' ));
 		$playersNumber = self::getPlayersNumber();
 
-		if ($countCardsByLocation != $playersNumber) {
+		self::dump("CCBL:", $countCardsByLocation);
+		self::dump("CCCBL:", $countCCBL);
+		self::dump("PN:", $playersNumber);
+
+		// self::trace("TCCCBL:");
+		// self::trace($countCCBL);
+		// self::trace("TPN:");
+		// self::trace($playersNumber);
+
+		if ($countCCBL != $playersNumber) {
 			// Someone has gone out
 			$this->gamestate->nextState("endHand");
 		} else {
@@ -651,77 +627,6 @@ die("bmc:OK Sev");
 			$this->gamestate->nextState('nextPlayer');			
 		}
 	}
-
-/*		
-		if ($this->cards->countCardInLocation('hand') == 0) {
-			// End of the hand
-			$this->gamestate->nextState("endHand");
-		} else {
-			// Next player can draw and play etc...
-			$current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
-			$player_id = self::activeNextPlayer();
-			$activePlayerId = self::getCurrentPlayerId();
-			$this->gamestate->nextState('nextPlayer');
-		}		
-*/
-
-/* This next used to be part of stNextPlayer
-
-//		self::setGameStateInitialValue('currentHandType', 17);
-
-        // Active next player OR end the trick and go to the next trick OR end the hand
-        if ($this->cards->countCardInLocation('cardsontable') == 4) {
-            // This is the end of the trick
-            $cards_on_table = $this->cards->getCardsInLocation('cardsontable');
-            $best_value = 0;
-            $best_value_player_id = null;
-            $currentTrickColor = self::getGameStateValue('trickColor');
-            foreach ( $cards_on_table as $card ) {
-                // Note: type = card color
-                if ($card ['type'] == $currentTrickColor) {
-                    if ($best_value_player_id === null || $card ['type_arg'] > $best_value) {
-                        $best_value_player_id = $card ['location_arg']; // Note: location_arg = player who played this card on table
-                        $best_value = $card ['type_arg']; // Note: type_arg = value of the card
-                    }
-                }
-            }
-            
-            // Active this player => he's the one who starts the next trick
-            $this->gamestate->changeActivePlayer( $best_value_player_id );
-            
-            // Move all cards to "cardswon" of the given player
-            $this->cards->moveAllCardsInLocation('cardsontable', 'cardswon', null, $best_value_player_id);
- 
-            // Notify
-            // Note: we use 2 notifications here in order we can pause the display during the first notification
-            //  before we move all cards to the winner (during the second)
-            $players = self::loadPlayersBasicInfos();
-            self::notifyAllPlayers( 'trickWin', clienttranslate('${player_name} wins the trick'), array(
-                'player_id' => $best_value_player_id,
-                'player_name' => $players[ $best_value_player_id ]['player_name']
-            ) );            
-			
-			// TODO: Can get rid of this next function
-            self::notifyAllPlayers( 'giveAllCardsToPlayer','', array(
-                'player_id' => $best_value_player_id
-            ) );
-        
-            if ($this->cards->countCardInLocation('hand') == 0) {
-                // End of the hand
-                $this->gamestate->nextState("endHand");
-            } else {
-                // End of the trick
-                $this->gamestate->nextState("nextTrick");
-            }
-        } else {
-            // Standard case (not the end of the trick)
-            // => just active the next player
-            $player_id = self::activeNextPlayer();
-            self::giveExtraTime($player_id);
-            $this->gamestate->nextState('nextPlayer');
-        }
-    }
-*/
 
     function stEndHand() {
 		self::trace("bmc: !!stEndHand!!");
@@ -787,9 +692,6 @@ die("bmc:OK Sev");
 
 		// Notify players to go to the next target hand
 		
-//		TODO: HERE INSTEAD OF GAMEDATAS, shuffle and deal, SEND IN EACH PLAYERS HAND, THE DISCARD PILE AND THE DECK SIZE.
-        //self::notifyAllPlayers( "newHand", '', PUTTHREEARGSHERE???) );
-
         ///// Test if this is the end of the game
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		if ($currentHandType == count($this->handTypes)) {
@@ -797,16 +699,6 @@ die("bmc:OK Sev");
 		} else {
 			$this->gamestate->nextState("newHand");
 		}
-/*
-        foreach ( $newScores as $player_id => $score ) {
-            if ($score >= 100) {
-                // Trigger the end of the game !
-                $this->gamestate->nextState("endGame");
-                return;
-            }
-        }
-        $this->gamestate->nextState("nextHand");
-*/
     }
 
     /*
@@ -928,6 +820,5 @@ die("bmc:OK Sev");
 //        // Please add your future database scheme changes here
 //
 //
-
     }    
 }

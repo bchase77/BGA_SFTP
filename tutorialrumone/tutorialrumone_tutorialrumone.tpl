@@ -58,9 +58,6 @@ Target hand: <div>{CURRENT_HAND_TYPE}</div>
 
 	/* Javascript HTML templates */
 
-/*var jstpl_hometown = '<div id="player_hometown" class="hometown hometown_${town_name}"></div>';
-*/
-
 /* This jstpl_playerPlayButton works but I'm doing the button in the white bar now.
 var jstpl_playerPlayButton = '<a href="#" id="currentPlayerPlayButton_id" class="bgabutton bgabutton_blue">\
 <span>Play Card</span></a>';

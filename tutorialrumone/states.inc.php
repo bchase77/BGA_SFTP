@@ -77,28 +77,29 @@ $machinestates = array(
         "type" => "game", // game
         "action" => "stNewHand",
         "updateGameProgression" => true,   
-        "transitions" => array( "" => 33 ) 
+        "transitions" => array( "" => 31 ) 
     ),    
     
-/*
+
     31 => array(
         "name" => "playerTurnDraw",
-        "description" => clienttranslate('State 31: ${actplayer} must draw a card. Others can buy, some day.'),
-        "descriptionmyturn" => clienttranslate('State 31: ${you} must draw a card.'),
+//        "description" => clienttranslate('State 31a: ${currentPlayer} must draw a card. Others can buy, some day.'),
+        "description" => clienttranslate('State 31a: ${actplayer} must draw a card. Others can buy, some day.'),
+        "descriptionmyturn" => clienttranslate('State 31b: ${you} must draw a card.'),
         "type" => "activeplayer", //multipleactiveplayer
 		"args" => "argPlayerTurn", // Not sure i need this argPlayerTurn
         "possibleactions" => array( "drawCard" ),
         "transitions" => array( "drawCard" => 33 )
     ), 
-*/
+
     33 => array(
         "name" => "playerTurnPlay",
-        "description" => clienttranslate('State 33a: Target: ${handTarget} | ${currentPlayer} must select and play a card.'),
+        "description" => clienttranslate('State 33a: Target: ${handTarget} | ${currentPlayer} must discard, play or go down.'),
         "descriptionmyturn" => clienttranslate('State 33b: ${you} must play a card.'),
-        "type" => "multipleactiveplayer",
+        "type" => "activeplayer", //multipleactiveplayer
 		"args" => "argMyArgumentMethod",
-        "possibleactions" => array( "playCard" ),
-        "transitions" => array( "playCard" => 35 )
+        "possibleactions" => array( "playCard", "goDown", "discardCard" ),
+        "transitions" => array( "playCard" => 70 , "goDown" => 60, "discardCard" => 35 )
     ), 
 	
 //	"buyCard" => 50, "pass" => 33, "playCard" => 35
@@ -107,7 +108,7 @@ $machinestates = array(
         "description" => "State 35",
         "type" => "game",
         "action" => "stNextPlayer",
-        "transitions" => array( "nextPlayer" => 33, "endHand" => 40 )
+        "transitions" => array( "nextPlayer" => 31, "endHand" => 40 )
     ), 
     
     
