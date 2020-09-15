@@ -125,7 +125,6 @@ class TutorialBMCHearts extends Table
             $cards = $this->cards->pickCards(13, 'deck', $player_id);
         } 
 
-
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
 

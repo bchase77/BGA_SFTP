@@ -61,36 +61,25 @@ $machinestates = array(
         "transitions" => array( "" => 10 )
     ),
     
-    // Create new deck
+    // Create new deck and deal
     10 => array(
         "name" => "deckSetup",
-        "description" => clienttranslate("Deck setup"),
+        "description" => clienttranslate("State10: Deck Setup"),
         "type" => "game",
         "action" => "stDeckSetup",
         "transitions" => array( "" => 20 )
     ),
 
-    /// New hand This one will increment through the types of goals: 2 sets, 1 run 1 set...
+    /// New hand
     20 => array(
         "name" => "newHand",
-        "description" => clienttranslate('State20: Go down target: ${currentHandType}.'),
+        "description" => clienttranslate('State20: New Hand'),
         "type" => "game", // game
         "action" => "stNewHand",
         "updateGameProgression" => true,   
-        "transitions" => array( "" => 33 ) // For now just let 1 player play cards
+        "transitions" => array( "" => 33 ) 
     ),    
     
-    // I don't think we need Trick. Players just play until someone goes out.
-    
-/*
-    30 => array(
-        "name" => "newTrick",
-        "description" => "",
-        "type" => "game",
-        "action" => "stNewTrick",
-        "transitions" => array( "" => 31 )
-    ),       
-*/
 /*
     31 => array(
         "name" => "playerTurnDraw",
@@ -104,7 +93,7 @@ $machinestates = array(
 */
     33 => array(
         "name" => "playerTurnPlay",
-        "description" => clienttranslate('State 33a: ${actplayer} ${currentPlayer} must play a card.'),
+        "description" => clienttranslate('State 33a: Target: ${handTarget} | ${currentPlayer} must select and play a card.'),
         "descriptionmyturn" => clienttranslate('State 33b: ${you} must play a card.'),
         "type" => "multipleactiveplayer",
 		"args" => "argMyArgumentMethod",
@@ -115,7 +104,7 @@ $machinestates = array(
 //	"buyCard" => 50, "pass" => 33, "playCard" => 35
     35 => array(
         "name" => "nextPlayer",
-        "description" => "",
+        "description" => "State 35",
         "type" => "game",
         "action" => "stNextPlayer",
         "transitions" => array( "nextPlayer" => 33, "endHand" => 40 )
@@ -123,18 +112,19 @@ $machinestates = array(
     
     
     // End of the hand (scoring, etc...)
+	// This state will increment through the types of goals: 2 sets, 1 run 1 set...
     40 => array(
         "name" => "endHand",
-        "description" => "",
+        "description" => "State 40",
         "type" => "game",
         "action" => "stEndHand",
-        "transitions" => array( "nextHand" => 20, "endGame" => 99 )
+        "transitions" => array( "newHand" => 20, "endGame" => 99 )
     ),     
     
     // Someone wants to buy a discarded card
     50 => array(
         "name" => "buyCard",
-        "description" => "Someone has bought the discard.",
+        "description" => "State 50: Someone has bought the discard.",
         "type" => "game",
         "action" => "stBuyCard",
         "transitions" => array( "" => 33 )

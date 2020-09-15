@@ -48,8 +48,7 @@ function (dojo, declare) {
             "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
         */
         
-        setup: function( gamedatas )
-        {
+        setup: function( gamedatas ) {
 //console.log( "bmc: Starting game setup" );
 
             // Setting up player boards
@@ -93,6 +92,10 @@ console.log("bmc: Cards in gamedatas and in player's hand");
 console.log(this.gamedatas);
 console.log(this.playerHand);
 
+
+// NEWHAND START MAYBE???
+
+
             //this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
 console.log("bmc: Add cards to hand");
 
@@ -110,7 +113,8 @@ console.log("bmc: Add cards to hand");
 
                 this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
             }
-			
+
+// NEWHAND MABYE NOT THIS START
 			this.deck = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
             this.deck.create( this, $('deck'), this.cardwidth, this.cardheight );            
 			//this.deck.create( this, $('deck'), this.cardwidth, this.cardheight );
@@ -119,6 +123,7 @@ console.log("bmc: Add cards to hand");
 			this.deck.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54); // Color 5 Value 3 is red back of the card
 //console.log("bmc: deckIDs");
 //console.log(this.gamedatas.deckIDs);
+// NEWHAND MABYE NOT THIS END
 
 			for ( let i = 0 ; i < this.gamedatas.deckIDs.length; i++) {
 //console.log(i + " / " + this.gamedatas.deckIDs[i]);
@@ -144,6 +149,8 @@ console.log(this.deck);
             this.discardPile.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
             this.discardPile.setOverlap( 50, 0 );
 
+
+// NEWHAND MABYE NOT THIS START
 			var discardPileWeights = new Array();
 			
             // Show the cards actually in the discard pile
@@ -156,27 +163,32 @@ console.log( "CCV: " + card.id + " / " + color + " / " + value );
 //console.log(card);
 
                 this.discardPile.addToStockWithId(this.getCardUniqueId(color, value), card.id);
-console.log(card.id);
+//console.log(card.id);
 				let location_arg = parseInt(this.gamedatas.discardPile[i]['location_arg']);
-console.log('bmc: location_arg:');
-console.log(location_arg);
+//console.log('bmc: location_arg:');
+//console.log(location_arg);
 
 				discardPileWeights[this.getCardUniqueId(color, value)] = location_arg;
 console.log(discardPileWeights);
             }
 			
-console.log("bmc: $(discardPile)");
-console.log($('discardPile'));
-			
-console.log("bmc: discardPile Before");
-console.log(this.discardPile);
+// NEWHAND MABYE NOT THIS END
 
-console.log("bmc: discardPileWeights RAW");
-console.log(discardPileWeights);
+			
+//console.log("bmc: discardPile Before");
+//console.log(this.discardPile);
+
+//console.log("bmc: discardPileWeights RAW");
+//console.log(discardPileWeights);
 
 			// Set the weights in the discard pile
 			this.discardPile.changeItemsWeight(discardPileWeights);
 
+// NEWHAND END MAYBE???
+
+console.log("bmc: $(discardPile)");
+console.log($('discardPile'));
+			
 console.log("bmc: discardPile After");
 console.log(this.discardPile);
 
@@ -185,13 +197,6 @@ console.log(this.player_id);
 
 //var up = document.documentElement.innerHTML;
 //console.log(up);
-
-			if (this.gamedatas.activePlayerId == this.player_id) {
-				console.log("bmc: YOU CAN PLAY SHOW THE BUTTON");
-				dojo.place(this.format_block('jstpl_playerPlayButton', {}), $('myhand_wrap'));
-			} else {
-				console.log("bmc: NOT YOU!");
-			}
 
             dojo.connect( this.playerHand,  'onChangeSelection', this, 'onPlayerHandSelectionChanged' );
             dojo.connect( this.deck,    'onChangeSelection', this, 'onDeckSelectionChanged' );
@@ -211,20 +216,33 @@ console.log(this.player_id);
         // onEnteringState: this method is called each time we are entering into a new game state.
         //                  You can use this method to perform some user interface changes at this moment.
         //
-        onEnteringState: function( stateName, args )
-        {
-            console.log( 'Entering state: '+stateName );
-            console.log(stateName);
-            switch( stateName )
-            {
-				case 'playerTurnPlay':
-					console.log("bmc: OnEnteringState PTP");
-					if (this.gamedatas.activePlayerId == this.player_id) {
-						this.handlers.currentPlayerPlayButton = this.onPlayerPlayButton.bind(this);
-						$('currentPlayerPlayButton_id').addEventListener('click', this.handlers.currentPlayerPlayButton);
-					}
+        onEnteringState: function( stateName, args ) {
+            console.log( 'ENTERING state: ' + stateName );
+			console.log(this.gamedatas.gamestate.active_player);
+			console.log(this.player_id);
+			console.log("bmc: SN:");
+			console.log(stateName);
+
+            switch( stateName ) {
+								
+				case 'newHand':
+					console.log("bmc: FOUND newHand");
 					break;
-            
+				case 'playerTurnPlay':
+					console.log("bmc: FOUND PTP");
+					break;
+				case 'nextPlayer':
+					console.log("bmc: FOUND nextPlayer");
+					break;
+				case 'endHand':
+					console.log("bmc: FOUND endHand");
+					break;
+				case 'dummmy':
+					break;
+				default:
+					console.log("bmc: OES DEFAULT");
+					break;
+            }
             /* Example:
            
             case 'myGameState':
@@ -234,18 +252,13 @@ console.log(this.player_id);
                 
                 break;
            */
-           
-				case 'dummmy':
-					break;
-            }
         },
 
         // onLeavingState: this method is called each time we are leaving a game state.
         //                 You can use this method to perform some user interface changes at this moment.
         //
-        onLeavingState: function( stateName )
-        {
-            console.log( 'Leaving state: '+stateName );
+        onLeavingState: function( stateName ) {
+            console.log( 'Leaving state: ' + stateName );
             
             switch( stateName )
             {
@@ -269,20 +282,26 @@ console.log(this.player_id);
         // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
         //                        action status bar (ie: the HTML links in the status bar).
         //        
-        onUpdateActionButtons: function( stateName, args )
-        {
-            console.log( 'onUpdateActionButtons: '+stateName );
-                      
-            if( this.isCurrentPlayerActive() )
-            {            
-                switch( stateName )
-                {
-					case 'playerTurnPlay':
-					//TODO: Only show the button to the player who can play
-					console.log("bmc: BUTTON!");
-					this.addActionButton('buttonPlayerPlay', _("Play Card"), 'onPlayerPlayButton');
+        onUpdateActionButtons: function( stateName, args ) {
+            console.log( 'bmc: onUpdateActionButtons: ' + stateName );
+			var items = this.playerHand.getSelectedItems()
+//			console.log(this.gamedatas);
+//			console.log(this.player_id);
+//			console.log(this.gamedatas.gamestate.active_player);
 
-/*               
+			if (this.gamedatas.gamestate.active_player == this.player_id) {
+				switch( stateName ) {
+					case 'playerTurnPlay':
+						if(items.length == 1 ) {
+
+						console.log("bmc: SHOW BUTTON TO ONLY 1");
+						this.addActionButton('buttonPlayerPlay', _("Play Card"), 'onPlayerPlayButton');
+						}
+				}
+			}
+		},
+
+/*
                  Example:
  
                  case 'myGameState':
@@ -293,11 +312,11 @@ console.log(this.player_id);
                     this.addActionButton( 'button_2_id', _('Button 2 label'), 'onMyMethodToCall2' ); 
                     this.addActionButton( 'button_3_id', _('Button 3 label'), 'onMyMethodToCall3' ); 
                     break;
-*/
+
                 }
             }
         },        
-
+*/
         ///////////////////////////////////////////////////
         //// Utility methods
         
@@ -318,8 +337,6 @@ console.log(this.player_id);
             return bob;
         },
 
-
-
         playCardOnTable : function(player_id, color, value, card_id) {
 			// Purpose is to show the played cards on the table, not really to play the card.
 			// Playing of the card is done on the server side (PHP).
@@ -330,16 +347,16 @@ console.log("[bmc]playCardOnTable");
 			weightChange[cardUniqueId] = this.discardPile.items.length + 300; // might be > by 1
 			this.discardPile.addToStockWithId(cardUniqueId, card_id);
 
-console.log("bmc: Change weight of new card");
+//console.log("bmc: Change weight of new card");
 //console.log(this.getCardUniqueId(color, value));
-console.log(player_id);
-console.log(color);
-console.log(value);
-console.log(card_id);
-console.log(cardUniqueId);
-console.log(this.discardPile.items.length);
-console.log([weightChange]);
-console.log(this.discardPile);
+// console.log(player_id);
+// console.log(color);
+// console.log(value);
+// console.log(card_id);
+// console.log(cardUniqueId);
+// console.log(this.discardPile.items.length);
+// console.log([weightChange]);
+// console.log(this.discardPile);
 			
 			// Get the id of the last card in the discard
 			this.discardPile.changeItemsWeight(weightChange);
@@ -372,8 +389,12 @@ console.log("bmc:Was in hand");
 					// Slide to it's final destination
 					this.slideToObject('myhand_item_' + card_id, 'discardPile', 1000).play();
                 }
-				
             }
+			// In any case: Remove the PLAY button
+			//dojo.empty(this.format_block('jstpl_playerPlayButton', {}));
+			//dojo.empty('jstpl_playerPlayButton'); // Died
+			//dojo.destroy('jstpl_playerPlayButton'); // Didn't die, but didn't remove button
+			//dojo.destroy('currentPlayerPlayButton_id'); // THIS ONE WORKS!
 
             // In any case: move it to its final destination
             //this.slideToObject('myhand_item_' + card_id, 'discardPile_item_' + card_id).play();
@@ -460,39 +481,44 @@ console.log("bmc:Was in hand");
 		onPlayerPlayButton : function() {
 			console.log("bmc: BUTTON IN THE CALL!");
 			console.log(this.player_id)
+		    this.removeActionButtons(); // Remove the button because they played
+
 			var card = this.playerHand.getSelectedItems()[0]; // It must be just 1!
 			console.log(card);
-			console.log(this.gamedatas.activePlayerId);
-			console.log(this.gamedatas.hand);
+//			console.log(this.gamedatas.activePlayerId);
+//			console.log(this.gamedatas.hand);
 			
-			let color = this.gamedatas.hand[card.id].type; // Suit
-			let value = this.gamedatas.hand[card.id].type_arg; // Ace through King
-			
-			// MAYBE: No need to check if there is just 1 card selected because we
-			// could not get here otherwise.
-			// Also: If they got the button then they are the only player who could play.
-			
-//console.log("bmc: checkAction1: " + action);
-//console.log("bmc: checkAction2: " + this.checkAction(action, true));
-			var card_id = card.id;                    
+			if (Object.keys(card).length > 0) {
+				console.log("bmc: destroy button!");
+				dojo.destroy('currentPlayerPlayButton_id');
 
-console.log("bmc: Playing card!");
+//				let color = this.gamedatas.hand[card.id].type; // Suit
+//				let value = this.gamedatas.hand[card.id].type_arg; // Ace through King
+				
+				// MAYBE: No need to check if there is just 1 card selected because we
+				// could not get here otherwise.
+				// Also: If they got the button then they are the only player who could play.
+				
+	//console.log("bmc: checkAction1: " + action);
+	//console.log("bmc: checkAction2: " + this.checkAction(action, true));
+				var card_id = card.id;                    
 
-			let action = 'playCard';
-			
-			this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-				id : card_id,
-				lock : true
-			}, this, function(result) {
-			}, function(is_error) {
-			});
- console.log("bmc: Did ajaxcall.");
+	console.log("bmc: Playing card!");
 
-			this.playerHand.unselectAll();
-			
+				let action = 'playCard';
+				
+				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+					id : card_id,
+					lock : true
+				}, this, function(result) {
+				}, function(is_error) {
+				});
+	 console.log("bmc: Did ajaxcall.");
+
+				this.playerHand.unselectAll();
+			}			
 //			if (this.gamedatas.activePlayerId == this.player_id) {
-			this.playCardOnTable(this.player_id, color, value, card.type);
-//			}
+//			this.playCardOnTable(this.player_id, color, value, card.type);
 		},
 
 		
@@ -644,34 +670,47 @@ console.log(items);
 console.log(items);
 //			let location_arg = parseInt(this.gamedatas.discardPile[i]['location_arg']);
 
-console.log("bmc: gamedatas");
+console.log("bmc: gamedatas:");
 console.log(this.gamedatas);
+console.log("bmc: Players and this hand:");
+console.log(this.gamedatas.gamestate.active_player);
+console.log(this.player_id);
+			if (this.gamedatas.gamestate.active_player == this.player_id) {
+				if(items.length == 1 ) {
+					console.log("bmc: SHOW BUTTON TO ONLY 1");
+					this.addActionButton('buttonPlayerPlay', _("Play Card2"), 'onPlayerPlayButton');
+				}
+			}
 
 			var thisPlayerHand = this.playerHand.getAllItems();
 			console.log(thisPlayerHand);
 
-            if (items.length > 0) {
-                var action = 'playCard';
-console.log("bmc: checkAction1: " + action);
-console.log("bmc: checkAction2: " + this.checkAction(action, true));
-                if (this.checkAction(action, true)) {
-                    // Can play a card
-                    var card_id = items[0].id;                    
+            // if (items.length > 0) {
+                // var action = 'playCard';
+// console.log("bmc: checkAction1: " + action);
+// console.log("bmc: checkAction2: " + this.checkAction(action, true));
+                // if (this.checkAction(action, true)) {
+                   // Can play a card
+                    // var card_id = items[0].id;                    
 
-console.log("[bmc]Playing card!");
-console.log("[bmc]card_id: " + card_id);
+// console.log("[bmc]Playing card!");
+// console.log("[bmc]card_id: " + card_id);
 
-                    this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-						id : card_id,
-						lock : true
-					}, this, function(result) {
-					}, function(is_error) {
-					});
-// console.log("[bmc]Did ajaxcall.");
+                    // this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						// id : card_id,
+						// lock : true
+					// }, this, function(result) {
+					// }, function(is_error) {
+					// });
+//console.log("[bmc]Did ajaxcall.");
 
-                    this.playerHand.unselectAll();
+                    // this.playerHand.unselectAll();
 
-                } else if (items.length === 2) {
+                // } else if (items.length === 2) {
+				if (items.length === 2) {
+					// Remove PLAY CARD button
+					this.removeActionButtons();
+
 					// Swap the order if necessary to keep player's 1st selection 1st
 					if (this.playerHand.firstSelected != items[0].type) {
 						//console.log("bmc: swap");
@@ -704,13 +743,14 @@ console.log("[bmc]card_id: " + card_id);
 					this.playerHand.changeItemsWeight(weightChange);
 					this.playerHand.unselectAll();
                 } else if (items.length === 1) {
-console.log("bmc: Store the first");
+//console.log("bmc: Store the first");
 					this.playerHand.firstSelected = items[0].type;
 				} else {
 // console.log("bmc: unselectAll");
+				this.removeActionButtons();
 			    this.playerHand.unselectAll();
 				}
-			}
+			//}
         },
         
         ///////////////////////////////////////////////////
@@ -730,6 +770,8 @@ console.log("bmc: Store the first");
             console.log( 'notifications subscriptions setup' );
             
             dojo.subscribe( 'newHand'  , this, "notif_newHand");
+			this.notifqueue.setSynchronous( 'newHand', 1000 );
+
             dojo.subscribe( 'playCard' , this, "notif_playCard");
             dojo.subscribe( 'drawCard' , this, "notif_drawCard");
 
@@ -759,15 +801,49 @@ console.log("bmc: Store the first");
         notif_newHand : function(notif) {
             // We received a new full hand of cards.
             this.playerHand.removeAll();
+			this.discardPile.removeAll();
+			this.deck.removeAll();
+			
+			console.log("bmc: notif_newHand");
+			console.log(notif);
 
-            for ( var i in notif.args.cards) {
-                var card = notif.args.cards[i];
-                var color = card.type;
-                var value = card.type_arg;
+			// Set up the new hand for the player
+            for ( let i in notif.args.hand) {
+				console.log("bmc: NEW HAND OF CARDS");
+                let card = notif.args.hand[i];
+                let color = card.type;
+                let value = card.type_arg;
                 this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
 			}
-        },
+console.log("bmc: this.playerHand");			
+console.log(this.playerHand);
 
+			// Set up the discard pile
+			var discardPileWeights = new Array();
+
+            for ( let i in notif.args.discardPile) {
+				console.log("bmc: NEW DISCARD PILE");
+                let card = notif.args.discardPile[i];
+                let color = card.type;
+                let value = card.type_arg;
+                this.discardPile.addToStockWithId(this.getCardUniqueId(color, value), card.id);
+				let location_arg = parseInt(notif.args.discardPile[i]['location_arg']);
+				discardPileWeights[this.getCardUniqueId(color, value)] = location_arg;
+			}
+			// Set the weights in the discard pile
+			this.discardPile.changeItemsWeight(discardPileWeights);
+console.log("bmc: this.discardPile");			
+console.log(this.discardPile);
+
+			// Set up the draw deck
+			for (let i = 0 ; i < notif.args.deck.length; i++) {
+				this.deck.addToStockWithId(1, notif.args.deck[i]);
+			}
+console.log("bmc: this.deck");			
+console.log(this.deck);
+
+        },
+			
         notif_playCard : function(notif) {
 console.log("[bmc]notif_playcard");
             // Play a card on the table
@@ -786,19 +862,8 @@ console.log(notif.args.card_id);
             // We do nothing here (just wait in order players can view the 4 cards played before they're gone.
         },
 		
-//        notif_giveAllCardsToPlayer : function(notif) {
-//            // Move all cards on table to given table, then destroy them
-//            var winner_id = notif.args.player_id;
-//            for ( var player_id in this.gamedatas.players) {
-//                var anim = this.slideToObject('cardontable_' + player_id, 'overall_player_board_' + winner_id);
-//                dojo.connect(anim, 'onEnd', function(node) {
-//                    dojo.destroy(node);
-//                });
-//                anim.play();
-//            }
-//        },  
         
-        // TODO: from this point and below, you can write your game notifications handling methods
+        // From this point and below, you can write your game notifications handling methods
         
         /*
         Example:

@@ -49,18 +49,16 @@ class TutorialRumOne extends Table
 			"bob" => 11
 
         ) );
-		
 	
-//		Not sure where to put this:
-//      $handTypes = array(
-//		  0 => "2 Sets",
-//		  1 => "1 Set and 1 Run",
-//		  2 => "2 Runs",
-//		  3 => "3 Sets",
-//		  4 => "2 Sets and 1 Run",
-//		  5 => "1 Set and 2 Runs",
-//		  6 => "3 Runs"
-//		);
+        $this->handTypes = array(
+		  0 => "2 Sets",
+		  1 => "1 Set and 1 Run",
+		  2 => "2 Runs",
+		  3 => "3 Sets",
+		  4 => "2 Sets and 1 Run",
+		  5 => "1 Set and 2 Runs",
+		  6 => "3 Runs"
+		);
 		  
         $this->cards = self::getNew( "module.common.deck" );
         $this->cards->init( "card" );
@@ -104,7 +102,7 @@ class TutorialRumOne extends Table
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
 
-        self::setGameStateInitialValue( 'currentHandType', 1 );
+        self::setGameStateInitialValue( 'currentHandType', 0 );
 
 
         // Activate first player (which is in general a good idea :) )
@@ -138,7 +136,7 @@ class TutorialRumOne extends Table
         //   Discard must not fit into either their own or any other player's laid cards.
         //     (or else draw extra card and whoever called Liverpool can discard a card)
 		
-		        // Create cards
+		// Create cards
         $cards = array ();
 
 //        foreach ( $this->colors as $color_id => $color ) {
@@ -165,35 +163,28 @@ class TutorialRumOne extends Table
 		}
 
         $this->cards->createCards( $cards, 'deck' );
+		// Go to the next game state
+        $this->gamestate->nextState();	
+	}
 
+
+// WAS IN NEW DECK:
         // Shuffle deck
-        $this->cards->shuffle('deck');
+//        $this->cards->shuffle('deck');
 		
         // Deal some cards to each players
-		
-		//bmc deal cards to all players
-//		$players = self::loadPlayersBasicInfos();
 
-//        $current_player_id = array_values($players)[0]"player_id";
+//        $players = self::loadPlayersBasicInfos();
 
-//        $cards = $this->cards->pickCards(11, 'deck', $current_player_id);
-
-//var_dump( array_values($players)[0]"player_id" );
-//var_dump($cards);
-//die('okSev');
-
-        $players = self::loadPlayersBasicInfos();
-		
-//var_dump($players);
-//die('okSev');
-		
-//var_dump($drawPileCards);
-//var_dump($player_id);
-//die('okSev');
-
-        foreach ( $players as $player_id => $player ) {
-            $cards = $this->cards->pickCards( 11, 'deck', $player_id );
-        } 
+//		$dbg1st = 0;
+//        foreach ( $players as $player_id => $player ) {
+//			if ($dbg1st == 0) {
+//				$dbg1st = 1;
+//				$cards = $this->cards->pickCards( 5, 'deck', $player_id );
+//			} else {
+//				$cards = $this->cards->pickCards( 1, 'deck', $player_id );
+//			}
+ //       } 
 //var_dump($cards);
 //die('okSev');
 
@@ -202,29 +193,25 @@ class TutorialRumOne extends Table
 		//insertCardOnExtremePosition( $card_id, $location, $bOnTop ); //
 		//moveCard( $card_id, $location, $location_arg=0 )
 		
-		$bill = $this->cards->getCardOnTop ( 'deck' );
+//		$bill = $this->cards->getCardOnTop ( 'deck' );
 
 //var_dump($bill['id']);
 //var_dump($bill);
 //die('okSev');
 		
-		self::warn("bmc: this->cards->getCardOnTop");
-		self::dump("ontop", $this->cards->getCardOnTop ( 'deck' )[ 'id' ]);
+//		self::warn("bmc: this->cards->getCardOnTop");
+//		self::dump("ontop", $this->cards->getCardOnTop ( 'deck' )[ 'id' ]);
 
 		// Put 1 card from the deck into the discard pile and give it a starting weight of 100
-		$this->cards->moveCard( $this->cards->getCardOnTop ( 'deck' )[ 'id' ], 'discard', 100); 
+//		$this->cards->moveCard( $this->cards->getCardOnTop ( 'deck' )[ 'id' ], 'discard', 100); 
 
-		$cardLocations = $this->cards->countCardsInLocations();
+//		$cardLocations = $this->cards->countCardsInLocations();
 //var_dump($cardLocations); // this accurately shows an array of the number of cards in each location
 //die('okSev');
 
-        // Set the first hand target
-		self::incGameStateValue( 'currentHandType', 100 ); // add 100 just to track who is doing what
-//        self::setGameStateValue( 'currentHandType', 2 ); // 0 is 2 Sets
-
 		// Go to the next game state
-        $this->gamestate->nextState();	
-	}
+//        $this->gamestate->nextState();	
+//	}
 	
     /*
         getAllDatas: 
@@ -258,21 +245,24 @@ class TutorialRumOne extends Table
         // Cards in player hand
         $result['hand'] = $this->cards->getCardsInLocation( 'hand', $current_player_id );
 
-        $result['deckCount'] = $this->cards->countCardInLocation( 'deck' );
+//        $result['deckCount'] = $this->cards->countCardInLocation( 'deck' );
 		
 		$result['deckIDs'] = array_keys($this->cards->getCardsInLocation( 'deck' ));
 		
-		$result['deck'] = $this->cards->getCardsInLocation ('deck');
+		// TODO: don't return all the IDs of the cards in the deck
+		//$result['deck'] = $this->cards->getCardsInLocation ('deck');
 		
+		$result['allHands'] = $cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
 		
-		// This array of all cards doesn't work:
-		//$allCardsArray = array();
+		$countCardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
+		$result['dbgcountA'] = $countCardsByLocation ;
+		$result['dbgcountV'] = count($countCardsByLocation);
+
+		$playersNumber = self::getPlayersNumber();
+		$result['dbgPlayersNumber'] = $playersNumber ;
 		
-		//for ($i = 0; $i < 54 ; $i++) {
-		//	array_push($allCardsArray, $i);
-		//}
-		//$result['allCards'] = $this->cards->getCards($allCardsArray);
-		
+		$result['handTypes'] = $this->handTypes;
+
 //var_dump($result);
 //die('okSev');
 		
@@ -307,7 +297,7 @@ class TutorialRumOne extends Table
 //var_dump($discardKeys);
 		
 //		$result['discardPile'] = $sortOneWay;
-		$result['discardPile'] = $this->cards->getCardsInLocation( 'discard' );
+		$result['discardPile'] = $this->cards->getCardsInLocation( 'discardPile' );
 		
 		self::trace("bmc:discardPile:");
 //var_dump($result['discardPile']);
@@ -329,9 +319,6 @@ class TutorialRumOne extends Table
 		$debugCount = $this->cards->countCardsInLocations();
 		self::trace("bmc: !!cardsinlocations!!");
 		//self::trace(implode(",", $debugCount));
-  
-//		self::incGameStateValue( 'currentHandType', 1000 );
-//  	self::setGameStateValue( 'currentHandType', 3 ); // 0 is 2 Sets
   
         return $result;
     }
@@ -376,15 +363,16 @@ class TutorialRumOne extends Table
         In this space, you can put any utility methods useful for your game logic
     */
 
-
     function argMyArgumentMethod()
     {
 //         $currentPlayer = array_search($this; // $this->getCurrentPlayerId();
 		$currentPlayer = $this->getActivePlayerName();
-		
+		$currentHandType = $this->getGameStateValue( 'currentHandType' );
+
 		return array(
 //            'currentPlayer' => $this->getCurrentPlayerId() //2 //$currentPlayer  // In this case ${nbr} in the description will be replaced by "2"
-            'currentPlayer' => $currentPlayer
+            'currentPlayer' => $currentPlayer,
+			'handTarget' => $this->handTypes[$currentHandType]
         );    
     }
 
@@ -409,43 +397,55 @@ class TutorialRumOne extends Table
 
 
 // TODO: Check that this player can really click the PLAY button.
+//     Check if the active player really has the played card in their hand.
 // AT the end, disable all players and go to the next state with this:
 //     $this->gamestate->setAllPlayersNonMultiactive( $next_state )
 
     function playCard($card_id) {
 		self::trace("bmc: !!playCard!!");
-        self::checkAction("playCard");
-        $player_id = self::getActivePlayerId();
-		$discardWeight = $this->cards->countCardInLocation('discard') + 100;
-		$this->cards->moveCard($card_id, 'discard', $discardWeight);
+        $thisPlayerId = self::getActivePlayerId();
+		$currentPlayerId = self::getCurrentPlayerId();
+		self::trace("bmc: <div>");
+		self::trace($thisPlayerId);
+		self::trace($currentPlayerId);
+		self::trace("</div>");
+		
+		if ($thisPlayerId == $currentPlayerId) { // Allow play if it's that player's turn
+			$discardWeight = $this->cards->countCardInLocation('discardPile') + 100;
+			$this->cards->moveCard($card_id, 'discardPile', $discardWeight);
+
+//var_dump($thisPlayerId);
+//die('okSev');
+
+//        self::checkAction("playCard");
 		
 //		self::trace("bmc: discardWeight<div>");
 //		self::trace($discardWeight);
 //		self::trace("</div>");
 		
         // XXX check rules here
-        $currentCard = $this->cards->getCard($card_id);
+			$currentCard = $this->cards->getCard($card_id);
 //      self::trace("bmc: currentCard: <div>");
 //		self::trace($currentCard);
 //		self::trace("</div>");
 
         // And notify
-        self::notifyAllPlayers(
-			'playCard',
-			clienttranslate('${player_name} plays ${value_displayed} ${color_displayed}'),
-			array (
-				'i18n' => array ('color_displayed',
-								 'value_displayed' ),
-				'card_id' => $card_id,
-				'player_id' => $player_id,
-				'player_name' => self::getActivePlayerName(),
-				'value' => $currentCard ['type_arg'],
-				'value_displayed' => $this->values_label [$currentCard ['type_arg']],
-				'color' => $currentCard ['type'],
-				'color_displayed' => $this->colors [$currentCard ['type']] ['name']
-			)
-		);
-        
+			self::notifyAllPlayers(
+				'playCard',
+				clienttranslate('${player_name} plays ${value_displayed} ${color_displayed}'),
+				array (
+					'i18n' => array ('color_displayed',
+									 'value_displayed' ),
+					'card_id' => $card_id,
+					'player_id' => $thisPlayerId,
+					'player_name' => self::getActivePlayerName(),
+					'value' => $currentCard ['type_arg'],
+					'value_displayed' => $this->values_label [$currentCard ['type_arg']],
+					'color' => $currentCard ['type'],
+					'color_displayed' => $this->colors [$currentCard ['type']] ['name']
+				)
+			);
+		}
 		// Next state
         $this->gamestate->nextState('playCard');
     }
@@ -537,46 +537,134 @@ class TutorialRumOne extends Table
         $this->gamestate->nextState("");
     }
 
-
-
-// Below is all copied from the HEARTS tutorial (which did work):
-
     function stNewHand() {
 		self::debug("bmc: !!stNewHand!!");
 		
         // Take back all cards (from any location => null) to deck
-//        $this->cards->moveAllCardsInLocation(null, "deck");
-//        $this->cards->shuffle('deck');
-        // Deal 11 cards to each players
-        // Create deck, shuffle it and give 11 initial cards
-//        $players = self::loadPlayersBasicInfos();
+        $this->cards->moveAllCardsInLocation(null, "deck");
+
+		$bob = $this->cards->countCardInLocation( 'deck' );
+		
+		self::debug("<div>");
+		self::debug($bob);
+		self::debug("</div>");
+		//die("bmc: BAAAAA");
+		
+		// Make sure the deck is the same size!
+		/*
+		if( $this->cards->countCardInLocation( 'deck' ) != 54 ) {
+			var_dump("<div>");
+			var_dump(implode(",", $this->cards->countCardInLocation( 'deck' )));
+			var_dump("</div>");
+			self::trace("<div>bmc: DECK SIZE NOT RIGHT!</div>");
+		}
+		*/
+
+        // Shuffle deck
+        $this->cards->shuffle('deck');
+
+        // Deal some cards to each players
+
+        $players = self::loadPlayersBasicInfos();
+		
+		// Deal 11 cards to each player
+		// Put 1 card in the discard pile
+		// Put the rest into the draw deck
+		// Notify players of the situation
+		
+		foreach ( $players as $player_id => $player ) {
+			$this->cards->pickCards( 2, 'deck', $player_id );
+		}
+		
+		// Put 1 card from the deck into the discard pile and give it a starting weight of 100
+		$this->cards->moveCard( $this->cards->getCardOnTop ( 'deck' )[ 'id' ], 'discardPile', 100); 
+		
+		// The rest of the cards are in 'deck'
+		
+		// TODO: This returns all the cards in the deck. Instead it should show
+		//   show those cards as type 1 (red backs).
+		
+		//Notify all players of their cards plus the deck and the discard pile
+		foreach ( $players as $player_id => $player ) {
+			self::notifyPlayer(
+				$player_id,
+				'newHand',
+				clienttranslate('Dealing cards'),
+				array(
+					'hand' => $this->cards->getPlayerHand($player_id),
+					'deck' => array_keys($this->cards->getCardsInLocation('deck')),
+					'discardPile' => $this->cards->getCardsInLocation('discardPile')
+				)
+			);
+		}
+
+/*		
+var_dump("<div>bmc:");
+var_dump($players);
+var_dump("</div>");
+
+		$dbg1st = 0;
+        foreach ( $players as $player_id => $player ) {
+			if ($dbg1st == 0) {
+				$dbg1st = 1;
+				$cards = $this->cards->pickCards( 5, 'deck', $player_id );
+			} else {
+				$cards = $this->cards->pickCards( 1, 'deck', $player_id );
+			}
+        } 
+
+		// Put 1 card from the deck into the discard pile and give it a starting weight of 100
+		$this->cards->moveCard( $this->cards->getCardOnTop ( 'deck' )[ 'id' ], 'discard', 100); 
+
+		$GSV = self::getGameStateValue('currentHandType');
+		self::trace("bmc: GSV");
+		self::trace($GSV);
+var_dump("<div>bmc:");
+var_dump(implode ("{", $cards));
+var_dump("</div>");
+die("bmc:OK Sev");
+*/
+		// Notify players
+//        self::notifyAllPlayers( "newHand", '', $this->cards) );
 //        foreach ( $players as $player_id => $player ) {
-//            $cards = $this->cards->pickCards(11, 'deck', $player_id);
-            // Notify player about his cards
-//            self::notifyPlayer($player_id, 'newHand', '', array ('cards' => $cards ));
-//        }
-//        self::setGameStateValue('alreadyPlayedHearts', 0);
-        self::setGameStateInitialValue('currentHandType', 13);
-        $this->gamestate->nextState("");
+//			self::notif	$cards = $this->cards->pickCards( 5, 'deck', $player_id );
+//				$cards = $this->cards->pickCards( 1, 'deck', $player_id );
+//        } 
+
+		// Go to the next game state
+        $this->gamestate->nextState("");	
     }
 
-    function stNewTrick() {
-		self::trace("bmc: !!stNewTrick!!");
-        // New trick: active the player who wins the last trick, or the player who own the club-2 card
-        // Reset trick color to 0 (= no color)
-        self::setGameStateInitialValue('trickColor', 0);
-        $this->gamestate->nextState();
-    }
-
-//TODO: This is no longer appropriate (to move to the next player after 4 cards played)
     function stNextPlayer() {
 		self::trace("bmc: !!stNextPlayer!!");
-		
-		$player_id = self::activeNextPlayer();
-		$this->gamestate->nextState('nextPlayer');
-		
+		$countCardsByLocation = count($this->cards->countCardsByLocationArgs( 'hand' ));
+		$playersNumber = self::getPlayersNumber();
+
+		if ($countCardsByLocation != $playersNumber) {
+			// Someone has gone out
+			$this->gamestate->nextState("endHand");
+		} else {
+			// Next player can draw and play etc...
+			$current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
+			$player_id = self::activeNextPlayer();
+			$activePlayerId = self::getCurrentPlayerId();
+			$this->gamestate->nextState('nextPlayer');			
+		}
 	}
-		
+
+/*		
+		if ($this->cards->countCardInLocation('hand') == 0) {
+			// End of the hand
+			$this->gamestate->nextState("endHand");
+		} else {
+			// Next player can draw and play etc...
+			$current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
+			$player_id = self::activeNextPlayer();
+			$activePlayerId = self::getCurrentPlayerId();
+			$this->gamestate->nextState('nextPlayer');
+		}		
+*/
+
 /* This next used to be part of stNextPlayer
 
 //		self::setGameStateInitialValue('currentHandType', 17);
@@ -639,52 +727,88 @@ class TutorialRumOne extends Table
 		self::trace("bmc: !!stEndHand!!");
         // Count and score points, then end the game or go to the next hand.
         $players = self::loadPlayersBasicInfos();
-        // Gets all "hearts" + queen of spades
+        // Cards 2 - 9 are 5 points each
+		// Cards 10, J, Q, K are 10 points each
+		// Cards A are 15 points each
+		// Cards Joker is 20 points each
 
-        $player_to_points = array ();
-        foreach ( $players as $player_id => $player ) {
+		$player_to_points = array ();
+		foreach ( $players as $player_id => $player) {
             $player_to_points [$player_id] = 0;
-        }
-        $cards = $this->cards->getCardsInLocation("cardswon");
-        foreach ( $cards as $card ) {
-            $player_id = $card ['location_arg'];
-            // Note: 2 = heart
-            if ($card ['type'] == 2) {
-                $player_to_points [$player_id] ++;
-            }
-        }
+		}
+		$cards = $this->cards->getCardsInLocation("hand");
+		
+		foreach ( $cards as $card ) {
+			$player_id = $card ['location_arg'];
+			if ($card['type'] >= 1 and $card['type'] <= 4) { // If non-Joker
+				switch ( true ) {
+					case ($card['type_arg'] >= 2 and $card['type_arg'] <= 9 ): // 5 points
+						self::trace("bmc: 2-9");
+						$player_to_points [$player_id] += 5;
+						break;
+					case ($card['type_arg'] >= 10 and $card['type_arg'] <= 13 ): // 10 points
+						self::trace("bmc: 10,J,Q,K");
+						$player_to_points [$player_id] += 10;
+						break;
+					case ($card['type_arg'] === 1 ): // 15 points	
+						self::trace("bmc: Ace");
+						$player_to_points [$player_id] += 15;
+						break;
+				}
+			} else { // It must be a joker, 20 points
+				self::trace("bmc: Joker");
+				$player_to_points [$player_id] += 20;
+			}
+		}
+//var_dump("bmc: TALLY!");
+//var_dump($player_to_points);
+//var_dump($cards);
+
         // Apply scores to player
         foreach ( $player_to_points as $player_id => $points ) {
             if ($points != 0) {
                 $sql = "UPDATE player SET player_score=player_score-$points  WHERE player_id='$player_id'";
                 self::DbQuery($sql);
                 $heart_number = $player_to_points [$player_id];
-                self::notifyAllPlayers("points", clienttranslate('${player_name} gets ${nbr} hearts and looses ${nbr} points'), array (
+                self::notifyAllPlayers("points", clienttranslate('${player_name} gets ${nbr} points'), array (
                         'player_id' => $player_id,'player_name' => $players [$player_id] ['player_name'],
                         'nbr' => $heart_number ));
             } else {
                 // No point lost (just notify)
-                self::notifyAllPlayers("points", clienttranslate('${player_name} did not get any hearts'), array (
+                self::notifyAllPlayers("points", clienttranslate('${player_name} did not get any points'), array (
                         'player_id' => $player_id,'player_name' => $players [$player_id] ['player_name'] ));
             }
         }
         $newScores = self::getCollectionFromDb("SELECT player_id, player_score FROM player", true );
         self::notifyAllPlayers( "newScores", '', array( 'newScores' => $newScores ) );
 
+        // Next hand target
+		self::incGameStateValue( 'currentHandType', 1 );
+
+		// Notify players to go to the next target hand
+		
+//		TODO: HERE INSTEAD OF GAMEDATAS, shuffle and deal, SEND IN EACH PLAYERS HAND, THE DISCARD PILE AND THE DECK SIZE.
+        //self::notifyAllPlayers( "newHand", '', PUTTHREEARGSHERE???) );
+
         ///// Test if this is the end of the game
+		$currentHandType = $this->getGameStateValue( 'currentHandType' );
+		if ($currentHandType == count($this->handTypes)) {
+			$this->gamestate->nextState("endGame");
+		} else {
+			$this->gamestate->nextState("newHand");
+		}
+/*
         foreach ( $newScores as $player_id => $score ) {
-            if ($score <= -100) {
+            if ($score >= 100) {
                 // Trigger the end of the game !
                 $this->gamestate->nextState("endGame");
                 return;
             }
         }
-
-        
         $this->gamestate->nextState("nextHand");
+*/
     }
 
-// End all copied from the HEARTS tutorial.
     /*
     
     Example for game state "MyGameState":
