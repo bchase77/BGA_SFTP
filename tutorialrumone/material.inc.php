@@ -33,7 +33,7 @@ $this->colors = array(
 );
 
 $this->values_label = array(
-    1 => clienttranslate('A'),
+    1 => clienttranslate('Ace'),
     2 => '2',
     3 => '3',
     4 => '4',
@@ -43,9 +43,19 @@ $this->values_label = array(
     8 => '8',
     9 => '9',
     10 => '10',
-    11 => clienttranslate('J'),
-    12 => clienttranslate('Q'),
-    13 => clienttranslate('K')
+    11 => clienttranslate('Jack'),
+    12 => clienttranslate('Queen'),
+    13 => clienttranslate('King')
+);
+
+$this->handTypes = array(
+  0 => "2 Sets",
+  1 => "1 Set and 1 Run",
+  2 => "2 Runs",
+  3 => "3 Sets",
+  4 => "2 Sets and 1 Run",
+  5 => "1 Set and 2 Runs",
+  6 => "3 Runs"
 );
 
 

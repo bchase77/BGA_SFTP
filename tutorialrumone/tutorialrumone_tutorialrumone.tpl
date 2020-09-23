@@ -24,11 +24,70 @@
     
     Please REMOVE this comment before publishing your game on BGA
 -->
-
+<div id="play1card" class="tiny"></div>
+<!-- UNCOMMENT THIS TO SHOW TEXT AT THE TOP OF THE SCREEN
 Dody Oaks Rummy First Implementation. This is your game interface. You can edit this HTML in the ".tpl" file.
+-->
+<div id="goDownArea_wrap" class="goDownWrap whiteblock">
+<!--
+	<div>Target hand: {CURRENT_HAND_TYPE}</div>
+-->
+	<div id="boxes">
+		<div id = "leftbox" class="leftbox">
+			<h3>Draw Deck</h3>
+			<div id="deck"></div>
+		</div>
+		<div id = "rightbox" class="rightbox">
+			<h3>Discard Pile</h3>
+			<div id="discardPile"></div>
+		</div>
+	</div>
+	<div id="downArea">
+		<!-- BEGIN goDownArea -->
+			<div id="playerDown_A_{PLAYER_ID}" class="downWhite"></div>
+			<div id="playerDown_B_{PLAYER_ID}" class="downWhite"></div>
+			<div id="playerDown_C_{PLAYER_ID}" class="downWhite"></div>
+		<!-- END goDownArea -->
+	</div>
+</div>
 
-Target hand: <div>{CURRENT_HAND_TYPE}</div>
+<div id="myhand_wrap" class="myhand whiteblock">
+    <h3>My Hand</h3>
+    <div id="myhand" class="">
+    </div>
+</div>
 
+
+
+
+
+<script type="text/javascript">
+
+/*
+<div id="downArea_wrap">
+<div id="downArea1" class="downLeft">
+	<h3>Down Area1</h3>
+	</div>
+<div id="downArea2" class="downMiddle">
+	<h3>Down Area2</h3>
+	</div>
+<div id="downArea3" class="downRight">
+	<h3>Down Area3</h3>
+	</div>
+
+<div id="downArea1" class="downLeft">
+	<h3>Down Area1</h3>
+	</div>
+<div id="downArea2" class="downMiddle">
+	<h3>Down Area2</h3>
+	</div>
+<div id="downArea3" class="downRight">
+	<h3>Down Area3</h3>
+	</div>
+
+</div>
+*/
+/*
 <div id="boxes">
 	<div id = "leftbox">
 		<h3>Draw Deck</h3>
@@ -42,9 +101,15 @@ Target hand: <div>{CURRENT_HAND_TYPE}</div>
 	</div>
 </div>
 
+
 <div id="downArea_wrap" class="whiteblock downArea">
-	<h3>Down Area</h3>
 	<div id="downArea">
+	</div>
+</div>
+
+<div id="downArea_wrap2" class="whiteblock downArea">
+	<h3>Down Area2</h3>
+	<div id="downArea2">
 	</div>
 </div>
 
@@ -53,10 +118,12 @@ Target hand: <div>{CURRENT_HAND_TYPE}</div>
     <div id="myhand">
     </div>
 </div>
-
-<script type="text/javascript">
+*/
 
 	/* Javascript HTML templates */
+
+var jstpl_handTarget = '<div id="handTarget"></div>';
+
 
 /* This jstpl_playerPlayButton works but I'm doing the button in the white bar now.
 var jstpl_playerPlayButton = '<a href="#" id="currentPlayerPlayButton_id" class="bgabutton bgabutton_blue">\

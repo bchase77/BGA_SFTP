@@ -39,32 +39,107 @@
             }
   	}
 
+    function parseNumberList($number_list_arg)
+    {
+        // Removing last ';' if exists
+        if (substr( $number_list_arg, -1 ) == ';' ) {
+            $number_list_arg = substr( $number_list_arg, 0, -1 );
+        }
+
+        if( $number_list_arg == '' ) {
+            return array();
+        } else {
+            return explode( ';', $number_list_arg );
+        }
+    }
+/*    function parseNumberList($number_list_arg)
+    {
+		self::dump("[bmc] number_list_arg", $number_list_arg);
+		
+        // Removing last ';' if exists
+//        if (substr( $number_list_arg, -1 ) == ';' ) {
+        if (substr( $number_list_arg, -1 ) == ',' ) {
+            $number_list_arg = substr( $number_list_arg, 0, -1 );
+        }
+
+        if( $number_list_arg == '' ) {
+			self::dump("[bmc] number_list_arg2", $number_list_arg);
+            return array();
+        } else {
+			self::dump("[bmc] number_list_arg3", $number_list_arg);
+//            return explode( ';', $number_list_arg );
+            return explode( ',', $number_list_arg );
+        }
+    }
+*/
   	// TODO: defines your action entry points there
 
         public function discardCard()
         {
-			self::trace("bmc: ajaxcall for discardCard");
+			self::trace("[bmc] ajaxcall for discardCard");
             self::setAjaxMode();
             $card_id = self::getArg("id", AT_posint, true);
             $this->game->discardCard($card_id);
             self::ajaxResponse();
         }
 
-        public function playCard()
-        {
-			self::trace("bmc: ajaxcall for playCard");
-            self::setAjaxMode();
-            $card_id = self::getArg("id", AT_posint, true);
-            $this->game->playCard($card_id);
-            self::ajaxResponse();
-        }
+		public function playSeveralCards()
+		{
+			self::setAjaxMode();
+			$card_ids = self::parseNumberList(self::getArg('card_ids', AT_numberlist, true));
+			$this->game->playSeveralCards($card_ids);
+			self::ajaxResponse();
+		}
 
+
+/*
+        public function playSeveralCards() {
+		    self::setAjaxMode();
+			self::dump("[bmc] inPSC: ", self::getArg('card_ids', AT_numberlist, true));
+		    $card_ids = self::parseNumberList(self::getArg('card_ids', AT_numberlist, true));
+		    $this->game->playSeveralCards($card_ids);
+		    self::ajaxResponse();
+		}
+*/
+
+/*
+        public function playCards()
+        {
+			self::trace("[bmc] ajaxcall for playCards");
+            self::setAjaxMode();
+			
+			$card_ids_raw = self::getArg( "cardArray", AT_numberlist, true);
+
+			// Removing last ';' if exists
+			if( substr( $card_ids_raw, -1 ) == ';' )
+				$card_ids_raw = substr( $card_ids_raw, 0, -1 );
+			if( $card_ids_raw == '' )
+				$card_ids = array();
+			else
+				$card_ids = explode( ';', $card_ids_raw );
+
+			self::dump("[bmc] ajax playcards: ", $card_ids);
+
+           $this->game->playCards($card_ids);
+           self::ajaxResponse();
+        }
+*/
         public function drawCard()
         {
             self::setAjaxMode();
-			self::trace("bmc: ajaxcall for drawCard");
+			self::trace("[bmc] ajaxcall for drawCard");
             $card_id = self::getArg("id", AT_posint, true);
-            $this->game->drawCard($card_id);
+			$drawSource = self::getArg("drawSource", AT_posint, true); // 0 == 'deck', 1 == 'discardPile'
+            $this->game->drawCard($card_id, $drawSource); 
+            self::ajaxResponse();
+        }
+
+        public function drawDiscard()
+        {
+            self::setAjaxMode();
+			self::trace("[bmc] ajaxcall for drawDiscard");
+//            $card_id = self::getArg("id", AT_posint, true);
+            $this->game->drawDiscard();
             self::ajaxResponse();
         }
     /*

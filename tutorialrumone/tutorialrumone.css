@@ -50,13 +50,75 @@
 
 /** Table layout **/
 
-/*#playertables {
-    position: relative;
-    width: 930px;
+#downArea {
+    position: left;
+/*    width: 100%;
     height: 200px;
-}
 */
+}
 
+
+.leftbox {
+	float: left;
+	width: 40%;
+	height: 140px;
+}
+.rightbox {
+	float: right;
+	width: 60%;
+	height: 140px;
+}
+
+.myhand {
+	float: Left;
+	width: 90%;
+	height: 140px;
+}
+
+.goDownWrap {
+	float: Left;
+    background-image: url('img/YellowTable.png');
+	background-size: cover;
+	background-repeat: no-repeat;
+	margin: 10px;
+	border: 10px;
+	padding: 10px;
+	width: 95%;
+	height: 560px;
+}
+
+.tiny {
+	float: Left;
+	width: 1px;
+	height: 1px;
+}
+
+.downWhite{
+	float: Left;
+	width: 30%;
+	height: 100px;
+}
+
+.downLeft {
+	float: Left;
+	background: Orange;
+	width: 33%;
+	height: 140px;
+}
+.downMiddle {
+	float: Left;
+	background: Gray;
+	width: 34%;
+	height: 140px;
+}
+.downRight {
+	float: Left;
+	background: Teal;
+	width: 33%;
+	height: 140px;
+}
+
+/*
 #leftbox {
 	float: left;
 	background: Red;
@@ -71,12 +133,10 @@
 	height: 140px;
 }
 
-/*
-.downArea {
+#downArea {
 	height: 200px;
 }
 */
-
 /*
     Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
 

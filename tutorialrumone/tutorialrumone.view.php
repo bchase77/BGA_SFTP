@@ -44,11 +44,24 @@
 //        $this->tpl['CURRENT_HAND_TYPE'] = $number_to_display;
 		//$sevdebug = $this->game->gamestate_labels["currentHandType"];
 
+
+// TODO: Why doesn't this get seen when it's in material.inc.php? It must not be in 2 places.
+$this->handTypes = array(
+  0 => "2 Sets",
+  1 => "1 Set and 1 Run",
+  2 => "2 Runs",
+  3 => "3 Sets",
+  4 => "2 Sets and 1 Run",
+  5 => "1 Set and 2 Runs",
+  6 => "3 Runs"
+);
+
+
 		$gameMethods = get_class_methods($this->game);
 
 		$debug = $gameMethods;
 
-		self::trace("bmc: build_page: ");
+		self::trace("[bmc] build_page: ");
 		//self::trace($debug);
 		
 //var_dump($debug);
@@ -56,13 +69,24 @@
 //        $to_display = $sevdebug;
 
 		//$to_display = getGameStateValue( 'currentHandType' );
-		$bob = $this->game->getGameStateValue( 'currentHandType' );
+		$htNumber = $this->game->getGameStateValue( 'currentHandType' );
 		
-        $this->tpl['CURRENT_HAND_TYPE'] = "view.php: Go Down Target: " . $bob;
-
-/*		$to_display = $currentHandType;
-        $this->tpl['CURRENT_HAND_TYPE'] = $to_display;
-*/
+		$handTarget = $this->handTypes[$htNumber];
+		
+        $this->tpl['CURRENT_HAND_TYPE'] = " " . $handTarget;
+			
+		$template = self::getGameName() . "_" . self::getGameName();
+        
+        // this will inflate our goDownArea block with actual players data
+        $this->page->begin_block($template, "goDownArea");
+        foreach ( $players as $player_id => $info ) {
+            //$dir = array_shift($directions);
+            $this->page->insert_block("goDownArea", array ("PLAYER_ID" => $player_id,
+                    "PLAYER_NAME" => $players [$player_id] ['player_name'],
+                    "PLAYER_COLOR" => $players [$player_id] ['player_color']
+					));
+        }
+		
         /*
         
         // Examples: set the value of some element defined in your tpl file like this: {MY_VARIABLE_ELEMENT}
@@ -98,8 +122,6 @@
         }
         
         */
-
-
 
         /*********** Do not change anything below this line  ************/
   	}

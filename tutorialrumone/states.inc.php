@@ -84,22 +84,29 @@ $machinestates = array(
     31 => array(
         "name" => "playerTurnDraw",
 //        "description" => clienttranslate('State 31a: ${currentPlayer} must draw a card. Others can buy, some day.'),
-        "description" => clienttranslate('State 31a: ${actplayer} must draw a card. Others can buy, some day.'),
-        "descriptionmyturn" => clienttranslate('State 31b: ${you} must draw a card.'),
+		"description" => clienttranslate('State 31a: ${handTarget}. ${actplayer} must draw a card. Others can buy, some day.'),
+		"descriptionmyturn" => clienttranslate('State 31b: ${handTarget}. ${you} must draw a card.'),
+//        "description" => clienttranslate('State 31a: ${actplayer} must draw a card. Others can buy, some day.'),
+//        "descriptionmyturn" => clienttranslate('State 31b: ${you} must draw a card.'),
         "type" => "activeplayer", //multipleactiveplayer
-		"args" => "argPlayerTurn", // Not sure i need this argPlayerTurn
-        "possibleactions" => array( "drawCard" ),
-        "transitions" => array( "drawCard" => 33 )
+		"args" => "argPlayerTurn", // Set the handtarget and who can play
+        "possibleactions" => array( "drawCard", "drawDiscard" ),
+        "transitions" => array( "" => 33 )
+//        "transitions" => array( "drawCard" => 33, "drawDiscard" => 33)
     ), 
 
     33 => array(
         "name" => "playerTurnPlay",
-        "description" => clienttranslate('State 33a: Target: ${handTarget} | ${currentPlayer} must discard, play or go down.'),
-        "descriptionmyturn" => clienttranslate('State 33b: ${you} must play a card.'),
+//        "description" => clienttranslate('State 33a: ${currentPlayer} must discard, play or go down.'),
+//        "descriptionmyturn" => clienttranslate('State 33b: ${you} must play a card.'),
+		"description" => clienttranslate('State 33a: ${handTarget}. ${actplayer} must play or discard a card.'),
+		"descriptionmyturn" => clienttranslate('State 33b: ${handTarget}. ${you} must play or discard a card.'),
         "type" => "activeplayer", //multipleactiveplayer
-		"args" => "argMyArgumentMethod",
-        "possibleactions" => array( "playCard", "goDown", "discardCard" ),
-        "transitions" => array( "playCard" => 70 , "goDown" => 60, "discardCard" => 35 )
+		"args" => "argPlayerTurn",
+        "possibleactions" => array( "playSeveralCards", "discardCard" ),
+        "transitions" => array( "playSeveralCards" => 70, "discardCard" => 35 )
+        //"possibleactions" => array( "playSeveralCards", "goDown", "discardCard" ),
+        //"transitions" => array( "playSeveralCards" => 70 , "goDown" => 60, "discardCard" => 35 )
     ), 
 	
 //	"buyCard" => 50, "pass" => 33, "playCard" => 35
@@ -110,7 +117,6 @@ $machinestates = array(
         "action" => "stNextPlayer",
         "transitions" => array( "nextPlayer" => 31, "endHand" => 40 )
     ), 
-    
     
     // End of the hand (scoring, etc...)
 	// This state will increment through the types of goals: 2 sets, 1 run 1 set...
@@ -126,11 +132,30 @@ $machinestates = array(
     50 => array(
         "name" => "buyCard",
         "description" => "State 50: Someone has bought the discard.",
-        "type" => "game",
+        "descriptionmyturn" => clienttranslate('State 50b: ${you} bought the discard.'),
+        "type" => "activeplayer",
         "action" => "stBuyCard",
-        "transitions" => array( "" => 33 )
+        "transitions" => array( "" => 35 )
     ),     
 
+    // Someone is going down
+    60 => array(
+        "name" => "goDown",
+        "description" => "State 60: Someone is going down!",
+        "descriptionmyturn" => clienttranslate('State 60b: ${you} are going down.'),
+        "type" => "activeplayer",
+        "action" => "stBuyCard",
+        "transitions" => array( "" => 35 )
+    ),     
+    // Someone is playing a card
+    70 => array(
+        "name" => "playSeveralCards",
+        "description" => "State 70: Someone is playing cards.",
+        "descriptionmyturn" => clienttranslate('State 70b: ${you} are playing cards.'),
+        "type" => "activeplayer",
+		"action" => "stPlayCards",
+        "transitions" => array( "" => 33 )
+    ),     
 /*
     Examples:
     
