@@ -17,6 +17,9 @@
 
 -- Note: The database schema is created from this file when the game starts. If you modify this file,
 --       you have to restart a game to see your changes in database.
+-- gone_down: 0 is no, 1 is yes the player has gone down
+
+ALTER TABLE `player` ADD `gone_down` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
 

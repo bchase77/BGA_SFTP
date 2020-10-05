@@ -82,6 +82,43 @@
             $this->game->discardCard($card_id);
             self::ajaxResponse();
         }
+/*
+		public function playerGoDown()
+		{
+			self::trace("[bmc] ajaxcall for playerGoDown");
+			self::setAjaxMode();
+			$cardGroupA = self::parseNumberList(self::getArg('cardGroupA', AT_numberlist, true));
+			$cardGroupB = self::parseNumberList(self::getArg('cardGroupB', AT_numberlist, true));
+			$cardGroupC = self::parseNumberList(self::getArg('cardGroupC', AT_numberlist, true));
+			self::dump("[bmc] A:", $cardGroupA);
+			self::dump("[bmc] B:", $cardGroupB);
+			self::dump("[bmc] C:", $cardGroupC);
+			$this->game->playerGoDown($cardGroupA, $cardGroupB, $cardGroupC);
+			self::ajaxResponse();
+		}
+*/
+		public function playerGoDown()
+		{
+			self::trace("[bmc] ajaxcall for playerGoDown");
+			self::setAjaxMode();
+			$cardGroupA = self::parseNumberList(self::getArg('cardGroupA', AT_numberlist, true));
+			$cardGroupB = self::parseNumberList(self::getArg('cardGroupB', AT_numberlist, true));
+			$cardGroupC = self::parseNumberList(self::getArg('cardGroupC', AT_numberlist, true));
+			$boardCardId = self::getArg('boardCardId', AT_alphanum, true);
+			$boardArea = self::getArg('boardArea', AT_alphanum, true);
+			$boardPlayer = self::getArg('boardPlayer', AT_alphanum, true);
+			$handItems = self::parseNumberList(self::getArg('handItems', AT_numberlist, true));
+			self::dump("[bmc] A:", $cardGroupA);
+			self::dump("[bmc] B:", $cardGroupB);
+			self::dump("[bmc] C:", $cardGroupC);
+			self::dump("[bmc] BC:", $boardCardId);
+			self::dump("[bmc] BA:", $boardArea);
+			self::dump("[bmc] BP:", $boardPlayer);
+			self::dump("[bmc] HI:", $handItems);
+
+			$this->game->playerGoDown($cardGroupA, $cardGroupB, $cardGroupC, $boardCardId, $boardArea, $boardPlayer, $handItems);
+			self::ajaxResponse();
+		}
 
 		public function playSeveralCards()
 		{
@@ -90,7 +127,6 @@
 			$this->game->playSeveralCards($card_ids);
 			self::ajaxResponse();
 		}
-
 
 /*
         public function playSeveralCards() {
@@ -134,6 +170,19 @@
             self::ajaxResponse();
         }
 
+        public function playCard()
+        {
+            self::setAjaxMode();
+			self::trace("[bmc] ajaxcall for playCard");
+            $card_id = self::getArg("card_id", AT_posint, true);
+			$player_id = self::getArg("player_id", AT_posint, true);
+			$boardArea = self::getArg("boardArea", AT_alphanum, true);
+			$boardPlayer = self::getArg("boardPlayer", AT_alphanum, true);
+            $this->game->playCard($card_id, $player_id, $boardArea, $boardPlayer); 
+            self::ajaxResponse();
+        }
+
+/*
         public function drawDiscard()
         {
             self::setAjaxMode();
@@ -142,6 +191,7 @@
             $this->game->drawDiscard();
             self::ajaxResponse();
         }
+*/
     /*
     
     Example:
