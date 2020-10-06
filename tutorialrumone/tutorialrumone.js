@@ -392,6 +392,8 @@ console.log(this.player_id);
 			dojo.connect( $('playerDown_B_' + this.player_id), 'onclick', this, 'onDownAreaClick');
 			dojo.connect( $('playerDown_C_' + this.player_id), 'onclick', this, 'onDownAreaClick');
 			
+//			dojo.connect( this.playerHand, 'onkeypress', this, 'onPlayerHandKeypress' );
+			
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
