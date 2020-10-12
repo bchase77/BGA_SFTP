@@ -20,6 +20,7 @@
 -- gone_down: 0 is no, 1 is yes the player has gone down
 
 ALTER TABLE `player` ADD `gone_down` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `player` ADD `buying` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
 

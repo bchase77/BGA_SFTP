@@ -77,55 +77,52 @@ $machinestates = array(
         "type" => "game", // game
         "action" => "stNewHand", // ACTION: Do this upon entering the state
         "updateGameProgression" => true,   
-        "transitions" => array( "" => 31 ) 
+        "transitions" => array( "" => 30 ) 
     ),    
-    
-
-    31 => array(
+    30 => array(
         "name" => "playerTurnDraw",
-		"description" => clienttranslate('State 31a: ${handTarget}. ${actplayer} must draw a card. Others can buy, some day.'),
-		"descriptionmyturn" => clienttranslate('State 31b: ${handTarget}. ${you} must draw a card.'),
-        "type" => "activeplayer", //multipleactiveplayer
-		"args" => "argPlayerTurn", // Set the handtarget and who can play
-        "possibleactions" => array( "drawCard", "drawDiscard" ),
-        "transitions" => array( "" => 32 )
+		"description" => clienttranslate('State 30a: ${handTarget}. AP:${actplayer} must draw from deck or discard pile.'),
+		"descriptionmyturn" => clienttranslate('State 30b: ${handTarget}. ${you} must draw from the deck or the discard pile.'),
+        //"type" => "activeplayer", //multipleactiveplayer
+        "type" => "multipleactiveplayer",
+        "action" => "stShowBUYButtons", // ACTION: Do this upon entering the state
+		"args" => "argPlayerTurnDraw", // Set the handtarget and who can play
+        "possibleactions" => array( "drawCard", "drawDiscard", "buyRequest", "notBuyRequest" ),
+        "transitions" => array( "drawCard" => 55, "drawDiscard" => 33, "buyRequest" => 50, "notBuyRequest" => 53)
 //        "transitions" => array( "drawCard" => 33, "drawDiscard" => 33)
     ), 
-
     32 => array(
         "name" => "checkEmptyDeck",
         "description" => "State 32",
         "type" => "game",
         "action" => "stCheckEmptyDeck", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 33 )
+        "transitions" => array( "drawAndLetPlayerPlay" => 35, "letPlayerDrawAfterBuy" => 57 )
     ), 
-
     33 => array(
-        "name" => "playerTurnPlay",
-//        "description" => clienttranslate('State 33a: ${currentPlayer} must discard, play or go down.'),
-//        "descriptionmyturn" => clienttranslate('State 33b: ${you} must play a card.'),
-//		"description" => clienttranslate('State 33a: ${handTarget}. ${actplayer} must play, discard or go down.'),
-//		"descriptionmyturn" => clienttranslate('State 33b: ${handTarget}. ${you} must play, discard or go down.'),
-		"description" => clienttranslate('State 33a: ${handTarget}. ${actplayer} must ${thingsCanDo}'),
-		"descriptionmyturn" => clienttranslate('State 33b: ${handTarget}. ${you} must ${thingsCanDo}'),
-        "type" => "activeplayer", //multipleactiveplayer
-		"args" => "argPlayerTurn",
-//        "possibleactions" => array( "playSeveralCards", "discardCard" ),
-        "possibleactions" => array( "playerGoDown", "discardCard", 'playCard'),
-        "transitions" => array( "playerGoDown" => 70, "discardCard" => 35, "playCard" => 33 )
-        //"possibleactions" => array( "playSeveralCards", "goDown", "discardCard" ),
-        //"transitions" => array( "playSeveralCards" => 70 , "goDown" => 60, "discardCard" => 35 )
+        "name" => "drawDiscard",
+        "description" => "State 33",
+        "type" => "game",
+        "action" => "stDrawDiscard", // ACTION: Do this upon entering the state
+        "transitions" => array( "" => 35 ) 
     ), 
-	
-//	"buyCard" => 50, "pass" => 33, "playCard" => 35
     35 => array(
+        "name" => "playerTurnPlay",
+//        "description" => clienttranslate('State 35a: ${currentPlayer} must discard, play or go down.'),
+//		"descriptionmyturn" => clienttranslate('State 35b: ${handTarget}. ${you} must play, discard or go down.'),
+		"description" => clienttranslate('State 35a: ${handTarget}. AP: ${actplayer} CP: ${currentPlayer} must ${thingsCanDo}'),
+		"descriptionmyturn" => clienttranslate('State 35b: ${handTarget}. ${you} must ${thingsCanDo}'),
+        "type" => "activeplayer", //multipleactiveplayer
+		"args" => "argPlayerTurnPlay",
+        "possibleactions" => array( "playerGoDown", "discardCard", 'playCard'),
+        "transitions" => array( "playerGoDown" => 70, "discardCard" => 37, "playCard" => 35 )
+    ), 
+    37 => array(
         "name" => "nextPlayer",
-        "description" => "State 35",
+        "description" => "State 37",
         "type" => "game",
         "action" => "stNextPlayer", // ACTION: Do this upon entering the state
-        "transitions" => array( "nextPlayer" => 31, "endHand" => 40 )
+        "transitions" => array( "nextPlayer" => 30, "endHand" => 40 )
     ), 
-    
     // End of the hand (scoring, etc...)
 	// This state will increment through the types of goals: 2 sets, 1 run 1 set...
     40 => array(
@@ -135,17 +132,38 @@ $machinestates = array(
         "action" => "stEndHand", // ACTION: Do this upon entering the state
         "transitions" => array( "newHand" => 20, "endGame" => 99 )
     ),     
-    
-    // Someone wants to buy a discarded card
-    50 => array(
-        "name" => "buyCard",
-        "description" => clienttranslate('State 50: Someone has bought the discard.'),
-        "descriptionmyturn" => clienttranslate('State 50b: ${you} bought the discard.'),
-        "type" => "activeplayer",
-        "action" => "stBuyCard", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 35 )
+    50 => array(    // Someone wants to buy a discarded card
+        "name" => "playerWantsToBuy",
+        "description" => clienttranslate('State 50: Someone wants to buy the discard.'),
+        "descriptionmyturn" => clienttranslate('State 50b: ${you} want to buy the discard.'),
+        "type" => "game",
+        "action" => "stBuyRequest", // ACTION: Do this upon entering the state
+        "transitions" => array( "" => 30 )
+    ),
+    53 => array(    // Someone does not want to buy a discarded card
+        "name" => "playerDoesNotWantToBuy",
+        "description" => clienttranslate('State 53: Someone DOES NOT want to buy the discard.'),
+        "descriptionmyturn" => clienttranslate('State 50b: ${you} DO NOT WANT to buy the discard.'),
+        "type" => "game",
+        "action" => "stNotBuyCard", // ACTION: Do this upon entering the state
+        "transitions" => array( "" => 30 )
     ),     
-
+    55 => array(    // The turn-player is drawing a card from the deck, first check if there's a buyer
+        "name" => "turnPlayerDrawingResolveBuyers",
+        "description" => clienttranslate('State 55: ${actplayer} is drawing from the deck. Resolve buyers first.'),
+        "descriptionmyturn" => clienttranslate('State 55b: ${you} are drawing from the deck. Resolve buyers first.'),
+        "type" => "game",
+        "action" => "stResolveBuyers", // ACTION: Do this upon entering the state
+        "transitions" => array( "" => 32 )
+    ),     
+    57 => array(    // The turn-player is drawing a card from the deck
+        "name" => "turnPlayerDrawFromDeck",
+        "description" => clienttranslate('State 57: ${actplayer} is drawing from the deck.'),
+        "descriptionmyturn" => clienttranslate('State 57b: ${you} are drawing from the deck.'),
+        "type" => "game",
+        "action" => "stDrawDeck", // ACTION: Do this upon entering the state
+        "transitions" => array( "" => 32 )
+    ),     
     // Someone is trying to play a card
      60 => array(
          "name" => "playCard",

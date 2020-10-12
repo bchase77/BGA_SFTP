@@ -44,9 +44,9 @@ Dody Oaks Rummy First Implementation. This is your game interface. You can edit 
 	</div>
 	<div id="downArea">
 		<!-- BEGIN goDownArea -->
-			<div id="playerDown_A_{PLAYER_ID}" class="downWhite">Set 1</div>
-			<div id="playerDown_B_{PLAYER_ID}" class="downWhite">Set 2</div>
-			<div id="playerDown_C_{PLAYER_ID}" class="downWhite">Set 3</div>
+			<div id="playerDown_A_{PLAYER_ID}" class="downWhite"></div>
+			<div id="playerDown_B_{PLAYER_ID}" class="downWhite"></div>
+			<div id="playerDown_C_{PLAYER_ID}" class="downWhite"></div>
 		<!-- END goDownArea -->
 	</div>
 </div>
