@@ -430,7 +430,7 @@ console.log(this.gamedatas);
 				( this.turnPlayer != this.player_id )) {
 				console.log("[bmc] Decided yes, should show BUY button.");
 				this.buyCounterTimerShouldExist = 'Yes'; // A timer and a button should exit
-				this.showBuyButton();
+				this.showBuyButton2();
 //exit(0);
 			}
             console.log( "[bmc] EXIT game setup" );
@@ -540,25 +540,55 @@ console.log(this.gamedatas);
         // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
         //                        action status bar (ie: the HTML links in the status bar).
         //        
+		
+		
+		
+		onUpdateActionButtons : function( stateName, args ) {
+console.log( '[bmc] ENTER onUpdateActionButtons: ' + stateName );
+console.log( args );
+console.log( this.player_id );
+			this.showBuyButton2();
+			
+			if (( this.buyCounterTimerShouldExist == 'Yes' ) && 
+				( this.actionTimerId2 == null )) {
+					
+				var notBuyButtonID = 'buttonPlayerNotBuy' + this.player_id;
+				this.startActionTimer2( notBuyButtonID );
+			}
+		},
+
+		
+/*
 		onUpdateActionButtons : function( stateName, args ) {
 console.log( '[bmc] ENTER onUpdateActionButtons: ' + stateName );
 console.log( args );
 console.log( this.player_id );
 console.log( this.gamedatas.gamestate.active_player );
 console.log( this.gamedatas.gamestate.activeTurnPlayer_id );
-console.log( '[bmc] EXIT onUpdateActionButtons: ' + stateName );
-			if ( args == null ) {
-				return;
-			}
+
+			// Show the buy buttons if appropriate on every call
+			// Every call here deletes the buttons, so they need to
+			// Be rebuilt every time. There must be a better way...
+			this.showBuyButton2();
+
+			// if ( args == null ) {
+// console.log( '[bmc] args == null' );
+				// return;
+			// }
 			
-			if ( args.buyers == null ) {
-				return;
-			}
-			if ( args.buyers[ this.player_id ] == 0 ) {
-				this.showBuyButton();
-			}
+			// if ( args.buyers == null ) {
+// console.log( '[bmc] args.buyers == null' );
+				// return;
+			// }
+			// if ( args.buyers[ this.player_id ] == 0 ) {
+// console.log( '[bmc] args.buyers [ this.player_id ] == 0' );
+				// this.showBuyButton();
+			// }
+
+console.log( '[bmc] EXIT onUpdateActionButtons: ' + stateName );
 //exit(0);
 		},
+End older version of OnUPdateActionButtons*/
 /*
         onUpdateActionButtonsORIGINAL : function( stateName, args ) {
 console.log( '[bmc] ENTER onUpdateActionButtons: ' + stateName );
@@ -603,7 +633,8 @@ console.log( '[bmc] EXIT onUpdateActionButtons: ' + stateName );
 /////////
 		onPlayerBuyButton : function() {
 console.log("[bmc] ENTER onPlayerBuyButton");
-			this.removeActionButtons();
+			this.clearButtons();
+			this.stopActionTimer2();
 			var action = 'buyRequest';
 			this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
 					player_id : this.player_id,
@@ -618,8 +649,8 @@ console.log("[bmc] ENTER onPlayerBuyButton");
 /////////
 		onPlayerNotBuyButton : function() {
 console.log("[bmc] ENTER onPlayerNotBuyButton");
-			this.removeActionButtons();
-			this.stopActionTimer();
+			this.clearButtons();
+			this.stopActionTimer2();
 			
 			var action = 'notBuyRequest';
 			this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
@@ -698,7 +729,7 @@ console.log( nextTurnPlayer );
 //            if (player_id != this.player_id) {
 console.log("[bmc] Card played not by me");
 				this.buyCounterTimerShouldExist = 'Yes'; // A timer and a button should exit
-				this.showBuyButton();
+				this.showBuyButton2();
 
             } else if ( this.player_id == player_id ) {
 console.log("[bmc] Card played by me");
@@ -731,6 +762,99 @@ console.log("[bmc] EXIT discardCard");
 /////////
 /////////
 /////////
+		startActionTimer2: function ( buttonId ) {
+			// MUST CALL THIS ONLY AFTER THE BUTTONS ARE CREATED. IF BUTTONS ARE REMOVED
+			// THEY MUST BE RECREATED.
+console.log( "[bmc] ENTER startActionTimer2" );
+			if( !$(buttonId) ) {
+console.log( "[bmc] buttonID is Null!" );
+				return;
+			}
+			if( this.actionTimerId2 ) { // Don't create a new timer if one already exists.
+console.log( "[bmc] Timer already exists, not need to create.");
+				return;
+			}
+			var isReadOnly = this.isReadOnly();
+//		  if (isDebug || isReadOnly || !this.bRealtime) {
+			if ( isReadOnly ) { // Spectators are read only?
+debug('Ignoring startActionTimer(' + buttonId + ')', 'debug=' + isDebug, 'readOnly=' + isReadOnly, 'realtime=' + this.bRealtime);
+				return;
+			}
+			this.actionTimerLabel = $(buttonId).innerHTML;
+			this.actionTimerSeconds = 8 ; // BUY COUNTDOWN
+console.log( "[bmc] Starting Timer! " + this.actionTimerSeconds );
+
+
+			this.actionTimerFunction2 = () => {
+console.log("[bmc] ENTER actionTimerFunction2.");
+console.log( buttonId );
+console.log( $(buttonId) );
+				var button = $(buttonId);
+console.log( "[bmc] actionTimerFunction2 BUTTONID: ");
+console.log( button );			
+console.log( this.actionTimerId2 );	
+				if ( button == null ) {
+console.log( "[bmc] BUTTON IS GONE!" );
+console.log( this.actionTimerId2 );
+					this.stopActionTimer2();
+					exit(0); // FATAL ERROR, the button should exist
+				} else if ( this.actionTimerSeconds-- > 1 ) {
+debug('Timer ' + buttonId + ' has ' + this.actionTimerSeconds + ' seconds left');
+					button.innerHTML = this.actionTimerLabel + ' (' + this.actionTimerSeconds + ')';
+				} else {
+debug('Timer ' + buttonId + ' execute');
+					button.click();
+console.log("[bmc] Just clicked the button automatically. Now remove timer, buttons and set that they should not exist and don't exist.");
+					this.stopActionTimer2();
+				}
+console.log("[bmc] EXIT actionTimerFunction2.");
+			};
+
+
+console.log("[bmc] Between definition and call.");
+			this.actionTimerFunction2();
+			this.buyCounterTimerExists = 'Yes';			
+			this.actionTimerId2 = window.setInterval( this.actionTimerFunction2, 1000 );
+debug('Timer #' + this.actionTimerId2 + ' ' + buttonId + ' start');
+console.log( "[bmc] EXIT startActionTimer2" );
+		},			
+/////////
+/////////
+/////////
+		stopActionTimer2 : function () {
+console.log( "[bmc] ENTER StopAction Timer2" );
+console.log( this.actionTimerId2 );
+			this.buyCounterTimerExists = 'No';
+			this.buyCounterTimerShouldExist = 'No';
+			this.clearButtons();
+	
+			if ( this.actionTimerId2 != null ) {
+				debug('Timer #' + this.actionTimerId2 + ' stop');
+				window.clearInterval( this.actionTimerId2 );
+				delete this.actionTimerId2;
+			}
+console.log( "[bmc] EXIT StopAction Timer2" );
+		},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		/*
 		 * Add a timer to an action and trigger action when timer is done (from Kingdom Builder)
 		 */
@@ -742,7 +866,7 @@ console.log( buttonId );
 console.log( "[bmc] buttonID is Null!" );
 				return;
 			}
-			
+
 			if( this.actionTimerId ) { // Don't create a new timer if one already exists.
 console.log( "[bmc] Timer already exists, not need to create.");
 				return;
@@ -760,6 +884,9 @@ debug('Ignoring startActionTimer(' + buttonId + ')', 'debug=' + isDebug, 'readOn
 		  
 console.log( "[bmc] Starting Timer! " + this.actionTimerSeconds );
 
+
+
+
 			this.actionTimerFunction = () => {
 console.log("[bmc] ENTER actionTimerFunction. Here is S(buttonId):");
 console.log(buttonId);
@@ -772,10 +899,10 @@ console.log( this.actionTimerId );
 //TODO: Each of the windows is using/seeing the same value for this.actionTimerId. Need to figure out how to separate them.  TODO: TRACE THROUGH THE TIMER CODE AND FIGUER OUT WHY IT'S STOPPING. aLSO SOME IDS ARE SAME SOME NOT.
 				
 				if ( button == null ) {
-console.log( "[bmc] this.stopActionTimer" );
+console.log( "[bmc] NO LONGEER DOING: this.stopActionTimer" );
 console.log( this.actionTimerId );	
 
-					this.stopActionTimer();
+					//this.stopActionTimer();
 					
 				} else if ( this.actionTimerSeconds-- > 1 ) {
 debug('Timer ' + buttonId + ' has ' + this.actionTimerSeconds + ' seconds left');
@@ -789,6 +916,9 @@ debug('Timer ' + buttonId + ' execute');
 				}
 console.log("[bmc] EXIT actionTimerFunction. Here is S(buttonId):");
 			};
+			
+			
+			
 			
 console.log("[bmc] Between definition and call.");
 			this.actionTimerFunction();
@@ -805,6 +935,8 @@ console.log( "[bmc] EXIT startActionTimer" );
 console.log( "[bmc] StopAction Timer! " );
 console.log( this.actionTimerId );
 			this.buyCounterTimerExists = 'No';
+			this.buyCounterTimerShouldExist = 'No';
+			this.clearButons();
 	
 			if ( this.actionTimerId != null ) {
 				debug('Timer #' + this.actionTimerId + ' stop');
@@ -831,6 +963,10 @@ debug('Timer #' + this.actionTimerId + ' stop');
 /////////
 /////////
 /////////
+		
+		
+		
+		
 		
 		
 		
@@ -888,6 +1024,23 @@ debug('Timer #' + this.actionTimerId + ' stop');
                          } );        
         },        
         */
+/////////
+/////////
+/////////
+		showBuyButton2 : function() {
+console.log("[bmc] ENTER showBuyButton2");
+			if (( this.buyCounterTimerShouldExist == 'Yes' ) || 
+				( this.buyCounterTimerExists == 'Yes' )) {
+
+				var buyButtonID = 'buttonPlayerBuy' + this.player_id;
+				var notBuyButtonID = 'buttonPlayerNotBuy' + this.player_id;
+				this.addActionButton( buyButtonID, _("Buy2"), 'onPlayerBuyButton' );
+				this.addActionButton( notBuyButtonID , _("Not Buy2"), 'onPlayerNotBuyButton' );
+console.log("[bmc] Action buttons were just created.");
+
+			}
+console.log("[bmc] EXIT showBuyButton2");
+		},
 /////////
 /////////
 /////////
@@ -1301,11 +1454,12 @@ console.log( "[bmc] ENTER clearButtons" );
 /////////
 /////////
 /////////
-		clearButtonsNotBuy : function () {
+/*		clearButtonsNotBuy : function () {
 console.log( "[bmc] ENTER clearButtonsNotBuy" );
 		    this.removeActionButtons(); // Remove the button because they discarded
 			this.showingButtons === 'No';
 		},
+*/
 /////////
 /////////
 /////////		
@@ -2531,7 +2685,8 @@ console.log("[bmc] EXIT notif_drawcard");
 			console.log(joker);
 			
 //			if (this.gamedatas.currentPlayerId == downPlayer ) {
-			if ( this.gamedatas.playerOrderTrue[ 0 ] == downPlayer ) {
+//			if ( this.gamedatas.playerOrderTrue[ 0 ] == downPlayer ) {
+			if ( this.gamedatas.gamestate.active_player == this.player_id ) {
 				console.log("[bmc] I went down!");
 				// TODO: change the color back to 'normal' if it was in 'prep' color
 				
