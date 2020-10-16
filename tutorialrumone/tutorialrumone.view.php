@@ -80,7 +80,7 @@ $this->handTypes = array( // Hand targets associate with the down areas:
 		//$to_display = getGameStateValue( 'currentHandType' );
 		$htNumber = $this->game->getGameStateValue( 'currentHandType' );
 		
-		self::dump("[bmc] handTypes:", $this->handTypes);
+		//self::dump("[bmc] handTypes(view83):", $this->handTypes);
 		
 		$handTarget = $this->handTypes[$htNumber]["Target"];
 		

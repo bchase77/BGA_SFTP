@@ -78,8 +78,9 @@
         {
 			self::trace("[bmc] ajaxcall for discardCard");
             self::setAjaxMode();
+			$player_id = self::getArg("player_id", AT_posint, true);
             $card_id = self::getArg("id", AT_posint, true);
-            $this->game->discardCard($card_id);
+            $this->game->discardCard( $card_id, $player_id );
             self::ajaxResponse();
         }
 /*
@@ -164,7 +165,7 @@
         {
             self::setAjaxMode();
 			self::trace("[bmc] ajaxcall for buyRequest");
-			$player_id = self::getArg("player_id", AT_posint, true);
+			$player_id = self::getArg( "player_id", AT_posint, true );
             $this->game->buyRequest( $player_id ); 
             self::ajaxResponse();
         }
@@ -183,8 +184,9 @@
             self::setAjaxMode();
 			self::trace("[bmc] ajaxcall for drawCard");
             $card_id = self::getArg("id", AT_posint, true);
+			$player_id = self::getArg("player_id", AT_posint, true);
 			$drawSource = self::getArg("drawSource", AT_posint, true); // 0 == 'deck', 1 == 'discardPile'
-            $this->game->drawCard($card_id, $drawSource); 
+            $this->game->drawCard( $card_id, $drawSource, $player_id );
             self::ajaxResponse();
         }
 
