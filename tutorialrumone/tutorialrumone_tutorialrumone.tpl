@@ -63,66 +63,14 @@ Dody Oaks Rummy First Implementation. This is your game interface. You can edit 
 
 <script type="text/javascript">
 
-/*
-<div id="downArea_wrap">
-<div id="downArea1" class="downLeft">
-	<h3>Down Area1</h3>
-	</div>
-<div id="downArea2" class="downMiddle">
-	<h3>Down Area2</h3>
-	</div>
-<div id="downArea3" class="downRight">
-	<h3>Down Area3</h3>
-	</div>
-
-<div id="downArea1" class="downLeft">
-	<h3>Down Area1</h3>
-	</div>
-<div id="downArea2" class="downMiddle">
-	<h3>Down Area2</h3>
-	</div>
-<div id="downArea3" class="downRight">
-	<h3>Down Area3</h3>
-	</div>
-
-</div>
-*/
-/*
-<div id="boxes">
-	<div id = "leftbox">
-		<h3>Draw Deck</h3>
-		<div id="deck">
-		</div>
-	</div>
-	<div id = "rightbox">
-		<h3>Discard Pile</h3>
-		<div id="discardPile">
-		</div>
-	</div>
-</div>
-
-
-<div id="downArea_wrap" class="whiteblock downArea">
-	<div id="downArea">
-	</div>
-</div>
-
-<div id="downArea_wrap2" class="whiteblock downArea">
-	<h3>Down Area2</h3>
-	<div id="downArea2">
-	</div>
-</div>
-
-<div id="myhand_wrap" class="whiteblock">
-    <h3>My Hand</h3>
-    <div id="myhand">
-    </div>
-</div>
-*/
-
 	/* Javascript HTML templates */
 
 var jstpl_handTarget = '<div id="handTarget"></div>';
+
+
+var jstpl_buys = 
+'<div id="player-status-" class="player-status">
+<span>Buys Left: ${buy_number}/3</span></div>';
 
 
 /* This jstpl_playerPlayButton works but I'm doing the button in the white bar now.
