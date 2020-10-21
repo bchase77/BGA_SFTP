@@ -74,6 +74,14 @@
 */
   	// TODO: defines your action entry points there
 
+		public function playerHasReviewedHand()
+		{
+			self::trace("[bmc] ajaxcall for playerHasReviewedHand");
+            self::setAjaxMode();
+//			$player_id = self::getArg("player_id", AT_posint, true);
+            $this->game->playerHasReviewedHand();
+            self::ajaxResponse();
+		}
         public function discardCard()
         {
 			self::trace("[bmc] ajaxcall for discardCard");
@@ -117,7 +125,7 @@
 			self::dump("[bmc] BP:", $boardPlayer);
 			self::dump("[bmc] HI:", $handItems);
 
-			$this->game->playerGoDown($cardIDGroupA, $cardIDGroupB, $cardIDGroupC, $boardCardId, $boardArea, $boardPlayer, $handItems);
+			$this->game->playerGoDown( $cardIDGroupA, $cardIDGroupB, $cardIDGroupC, $boardCardId, $boardArea, $boardPlayer, $handItems);
 			self::ajaxResponse();
 		}
 

@@ -28,6 +28,13 @@
 <!-- UNCOMMENT THIS TO SHOW TEXT AT THE TOP OF THE SCREEN
 Dody Oaks Rummy First Implementation. This is your game interface. You can edit this HTML in the ".tpl" file.
 -->
+
+<div id="myhand_wrap" class="myhand whiteblock">
+    <h3>My Hand</h3>
+    <div id="myhand" class="">
+    </div>
+</div>
+
 <div id="goDownArea_wrap" class="goDownWrap whiteblock">
 <!--
 	<div>Target hand: {CURRENT_HAND_TYPE}</div>
@@ -51,41 +58,34 @@ Dody Oaks Rummy First Implementation. This is your game interface. You can edit 
 	</div>
 </div>
 
-<div id="myhand_wrap" class="myhand whiteblock">
-    <h3>My Hand</h3>
-    <div id="myhand" class="">
-    </div>
-</div>
-
-
-
-
-
 <script type="text/javascript">
 
 	/* Javascript HTML templates */
-
+/*
 var jstpl_handTarget = '<div id="handTarget"></div>';
+*/
 
+/*
+var jstpl_buys = '<div id="player-status-${player_id}" class="player-status"><span>Buys Left: ${buy_number}/3</span></div>';
+*/
 
-var jstpl_buys = 
-'<div id="player-status-" class="player-status">
-<span>Buys Left: ${buy_number}/3</span></div>';
+/* var jstpl_player_board = '\<div class="player_score">\ */
+var jstpl_player_board = '\<div class="cp_board">\
+    <span id="buycount_p${id}"></span> <img class="rum_buyicon"></img> <span id="handcount_p${id}"></span> <img class="rum_cardicon"></img></div>';
 
-
+/* This works, but trying to show it in 1 line:
+var jstpl_player_board = '\<div class="cp_board">\
+    <div id="stoneicon_p${id}" class="gmk_stoneicon"></div><span id="buycount_p${id}">Buys Left</span></div>';
+*/
 /* This jstpl_playerPlayButton works but I'm doing the button in the white bar now.
 var jstpl_playerPlayButton = '<a href="#" id="currentPlayerPlayButton_id" class="bgabutton bgabutton_blue">\
 <span>Play Card</span></a>';
 */ 
-
-
 /*
 // Example:
 var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_ID}"></div>';
-
 var jstpl_cardontable = '<div class="cardontable" id="cardontable_${player_id}" style="background-position:-${x}px -${y}px">\
                         </div>';
 */
-
 </script>  
 {OVERALL_GAME_FOOTER}

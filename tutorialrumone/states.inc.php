@@ -81,8 +81,10 @@ $machinestates = array(
     ),    
     30 => array(
         "name" => "playerTurnDraw",
-		"description" => clienttranslate('${handTarget}. ${turnPlayerName} must draw from deck or discard pile. Others might buy.[ST30a]'),
-		"descriptionmyturn" => clienttranslate('${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.[ST30b]'),
+		"description" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must draw from deck or discard pile. Others might buy.'),
+		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.'),
+//		"description" => clienttranslate('${handTarget}. ${turnPlayerName} must draw from deck or discard pile. Others might buy.[ST30a]'),
+//		"descriptionmyturn" => clienttranslate('${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.[ST30b]'),
         //"type" => "activeplayer", //multipleactiveplayer
         "type" => "multipleactiveplayer",
         "action" => "stShowBUYButtons", // ACTION: Do this upon entering the state
@@ -108,10 +110,10 @@ $machinestates = array(
     ), 
     35 => array(
         "name" => "playerTurnPlay",
-//        "description" => clienttranslate('State 35a: ${currentPlayer} must discard, play or go down.'),
-//		"descriptionmyturn" => clienttranslate('State 35b: ${handTarget}. ${you} must play, discard or go down.'),
-		"description" => clienttranslate('${handTarget}. ${turnPlayerName} must ${thingsCanDo}[ST35a]'),
-		"descriptionmyturn" => clienttranslate('${handTarget}. ${you} must ${thingsCanDo}[ST35b]'),
+//		"description" => clienttranslate('${handTarget}. ${turnPlayerName} must ${thingsCanDo}[ST35a]'),
+//		"descriptionmyturn" => clienttranslate('${handTarget}. ${you} must ${thingsCanDo}[ST35b]'),
+		"description" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must ${thingsCanDo}'),
+		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${you} must ${thingsCanDo}'),
         "type" => "activeplayer", //multipleactiveplayer
 		"action" => "stPlayerTurnPlay",
 		"args" => "argPlayerTurnPlay",
@@ -125,11 +127,22 @@ $machinestates = array(
         "action" => "stNextPlayer", // ACTION: Do this upon entering the state
         "transitions" => array( "nextPlayer" => 30, "endHand" => 40 )
     ), 
-    // End of the hand (scoring, etc...)
-	// This state will increment through the types of goals: 2 sets, 1 run 1 set...
+    // End of the hand. Let players look at their hand and the board
     40 => array(
+        "name" => "wentOut",
+        "description" => clienttranslate('${player_name} went out!'),
+		"descriptionmyturn" => clienttranslate('${player_name} went out!'),
+        "type" => "multipleactiveplayer",
+        "action" => "stWentOut", // ACTION: Do this upon entering the state
+		"args" => "argWentOut",
+		"possibleactions" => array( "playerHasReviewedHand" ),
+        "transitions" => array( "" => 45 )
+    ),
+	// Update the scoring; Shuffle the cards; 
+	// Increment through the types of goals: 2 sets, 1 run & 1 set, etc...
+    45 => array(
         "name" => "endHand",
-        "description" => "[ST40]",
+        "description" => "[ST45]",
         "type" => "game",
         "action" => "stEndHand", // ACTION: Do this upon entering the state
         "transitions" => array( "newHand" => 20, "endGame" => 99 )
@@ -172,15 +185,15 @@ $machinestates = array(
         "action" => "stResolveBuyers", // ACTION: Do this upon entering the state
         "transitions" => array( "" => 32 )
     ),     
-    57 => array(    // The turn-player is drawing a card from the deck
+*/    57 => array(    // The turn-player is drawing a card from the deck
         "name" => "turnPlayerDrawFromDeck",
         "description" => clienttranslate('State 57: ${actplayer} is drawing from the deck.'),
         "descriptionmyturn" => clienttranslate('State 57b: ${you} are drawing from the deck.'),
         "type" => "game",
         "action" => "stDrawDeck", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 32 )
+        "transitions" => array( "" => 30 )
     ),   
-*/	
+
     // Someone is trying to play a card
      60 => array(
          "name" => "playCard",

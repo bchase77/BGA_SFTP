@@ -137,6 +137,57 @@
 	height: 140px;
 }
 
+.rum_buyicon {
+	width: 20px;
+	height: 24px;
+	display: inline-block;
+    position: relative;
+	object-fit: scale-down;
+    background-repeat: no-repeat;
+    background-image: url( 'img/dollarSign20x24.jpg');
+    background-position: 0px 0px;
+    margin-top: 0px;
+    margin-right: 0px;
+}
+
+.rum_cardicon {
+	width: 20px;
+	height: 24px;
+	display: inline-block;
+    position: relative;
+    background-repeat: no-repeat;
+    background-image: url( 'img/cardback.png');
+    margin-top: 4px;
+    margin-right: 3px;
+}
+
+.gmk_stoneicon {
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+    position: relative;
+    background-repeat: no-repeat;
+    background-image: url( 'img/stone_icons.png');
+    background-position: -28px 0px;
+    margin-top: 4px;
+    margin-right: 3px;
+}
+
+.gmk_stoneicon_000000 {
+	background-position:0px 0px
+}
+
+.gmk_stoneicon_ffffff {
+	background-position:-14px 0px
+}
+
+.cp_board {
+	clear: both;
+}
+
+.player_score {
+	clear: both;
+}
 /*
 #leftbox {
 	float: left;
