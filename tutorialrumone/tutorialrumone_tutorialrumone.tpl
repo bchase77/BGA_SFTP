@@ -24,29 +24,33 @@
     
     Please REMOVE this comment before publishing your game on BGA
 -->
-<div id="play1card" class="tiny"></div>
+<!--<div id="play1card" class="tiny"></div>
+-->
 <!-- UNCOMMENT THIS TO SHOW TEXT AT THE TOP OF THE SCREEN
 Dody Oaks Rummy First Implementation. This is your game interface. You can edit this HTML in the ".tpl" file.
 -->
 
 <div id="myhand_wrap" class="myhand whiteblock">
-    <h3>My Hand</h3>
-    <div id="myhand" class="">
-    </div>
+   <div class="sortbuttons">
+      <h3>My Hand
+         <a href="#" id="SortBySetsId" class="bgabutton bgabutton_gray">Sort By Sets</a>
+         <a href="#" id="SortByRunsId" class="bgabutton bgabutton_gray">Sort By Runs</a>
+      </h3>
+   </div>
+   <span class="myhand"></span>
+   <div id="myhand">
+   </div>
 </div>
 
+
 <div id="goDownArea_wrap" class="goDownWrap whiteblock">
-<!--
-	<div>Target hand: {CURRENT_HAND_TYPE}</div>
--->
 	<div id="boxes">
 		<div id = "leftbox" class="leftbox">
-			<h3>Draw Deck</h3>
+			<h3>Draw Deck (<span id="drawDeckSize"></span>)</h3>
 			<div id="deck"></div>
 		</div>
 		<div id = "rightbox" class="rightbox">
-			<h3>Discard Pile: <span id="discardSize"></span> Card{DISCARDPLURAL}</span>
-</h3>
+			<h3>Discard Pile (<span id="discardSize"></span>)</h3>
 			<div id="discardPile"></div>
 		</div>
 	</div>

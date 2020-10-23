@@ -57,22 +57,27 @@
 */
 }
 
+.sortbuttons {
+	position: Left;
+	width: 60px;
+}
 
 .leftbox {
-	float: left;
-	width: 40%;
+	float: Left;
+	width: 25%;
 	height: 140px;
 }
 .rightbox {
-	float: right;
-	width: 60%;
+	float: Right;
+	width: 45%;
 	height: 140px;
 }
 
 .myhand {
 	float: Left;
-	width: 90%;
-	height: 140px;
+	left: 20px;
+	width: 100px;
+	height: 180px;
 }
 
 .goDownWrap {
@@ -188,6 +193,7 @@
 .player_score {
 	clear: both;
 }
+
 /*
 #leftbox {
 	float: left;

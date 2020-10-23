@@ -520,9 +520,17 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		
 		self::dump("[bmc] Progression:", $currentHandType );
 		self::dump("[bmc] Progression:", count( $this->handTypes ));
-		return $currentHandType / count( $this->handTypes );
+		
+		$ret = 100 * ( floatval( $currentHandType / count( $this->handTypes )));
+		
+		if( $ret < 1 ) {
+            $ret = 1;
+        }
+        if( $ret > 99 ) {
+            $ret = 99;
+        }
 
-//        return 0;
+		return $ret;
     }
 
 
@@ -702,13 +710,15 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			$discardSize = count( $this->cards->countCardsByLocationArgs( 'discardPile' ));
 			self::setGameStateValue( 'discardSize', $discardSize );
 			
-			self::dump('[bmc] discard PLURAL :',  $discardSize );
+//			self::dump('[bmc] discard PLURAL :',  $discardSize );
 
-			if ( $discardSize != 1 ) {
-				$this->tpl['DISCARDPLURAL'] = "s";
-			} else {
-				$this->tpl['DISCARDPLURAL'] = "";
-			}
+			// if ( $discardSize != 1 ) {
+				// self::trace( "[bmc] discardCard in game.php PLURAL TO S");
+				// $this->tpl['DISCARDPLURAL'] = "s";
+			// } else {
+				// self::trace( "[bmc] discardCard in game.php PLURAL TO nothing");
+				// $this->tpl['DISCARDPLURAL'] = "";
+			// }
 			
 			self::dump("[bmc] cardsByLocation(Hand):", $cardsByLocationHand );
 			self::dump("[bmc] cardsByLocation(DP):", $discardSize );
@@ -931,19 +941,23 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			)
 		);
 */
+		$drawDeckSize = count( $this->cards->countCardsByLocationArgs( 'deck' ));
+		
 		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
 
 		$discardSize = count( $this->cards->countCardsByLocationArgs( 'discardPile' ));
 		self::setGameStateValue( 'discardSize', $discardSize );
 		
-		self::dump('[bmc] draw PLURAL :',  $discardSize );
+		// self::dump('[bmc] draw PLURAL :',  $discardSize );
 
-		if ( $discardSize != 1 ) {
-			$this->tpl['DISCARDPLURAL'] = "s";
-		} else {
-			$this->tpl['DISCARDPLURAL'] = "";
-		}
-
+		// if ( $discardSize != 1 ) {
+			// self::trace( "[bmc] drawNotify in game.php PLURAL TO S");
+			// $this->tpl['DISCARDPLURAL'] = "s";
+		// } else {
+			// self::trace( "[bmc] drawNotify in game.php PLURAL TO nothing");
+			// $this->tpl['DISCARDPLURAL'] = "";
+		// }
+			
 		foreach ( $players as $player_id => $player ) {
 //			self::dump('[bmc] player_id :',  $player_id );
 //			self::dump('[bmc] activeTurnPlayer_id :',  $activeTurnPlayer_id );
@@ -965,7 +979,8 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 						'drawSourceText' => $drawSourceText,
 						'drawPlayer' => $drawPlayer,
 						'allHands' => $cardsByLocation,
-						'discardSize' => $discardSize
+						'discardSize' => $discardSize,
+						'drawDeckSize' => $drawDeckSize
 					)
 				);
 			} else {
@@ -985,7 +1000,8 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 						'drawSourceText' => $drawSourceText,
 						'drawPlayer' => $drawPlayer,
 						'allHands' => $cardsByLocation,
-						'discardSize' => $discardSize
+						'discardSize' => $discardSize,
+						'drawDeckSize' => $drawDeckSize
 					)
 				);
 			}
@@ -2167,13 +2183,15 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 
 		self::setGameStateValue( 'discardSize', $discardSize );
 
-		self::dump('[bmc] newhand PLURAL :',  $discardSize );
+		// self::dump('[bmc] newhand PLURAL :',  $discardSize );
 
-		if ( $discardSize != 1 ) {
-			$this->tpl['DISCARDPLURAL'] = "s";
-		} else {
-			$this->tpl['DISCARDPLURAL'] = "";
-		}
+		// if ( $discardSize != 1 ) {
+			// self::trace( "[bmc] stNewHand in game.php PLURAL TO S");
+			// $this->tpl['DISCARDPLURAL'] = "s";
+		// } else {
+			// self::trace( "[bmc] stNewHand in game.php PLURAL TO nothing");
+			// $this->tpl['DISCARDPLURAL'] = "";
+		// }
 
 		if ( $dealer == 0 ) { // If it ever got set to zero, choose the first real number
 			self::setGameStateValue( 'dealer', $playerOrder[ $playerOrder[ $dealer ]]);
@@ -2345,22 +2363,6 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		// 1 == 'discardPile' (buyer gets nothing)
 		// 2 == Other sources (other conditions like playing a card for a joker)
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 		if ( $drawSourceValue == 0 ) {
 			self::trace( "[bmc] TurnPlayer Drawing from deck, so a buy will go through if it exists.");
 			
@@ -2373,19 +2375,17 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 				//Move the cards for the buyer (the turnPlayer will get their cards in drawCard)
 				
 				$card = $this->cards->getCardOnTop( 'discardPile' );
-				//self::dump("bmc] card: ", $card);
+				self::dump("bmc] Card Bought: ", $card);
 				$this->cards->moveCard( $card[ 'id' ], 'hand', $someoneIsBuying );
 
 				$card = $this->cards->getCardOnTop( 'deck' );
-				//self::dump("bmc] card: ", $card);
+				self::dump("bmc] Card from deck: ", $card);
 				$this->cards->moveCard( $card[ 'id' ], 'hand', $someoneIsBuying );
 			
 				//TODO: Notify players buy is happening.
 				
 				$players = self::loadPlayersBasicInfos();
-				//self::dump( "[bmc] players:", $players );
-				
-				//self::dump( "[bmc] colored player name:", $players[ $someoneIsBuying ][ 'player_name' ]);
+				self::dump( "[bmc] players:", $players );
 				
 				self::notifyAllPlayers(
 					'playerBought',

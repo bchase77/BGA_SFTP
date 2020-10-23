@@ -231,6 +231,9 @@ console.log(this.gamedatas);
 			
 			
 			
+			this.drawDeckSize = new ebg.counter();
+			this.drawDeckSize.create( 'drawDeckSize' );
+			this.drawDeckSize.setValue( this.gamedatas.deckIDs.length );
 			
 			
 			
@@ -263,6 +266,7 @@ console.log( thisDiscardPile );
 
 // Keep the pile, just show 1 card
 
+			if ( thisDiscardPile.length != 0 ) {
                var card = thisDiscardPile[ 0 ];
                var color = card.type;
                var value = card.type_arg;
@@ -270,7 +274,7 @@ console.log( "CCV: " + card.id + " / " + color + " / " + value );
 console.log(card);
                this.discardPile.addToStockWithId( this.getCardUniqueId( color, value ), card.id,  );
 console.log( discardPile );
-
+			}
 
 
 
@@ -483,7 +487,7 @@ console.log( topCard );
 					this.downArea_C_[ player ].addToStockWithId( this.getCardUniqueId( color, value ), card_id );
 				}
 			}
-			
+/*			
 			// Add stock for a single card played by a player. Probably can delete this if slow
 			this.play1card = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
             this.play1card.create( this, $('play1card'), this.cardwidth, this.cardheight );            
@@ -491,7 +495,7 @@ console.log( topCard );
 			this.play1card.setOverlap( 0.1, 0 );
 			this.item_margin = 0;
 			this.play1card.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54); // Color 5 Value 3 is red back of the card
-
+*/
 
 			this.goneDown = new Array();
 //			console.log(this.gamedatas);
@@ -2154,7 +2158,8 @@ console.log("[bmc] EXIT sendAction: " + action + " : " );
 			drawSource,
 			drawPlayer,
 			allHands,
-			discardSize
+			discardSize,
+			drawDeckSize
 			) {
 console.log("[bmc] ENTER drawCard2 (from notif from PHP)");
 console.log(this.player_id);
@@ -2180,10 +2185,12 @@ console.log(discardSize);
 			}
 
 			this.discardSize.setValue( discardSize );
+			this.drawDeckSize.setValue( drawDeckSize );
 
 console.log("[bmc] modified drawSource");
 console.log(drawSource);
 console.log(from);
+console.log(this.playerHand)
 
 //			if ( player_id == this.player_id ) {
 			if ( drawingPlayer == this.player_id ) {
@@ -2509,7 +2516,8 @@ console.log( this.player_id );
 				// Slide to it's final destination
 //				this.slideToObject('myhand_item_' + card.id, 'playerDown_A_' + player_id, 1000).play();
 				this.playerHand.removeFromStockById (card.id );
-				this.play1card.removeFromStock( 1 );
+/*				this.play1card.removeFromStock( 1 );
+*/
 			}
 		},
 ////////
@@ -2559,7 +2567,8 @@ console.log( this.player_id );
 				// Slide to it's final destination
 //				this.slideToObject('myhand_item_' + card.id, 'playerDown_A_' + player_id, 1000).play();
 				this.playerHand.removeFromStockById(card.id);
-				this.play1card.removeFromStock(1);
+/*				this.play1card.removeFromStock(1);
+*/
 
 				
 /*
@@ -3036,7 +3045,8 @@ console.log( notif );
 				notif.args.drawSource,
 				notif.args.drawPlayer,
 				notif.args.allHands,
-				notif.args.discardSize
+				notif.args.discardSize,
+				notif.args.drawDeckSize
 			);
 console.log("[bmc] EXIT notif_drawcard");
         },
