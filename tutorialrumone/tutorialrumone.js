@@ -43,6 +43,7 @@ function (dojo, declare) {
 			this.buyCounterTimerShouldExist = 'No';
 			this.buyCounterTimerExists = 'No';
 			this.firstLoad = 'Yes';
+			this.handReviewed = 'No';
 
 			this.setsRuns = [ // Places in the downArea where the cards should go, per hand
 				[ "Area_A", "Area_B", "None",   "None",   "None",   "None"],
@@ -113,8 +114,12 @@ function (dojo, declare) {
 // 10/20: Player 3 went down with a joker and the playerboards show 4 card when player really has 3. F5 didn't fix it.
 // 10/20 Consider adding a database access to PHP (playerHasReviewedHand) to track when players hit the button ON TO THE NEXT.
 // 10/20 After a hand is over, other players should be able to buy the discard.
-
-				
+// 10/21 Played a card onto a run with a joker. The joker came to hand and also
+//       stayed on board (bad). The card did not move from hand to board. But the
+//       game took the action. The PHP worked OK, but the JS player doing the action
+//       did not get updated correctly.
+// 10/21 When the player draws the discard, stop the BUY timers.
+// 10/21 Use setSelectionAppearance to show the DOWN PREP
 
 
 
@@ -208,6 +213,8 @@ console.log(this.gamedatas);
 			// Create stock for the discard pile (could be any card)
             this.discardPile = new ebg.stock(); // new stock object for hand
             this.discardPile.create( this, $('discardPile'), this.cardwidth, this.cardheight );            
+			this.discardPile.order_items = false;
+
             this.discardPile.image_items_per_row = 13; // 13 images per row in the sprite file
             for (var color = 1; color <= 4; color++) {
                 for (var value = 1; value <= 13; value++) {
@@ -219,30 +226,104 @@ console.log(this.gamedatas);
             }
             this.discardPile.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
             this.discardPile.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
-            this.discardPile.setOverlap( 50, 0 );
-
-// NEWHAND MABYE NOT THIS START
-			var discardPileWeights = new Array();
+            this.discardPile.setOverlap( 0.1, 0 );
+		
 			
-            // Show the cards actually in the discard pile
-            for ( var i in this.gamedatas.discardPile) {
-//console.log( "i: " + i);
-                var card = this.gamedatas.discardPile[i];
-                var color = card.type;
-                var value = card.type_arg;
-//console.log( "CCV: " + card.id + " / " + color + " / " + value );
-//console.log(card);
+			
+			
+			
+			
+			
+			
+			
+			// NEW DISCARD PILE HANDLING
+			this.discardSize = new ebg.counter();
+			this.discardSize.create( 'discardSize' );
+			this.discardSize.setValue( this.gamedatas.discardSize );
 
-                this.discardPile.addToStockWithId(this.getCardUniqueId(color, value), card.id);
-//console.log(card.id);
-				let location_arg = parseInt(this.gamedatas.discardPile[i]['location_arg']);
-//console.log('[bmc] location_arg:');
-//console.log(location_arg);
+			thisDiscardPile = new Array();
+			
+			for (let i in this.gamedatas.discardPile ) {
+				
+//				let [ color, value ] = this.getColorValue( this.gamedatas.discardPile[ i ]['type'] );
+				el = {
+					'id' : this.gamedatas.discardPile[ i ][ 'id' ],
+					'unique_id' : this.getCardUniqueId( color, value ),
+					'type' : this.gamedatas.discardPile[ i ][ 'type' ],
+					'type_arg' : this.gamedatas.discardPile[ i ][ 'type_arg' ],
+					'location' : 'discardPile',
+					'location_arg' : this.gamedatas.discardPile[ i ][ 'location_arg' ]
+				}
+				thisDiscardPile[ this.gamedatas.discardPile[ i ][ 'id' ]] = el;
+			}
+				
+			thisDiscardPile.sort( this.compareLocationArg ); // Sort by location_arg, which is weight
+console.log( "thisDiscardPile" );
+console.log( thisDiscardPile );
 
-				discardPileWeights[this.getCardUniqueId(color, value)] = location_arg;
-//console.log(discardPileWeights);
+// Keep the pile, just show 1 card
+
+               var card = thisDiscardPile[ 0 ];
+               var color = card.type;
+               var value = card.type_arg;
+console.log( "CCV: " + card.id + " / " + color + " / " + value );
+console.log(card);
+               this.discardPile.addToStockWithId( this.getCardUniqueId( color, value ), card.id,  );
+console.log( discardPile );
+
+
+
+
+
+
+
+/*
+			let topCard = thisDiscardPile[0];
+console.log( topCard );
+
+            this.discardTop = new ebg.stock(); // new stock object for hand
+
+            for (var color = 1; color <= 4; color++) {
+                for (var value = 1; value <= 13; value++) {
+                    // Build card type id. Only create 52 here, 2 jokers below
+				
+						let card_type_id = this.getCardUniqueId(color, value);
+						this.discardTop.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
+                }
             }
 			
+            this.discardTop.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+            this.discardTop.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+
+
+
+
+
+
+			this.discardTop.addToStockWithId( this.getCardUniqueId( color, value ), topCard.id,  );
+*/
+// NEWHAND MABYE NOT THIS START
+//			var discardPileWeights = new Array();
+            // Show the cards actually in the discard pile
+//            for ( var i in this.gamedatas.discardPile) {
+//console.log( "i: " + i);
+//                var card = this.gamedatas.discardPile[ i ];
+//                var color = card.type;
+//                var value = card.type_arg;
+//console.log( "CCV: " + card.id + " / " + color + " / " + value );
+//console.log(card);
+//                this.discardPile.addToStockWithId( this.getCardUniqueId( color, value ), card.id,  );
+//console.log(card.id);
+//				let location_arg = parseInt( this.gamedatas.discardPile[ i ][ 'location_arg' ]);
+//console.log('[bmc] location_arg:');
+//console.log(location_arg);
+//				discardPileWeights[ this.getCardUniqueId( color, value )] = location_arg;
+//console.log(discardPileWeights);
+ //           }
+
+			// END NEW DISCARD PILE HANDLING
+
+
 			this.buyCount = {};
 			this.handCount = {};
 
@@ -274,13 +355,7 @@ console.log(this.gamedatas);
 				this.handCount[ player_id ].setValue( this.gamedatas.allHands[ player_id ] );
 			}
 
-
-
-
-
-
-
-// NEWHAND MABYE NOT THIS END
+// NEWHAND MAYBE NOT THIS END
 
 //console.log("[bmc] discardPile Before");
 //console.log(this.discardPile);
@@ -288,8 +363,8 @@ console.log(this.gamedatas);
 //console.log("[bmc] discardPileWeights RAW");
 //console.log(discardPileWeights);
 
-			// Set the weights in the discard pile
-			this.discardPile.changeItemsWeight(discardPileWeights);
+			// Set the weights in the discard pile to be the natural order in the sprite
+//			this.discardPile.changeItemsWeight(discardPileWeights);
 
 // NEWHAND END MAYBE???
 //console.log("[bmc] $(discardPile)");
@@ -807,7 +882,7 @@ console.log("[bmc] ENTER onPlayerReviewedHandButton");
 /////////
 /////////
 /////////
-        discardCard : function( player_id, color, value, card_id, nextTurnPlayer, allHands ) {
+        discardCard : function( player_id, color, value, card_id, nextTurnPlayer, allHands, discardSize ) {
 			// Purpose is to show the played cards on the table, not really to play the card.
 			// Playing of the card is done on the server side (PHP).
 console.log( "[bmc] ENTER discardCard" );
@@ -818,25 +893,56 @@ console.log( color );
 console.log( value );
 console.log( card_id );
 console.log( allHands );
+console.log( discardSize );
+console.log( "discardPile and playerhand:" );
+console.log( this.discardPile );
+console.log( this.playerHand );
 
-			let cardUniqueId = this.getCardUniqueId( color, value );
-			let weightChange = {};
-			weightChange[cardUniqueId] = this.discardPile.items.length + 300; // might be > by 1
-console.log( weightChange[cardUniqueId] );
-console.log( weightChange );
-
-			this.discardPile.addToStockWithId( cardUniqueId, card_id, 'overall_player_board_' + player_id );
-
+			// Adjust all hand card-counts because of the discard
 			for ( var p_id in allHands ) {
 				this.handCount[ p_id ].setValue( allHands[ p_id ] );
 			}
 
+			// Set the discard pile size for players to see
+			this.discardSize.setValue( discardSize );
+
+			// Add it to the pile and set the weight
+			let cardUniqueId = this.getCardUniqueId( color, value );
+			this.discardPile.addToStockWithId( cardUniqueId, card_id, 'overall_player_board_' + player_id );
+
+//			let weightChange = {};
+////			weightChange[ card_id ] = this.discardPile.items.length + 300; // might be > by 1
+//			weightChange[ card_id ] = discardWeight;
+//console.log( weightChange[ card_id ] );
+//console.log( weightChange );
+			
+//			var thisDiscardPileIds = this.discardPile.getAllItems();
+//console.log( thisDiscardPileIds );
+
+			// var el = {};
+			// var thisDiscardPile = new Array();
+			// for ( let i in thisDiscardPileIds ) {
+				// var [ color, value ] = this.getColorValue( thisDiscardPileIds[ i ]['type'] );
+				// el = {
+					// 'id' : thisDiscardPileIds[ i ][ 'id' ],
+					// 'unique_id' : this.getCardUniqueId( color, value ),
+					// 'type' : color,
+					// 'type_arg' : value,
+					// 'location' : 'discardPile',
+					// 'location_arg' : this.player_id
+				// }
+				// thisDiscardPile[ thisDiscardPileIds[ i ][ 'id' ]] = el;
+			// }
+			// for ( let i in this.discardPile ) {
+				// weightChange[ thisDiscardPile[ i ].unique_id ] = thisDiscardPileIds[ i ].discardWeight;
+			// }
+// console.log( "weightchange after process:" );
+// console.log(weightChange);
+			// this.discardPile.changeItemsWeight( weightChange );
+
 			// Discarding a card means the turn shifts to the next player
 			this.turnPlayer = player_id;
 
-			// Get the id of the last card in the discard
-			this.discardPile.changeItemsWeight( weightChange );
-				
 console.log( player_id );
 console.log( this.player_id );
 
@@ -887,7 +993,8 @@ console.log(this.firstLoad);
 			}
 
 			// MUST CALL THIS ONLY AFTER THE BUTTONS ARE CREATED. IF BUTTONS ARE REMOVED
-			// THEY MUST BE RECREATED.
+			//   (for example when onUpdateActionButtons is run, which is a lot) THEY 
+			//   MUST BE RECREATED.
 console.log( "[bmc] ENTER startActionTimer2" );
 			if( !$(buttonId) ) {
 console.log( "[bmc] buttonID is Null!" );
@@ -1449,7 +1556,7 @@ console.log(boardArea);
 //				this.downArea_B_[boardPlayer].removeFromStockById(boardCard['id']);
 //				this.playerHand.removeFromStockById(card_id['id']);
 console.log("[bmc] Added.");
-				this.playerHand.removeFromStockById(card_id);
+				this.playerHand.removeFromStockById( card_id );
 console.log("[bmc] Removed.");
 			}
 			if ( boardArea === 'playerDown_C' ) {
@@ -1725,6 +1832,18 @@ console.log("[bmc] EXIT onPlayerSortByButton!");
 				return -1;
 			}
 			if ( parseInt(a.type_arg) > parseInt(b.type_arg) ){
+				return 1;
+			}
+			return 0;
+		},
+/////////
+/////////
+/////////
+		compareLocationArg : function( b, a ) {
+			if ( parseInt(a.location_arg) < parseInt(b.location_arg) ){
+				return -1;
+			}
+			if ( parseInt(a.location_arg) > parseInt(b.location_arg) ){
 				return 1;
 			}
 			return 0;
@@ -2017,6 +2136,145 @@ console.log("[bmc] EXIT sendAction: " + action + " : " );
 /////////
 /////////
 /////////
+
+
+
+
+
+
+
+
+
+
+		drawCard : function (
+			player_id,
+			card_id,
+			color,
+			value,
+			drawSource,
+			drawPlayer,
+			allHands,
+			discardSize
+			) {
+console.log("[bmc] ENTER drawCard2 (from notif from PHP)");
+console.log(this.player_id);
+console.log(player_id);
+console.log(card_id);
+console.log(color);
+console.log(value);
+console.log(drawSource);
+console.log(drawPlayer);
+console.log(allHands);
+console.log(discardSize);
+
+			for ( var p_id in allHands ) {
+				this.handCount[ p_id ].setValue( allHands[ p_id ] );
+			}
+
+			if ( drawSource.match(/playerDown/g) ) {
+				var from = drawSource + '_' + drawPlayer;
+				var drawingPlayer = player_id;
+			} else {
+				var from = drawSource;
+				var drawingPlayer = drawPlayer;
+			}
+
+			this.discardSize.setValue( discardSize );
+
+console.log("[bmc] modified drawSource");
+console.log(drawSource);
+console.log(from);
+
+//			if ( player_id == this.player_id ) {
+			if ( drawingPlayer == this.player_id ) {
+				console.log("[bmc] player_id is me");
+				var addTo = 'myhand';
+
+				let cardUniqueId = this.getCardUniqueId( color, value );
+				
+				this.playerHand.addToStockWithId( cardUniqueId, card_id ); // Add the card to my hand from the board
+				
+				let weightChange = {};
+				weightChange[ cardUniqueId ] = this.playerHand.items.length + 300; // might be > by 1
+console.log(weightChange);
+
+				this.playerHand.changeItemsWeight( weightChange );
+
+			} else {
+				console.log("[bmc] player_id is NOT me");
+//				var addTo = 'overall_player_board_' + player_id;
+				var addTo = 'overall_player_board_' + drawPlayer;
+			}
+				
+console.log( '[bmc] addTo: ' + addTo );
+				
+//			if (( color !== undefined ) &&
+//				( color !== '' )) {
+				
+//				var removeFrom = 'overall_player_board_' + player_id;
+
+				if ( drawSource == 'deck' ) {
+console.log( '[bmc] Deck' );
+					this.deck.removeFromStockById(card_id, addTo );
+				}
+				if ( drawSource == 'discardPile' ) {
+console.log( '[bmc] DP' );
+					this.discardPile.removeFromStockById( card_id, addTo );
+				}
+				if ( drawSource == 'playerDown_A' ) {
+console.log( '[bmc] A' );
+//						this.downArea_A_[ drawPlayerInContext ].removeFromStockById( card_id );
+//					this.downArea_A_[ player_id ].removeFromStockById( card_id, addTo );
+					this.downArea_A_[ drawPlayer ].removeFromStockById( card_id, addTo );
+				}
+				if ( drawSource == 'playerDown_B' ) {
+console.log( '[bmc] B' );
+// EXPERIMENT: Shouldn't remove both, but not sure how to distinquish joker swap while going down
+//					this.downArea_B_[ player_id ].removeFromStockById( card_id, addTo );
+					this.downArea_B_[ drawPlayer ].removeFromStockById( card_id, addTo );
+				}
+				if ( drawSource == 'playerDown_C' ) {
+console.log( '[bmc] C' );
+//						this.downArea_C_[ drawPlayerInContext ].removeFromStockById( card_id );
+//					this.downArea_C_[ player_id ].removeFromStockById( card_id, addTo );
+					this.downArea_C_[ drawPlayer ].removeFromStockById( card_id, addTo );
+				}
+			// } else {
+				// console.log("[bmc] It was a group notify. Move card to the player hand.");
+				
+			// }
+		console.log("[bmc] EXIT drawCard");
+		},
+				
+				
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+
 		drawCard : function (
 			player_id,
 			card_id,
@@ -2042,13 +2300,29 @@ console.log(drawPlayer);
 			}
 
 console.log("[bmc] modified drawSource");
+console.log(drawSource);
 console.log(from);
 
 			for ( var p_id in allHands ) {
 				this.handCount[ p_id ].setValue( allHands[ p_id ] );
 			}
 
-			if ( drawPlayer != this.player_id ) {
+			// If drawing a joker, use the player_id.
+			// If drawing a card, use the drawPlayer.
+			
+			if ( color == 5 ) { // If a joker
+				var drawPlayerInContext = player_id;
+			} else {
+				var drawPlayerInContext = drawPlayer;
+			}
+
+
+// EXPERIMENT:Trying to fix joker draw for all players. When should it be player_id????
+//			var drawPlayerInContext = drawPlayer;
+
+console.log( drawPlayerInContext );
+
+			if ( drawPlayerInContext != this.player_id ) {
 				console.log("[bmc] player_id is not me");
 				if ( drawSource == 'deck' ) {
 					this.deck.removeFromStockById(
@@ -2061,17 +2335,17 @@ console.log(from);
 						'overall_player_board_' + player_id
 					);
 				} else if ( drawSource == 'playerDown_A' ) {
-					this.downArea_A_[ drawPlayer ].removeFromStockById(
+					this.downArea_A_[ drawPlayerInContext ].removeFromStockById(
 						card_id,
 						'overall_player_board_' + player_id
 					);
 				} else if ( drawSource == 'playerDown_B' ) {
-					this.downArea_B_[ drawPlayer ].removeFromStockById(
+					this.downArea_B_[ drawPlayerInContext ].removeFromStockById(
 						card_id,
 						'overall_player_board_' + player_id
 					);
 				} else if ( drawSource == 'playerDown_C' ) {
-					this.downArea_C_[ drawPlayer ].removeFromStockById(
+					this.downArea_C_[ drawPlayerInContext ].removeFromStockById(
 						card_id,
 						'overall_player_board_' + player_id
 					);
@@ -2089,7 +2363,7 @@ console.log("[bmc] Single player notify");
 console.log(cardUniqueId);
 
 //TODO EXPERIMENTING cleaning up the card movements
-					let cardInDOM = drawSource + '_item_' + cardUniqueId; // TODO or card_id?
+					let cardInDOM = drawSource + '_' + drawPlayer + '_item_' + card_id;
 console.log( cardInDOM );
 console.log( $(cardInDOM) );
 
@@ -2097,21 +2371,31 @@ console.log( $(cardInDOM) );
 					this.playerHand.addToStockWithId( cardUniqueId, card_id, from ); // Add the card to my hand from the board
 					
 					let weightChange = {};
-					weightChange[cardUniqueId] = this.playerHand.items.length + 300; // might be > by 1
+					weightChange[ cardUniqueId ] = this.playerHand.items.length + 300; // might be > by 1
 console.log(weightChange);
 
-					this.playerHand.changeItemsWeight(weightChange);
+					this.playerHand.changeItemsWeight( weightChange );
 
 					if ( drawSource == 'discardPile' ) {
+console.log( '[bmc] DP' );
 						this.discardPile.removeFromStockById( card_id );
 					}
 					if ( drawSource == 'playerDown_A' ) {
+console.log( '[bmc] A' );
+//						this.downArea_A_[ drawPlayerInContext ].removeFromStockById( card_id );
+						this.downArea_A_[ player_id ].removeFromStockById( card_id );
 						this.downArea_A_[ drawPlayer ].removeFromStockById( card_id );
 					}
 					if ( drawSource == 'playerDown_B' ) {
+console.log( '[bmc] B' );
+// EXPERIMENT: Shouldn't remove both, but not sure how to distinquish joker swap while going down
+						this.downArea_B_[ player_id ].removeFromStockById( card_id );
 						this.downArea_B_[ drawPlayer ].removeFromStockById( card_id );
 					}
 					if ( drawSource == 'playerDown_C' ) {
+console.log( '[bmc] C' );
+//						this.downArea_C_[ drawPlayerInContext ].removeFromStockById( card_id );
+						this.downArea_C_[ player_id ].removeFromStockById( card_id );
 						this.downArea_C_[ drawPlayer ].removeFromStockById( card_id );
 					}
 /* EXPERIMENT: This might be the cause of the duplicate card images during draw
@@ -2120,20 +2404,45 @@ console.log(weightChange);
 					} else if ( drawSource == 'discardPile' ) {
 						this.discardPile.removeFromStockById(card_id, 'myhand');
 					} else if ( drawSource == 'playerDown_A' ) {
-						this.downArea_A_[drawPlayer].removeFromStockById(card_id, 'myhand');
+						this.downArea_A_[drawPlayerInContext].removeFromStockById(card_id, 'myhand');
 					} else if ( drawSource == 'playerDown_B' ) {
-						this.downArea_B_[drawPlayer].removeFromStockById(card_id, 'myhand');
+						this.downArea_B_[drawPlayerInContext].removeFromStockById(card_id, 'myhand');
 					} else if ( drawSource == 'playerDown_C' ) {
-						this.downArea_C_[drawPlayer].removeFromStockById(card_id, 'myhand');
+						this.downArea_C_[drawPlayerInContext].removeFromStockById(card_id, 'myhand');
 					}
 */					
-					
+/*					
 				} else {
 					console.log("[bmc] It was a group notify");
 				}
 			}
 		console.log("[bmc] EXIT drawCard");
 		},
+		
+*/
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 /////////
 /////////
 /////////
@@ -2568,6 +2877,18 @@ console.log( "[bmc] EXIT notifications subscriptions setup" );
 			// If someone went out, remove the BUY buttons, kill the timers and let them review.
 			this.stopActionTimer2();
 			this.clearButtons();
+			
+			// If someone clicked their button 'On To The Next' just ignore it
+			// and replace the button. The state machine will continue after ALL have clicked.
+			// if ( notif.type == 'wentOut' ) {
+				// if (( notif.args.ackPlayer == this.player_id ) &&
+				    // ( this.handReviewed == 'No' )) {
+					
+					// this.handReviewed = 'Yes';
+				// }
+				// return;
+			// }
+
 			this.showReviewButton( notif.args.player_id );
 		},
 /////////
@@ -2577,9 +2898,11 @@ console.log( "[bmc] EXIT notifications subscriptions setup" );
 console.log("[bmc] ENTER notif_newHand");
 console.log(notif);
 			
-			// At the start of each hand give every time to see the first discard
+			// At the start of each hand give everyone time to see the first discard
+			// And clear the knowledge that they've reviewed the past hand.
 			this.firstLoad = 'Yes';
-
+			this.handReviewed = 'No';
+			
             // We received a new full hand of cards. Clear the table.
             this.playerHand.removeAll();
 			this.discardPile.removeAll();
@@ -2622,6 +2945,9 @@ console.log(this.playerHand);
 			this.discardPile.changeItemsWeight(discardPileWeights);
 console.log("[bmc] this.discardPile");			
 console.log(this.discardPile);
+
+			// Set to show the count of cards in the discard pile
+			this.discardSize.setValue( this.discardPile.items.length );
 
 			// Set up the draw deck
 			for ( let i = 0 ; i < notif.args.deck.length; i++ ) {
@@ -2683,7 +3009,8 @@ console.log( notif );
 				notif.args.value,
 				notif.args.card_id,
 				notif.args.nextTurnPlayer,
-				notif.args.allHands
+				notif.args.allHands,
+				notif.args.discardSize
 			);
 console.log("[bmc] EXIT notif_discardCard");
 		},
@@ -2692,13 +3019,15 @@ console.log("[bmc] EXIT notif_discardCard");
 /////////
         notif_drawCard : function( notif ) {
 console.log("[bmc] ENTER notif_drawcard");
-console.log(notif);
-//			if ( this.gamedatas.playerOrderTrue[ 0 ] == this.player_id ) {
-//			if ( this.gamedatas.activeTurnPlayer_id == this.player_id ) {
-			if ( this.gamedatas.gamestate.active_player == notif.player_id ) {
+console.log( notif );
+
+			// If we drew or someone else drew the discard, then stop any timers.
+			if (( this.gamedatas.gamestate.active_player == notif.player_id ) ||
+				( notif.args.drawSource == 'discardPile' )) {
+				this.clearButtons();
 				this.stopActionTimer2();
 			}
-            // Draw a card from the deck
+            // Draw a card from the deck, discard pile or the board (i.e. joker replace)
             this.drawCard(
 				notif.args.player_id,
 				notif.args.card_id,
@@ -2706,7 +3035,8 @@ console.log(notif);
 				notif.args.value,
 				notif.args.drawSource,
 				notif.args.drawPlayer,
-				notif.args.allHands
+				notif.args.allHands,
+				notif.args.discardSize
 			);
 console.log("[bmc] EXIT notif_drawcard");
         },

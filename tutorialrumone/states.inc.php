@@ -81,8 +81,8 @@ $machinestates = array(
     ),    
     30 => array(
         "name" => "playerTurnDraw",
-		"description" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must draw from deck or discard pile. Others might buy.'),
-		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.'),
+		"description" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must draw from deck or discard pile. Others might buy.  <st30a>'),
+		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.  <st30b>'),
 //		"description" => clienttranslate('${handTarget}. ${turnPlayerName} must draw from deck or discard pile. Others might buy.[ST30a]'),
 //		"descriptionmyturn" => clienttranslate('${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.[ST30b]'),
         //"type" => "activeplayer", //multipleactiveplayer
@@ -112,8 +112,8 @@ $machinestates = array(
         "name" => "playerTurnPlay",
 //		"description" => clienttranslate('${handTarget}. ${turnPlayerName} must ${thingsCanDo}[ST35a]'),
 //		"descriptionmyturn" => clienttranslate('${handTarget}. ${you} must ${thingsCanDo}[ST35b]'),
-		"description" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must ${thingsCanDo}'),
-		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${you} must ${thingsCanDo}'),
+		"description" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must ${thingsCanDo}  <st35a>'),
+		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${you} must ${thingsCanDo}  <st35b>'),
         "type" => "activeplayer", //multipleactiveplayer
 		"action" => "stPlayerTurnPlay",
 		"args" => "argPlayerTurnPlay",
@@ -149,8 +149,8 @@ $machinestates = array(
     ),
     50 => array(    // Resolve the potential buyers of the discard card
         "name" => "resolveBuyers",
-        "description" => clienttranslate('Resolve discard buyers.[ST50a]'),
-        "descriptionmyturn" => clienttranslate('Resolve discard buyers.[ST50b]'),
+        "description" => clienttranslate('Resolve discard buyers. <st50a>'),
+        "descriptionmyturn" => clienttranslate('Resolve discard buyers.  <st50b>'),
         "type" => "game",
         "action" => "stResolveBuyers", // ACTION: Do this upon entering the state
         "transitions" => array( "checkEmptyDeck" => 32, "drawDiscard" => 33, "other" => 35 )

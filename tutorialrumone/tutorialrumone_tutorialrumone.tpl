@@ -45,7 +45,8 @@ Dody Oaks Rummy First Implementation. This is your game interface. You can edit 
 			<div id="deck"></div>
 		</div>
 		<div id = "rightbox" class="rightbox">
-			<h3>Discard Pile</h3>
+			<h3>Discard Pile: <span id="discardSize"></span> Card{DISCARDPLURAL}</span>
+</h3>
 			<div id="discardPile"></div>
 		</div>
 	</div>

@@ -88,7 +88,16 @@ $this->handTypes = array( // Hand targets associate with the down areas:
 		self::dump("[bmc] this->handtypes[]:", $this->handTypes[$htNumber]["Target"]);
 		
         $this->tpl['CURRENT_HAND_TYPE'] = " " . $handTarget;
-			
+
+		$discardSize = $this->game->getGameStateValue( 'discardSize' );
+		self::dump( "[bmc] (View) PLURAL:", $discardSize );
+		
+		if ( $discardSize != 1 ) {
+			$this->tpl['DISCARDPLURAL'] = "s";
+		} else {
+			$this->tpl['DISCARDPLURAL'] = "";
+		}
+
 		$template = self::getGameName() . "_" . self::getGameName();
         
 		$area_A_target = $this->game->getGameStateValue( 'area_A_target' );
