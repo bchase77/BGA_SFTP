@@ -58,13 +58,13 @@
 }
 
 .sortbuttons {
-	position: Left;
-	width: 60px;
+	float: Left;
+	width: 740px;
 }
 
 .leftbox {
 	float: Left;
-	width: 25%;
+	width: 55%;
 	height: 140px;
 }
 .rightbox {
@@ -74,9 +74,9 @@
 }
 
 .myhand {
-	float: Left;
-	left: 20px;
-	width: 100px;
+	position: Left;
+	left: 2px;
+	width: 740px;
 	height: 180px;
 }
 
@@ -107,7 +107,12 @@
 	padding: 2px;
 	text-align: center;
 	color: white;
+}
 
+.border1 {
+  border-style: solid;
+  border-color: red;
+  background: Orange;
 }
 
 .downPrep{
@@ -125,18 +130,21 @@
 
 .downLeft {
 	float: Left;
+	position:relative;
 	background: Orange;
 	width: 33%;
 	height: 140px;
 }
 .downMiddle {
 	float: Left;
+	position:relative;
 	background: Gray;
 	width: 34%;
 	height: 140px;
 }
 .downRight {
 	float: Left;
+	position:relative;
 	background: Teal;
 	width: 33%;
 	height: 140px;

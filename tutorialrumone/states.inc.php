@@ -81,8 +81,8 @@ $machinestates = array(
     ),    
     30 => array(
         "name" => "playerTurnDraw",
-		"description" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must draw from deck or discard pile. Others might buy.  <st30a>'),
-		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.  <st30b>'),
+		"description" => clienttranslate('Target: ${handTarget}. ${buyMessage}${turnPlayerName} must draw from deck or discard pile. Others might buy.  (st30a)'),
+		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.  (st30b)'),
 //		"description" => clienttranslate('${handTarget}. ${turnPlayerName} must draw from deck or discard pile. Others might buy.[ST30a]'),
 //		"descriptionmyturn" => clienttranslate('${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.[ST30b]'),
         //"type" => "activeplayer", //multipleactiveplayer
@@ -112,8 +112,8 @@ $machinestates = array(
         "name" => "playerTurnPlay",
 //		"description" => clienttranslate('${handTarget}. ${turnPlayerName} must ${thingsCanDo}[ST35a]'),
 //		"descriptionmyturn" => clienttranslate('${handTarget}. ${you} must ${thingsCanDo}[ST35b]'),
-		"description" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must ${thingsCanDo}  <st35a>'),
-		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${you} must ${thingsCanDo}  <st35b>'),
+		"description" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must ${thingsCanDo}  (st35a)'),
+		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${you} must ${thingsCanDo}  (st35b)'),
         "type" => "activeplayer", //multipleactiveplayer
 		"action" => "stPlayerTurnPlay",
 		"args" => "argPlayerTurnPlay",
@@ -191,7 +191,7 @@ $machinestates = array(
         "descriptionmyturn" => clienttranslate('State 57b: ${you} are drawing from the deck.'),
         "type" => "game",
         "action" => "stDrawDeck", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 30 )
+        "transitions" => array( "" => 35 )
     ),   
 
     // Someone is trying to play a card

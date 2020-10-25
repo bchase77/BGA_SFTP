@@ -125,7 +125,13 @@ $gameinfos = array(
 //    totranslate("This wonderful game is about geometric shapes!"),
 //    totranslate("It was awarded best triangle game of the year in 2005 and nominated for the Spiel des Jahres."),
 //    ...
-totranslate("This is my first implementation of a rummy game on BGA!")
+totranslate("Cozy Oaks Rummy is prototype of an adaptation of our family's"),
+totranslate("version of Liverpool Rummy. The game is divided into 7 hands which are"),
+totranslate("progressively harder to complete. Players are dealt cards and can"),
+totranslate("'buy' up to 3 discard cards during other player's turns. When a player"),
+totranslate("has the target ready in their hand (e.g. 2 runs and 1 set), they 'go"),
+totranslate("down' and place those cards face up on the table. They can then play"),
+totranslate("on other down cards, attempting to get rid of all their cards.")
 ),
 
 // Games categories
@@ -135,7 +141,7 @@ totranslate("This is my first implementation of a rummy game on BGA!")
 //  http://en.doc.boardgamearena.com/Game_meta-information:_gameinfos.inc.php
 //  IMPORTANT: this list should be ORDERED, with the most important tag first.
 //  IMPORTANT: it is mandatory that the FIRST tag is 1, 2, 3 and 4 (= game category)
-'tags' => array( 2 ),
+'tags' => array( 2, 12, 22, 200 ),
 
 
 //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)
