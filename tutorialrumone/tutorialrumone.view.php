@@ -58,13 +58,13 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 );
 */
 $this->handTypes = array( // Hand targets associate with the down areas:
-  0 => array( "Target" => "m2 Sets",           "QtySets" => 2, "QtyRuns" => 0, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Empty" ),
-  1 => array( "Target" => "m1 Set and 1 Run",  "QtySets" => 1, "QtyRuns" => 1, "Area_A" => "Set", "Area_B" => "Run", "Area_C" => "Empty" ),
-  2 => array( "Target" => "m2 Runs",           "QtySets" => 0, "QtyRuns" => 2, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Empty" ),
-  3 => array( "Target" => "m3 Sets",           "QtySets" => 3, "QtyRuns" => 0, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Set" ),
-  4 => array( "Target" => "m2 Sets and 1 Run", "QtySets" => 2, "QtyRuns" => 1, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Run" ),
-  5 => array( "Target" => "m1 Set and 2 Runs", "QtySets" => 1, "QtyRuns" => 2, "Area_A" => "Set", "Area_B" => "Run", "Area_C" => "Run" ),
-  6 => array( "Target" => "m3 Runs",           "QtySets" => 0, "QtyRuns" => 3, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Run" )
+  0 => array( "Target" => "2 Sets",           "QtySets" => 2, "QtyRuns" => 0, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Empty" ),
+  1 => array( "Target" => "1 Set and 1 Run",  "QtySets" => 1, "QtyRuns" => 1, "Area_A" => "Set", "Area_B" => "Run", "Area_C" => "Empty" ),
+  2 => array( "Target" => "2 Runs",           "QtySets" => 0, "QtyRuns" => 2, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Empty" ),
+  3 => array( "Target" => "3 Sets",           "QtySets" => 3, "QtyRuns" => 0, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Set" ),
+  4 => array( "Target" => "2 Sets and 1 Run", "QtySets" => 2, "QtyRuns" => 1, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Run" ),
+  5 => array( "Target" => "1 Set and 2 Runs", "QtySets" => 1, "QtyRuns" => 2, "Area_A" => "Set", "Area_B" => "Run", "Area_C" => "Run" ),
+  6 => array( "Target" => "3 Runs",           "QtySets" => 0, "QtyRuns" => 3, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Run" )
 );
 
 		$gameMethods = get_class_methods($this->game);
@@ -84,10 +84,12 @@ $this->handTypes = array( // Hand targets associate with the down areas:
 		
 		$handTarget = $this->handTypes[$htNumber]["Target"];
 		
-		self::dump("[bmc] this->handtypes[]:", $this->handTypes[$htNumber]);
+//		self::dump("[bmc] this->handtypes[]:", $this->handTypes[$htNumber]);
 		self::dump("[bmc] this->handtypes[]:", $this->handTypes[$htNumber]["Target"]);
 		
         $this->tpl['CURRENT_HAND_TYPE'] = " " . $handTarget;
+
+        $this->tpl['HANDTARGET'] = $this->handTypes[ $htNumber ][ 'Target' ];
 
 		// $discardSize = $this->game->getGameStateValue( 'discardSize' );
 		// self::dump( "[bmc] (View) PLURAL:", $discardSize );

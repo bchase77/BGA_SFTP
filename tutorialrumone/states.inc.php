@@ -73,7 +73,7 @@ $machinestates = array(
     /// New hand
     20 => array(
         "name" => "newHand",
-        "description" => clienttranslate('New Hand[ST20]'),
+        "description" => clienttranslate('New Hand <span style:"color:gray">(st20)</span>'),
         "type" => "game", // game
         "action" => "stNewHand", // ACTION: Do this upon entering the state
         "updateGameProgression" => true,   
@@ -81,22 +81,19 @@ $machinestates = array(
     ),    
     30 => array(
         "name" => "playerTurnDraw",
-		"description" => clienttranslate('Target: ${handTarget}. ${buyMessage}${turnPlayerName} must draw from deck or discard pile. Others might buy.  (st30a)'),
-		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.  (st30b)'),
-//		"description" => clienttranslate('${handTarget}. ${turnPlayerName} must draw from deck or discard pile. Others might buy.[ST30a]'),
-//		"descriptionmyturn" => clienttranslate('${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.[ST30b]'),
-        //"type" => "activeplayer", //multipleactiveplayer
+//		"description" => clienttranslate('Target: ${handTarget}. ${buyMessage}${turnPlayerName} must draw from deck or discard pile. Others might buy.  (st30a)'),
+//		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.  (st30b)'),
+		"description" => clienttranslate('${buyMessage}${turnPlayerName} must draw from deck or discard pile. Others might buy. <span style:"color:gray">(st30a)</span>'),
+		"descriptionmyturn" => clienttranslate('${turnPlayerName} must draw from the deck or the discard pile. Others might buy. <span style:"color:gray">(st30b)</span>'),
         "type" => "multipleactiveplayer",
         "action" => "stShowBUYButtons", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnDraw", // Set the handtarget and who can play
         "possibleactions" => array( "drawCard", "drawDiscard", "buyRequest", "notBuyRequest" ),
         "transitions" => array( "resolveBuyers" => 50 )
-//        "transitions" => array( "drawCard" => 33, "drawDiscard" => 33)
-//        "transitions" => array( "drawCard" => 55, "drawDiscard" => 33, "buyRequest" => 50, "notBuyRequest" => 53)
     ), 
     32 => array(
         "name" => "checkEmptyDeck",
-        "description" => "[ST32]",
+        "description" => '<span style:"color:gray">(st32)</span>',
         "type" => "game",
         "action" => "stCheckEmptyDeck", // ACTION: Do this upon entering the state
         "transitions" => array( "drawAndLetPlayerPlay" => 35, "letPlayerDrawAfterBuy" => 57 )
@@ -110,15 +107,15 @@ $machinestates = array(
     ), 
     35 => array(
         "name" => "playerTurnPlay",
-//		"description" => clienttranslate('${handTarget}. ${turnPlayerName} must ${thingsCanDo}[ST35a]'),
-//		"descriptionmyturn" => clienttranslate('${handTarget}. ${you} must ${thingsCanDo}[ST35b]'),
-		"description" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must ${thingsCanDo}  (st35a)'),
-		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${you} must ${thingsCanDo}  (st35b)'),
+//		"description" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must ${thingsCanDo}  (st35a)'),
+//		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${you} must ${thingsCanDo}  (st35b)'),
+		"description" => clienttranslate('${turnPlayerName} must ${thingsCanDo}  (st35a)'),
+		"descriptionmyturn" => clienttranslate('${you} must ${thingsCanDo}  (st35b)'),
         "type" => "activeplayer", //multipleactiveplayer
 		"action" => "stPlayerTurnPlay",
 		"args" => "argPlayerTurnPlay",
-        "possibleactions" => array( "playerGoDown", "discardCard", 'playCard'),
-        "transitions" => array( "playerGoDown" => 70, "discardCard" => 37, "playCard" => 35 )
+        "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple'),
+        "transitions" => array( "playerGoDown" => 70, "discardCard" => 37, "playCard" => 35, "playCardMultiple" => 35 )
     ), 
     37 => array(
         "name" => "nextPlayer",

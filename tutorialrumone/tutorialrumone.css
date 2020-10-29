@@ -56,12 +56,21 @@
     height: 200px;
 */
 }
-
-.sortbuttons {
+/*.sortbuttons {
 	float: Left;
 	width: 740px;
 }
-
+*/
+.leftboxHandArea {
+	float: Left;
+	width: 100%;
+	height: 140px;
+}
+.rightboxHandArea {
+	float: Left;
+	width: 100%;
+	height: 140px;
+}
 .leftbox {
 	float: Left;
 	width: 55%;
@@ -72,11 +81,22 @@
 	width: 45%;
 	height: 140px;
 }
-
+.myHandWrap {
+	float: Left;
+	margin: 10px;
+	border: 10px;
+	padding: 10px;
+	width: 95%;
+	height: 180px;
+}
 .myhand {
-	position: Left;
-	left: 2px;
-	width: 740px;
+	float: Left;
+/*	left: 2px; */
+/*	width: 740px;*/
+	margin: 10px;
+	border: 10px;
+	padding: 10px;
+	width: 95%;
 	height: 180px;
 }
 
@@ -109,10 +129,20 @@
 	color: white;
 }
 
+.playerText{
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .border1 {
-  border-style: solid;
+/*  border-style: solid;
   border-color: red;
-  background: Orange;
+  border-width: 1px;
+*/
+  border:0;
+  background: coral;
 }
 
 .downPrep{

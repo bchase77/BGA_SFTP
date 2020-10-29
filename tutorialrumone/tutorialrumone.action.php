@@ -211,6 +211,19 @@
             self::ajaxResponse();
         }
 
+        public function playCardMultiple()
+        {
+            self::setAjaxMode();
+			self::trace( "[bmc] ajaxcall for playCardMultiple" );
+			$card_ids = self::parseNumberList(self::getArg('card_ids', AT_numberlist, true));
+			self::dump("[bmc] playCardMultiple:", $card_ids);
+			$player_id = self::getArg( "player_id", AT_posint, true );
+			$boardArea = self::getArg( "boardArea", AT_alphanum, true );
+			$boardPlayer = self::getArg( "boardPlayer", AT_alphanum, true );
+            $this->game->playCardMultiple( $card_ids, $player_id, $boardArea, $boardPlayer ); 
+            self::ajaxResponse();
+        }
+
 /*
         public function drawDiscard()
         {

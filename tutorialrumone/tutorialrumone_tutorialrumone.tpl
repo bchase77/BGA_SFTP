@@ -23,14 +23,23 @@
     See your "view" PHP file to check how to set variables and control blocks
     
     Please REMOVE this comment before publishing your game on BGA
+<div id="myhand_wrap" class="myhand whiteblock">
 -->
 
-<div id="myhand_wrap" class="myhand whiteblock">
+<div id="myhand_wrap" class="myHandWrap whiteblock">
    <div id="topBoxes">
-      <div id="TLeftBox" class="leftbox">
+      <div id="TLeftBox" class="leftboxHandArea">
          <h3>My Hand (<span id="myHandSize"></span>)
-            <a href="#" id="buttonPlayerSortBySet" class="bgabutton bgabutton_gray">Sort By Sets</a>
-            <a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_gray">Sort By Runs</a>
+            <a href="#" id="buttonPlayerSortBySet" class="bgabutton bgabutton_blue">Sort Sets</a>
+            <a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue">Sort Runs</a>
+            <span style="margin-left:15px"></span>
+			<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray"> Buy it! </a>
+            <a href="#" id="buttonNotBuy" class="bgabutton bgabutton_gray">Don't buy</a>
+			<span style="margin-left:15px"></span>
+			<a href="#" id="buttonPrepAreaA" class="bgabutton bgabutton_gray">Prep A</a>
+            <a href="#" id="buttonPrepAreaB" class="bgabutton bgabutton_gray">Prep B</a>
+            <a href="#" id="buttonPrepAreaC" class="bgabutton bgabutton_gray">Prep C</a>
+			<span>Target: <span id="redTarget" style="color:red"></span><span></span></span>
          </h3>
          <div id="myhand" class="myhand"></div>
       </div>
@@ -51,9 +60,9 @@
 	</div>
 	<div id="downArea">
 		<!-- BEGIN goDownArea -->
-			<div id="playerDown_A_{PLAYER_ID}" class="downWhite"></div>
-			<div id="playerDown_B_{PLAYER_ID}" class="downWhite"></div>
-			<div id="playerDown_C_{PLAYER_ID}" class="downWhite"></div>
+			<div id="playerDown_A_{PLAYER_ID}" class="downWhite"><span id=playerText>{PLAYER_NAME}<span></div>
+			<div id="playerDown_B_{PLAYER_ID}" class="downWhite"><span id=playerText>{PLAYER_NAME}<span></div>
+			<div id="playerDown_C_{PLAYER_ID}" class="downWhite"><span id=playerText>{PLAYER_NAME}<span></div>
 		<!-- END goDownArea -->
 	</div>
 </div>

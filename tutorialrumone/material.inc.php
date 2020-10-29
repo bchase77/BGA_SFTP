@@ -48,17 +48,17 @@ $this->values_label = array(
     13 => clienttranslate('King')
 );
 
-$this->handTypes = array( // Hand targets associate with the down areas:
-  0 => array( "Target" => "2 Sets",           "QtySets" => 2, "QtyRuns" => 0, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Empty" ),
-  1 => array( "Target" => "1 Set and 1 Run",  "QtySets" => 1, "QtyRuns" => 1, "Area_A" => "Set", "Area_B" => "Run", "Area_C" => "Empty" ),
-  2 => array( "Target" => "2 Runs",           "QtySets" => 0, "QtyRuns" => 2, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Empty" ),
-  3 => array( "Target" => "3 Sets",           "QtySets" => 3, "QtyRuns" => 0, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Set" ),
-  4 => array( "Target" => "2 Sets and 1 Run", "QtySets" => 2, "QtyRuns" => 1, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Run" ),
-  5 => array( "Target" => "1 Set and 2 Runs", "QtySets" => 1, "QtyRuns" => 2, "Area_A" => "Set", "Area_B" => "Run", "Area_C" => "Run" ),
-  6 => array( "Target" => "3 Runs",           "QtySets" => 0, "QtyRuns" => 3, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Run" )
+$this->handTypesFull = array( // Hand targets associate with the down areas:
+  0 => array( "Target" => "2 Sets; No more no less",           "QtySets" => 2, "QtyRuns" => 0, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Empty" ),
+  1 => array( "Target" => "1 Set and 1 Run; No more no less",  "QtySets" => 1, "QtyRuns" => 1, "Area_A" => "Set", "Area_B" => "Run", "Area_C" => "Empty" ),
+  2 => array( "Target" => "2 Runs; No more no less",           "QtySets" => 0, "QtyRuns" => 2, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Empty" ),
+  3 => array( "Target" => "3 Sets; No more no less",           "QtySets" => 3, "QtyRuns" => 0, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Set" ),
+  4 => array( "Target" => "2 Sets and 1 Run; No more no less", "QtySets" => 2, "QtyRuns" => 1, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Run" ),
+  5 => array( "Target" => "1 Set and 2 Runs; No more no less", "QtySets" => 1, "QtyRuns" => 2, "Area_A" => "Set", "Area_B" => "Run", "Area_C" => "Run" ),
+  6 => array( "Target" => "3 Runs; No more no less",           "QtySets" => 0, "QtyRuns" => 3, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Run" )
 );
 
-$this->setsRuns = array ( // Places in the downArea where the cards should go, per hand
+$this->setsRunsFull = array ( // Places in the downArea where the cards should go, per hand
  0 => array( "Area_A", "Area_B", "None",   "None",   "None",   "None" ),
  1 => array( "Area_A", "None",   "None",   "Area_B", "None",   "None" ),
  2 => array( "None",   "None",   "None",   "Area_A", "Area_B", "None" ),
@@ -68,8 +68,29 @@ $this->setsRuns = array ( // Places in the downArea where the cards should go, p
  6 => array( "None",   "None",   "None",   "Area_A", "Area_B", "Area_C" )
 );
 
+$this->handTypesShort = array( // Hand targets associate with the down areas:
+  0 => array( "Target" => "2 Sets; No more no less",           "QtySets" => 2, "QtyRuns" => 0, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Empty" ),
+  2 => array( "Target" => "2 Runs; No more no less",           "QtySets" => 0, "QtyRuns" => 2, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Empty" ),
+  4 => array( "Target" => "2 Sets and 1 Run; No more no less", "QtySets" => 2, "QtyRuns" => 1, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Run" ),
+  6 => array( "Target" => "3 Runs; No more no less",           "QtySets" => 0, "QtyRuns" => 3, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Run" )
+);
 
+$this->setsRunsShort = array ( // Places in the downArea where the cards should go, per hand
+ 0 => array( "Area_A", "Area_B", "None",   "None",   "None",   "None" ),
+ 2 => array( "None",   "None",   "None",   "Area_A", "Area_B", "None" ),
+ 4 => array( "Area_A", "Area_B", "None",   "Area_C", "None",   "None" ),
+ 6 => array( "None",   "None",   "None",   "Area_A", "Area_B", "Area_C" )
+);
 
+$gameLengthOption = $this->getGameStateValue[ 'gameLengthOption' ];
+
+if ( $gameLengthOption == 'Full' ) {
+	$this->setsRuns = $this->handTypesFull;
+	$this->handTypes = $this->handTypesFull;
+} else {
+	$this->setsRuns = $this->handTypesShort;
+	$this->handTypes = $this->handTypesShort;
+}
 
 /*
   0 => array( "m2 Sets", 2, 0),
