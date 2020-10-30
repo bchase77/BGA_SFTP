@@ -67,6 +67,9 @@
 	</div>
 </div>
 
+<audio id="audiosrc_tutorialrumone_wentOutYeah" src="{GAMETHEMEURL}img/tutorialrumone_wentOutYeah.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_o_tutorialrumone_wentOutYeah" src="{GAMETHEMEURL}img/tutorialrumone_wentOutYeah.ogg" preload="none" autobuffer></audio>
+
 <script type="text/javascript">
 
 	/* Javascript HTML templates */

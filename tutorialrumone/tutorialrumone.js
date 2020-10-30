@@ -85,11 +85,15 @@ function (dojo, declare) {
 // 10/24: Something happened where player 2 tried to draw, but it didn't register, and still had only 1 card, then discarded.
 // 10/24: Prep border lit up before anyone went down!
 // 10/24: When a buyer exists, update the action bar to show everyone "player wants to buy."
-// 10/28: Sometimes after discard, clicking discard or somewhere quickly the player's draw is not registered and it goes to PLAY
+// 10/28: Sometimes after discard, clicking discard or somewhere quickly the player's draw is not registered and it goes to PLAY. Seems like if I click DRAW before the DISCARD completes then there is an issue (timing).
 // 10/28: Keep the highlighting on after the turn moves around. Now it turns off, not sure why.
 // 10/28: MAY BE OK (because stuff was prepped): GO DOWN button appears when no cards are selected in hand, should not.
 // 10/28: Change # of cards dealt each hand? and the rules for 3 runs???
 // 10/29: Change allowed run to require sequential values. Now 5668 is an OK run.
+// 10/29: at REVIEW time, not all the blue buttnos appear
+// 10/29: move the sound to a later function, since it says "YEAH" too many times.
+// 10/29: board names don't always show up!
+// 10/29: Play a 4 on a set of 4s in AREA A got RED RUN CARDS MUST ALL BE SAME SUIT. But tried it again and it worked!
 //
 // X 9/28 After player has gone down, when they click their hand do not show PREP buttons. (discard and sort)
 // X 10/28: Add options for fewer hands
@@ -689,6 +693,7 @@ console.log( this.player_id );
 			// If someone clicked their button 'On To The Next' just ignore it
 			// and replace the button. The state machine will continue after ALL have clicked.
 			if ( stateName == 'wentOut' ) {
+				playSound('tutorialrumone_wentOutYeah');
 				this.showReviewButton( args.player_id );
 				return;
 			}
@@ -1802,7 +1807,7 @@ console.log("[bmc] Removed.");
 			console.log("[bmc] ENTER drawCard2nd.");
 			console.log( items );
 			console.log( drawSource );
-			if (items.length > 0) {
+			if (( items.length > 0 ) || ( drawSource == 'discardPile' )) {
 				console.log("[bmc] >0; Sending the card.");
 				
 				var action = 'drawCard';
@@ -2418,14 +2423,16 @@ console.log( this.player_id );
 			if ( this.gamedatas.gamestate.name == 'playerTurnPlay' ) {
 				this.onPlayerDiscardButton();
 				
-			// If the gamestate is draw, then draw the discarded card.
+			// If the gamestate is draw, then draw the top of discard pile (chosen in php).
 			} else if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ) {
-				var card = this.discardPile.getSelectedItems()[ 0 ]; // Only ajax if a card was selected
-console.log(card);
+				//var card = this.discardPile.getSelectedItems()[ 0 ]; // Only ajax if a card was selected
+//console.log(card);
 
 				var items = new Array();
-				items.push( card );
-	//			this.drawCard2nd( items, 1 ); // 0 == 'deck', 1 == 'discardPile'
+				
+				items[0] = {id: "0", type: 0 }; // "Fake" card just used for discarding (i.e. we need to send *something* but
+				// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
+//				items.push( card );
 				this.drawCard2nd( items, 'discardPile' );
 			}
 		},

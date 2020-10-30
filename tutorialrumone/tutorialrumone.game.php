@@ -139,6 +139,18 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		
 		//self::dump("[bmc] handtypes(line138):", $this->handTypes[$currentHandType]);
+
+		//self::setGameStateInitialValue( 'gameLengthOption', 1 );
+
+		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
+
+		if ( $gameLengthOption == 1 ) {
+			$this->setsRuns = $this->setsRunsFull;
+			$this->handTypes = $this->handTypesFull;
+		} else {
+			$this->setsRuns = $this->handTypesShort;
+			$this->handTypes = $this->handTypesShort;
+		}
 		
         self::setGameStateInitialValue( 'area_A_target', $this->handTypes[$currentHandType]["Area_A"]);
         self::setGameStateInitialValue( 'area_B_target', $this->handTypes[$currentHandType]["Area_B"]);
@@ -167,6 +179,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		self::setGameStateInitialValue( 'discardWeightHistory', 300 ); // Start higher than any game will have qty of cards
 
         self::setGameStateInitialValue( 'skipFirstDeal', true );
+
 
         /************ Start the game initialization *****/
 
@@ -288,6 +301,16 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 
 		$playersNumber = self::getPlayersNumber();
 		$result['dbgPlayersNumber'] = $playersNumber ;
+		
+		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
+
+		if ( $gameLengthOption == 1 ) {
+			$this->setsRuns = $this->setsRunsFull;
+			$this->handTypes = $this->handTypesFull;
+		} else {
+			$this->setsRuns = $this->setsRunsShort;
+			$this->handTypes = $this->handTypesShort;
+		}
 		
 		$result['handTypes']["Target"] = $this->handTypes; // Pull the description
 		
@@ -453,6 +476,16 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		
 		$buyMessage = '';
 		
+		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
+
+		if ( $gameLengthOption == 1 ) {
+			$this->setsRuns = $this->setsRunsFull;
+			$this->handTypes = $this->handTypesFull;
+		} else {
+			$this->setsRuns = $this->setsRunsShort;
+			$this->handTypes = $this->handTypesShort;
+		}
+
 		//self::dump("[bmc] currentHandType argPlayerTurnDraw:", $this->handTypes[$currentHandType]["Target"] );
 		//self::dump("[bmc] thingsCanDo:", $thingsCanDo );
 		//self::dump("[bmc] activePlayer(PTD):", $activePlayer );
@@ -522,6 +555,16 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		//self::dump("[bmc] thingsCanDo:", $thingsCanDo );
 		//self::dump("[bmc] activePlayer(PTP):", $activePlayer );
 
+		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
+
+		if ( $gameLengthOption == 1 ) {
+			$this->setsRuns = $this->setsRunsFull;
+			$this->handTypes = $this->handTypesFull;
+		} else {
+			$this->setsRuns = $this->setsRunsShort;
+			$this->handTypes = $this->handTypesShort;
+		}
+
 		$tpn = '<span style="color:#' . $players[ $activeTurnPlayer_id ]["player_color"] . ';">' . $players[ $activeTurnPlayer_id ]["player_name"] . '</span>';
 		
 		self::dump("[bmc] tpn: ", $tpn );
@@ -558,6 +601,16 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		
+		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
+
+		if ( $gameLengthOption == 1 ) {
+			$this->setsRuns = $this->setsRunsFull;
+			$this->handTypes = $this->handTypesFull;
+		} else {
+			$this->setsRuns = $this->setsRunsShort;
+			$this->handTypes = $this->handTypesShort;
+		}
+
 		self::dump("[bmc] Progression:", $currentHandType );
 		self::dump("[bmc] Progression:", count( $this->handTypes ));
 		
@@ -1085,9 +1138,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		self::dump("[bmc] playerGoDown: ", $active_player_id);
 		self::checkAction('playerGoDown');
 
-		$countCardsInPlayerHand = intval($this->cards->countCardsByLocationArgs( 'hand' )[$active_player_id]);
-		self::dump("CCIPH:", $countCardsInPlayerHand);
-		
+		// Add restriction to go down with no more than 1 joker (or not)
 		$cntCardGroupA = count( $cardIDGroupA );
 		$cntCardGroupB = count( $cardIDGroupB );
 		$cntCardGroupC = count( $cardIDGroupC );
@@ -1097,8 +1148,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		self::dump("[bmc] cardIDGroupA:", $cardIDGroupA);
 		self::dump("[bmc] cardIDGroupB:", $cardIDGroupB);
 		self::dump("[bmc] cardIDGroupC:", $cardIDGroupC);
-		
-		
+				
 		$cardGroupA = $this->cards->getCards( $cardIDGroupA );
 		$cardGroupB = $this->cards->getCards( $cardIDGroupB );
 		$cardGroupC = $this->cards->getCards( $cardIDGroupC );
@@ -1114,6 +1164,10 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			return;
 		}
 */		
+		// Make sure there is > 1 card left in hand
+		$countCardsInPlayerHand = intval($this->cards->countCardsByLocationArgs( 'hand' )[$active_player_id]);
+		self::dump("CCIPH:", $countCardsInPlayerHand);
+		
 		$countCardsToPlay = $cntCardGroupA + $cntCardGroupB + $cntCardGroupC;
 		//count($cardGroupA) + count($cardGroupB) + count($cardGroupC);
 		self::dump("CCTP:", $countCardsToPlay);
@@ -1167,8 +1221,17 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			self::dump('[bmc] jokerSwapResult', $jokerSwapResult);
 		
 			// Move the new joker into the deficient area
-			
-			foreach ( $this->setsRuns[$currentHandType] as $idx => $Area ) {
+		
+		
+		
+		// Replacing the code below with new function findDeficientArea.
+		
+		
+
+
+
+/*					
+			foreach ( $this->setsRuns[ $currentHandType ] as $idx => $Area ) {
 	//			echo "$idx = $Area<br>";
 				$cGCount[$idx] = ( $Area != "None") * ( 3 + ($idx > 2 )); // 3 if not 'None' or 4 if Run
 	//			echo "$cGCount[$idx]<br>";
@@ -1201,9 +1264,30 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			}
 			self::dump("[bmc] targetArea:", $targetArea );
 			
+			
+*/
+			
+			
+			
+			
+// Begin new code
+			$targetArea = $this->findDeficientArea( $cardGroupA, $cardGroupB, $cardGroupC );
+			
+			if ( $targetArea == false ) {
+				throw new BgaUserException( self::_('There is no deficient area. Should never happen.') );
+			}
+// End new code			
+			
+			
+			
+			
+			
+			
+			
+			
 			$playerHand = $this->cards->getCardsInLocation( 'hand', $active_player_id );
 			
-			$joker = $this->checkForJoker ($playerHand);
+			$joker = $this->checkForJoker( $playerHand );
 			self::dump("[bmc] Hand Joker:", $joker);
 
 			// Now we know where to put the joker so add it there and finish going down
@@ -1242,10 +1326,48 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 ////////
 ////////
 ////////
-//	function findDeficientArea ( $cardGroupA, $cardGroupB, $cardGroupC, $currentHandType ) {
-//		foreach
-//		return $deficientArea;
-//	}
+	function findDeficientArea ( $cardGroupA, $cardGroupB, $cardGroupC ) {
+		self::dump( "[bmc] FDA CGA: ", count( $cardGroupA ));
+		self::dump( "[bmc] FDA CGB: ", count( $cardGroupB ));
+		self::dump( "[bmc] FDA CGC: ", count( $cardGroupC ));
+
+		if        (( count( $cardGroupA ) == 2 ) ||
+			( $this->isShortRun( $cardGroupA ))) {
+			$targetArea = 'playerDown_A';
+		} else if (( count( $cardGroupB ) == 2 ) ||
+				   ( $this->isShortRun( $cardGroupB ))) {
+			$targetArea = 'playerDown_B';
+		} else if (( count( $cardGroupC ) == 2 ) || 
+				   ( $this->isShortRun( $cardGroupC ))) {
+			$targetArea = 'playerDown_C';
+		} else {
+		return false;
+		}
+		return $targetArea;
+	}
+////////
+////////
+////////
+	function isShortRun( $cardGroup ) {
+		self::dump( "[bmc] isShortRun: ", $cardGroup );
+		$oneValue = 0;
+		
+		// Go through each card; Compare 2 non-jokers. If same value then it's trying to be a set. If different values, then it's trying to be a run.
+		foreach( $cardGroup as $card ) {
+			if( $card['type'] != 5 ) {
+				if ( empty( $oneValue )) {
+					$oneValue = $card[ 'type_arg' ];
+					self::dump( "[bmc] oneValue: ", $oneValue );
+				} else if ( $oneValue == $card[ 'type_arg' ] ) {
+					self::trace("[bmc] isShortRun false");
+					return false;
+				} else {
+					self::trace("[bmc] isShortRun true");
+					return true;
+				}
+			}
+		}
+	}
 ////////
 ////////
 ////////
@@ -1399,10 +1521,6 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		self::setPlayerGoneDown( $active_player_id, 1 /* 0 (not gone down) or 1 (gone down) */ );
 
 	}
-	
-	
-	
-// TODO: While going down, you illegally get a joker for a run card (it gives you the joker back and shouldn't)
 ////////
 ////////
 ////////
@@ -1638,19 +1756,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 	function checkForJoker( $cards ) {
 		self::dump("[bmc] ENTER check for joker in cards: ", $cards);
 
-//XTODO: When player goes down, that player sees a huge red error "illegal string offset"
-//      on the line:
-//          if ( $card['type'] == "5") {
-//		Figure out why. I think when there is no joker, a 'fake' card is put in 
-//          and the format of that fake card is wrong 'type' and all that.
-		
-		
-//		foreach ( $cards as $cardId ) {
 			foreach ( $cards as $card ) {
-//			$card = $this->cards->getCard( $cardId );
-			
-//			TODOBMC
-			
 //			self::dump("[bmc] checkForJoker card:",  $card );
 			//self::dump("[bmc] checkForJoker card type:", $card['type']);
 			if ( $card['type'] == "5") {
@@ -1779,7 +1885,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 				self::trace("[bmc] Found a joker, keep looking for a non-joker.");
 			}
 		}
-		$card = reset($cardsInArea); 
+		$card = reset( $cardsInArea ); 
 		self::dump("[bmc] All Jokers! Returning one of them:", $card);
 		
 		return $card;
@@ -2981,12 +3087,23 @@ buttons too, which is should not have done.
 		// Notify players and wait for them to confirm to move to the next hand		
 		
         // Next hand target
-		$gameLength = self::getGameStateValue( 'gameLengthOption' ); // 1 is full or 2 is short
-		self::dump( "[bmc] gamelength:", $gamelength );
-		self::incGameStateValue( 'currentHandType', $gameLength );
+		$gameLengthOption = self::getGameStateValue( 'gameLengthOption' ); // 1 is full or 2 is short
+		self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
+		self::incGameStateValue( 'currentHandType', $gameLengthOption );
+		$gameLengthOption = self::getGameStateValue( 'gameLengthOption' ); // 1 is full or 2 is short
+		self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
+		
+		if ( $gameLengthOption == 1 ) {
+			$this->setsRuns = $this->setsRunsFull;
+			$this->handTypes = $this->handTypesFull;
+		} else {
+			$this->setsRuns = $this->setsRunsShort;
+			$this->handTypes = $this->handTypesShort;
+		}
+
 		$currentHandType = self::getGameStateValue( 'currentHandType' );
-		$handTarget = $this->handTypes[$currentHandType]["Target"]; // Pull the description
-		self::dump("[bmc] handTarget stEndHand2072:", $handTarget);
+		$handTarget = $this->handTypes[ $currentHandType ][ "Target" ]; // Pull the description
+		self::dump("[bmc] handTarget stEndHand2072:", $handTarget );
 		
 		// Notify players to go to the next target hand
 		

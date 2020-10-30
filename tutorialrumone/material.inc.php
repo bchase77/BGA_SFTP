@@ -82,16 +82,6 @@ $this->setsRunsShort = array ( // Places in the downArea where the cards should 
  6 => array( "None",   "None",   "None",   "Area_A", "Area_B", "Area_C" )
 );
 
-$gameLengthOption = $this->getGameStateValue[ 'gameLengthOption' ];
-
-if ( $gameLengthOption == 'Full' ) {
-	$this->setsRuns = $this->handTypesFull;
-	$this->handTypes = $this->handTypesFull;
-} else {
-	$this->setsRuns = $this->handTypesShort;
-	$this->handTypes = $this->handTypesShort;
-}
-
 /*
   0 => array( "m2 Sets", 2, 0),
   1 => array( "m1 Set and 1 Run", 1, 1),
