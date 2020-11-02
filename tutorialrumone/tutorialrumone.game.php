@@ -129,6 +129,8 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
             $color = array_shift( $default_colors );
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player[ 'player_name' ] )."','".addslashes( $player['player_avatar'] )."')";
 			
+			// No buy timers are running after first load.
+			self::setBuyTimerStatus( $player_id, 0 ); // 0 = Not running. 1 = Running.
         }
         $sql .= implode( $values, ',' );
         self::DbQuery( $sql );
@@ -180,6 +182,8 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 
         self::setGameStateInitialValue( 'skipFirstDeal', true );
 
+		$this->waiting = false; // This keeps the state machine from getting out of sync by requiring
+		// all players to select BUY / NOT BUY before a player discards a 2nd time.
 
         /************ Start the game initialization *****/
 
@@ -321,7 +325,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
         $playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
 		
 		$buyers = self::getPlayerBuying();
-		self::dump("[bmc] gamedatas buyers:", $buyers);
+		//self::dump("[bmc] gamedatas buyers:", $buyers);
 		
 		$buyCount = self::getPlayersBuyCount();
 //		self::dump("[bmc] gamedatas buyCount:", $buyCount);
@@ -466,7 +470,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		//list( $turnPlayerName, $turnPlayerArray ) = $this->getTurnPlayer();
 		
 		$buyers = self::getPlayerBuying();
-		self::dump("[bmc] argPlayerTurnDraw buyers (PTD):", $buyers);
+		//self::dump("[bmc] argPlayerTurnDraw buyers (PTD):", $buyers);
 
 		if ( $playerGoneDown[ $activeTurnPlayer_id ] == 1 ) {
 			$thingsCanDo = 'play or discard!!.';
@@ -543,7 +547,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
 
 		$buyers = self::getPlayerBuying();
-		self::dump("[bmc] argPlayerTurnPlay buyers(PTP):", $buyers);
+		//self::dump("[bmc] argPlayerTurnPlay buyers(PTP):", $buyers);
 
 		if ( $playerGoneDown[ $activeTurnPlayer_id ] == 1 ) {
 			$thingsCanDo = 'play or discard.';
@@ -685,6 +689,24 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 /////
 /////
 /////
+	function setBuyTimerStatus( $player_id, $setTo ) // 0 = Not running, 1 = Running
+	{
+        $sql = "UPDATE player SET buyTimer = $setTo  WHERE player_id = $player_id ";
+        self::DbQuery( $sql );
+	}
+    function getBuyTimerStatus()
+    {
+        $sql = "SELECT player_id, buyTimer FROM player ";
+        return self::getCollectionFromDB($sql, true);
+    }
+    function clearBuyTimers()
+    {
+        $sql = "UPDATE player SET buyTimer = 0 ";
+        self::DbQuery( $sql );
+    }
+/////
+/////
+/////
     function getPlayersBuyCount()
     {
         $sql = "SELECT player_id, buy_count FROM player ";
@@ -774,7 +796,33 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
 		self::dump("[bmc] getActivePlayerName:", self::getActivePlayerName() );
 		
+		// EXP 11/1
 		if ( $activeTurnPlayer_id == $player_id ) { // Allow discard if it's that player's turn
+			// Notifying players potentially buying the previous one that they were too slow!
+			self::notifyAllPlayers(
+				'clearBuyers',
+				clienttranslate(''),
+				array (
+//					'discardWeight' => $discardWeight
+				)
+			);
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 			self::trace( "[bmc] Discarding the card." );
 			
 			//list( $turnPlayerName, $turnPlayerArray ) = $this->getTurnPlayer();
@@ -793,7 +841,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 	
 			$cardsInDp = $this->cards->getCardsInLocation( 'discardPile' );
 			
-			self::dump("[bmc] cardsInDp:", $cardsInDp );
+			//self::dump("[bmc] cardsInDp:", $cardsInDp );
 
 			$nextTurnPlayer = $this->getPlayerAfter( $player_id );
 			
@@ -803,7 +851,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			$discardSize = count( $this->cards->countCardsByLocationArgs( 'discardPile' ));
 			self::setGameStateValue( 'discardSize', $discardSize );
 			
-			self::dump("[bmc] cardsByLocation(Hand):", $cardsByLocationHand );
+			//self::dump("[bmc] cardsByLocation(Hand):", $cardsByLocationHand );
 			self::dump("[bmc] cardsByLocation(DP):", $discardSize );
 
 			$currentCard = $this->cards->getCard( $card_id );
@@ -842,22 +890,47 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 				)
 			);
 			
-			
 			// TODO: 10/13 State is playerTurnPlay here, so setting nonmultieactive is not meanginful??
 			//       I think this setting needs to go in the next game state, which is 37, because
 			//       you can set multiactive stuff only in game states, and this PTP is a ACTIVE state.
 			// Set the discarding player as non active and go to the next state
 			//$this->gamestate->setPlayerNonMultiactive( $player_id, 'discardCard' );
-		}
-		
-		//TODO: This should not be here. It should flow to set all to nonmultiactive, //then go to discard.
-		//Compare to HEARTS code.
-		self::trace( "[bmc] EXIT discardCard (via nextState( 'discardCard')." );
 
-		$this->gamestate->nextState( 'discardCard' );
-		
-		// If not then do nothing because the requesting player cannot discard.
-		// DO NOT PUT ANOTHER NEXT STATE AFTER THE SETPLAYERNONMULTIACTIVE!
+			// TODO: Maybe ensure all buyers are cleared here before moving on?
+			$buyers = self::getPlayerBuying();
+			self::dump("[bmc] Buyers Status(discardCard):", $buyers);
+
+			//TODO: This should not be here. It should flow to set all to nonmultiactive, //then go to discard.
+			self::trace( "[bmc] About to EXIT discardCard (via nextState'discardCard')." );
+
+			$buyTimerStatus = $this->getBuyTimerStatus();
+			self::dump( "[bmc] buyTimerStatus (stPlayerTurnPlay):", $buyTimerStatus );
+			
+/*
+   PROBABLY I don't need this checking. When the player discards, then invalidate any player BUY timers.
+			$openPlayers = 0;
+			
+			foreach ( $buyTimerStatus as $status ) {
+				$openPlayers += $status;
+			}
+			self::dump( "[bmc] openPlayers:", $openPlayers );
+			if ( $openPlayers == 0 ) {
+				$this->gamestate->nextState( 'discardCard' );
+			} else {
+				self::trace("[bmc] Waiting for all timers to time out.");
+				throw new BgaUserException( self::_("Waiting for previous buy decisions to resolve.") );
+			}
+*/
+			// Discarded the card, move on
+			$this->gamestate->nextState( 'discardCard' );
+
+			// Make note that the JS BUY timers have started, but not for the current and next players.
+			$this->setAllBuyTimerStatus( $activeTurnPlayer_id, $nextTurnPlayer );
+
+		} else {
+			throw new BgaUserException( self::_("You cannot discard, it's not your turn.") );
+		}
+		self::trace("[bmc] EXIT discardCard (from JS)");
     }
 ////////
 ////////
@@ -891,7 +964,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
         $this->cards->moveCard( $card_id, 'hand', $player_id );
 
 		$countCardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
-		self::dump("[bmc] CCBL aftermove:", $countCardsByLocation);
+		//self::dump("[bmc] CCBL aftermove:", $countCardsByLocation);
 
         $currentCard = $this->cards->getCard( $card_id );
 		
@@ -918,9 +991,11 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 ////////
 ////////
 	function notifyPlayerIsNotBuying( $player_id ) {
-		self::trace("[bmc] !! notifyPlayerIsNotBuying!!");
+		self::trace("[bmc] ENTER notifyPlayerBuy-NOT");
 		self::dump("[bmc] notifyPlayerIsNotBuying - player_id:",  $player_id);
 		
+		self::setBuyTimerStatus( $player_id, 0 ); // 0 = Not running. 1 = Running.
+
 		$players = self::loadPlayersBasicInfos();
 
 		$buyers = self::getPlayerBuying();
@@ -934,13 +1009,16 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 				'buyers' => $buyers
 			)
 		);
+		self::trace("[bmc] EXIT notifyPlayerBuy-NOT");
 	}
 ////////
 ////////
 ////////
 	function notifyPlayerWantsToBuy( $player_id ) {
-		self::trace("[bmc] !! notifyPlayerWantsToBuy!");
+		self::trace("[bmc] ENTER notifyPlayerBuy-WANT");
 		self::dump("[bmc] player_id:",  $player_id);
+
+		self::setBuyTimerStatus( $player_id, 0 ); // 0 = Not running. 1 = Running.
 
 		$players = self::loadPlayersBasicInfos();
 
@@ -954,7 +1032,6 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			$value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
 			$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
 		}
-		
 		
 //		$buyMessage = $players[ $player_id ][ 'player_name' ] . 
 		$buyMessage = $players[ $player_id ][ 'player_name' ] . 
@@ -987,12 +1064,13 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 				'color_displayed' => $color_displayed
 			)
 		);
+		self::trace("[bmc] EXIT notifyPlayerBuy-WANT");
 	}
 ////////
 ////////
 ////////
     function drawNotify( $currentCard, $playingPlayer_id, $drawSource, $drawPlayer, $activeTurnPlayer_id ) {
-		self::trace("[bmc] !! drawNotify!!");
+		self::trace("[bmc] ENTER drawNotify");
 
 		self::dump("[bmc] currentCard    :",  $currentCard);
 		
@@ -1001,10 +1079,10 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		$players = self::loadPlayersBasicInfos();
 		$activePlayer = $players[ $playingPlayer_id ][ 'player_name' ];
 
-		self::dump("[bmc] card_id          :",  $card_id );
-		self::dump("[bmc] drawSource       :",  $drawSource );
-		self::dump('[bmc] playingPlayer_id :',  $playingPlayer_id );
-		self::dump('[bmc] player_name      :',  $activePlayer );
+//		self::dump("[bmc] card_id          :",  $card_id );
+//		self::dump("[bmc] drawSource       :",  $drawSource );
+//		self::dump('[bmc] playingPlayer_id :',  $playingPlayer_id );
+//		self::dump('[bmc] player_name      :',  $activePlayer );
 //		self::dump('[bmc] card_id          :',  $card_id );
 //		self::dump('[bmc] value            :',  $currentCard ['type_arg'] );
 //		self::dump('[bmc] value_displayed  :',  $this->values_label [$currentCard ['type_arg']] );
@@ -1114,6 +1192,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			}
 		}
 
+		self::trace("[bmc] EXIT (almost) drawNotify");
 		// Next State
 		$state = $this->gamestate->state();
 //		self::dump("[bmc] state:", $state);
@@ -1126,6 +1205,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			return;
 		} else {
 			// Else got card from a true draw (deck or discard), so resolve buyers and whatnot.
+			self::trace("[bmc] MAYBE ERROR AREA IN DRAWNOTIFY");
 			$this->gamestate->nextState( 'resolveBuyers' );
 		}
 	}
@@ -1209,8 +1289,9 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		$joker = array ('id' => 'None'); // Start by assuming no joker being swapped
 		$targetArea = 'None'; // Start by assuming no target area for the going-down-joker
 
-		if (( $key === false ) ||          // Nothing selected on board;
-		    ( empty( $handItems )) ||      // Nothing selected in hand;
+//		if (( $key === false ) ||          // Nothing selected on board;
+		if (( $boardArea == null ) ||          // Nothing selected on board;
+			( empty( $handItems )) ||      // Nothing selected in hand;
 			( $boardCard['type'] < 5  )) { // Board card is not a joker; So no need to do joker swap.
 			
 			self::trace( "[bmc] No Joker Swap Needed." );
@@ -2134,6 +2215,10 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			self::trace("[bmc] Not a Set and Not a Run!");
 				throw new BgaUserException( self::_('Not a Set and Not a Run (shouldnt happen!).'));
 		}
+		// TODO: Maybe ensure all buyers are cleared here before moving on?
+		$buyers = self::getPlayerBuying();
+		self::dump("[bmc] Buyers Status(playCardFinish):", $buyers);
+		self::trace( "[bmc] EXIT playCardFinish" );
 	}
 ////
 ////
@@ -2367,6 +2452,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		
 		self::setGameStateValue( "previous_player_id", 0 ); // After the deal everyone else can buy.
 		
+		self::trace("[bmc] MAYBE ERROR AREA: STNEWHAND NEXTSTATE()");
         $this->gamestate->nextState("");	
     }
 
@@ -2437,10 +2523,12 @@ TODO: Maybe check if there were no more playable cards and show that message.
 ////
 ////
 ////
-    function stPlayCards() {
+/*    function stPlayCards() {
 		self::trace("[bmc] ENTER & EXIT stPlayCards. Likely never fires????");
+		// TODO: Does this ever run???
 		$this->gamestate->nextState('playerTurnPlay');	
 	}
+*/
 ////
 ////
 ////
@@ -2491,17 +2579,18 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		
 		$buyers = self::getPlayerBuying();
 
+		self::dump("[bmc] buyers(stResolveBuyers):", $buyers);
 		self::clearPlayersBuying(); // EXP 10/27
 		
 		foreach( $buyers as $player_id => $buyer ) {
-			self::dump("bmc] player_id: ", $player_id);
-			self::dump("bmc] buyer: ", $buyer);
+			//self::dump("bmc] player_id: ", $player_id);
+			//self::dump("bmc] buyer: ", $buyer);
 			
 			if ( $buyer == 2 ) {
 				$someoneIsBuying = $player_id ;
 			}
 		}
-		self::dump("bmc] someoneIsBuying: ", $someoneIsBuying);
+		self::dump("[bmc] someoneIsBuying: ", $someoneIsBuying);
 
 		// drawSource Sources:
 		// 0 == 'deck' (buyer gets it + 1 down card; Increment buy counter)
@@ -2645,7 +2734,7 @@ TEMPORARY */
 		}
 		
 		$buyers = self::getPlayerBuying();
-		//self::dump("[bmc] Buyers Status(stShowBUYButtons):", $buyers);
+		self::dump("[bmc] Buyers Status(stShowBUYButtons):", $buyers);
 
 		//self::dump("[bmc] Buyers Status Buying (ShowBuyButtons):", $buyers);
 		self::trace( "[bmc] EXIT stShowBUYButtons:" );
@@ -2661,6 +2750,8 @@ TEMPORARY */
 		
 		self::dump("[bmc] activePlayerId:", $activePlayerId );
 		
+		self::setBuyTimerStatus( $player_id, 0 ); // 0 = Not running. 1 = Running.
+
 		//$turnPlayerArray = $this->getNextPlayerTable();
 		//$turnPlayerId = $turnPlayerArray[ 0 ];
 
@@ -2677,6 +2768,9 @@ TEMPORARY */
 		
 			$this->notifyPlayerIsNotBuying( $player_id );
 
+			$buyers = self::getPlayerBuying();
+			self::dump("[bmc] Buyers Status1(notBuyRequest):", $buyers);
+
 			self::trace("[bmc] EXIT (maybe) stNotBuyRequest:" );
 			// deactivate player; if none left, transition to process discard
 			$this->gamestate->setPlayerNonMultiactive( $player_id, 'resolveBuyers' );
@@ -2687,12 +2781,20 @@ TEMPORARY */
 ////
 ////
 ////
+
+
+//TODO: BUYING IS BROKEN!
+
+
+
 	function buyRequest( $player_id ) {
 		self::trace("[bmc] ENTER buyRequest");
 		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
 		// Check if can still buy or if someone else clicked the button
 
 		self::checkAction('buyRequest');
+
+		self::setBuyTimerStatus( $player_id, 0 ); // 0 = Not running. 1 = Running.
 
 		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 
@@ -2709,8 +2811,7 @@ TEMPORARY */
 		}
 		
 		$buyers = self::getPlayerBuying();
-
-		//self::dump("[bmc] Buyers Status1(buyRequest):", $buyers);
+		self::dump("[bmc] Buyers Status1(buyRequest):", $buyers);
 		
 		foreach( $buyers as $buyer ) {
 			if ( $buyer == 2 ) {
@@ -2726,12 +2827,23 @@ TEMPORARY */
 			throw new BgaUserException( self::_("You cannot buy any more this hand(buyRequest).") );
 		}
 		// If it passes through to here (i.e. buy is possible) then log the request.
+		// Tell the database there is a buyer (0==unknown, 1==Not buying 2==Buying)		
+		$players = self::loadPlayersBasicInfos();
+		self::dump("[bmc] players (buyRequest):", $players);
 		
-		self::setPlayerBuying( $player_id, 2 ); // Tell the database there is a buyer (0==unknown, 1==Not buying 2==Buying)
+		foreach ( $players as $pid => $player ) {
+			if ( $player_id == $pid ) {
+				self::dump("[bmc] SET TO 2", $pid );
+				self::setPlayerBuying( $pid, 2 );
+			} else {
+				self::dump("[bmc] SET TO 1", $pid);
+				self::setPlayerBuying( $pid, 1 );
+			}
+		}			
 		
 		$buyers = self::getPlayerBuying();
 
-		//self::dump("[bmc] Buyers Status2(buyRequest):", $buyers);
+		self::dump("[bmc] Buyers Status2(buyRequest):", $buyers);
 
 		$this->notifyPlayerWantsToBuy( $player_id );
 		self::trace("[bmc] EXIT (almost) buyRequest");
@@ -2752,20 +2864,74 @@ TEMPORARY */
 	}
 ////
 ////
+////	
+	function setAllBuyTimerStatus( $thisPlayer, $nextPlayer ) {
+		self::trace("[bmc] ENTER setAllBuyTimerStatus.");
+		$players = self::loadPlayersBasicInfos();
+		
+		foreach ( $players as $player_id => $player) {
+			if (( $player_id == $thisPlayer ) ||
+			    ( $player_id == $nextPlayer )) {
+				// Don't make note of the current and next players because they cannnot buy.
+				self::setBuyTimerStatus( $player_id, 0 ); // 0 = Not running. 1 = Running.
+			} else {
+				self::setBuyTimerStatus( $player_id, 1 ); // 0 = Not running. 1 = Running.
+			}
+		}
+	}
+////
+////
 ////
     function stPlayerTurnPlay() {
 		self::trace("[bmc] ENTER stPlayerTurnPlay");
-		
-		// TODO TODO 10/13/2020
+				
+		// TODO 11/1 Here should wait until all the BUY / NOT BUY requests are in.
+		// Only then can continue. But now there is a bug.
+		// To duplicate the bug:
+		// Discard
+		// Draw
+		// Discard
+		// Let buy timer expire (player is supposed to draw but timer is ticking)
+		// Click DRAW (no card is drawn)
+		//
 		// The structure should be this, but playing cards and going down 
 		//   remains in the same state (35) so all we need is to exit when discarding.
-		// if (  ) {
+		// if ( allbuy timers are not running then play, else stay in this state ) {
 			// $this->gamestate->nextState( 'playerGoDown' );
 		// } else if (  ) {
 			// $this->gamestate->nextState( 'discardCard' );
 		// } else {
 			// $this->gamestate->nextState( 'playCard' );
 		// }
+	}
+////
+////
+////
+    function stWaitForAll() {
+		self::trace( "[bmc] ENTER stWaitForAll" );
+		
+		$buyers = self::getPlayerBuying();
+		self::dump("[bmc] buyers:", $buyers );
+		
+		$waiting = false;
+		
+		foreach ( $buyers as $buyer => $buying ) {
+			if ( $buying == 0 ) {
+				self::dump("[bmc] Wwaaiiting for buyer:", $buyer );
+				$waiting = true;
+			}
+		}
+		
+		if ( $waiting ) {
+			self::trace( "[bmc] Still waiting, loop around (eventually)" );
+	//		$this->gamestate->nextState( 'notFullyResolved' );
+		} else {
+			self::trace( "[bmc] No longer waiting" );
+	//		$this->gamestate->nextState( 'fullyResolved' );
+		}
+		self::trace( "[bmc] about to go to fullyResolved" );
+		$this->gamestate->nextState( 'fullyResolved' );
+		self::trace( "[bmc] EXIT (truly - does this ever run?) stWaitForAll" );
 	}
 ////
 ////
@@ -2779,12 +2945,12 @@ This means the JS did not interpret the notify from the BUYERS properly. I think
 buttons too, which is should not have done.
 */
 
-
-
-
     function stNextPlayer() {
 		self::trace("[bmc] ENTER NextPlayer");
 		
+		// Discard cannot continue until all player NOT BUY counters have registered
+				
+		$waiting = false;
 		$countCardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
 		$countCCBL = count($this->cards->countCardsByLocationArgs( 'hand' ));
 		$playersNumber = self::getPlayersNumber();
@@ -2792,15 +2958,15 @@ buttons too, which is should not have done.
 		$countCCBLDeck = count($this->cards->countCardsByLocationArgs( 'deck' ));
 		$countCCBLDiscardPile = count($this->cards->countCardsByLocationArgs( 'discardPile' ));
 		
-		self::dump("[bmc] CCBL:", $countCardsByLocation );
-		self::dump("[bmc] CCCBL:", $countCCBL );
-		self::dump("[bmc] PN:", $playersNumber );
-		self::dump("[bmc] CCBLDeck:", $countCCBLDeck );
-		self::dump("[bmc] CCBLDiscardPile:", $countCCBLDiscardPile );
+		//self::dump("[bmc] CCBL (hands):", $countCardsByLocation );
+		//self::dump("[bmc] CCCBL:", $countCCBL );
+		//self::dump("[bmc] PN:", $playersNumber );
+		//self::dump("[bmc] CCBLDeck:", $countCCBLDeck );
+		//self::dump("[bmc] CCBLDiscardPile:", $countCCBLDiscardPile );
 
 		$allCards = $this->cards->countCardsInLocations();
 		
-		self::dump("[bmc] allCards:", $allCards );
+		//self::dump("[bmc] allCards:", $allCards );
 		
 		$countDownCards = 0;
 		
@@ -2838,7 +3004,7 @@ buttons too, which is should not have done.
 
 			// Show State
 			$state = $this->gamestate->state();
-			self::dump("[bmc] stNextPlayer state:", $state);
+			//self::dump("[bmc] stNextPlayer state:", $state);
 
 			$activePlayerId = $this->getActivePlayerId();
 			self::dump( "[bmc] activePlayerId (before change):", $activePlayerId );
@@ -2877,7 +3043,7 @@ buttons too, which is should not have done.
 
 			// Show State
 			$state = $this->gamestate->state();
-			self::dump("[bmc] stNextPlayer state:", $state);
+			//self::dump("[bmc] stNextPlayer state:", $state);
 
 			$this->gamestate->nextState( 'nextPlayer' );					
 		}
@@ -2893,7 +3059,7 @@ buttons too, which is should not have done.
 ////
 ////
 	function checkPlayable() {
-		self::trace( "[bmc] ENTER checkUnplayable" );
+		//self::trace( "[bmc] ENTER checkUnplayable" );
 
 		$playedCardArray = [];
 		$unplayedHandArray = [];
@@ -2906,7 +3072,7 @@ buttons too, which is should not have done.
 		
 		$unplayedCardArray = array_merge( $unplayedHandArray, $unplayedDeckArray, $unplayedDPArray );
 		
-		self::dump("[bmc] unplayedCardArray:", $unplayedCardArray );
+		//self::dump("[bmc] unplayedCardArray:", $unplayedCardArray );
 	
 //		$playedCardArray = $this->cards->getCardsInLocation( 'playerDown_A' );
 //		$playedCardArray[] = $this->cards->getCardsInLocation( 'playerDown_B' );
@@ -2933,7 +3099,7 @@ buttons too, which is should not have done.
 				}
 			}
 		}
-		self::dump("[bmc] playedValues :", $playedValues );
+		//self::dump("[bmc] playedValues :", $playedValues );
 			
 		$unplayedValues = array();
 		
@@ -2945,7 +3111,7 @@ buttons too, which is should not have done.
 		}
 		self::dump("[bmc] count(UPV) :", count( $unplayedValues ));
 
-		self::dump("[bmc] unplayedValues :", $unplayedValues );
+		//self::dump("[bmc] unplayedValues :", $unplayedValues );
 
 		foreach( $unplayedValues as $value ) {
 			
@@ -2959,16 +3125,16 @@ buttons too, which is should not have done.
 		$numberOfDecks = self::getGameStateValue( 'numberOfDecks' );
 		
 		if ( $jokersPlayed < ( 2 * $numberOfDecks )) {
-			self::trace( "[bmc] Still a playable joker." );
+			//self::trace( "[bmc] Still a playable joker." );
 			return true; // Still can play at least 1 joker
 		}
 
 		// TODO: Might need to check if there are no more playable run cards
 
 		// If we got here, then there are no unplayable cards on sets, which means the hand may end
+		//self::trace( "[bmc] EXIT checkUnplayable" );
 		return false;
 		
-		self::trace( "[bmc] ENTER checkUnplayable" );
 	}
 ////
 ////
@@ -3184,6 +3350,9 @@ buttons too, which is should not have done.
     function zombieTurn( $state, $active_player )
     {
     	$statename = $state['name'];
+
+		// Don't let the buy timers stop play
+		self::setBuyTimerStatus( $active_player, 0 ); // 0 = Not running. 1 = Running.
     	
         if ($state['type'] === "activeplayer") {
             switch ($statename) {

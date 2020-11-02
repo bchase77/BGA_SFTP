@@ -51,6 +51,9 @@ function (dojo, declare) {
 			// New variables for new timers on static buttons
 			this.enableDBStatic = 'Yes'; // (except the player whose turn it is
 			this.enableDBTimer = 'No';
+			this.playedSoundWentOut = false;
+			this.playedSoundWentDown = false;
+			this.actionTimerLabelDefault = "Don't Buy";
 
 			this.setsRuns = [ // Places in the downArea where the cards should go, per hand (set, set, set, run, run, run)
 				[ "Area_A", "Area_B", "None",   "None",   "None",   "None"],
@@ -81,20 +84,25 @@ function (dojo, declare) {
 //
 // TODO:
 //
-// 9/28 When you go down, it should play a sound "Yes!" or something.
-// 10/24: Something happened where player 2 tried to draw, but it didn't register, and still had only 1 card, then discarded.
+// 11/1: One player has BUY buttons shown but in fact cannot buy, but should be allowed (#0).
+// 10/30: After a hand is over, draw deck shows 50 when it should be 66.
+// 10/30: The GODOWN sound doesn't play, but you can hear the cards move.
 // 10/24: Prep border lit up before anyone went down!
 // 10/24: When a buyer exists, update the action bar to show everyone "player wants to buy."
-// 10/28: Sometimes after discard, clicking discard or somewhere quickly the player's draw is not registered and it goes to PLAY. Seems like if I click DRAW before the DISCARD completes then there is an issue (timing).
 // 10/28: Keep the highlighting on after the turn moves around. Now it turns off, not sure why.
 // 10/28: MAY BE OK (because stuff was prepped): GO DOWN button appears when no cards are selected in hand, should not.
 // 10/28: Change # of cards dealt each hand? and the rules for 3 runs???
-// 10/29: Change allowed run to require sequential values. Now 5668 is an OK run.
-// 10/29: at REVIEW time, not all the blue buttnos appear
-// 10/29: move the sound to a later function, since it says "YEAH" too many times.
-// 10/29: board names don't always show up!
+// 10/29: ASK GROUP: Change allowed run to require sequential values. Now 5668 is an OK run.
+// 10/29: At REVIEW time, not all the blue buttnos appear
+// 10/29: Board names don't always show up!
 // 10/29: Play a 4 on a set of 4s in AREA A got RED RUN CARDS MUST ALL BE SAME SUIT. But tried it again and it worked!
+// 10/29: Change pictures to show game board.
+// 10/29: Add How To Play
 //
+// X 10/24: Something happened where player 2 tried to draw, but it didn't register, and still had only 1 card, then discarded.
+// X 10/28: Sometimes after discard, clicking discard or somewhere quickly the player's draw is not registered and it goes to PLAY. Seems like if I click DRAW before the DISCARD completes then there is an issue (timing).
+// X 10/29: move the sound to a later function, since it says "YEAH" too many times.
+// X 9/28 When you go down, it should play a sound "Yes!" or something.
 // X 9/28 After player has gone down, when they click their hand do not show PREP buttons. (discard and sort)
 // X 10/28: Add options for fewer hands
 // X 10/24: After a new deal, wait until click, or allow 45 seconds (?) to figure out if want to buy.
@@ -618,6 +626,7 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 					break;
 				case 'endHand':
 					console.log("[bmc] FOUND endHand");
+					this.playedSoundWentOut = false; // Reset to play the sound only once
 					break;
 				case 'playerWantsToBuy':
 					console.log("[bmc] FOUND playerWantsToBuy");
@@ -693,7 +702,10 @@ console.log( this.player_id );
 			// If someone clicked their button 'On To The Next' just ignore it
 			// and replace the button. The state machine will continue after ALL have clicked.
 			if ( stateName == 'wentOut' ) {
-				playSound('tutorialrumone_wentOutYeah');
+				if ( this.playedSoundWentOut == false ) {
+					this.playedSoundWentOut = true;
+					playSound('tutorialrumone_wentOutYeah');
+				}
 				this.showReviewButton( args.player_id );
 				return;
 			}
@@ -827,15 +839,21 @@ console.log("[bmc] ENTER onPlayerBuyButton");
 			var action = 'buyRequest';
 			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 			dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
+			console.log(this.firstLoad);
 
 			//if ( this.player_id == currentplayer then just ignore. But for now I'll throw a BGA error from PHP.
-			if (this.checkAction( action, true)) {
+			if ( this.checkAction( action, true )  ||
+			   ( this.firstLoad == 'Yes' )) {
+				console.log("[bmc] ajax " + action );
+
 				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
 						player_id : this.player_id,
 						lock : true
 					}, this, function(result) {
 					}, function(is_error) {
 				});
+			} else {
+				console.log("[bmc] Buy not allowed now");
 			}
 		},
 /////////
@@ -845,16 +863,20 @@ console.log("[bmc] ENTER onPlayerBuyButton");
 console.log("[bmc] ENTER onPlayerNotBuyButton");
 			this.clearButtons();
 			this.stopActionTimer2();
+			console.log(this.gamedatas);
 			
 			var action = 'notBuyRequest';
 
 			if (this.checkAction( action, true)) {
+				console.log("[bmc] ajax " + action );
 				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
 						player_id : this.player_id,
 						lock : true
 					}, this, function(result) {
 					}, function(is_error) {
 				});
+			} else {
+				console.log( "[bmc] checkAction false");
 			}
 		},
 /////////
@@ -1017,7 +1039,6 @@ console.log( "[bmc] Spectator, no timer.");
 			}
 			var notBuyButtonID = 'buttonNotBuy';
 //			this.actionTimerLabelDefault = $(notBuyButtonID).innerHTML;
-			this.actionTimerLabelDefault = "Don't Buy";
 			this.actionTimerLabel = this.actionTimerLabelDefault;
 			this.actionTimerSeconds = 11 ; // BUY COUNTDOWN TODO: Connect this to options (PHP)
 console.log( "[bmc] Starting TimerStatic! " + this.actionTimerSeconds );
@@ -2475,7 +2496,7 @@ console.log( this.player_id );
 				
 				console.log(from);
 
-				this.playerHand.removeFromStockById (card.id );
+				this.playerHand.removeFromStockById( card.id );
 			}
 		},
 ////////
@@ -2945,6 +2966,7 @@ console.log( '[bmc] ENTER notifications subscriptions setup' );
             dojo.subscribe( 'playerBought' ,     this, "notif_playerBought");
             dojo.subscribe( 'playerDidNotBuy' ,  this, "notif_playerDidNotBuy");
 			dojo.subscribe( 'wentOut' , 		 this, "notif_playerWentOut");
+            dojo.subscribe( 'clearBuyers' ,      this, "notif_clearBuyers");
 //            dojo.subscribe( 'playerDidNotBuy' ,  this, "notif_NextPlayer");
 
 console.log( "[bmc] EXIT notifications subscriptions setup" );
@@ -3184,6 +3206,20 @@ console.log("[bmc] EXIT notif_drawcard");
 /////////
 /////////
 /////////
+		notif_clearBuyers : function(notif) {
+			console.log("[bmc]notif_clearBuyers");
+			// No one is buying because the next-next player has discarded!
+			console.log(notif);
+			this.stopActionTimer2();
+			this.showHideButtons();
+			this.enableDBStatic = 'No';
+			this.enableDBTimer = 'No'; // But let the timer run out if it's there
+			this.enDisStaticBuyButtons();
+			this.stopActionTimerStatic(); // Stop the timer, we are not buying			
+		},
+/////////
+/////////
+/////////
 		notif_playerNotBuying : function(notif) {
 			console.log("[bmc]notif_playerIsNotBuying");
 			console.log(notif);
@@ -3245,6 +3281,10 @@ console.log("[bmc] EXIT notif_drawcard");
 			console.log( this.gamedatas.currentPlayerId );
 			console.log( this.gamedatas.playerOrderTrue );
 
+			this.disableNextMoveSound();
+			playSound( 'GoingDown' );
+			//this.disableNextMoveSound();
+			
 			// Update card-counts when someone goes down:
 
 			for ( var p_id in notif.args.allHands ) {
@@ -3301,7 +3341,6 @@ console.log("[bmc] EXIT notif_drawcard");
 							this.downArea_C_[ downPlayer ].addToStockWithId( jokerUniqueID, joker.id, 'myhand' );
 						}
 						this.playerHand.removeFromStockById(joker.id);
-
 					}
 				}
 				this.showHideButtons();

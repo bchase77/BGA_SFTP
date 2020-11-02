@@ -51,8 +51,8 @@ $game_options = array(
 	102 => array(
 		'name' => totranslate( 'Game Length (Sets and Runs targets needed for each hand)' ),
 		'values' => array(
-			1 => array ( 'name' => totranslate( 'Full length game (2S, 1S1R, 2R, 3S, 2S1R, 2R1S, 3R)' )	),
-			2 => array ( 'name' => totranslate( 'Short game (2S, 2R, 2S1R, 3R)' ) )
+			1 => array ( 'name' => totranslate( 'Full length game (2Sets, 1Set1Run, 2Runs, 3Sets, 2Sets1Run, 2Run1Set, 3Runs)' )	),
+			2 => array ( 'name' => totranslate( 'Short game (2Sets, 2Runs, 2Sets1Run, 3Runs)' ) )
 		),
 		'default' => 10
 	)
