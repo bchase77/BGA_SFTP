@@ -61,6 +61,9 @@
 	width: 740px;
 }
 */
+.spectatorMode #myhand_wrap {
+    display: none;
+}
 .leftboxHandArea {
 	float: Left;
 	width: 100%;

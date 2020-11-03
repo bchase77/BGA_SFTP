@@ -27,23 +27,28 @@
 -->
 
 <div id="myhand_wrap" class="myHandWrap whiteblock">
-   <div id="topBoxes">
-      <div id="TLeftBox" class="leftboxHandArea">
-         <h3>My Hand (<span id="myHandSize"></span>)
-            <a href="#" id="buttonPlayerSortBySet" class="bgabutton bgabutton_blue">Sort Sets</a>
-            <a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue">Sort Runs</a>
-            <span style="margin-left:15px"></span>
-			<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray"> Buy it! </a>
-            <a href="#" id="buttonNotBuy" class="bgabutton bgabutton_gray">Don't buy</a>
-			<span style="margin-left:15px"></span>
-			<a href="#" id="buttonPrepAreaA" class="bgabutton bgabutton_gray">Prep A</a>
-            <a href="#" id="buttonPrepAreaB" class="bgabutton bgabutton_gray">Prep B</a>
-            <a href="#" id="buttonPrepAreaC" class="bgabutton bgabutton_gray">Prep C</a>
-			<span>Target: <span id="redTarget" style="color:red"></span><span></span></span>
-         </h3>
-         <div id="myhand" class="myhand"></div>
-      </div>
-   </div>
+	<div id="topBoxes">
+		<div id="TLeftBox" class="leftboxHandArea">
+			<h3>
+				<span>Target: 
+					<span id="redTarget" style="color:red">
+					</span>
+				</span>
+			</h3>
+				<span id="myHandArea" style="font-weight: bold">     My Hand (<span id="myHandSize"></span>):
+					<a href="#" id="buttonPlayerSortBySet" class="bgabutton bgabutton_blue">Sort Sets</a>
+					<a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue">Sort Runs</a>
+					<span style="margin-left:15px"></span>
+					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray"> Buy it! </a>
+					<a href="#" id="buttonNotBuy" class="bgabutton bgabutton_gray">Don't buy</a>
+					<span style="margin-left:15px"></span>
+					<a href="#" id="buttonPrepAreaA" class="bgabutton bgabutton_gray">Prep A</a>
+					<a href="#" id="buttonPrepAreaB" class="bgabutton bgabutton_gray">Prep B</a>
+					<a href="#" id="buttonPrepAreaC" class="bgabutton bgabutton_gray">Prep C</a>
+					<div id="myhand" class="myhand"></div>
+				</span>
+		</div>
+	</div>
 </div>
 
 
@@ -69,6 +74,8 @@
 
 <audio id="audiosrc_tutorialrumone_wentOutYeah" src="{GAMETHEMEURL}img/tutorialrumone_wentOutYeah.mp3" preload="none" autobuffer></audio>
 <audio id="audiosrc_o_tutorialrumone_wentOutYeah" src="{GAMETHEMEURL}img/tutorialrumone_wentOutYeah.ogg" preload="none" autobuffer></audio>
+<audio id="audiosrc_tutorialrumone_GoingDown" src="{GAMETHEMEURL}img/tutorialrumone_GoingDown.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_o_tutorialrumone_GoingDown" src="{GAMETHEMEURL}img/tutorialrumone_GoingDown.ogg" preload="none" autobuffer></audio>
 
 <script type="text/javascript">
 
