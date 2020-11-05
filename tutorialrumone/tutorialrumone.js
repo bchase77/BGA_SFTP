@@ -83,19 +83,20 @@ function (dojo, declare) {
 ////////
 //
 // TODO:
-// 11/2: [B] Firefox doesn't show dollar sign and card images in the player board areas.
-// 11/1: [B] Spectators should not see the buttons and the hand area. They should see TARGET.
-// 11/1: [B] Spectators should not see HAND and buttons.
+// 11/5:
 // 10/28: Change # of cards dealt each hand? and the rules for 3 runs???
 // 11/2: Ask group: Call Liverpool on another player?
 // 11/1: Single-sorting 1 card if an identical is there moves both cards.
-//11/1: Runs on board, jokers always go to right when they sometimes should be elsewhere.
-//11/1: Runs on board, Aces always go to left but sometimes should go to right.
 // 11/1: One player has BUY buttons shown but in fact cannot buy, but should be allowed (#0).
 // 11/1: Add game option of buyer precedence or buyer click-speed.
 // 10/24: When a buyer exists, update the action bar to show everyone "player wants to buy."
-// 10/29: Board names don't always show up!
+// 10/29: Board names don't show up after new hand is dealt.
 //
+// X 11/1: Runs on board, jokers always go to right when they sometimes should be elsewhere.
+// X 11/1: Runs on board, Aces always go to left but sometimes should go to right.
+// X 11/2: [B] Firefox doesn't show dollar sign and card images in the player board areas. Change to use only PNG.
+// X 11/1: [B] Spectators should not see the buttons and the hand area. They should see TARGET.
+// X 11/1: [B] Spectators should not see HAND and buttons.
 // X 10/30: The GODOWN sound doesn't play, but you can hear the cards move.
 // X 10/30: After a hand is over, draw deck shows 50 when it should be 66.
 // X 10/28: MAY BE OK (because stuff was prepped): GO DOWN button appears when no cards are selected in hand, should not.
@@ -908,16 +909,28 @@ console.log("[bmc] ENTER onPlayerReviewedHandButton");
 /////////
 /////////
 
-11/3 TODO:  Validate this can go through the board areas properly.
-Maybe just do it after a card is played onto a run and after someone goes down.
+//11/3 TODO:  Validate this can go through the board areas properly.
+//Maybe just do it after a card is played onto a run and after someone goes down.
 
-		sortBoard : function() {
-			for (var player in this.gamedatas.players) {
+		sortBoard : function( ) {
+console.log( "[bmc] ENTER sortBoard" );
+			for ( var player in this.gamedatas.players ) {
 				cards = this.downArea_A_[ player ].getAllItems();
 				weightChange = this.sortRun( cards, 'playerDown_A' );
 console.log( weightChange );
 				this.downArea_A_[ player ].changeItemsWeight( weightChange );
+
+				cards = this.downArea_B_[ player ].getAllItems();
+				weightChange = this.sortRun( cards, 'playerDown_B' );
+console.log( weightChange );
+				this.downArea_B_[ player ].changeItemsWeight( weightChange );
+
+				cards = this.downArea_C_[ player ].getAllItems();
+				weightChange = this.sortRun( cards, 'playerDown_C' );
+console.log( weightChange );
+				this.downArea_C_[ player ].changeItemsWeight( weightChange );
 			}
+console.log( "[bmc] EXIT sortBoard" );
 		},
 /////////
 /////////
@@ -927,103 +940,106 @@ console.log( "[bmc] ENTER sortRun" );
 console.log( cards );
 console.log( downArea );
 
-			var el = {};
-			var cardGroup = new Array();
-			var cardGroupNonJokers = new Array();
-			
-			for ( let i in cards ) {
-				//console.log(i);
+			if ( cards.length != 0 ) {
+				var el = {};
+				var cardGroup = new Array();
+				var cardGroupNonJokers = new Array();
 				
-				var [ color, value ] = this.getColorValue( cards[ i ]['type'] );
+				for ( let i in cards ) {
+					//console.log(i);
+					
+					var [ color, value ] = this.getColorValue( cards[ i ]['type'] );
 
-				el = {
-					'id' : cards[i]['id'],
-					'unique_id' : this.getCardUniqueId(color, value),
-					'type' : color,
-					'type_arg' : value,
-					'location' : downArea,
-					'location_arg' : value // value = weight
-				}
-				cardGroup[ cards[ i ][ 'id' ]] = el;
-				
-				// Also store the non-jokers
-				if ( color != 5 ) {
-					// Also store the ace, if present (assume there is only 1)
-					cardGroupNonJokers[ cards[ i ][ 'id' ]] = el;
-					if ( value == 1 ) {
-						ace = el ;
+					el = {
+						'id' : cards[i]['id'],
+						'unique_id' : this.getCardUniqueId(color, value),
+						'type' : color,
+						'type_arg' : value,
+						'location' : downArea,
+						'location_arg' : value // value = weight
+					}
+					cardGroup[ cards[ i ][ 'id' ]] = el;
+					
+					// Also store the non-jokers
+					if ( color != 5 ) {
+						// Also store the ace, if present (assume there is only 1)
+						cardGroupNonJokers[ cards[ i ][ 'id' ]] = el;
+						if ( value == 1 ) {
+							var ace = el ;
+						}
+console.log( ace );
 					}
 				}
-			}
 console.log( "cardGroup:" );
 console.log( cardGroup );
 console.log( cardGroupNonJokers );
-console.log( ace );
 
-			// Count number of jokers and track their IDs to set weights later
-			
-			type = 5; // Jokers are type 5
-			var jokerCount = 0;
-			jokers = new Array();
-			
-			for ( let i in cardGroup ) {
+				// Count number of jokers and track their IDs to set weights later
+				
+				type = 5; // Jokers are type 5
+				var jokerCount = 0;
+				jokers = new Array();
+				
+				for ( let i in cardGroup ) {
 console.log(i);
-				if ( cardGroup[ i ][ 'type' ] == 5 ) {
-					jokers[ jokerCount ] = cardGroup[ i ][ 'unique_id' ];
-					jokerCount++;
+					if ( cardGroup[ i ][ 'type' ] == 5 ) {
+						jokers[ jokerCount ] = cardGroup[ i ][ 'unique_id' ];
+						jokerCount++;
+					}
 				}
-			}
 console.log( jokerCount );
 console.log( jokers );
 
-			cardGroupNonJokers.sort( this.compareTypeArg ); // Sort by value, but it changes the indices
+				cardGroupNonJokers.sort( this.compareTypeArg ); // Sort by value, but it changes the indices
 console.log( "cardGroupNonJokers aftersort" );
 console.log( cardGroupNonJokers );
 
-			lowestCard = cardGroupNonJokers.find(Boolean) ; // Store first non-joker value
+				lowestCard = cardGroupNonJokers.find(Boolean) ; // Store first non-joker value
 console.log( "lowestCard" );
 console.log( lowestCard );
-			
-			jokerIndex = 0;
-			
-			let weightChange = {};
-			
-			weightChange[ lowestCard.unique_id ] = 0; // Lowest card gets lowest weight
+				
+				jokerIndex = 0;
+				
+				let weightChange = {};
+				
+				weightChange[ lowestCard.unique_id ] = 0; // Lowest card gets lowest weight
 
-			cgLength = Object.keys(cardGroupNonJokers).length;
+				cgLength = Object.keys(cardGroupNonJokers).length;
 console.log(cgLength);
 
-			for ( let i = 1 ; i < cgLength ; i++ ) {
+				for ( let i = 1 ; i < cgLength ; i++ ) {
 console.log(i);
 console.log(cardGroupNonJokers[i]);
-				if ( cardGroupNonJokers[ i ][ 'type_arg' ] - lowestCard[ 'type_arg' ] > 1 ) {
-					weightChange[ jokers[ jokerIndex ]] = i + jokerIndex;
-					weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex + 1;
-					jokerIndex++;
-				} else {
-					weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex;
-				}
-				lowestCard = cardGroupNonJokers[ i ];
+					if ( cardGroupNonJokers[ i ][ 'type_arg' ] - lowestCard[ 'type_arg' ] > 1 ) {
+						weightChange[ jokers[ jokerIndex ]] = i + jokerIndex;
+						weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex + 1;
+						jokerIndex++;
+					} else {
+						weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex;
+					}
+					lowestCard = cardGroupNonJokers[ i ];
 console.log("weightChange");
 console.log(weightChange);			
 console.log(lowestCard);
-			}
+				}
 console.log("FINAL weightChange before ACE analysis");
 console.log(weightChange);
 
-			// Check if ace needs to be highest.  Assuming it's already a run, ace is high when:
-			//   There is a King, or
-			//   There is a Queen and 1 joker, or
-			//   There is a Jack and 2 jokers, etc...
-console.log(Object.keys(cardGroupNonJokers).length);
-			if ( cardGroupNonJokers[ Object.keys(cardGroupNonJokers).length - 1 ][ 'type_arg'] + jokerCount > 12 ) {
-console.log("Making Ace High");
-				weightChange[ ace.unique_id ] = 14; // King is highest at 13, so make it higher
-			}
+				if ( ace != null ) {
+					// Check if ace needs to be highest.  Assuming it's already a run, ace is high when:
+					//   There is a King, or
+					//   There is a Queen and 1 joker, or
+					//   There is a Jack and 2 jokers, etc...
+	console.log(Object.keys(cardGroupNonJokers).length);
+					if ( cardGroupNonJokers[ Object.keys(cardGroupNonJokers).length - 1 ][ 'type_arg'] + jokerCount > 12 ) {
+	console.log("Making Ace High");
+						weightChange[ ace.unique_id ] = 14; // King is highest at 13, so make it higher
+					}
+				}
 console.log("FINAL FINAL weightChange after ACE analysis");
 console.log(weightChange);
-
-return weightChange;
+			return weightChange;
+			}
 console.log( "[bmc] EXIT sortRun" );
 		},
 /////////
@@ -1852,6 +1868,7 @@ console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById(card_id);
 console.log("[bmc] Removed.");
 			}
+			this.sortBoard();
 			console.log("[bmc] (from PHP) EXIT cardWasPlayed");
 		},
 /////////
@@ -2042,7 +2059,8 @@ console.log("[bmc] ENTER onPlayerSortByButton!");
 console.log(this.player_id);
 			
 			var thisPlayerHandIds = this.playerHand.getAllItems();
-			this.sortRun( thisPlayerHandIds, 'playerDown_A' );
+			// Just practicing the sortRun function
+			//this.sortRun( thisPlayerHandIds, 'playerDown_A' );
 			
 			var thisPlayerHandIds = this.playerHand.getAllItems();
 			
@@ -2684,9 +2702,13 @@ console.log( this.gamedatas );
 console.log( this.player_id );
 
 			// If the gamestate is play, then treat it as a discard.
-			if ( this.gamedatas.gamestate.name == 'playerTurnPlay' ) {
+			// 
+            var handCards = this.playerHand.getSelectedItems();
+
+			if (( this.gamedatas.gamestate.name == 'playerTurnPlay' ) &&
+				( handCards.length == 1)) {
 				this.onPlayerDiscardButton();
-				
+	
 			// If the gamestate is draw, then draw the top of discard pile (chosen in php).
 			} else if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ) {
 				//var card = this.discardPile.getSelectedItems()[ 0 ]; // Only ajax if a card was selected
@@ -3050,7 +3072,8 @@ console.log( this.gamedatas.activeTurnPlayer_id );
 			// Show GO DOWN button if prepped, not gone down and my turn
 			//
 			var goDownDOM = document.getElementById( 'buttonPlayerGoDown' );
-			
+
+// TODO: Add condition that player has already drawn			
 //			if (  showButtons['prepped'] && 
 			if (( this.prepAreas > 0 ) &&
 				 !showButtons['goneDown'] &&
@@ -3248,9 +3271,9 @@ console.log( "[bmc] EXIT notifications subscriptions setup" );
 			var reviewButtonID = 'buttonReview' + this.player_id;
 
 			if ( player_id == this.player_id ) {
-				this.addActionButton( reviewButtonID, _("AWESOME! WOOT! On To The Next!"), 'onPlayerReviewedHandButton' );
+				this.addActionButton( reviewButtonID, _("AWESOME! WOOT! On to the next!"), 'onPlayerReviewedHandButton' );
 			} else {
-				this.addActionButton( reviewButtonID, _("Bummer! on to the next."), 'onPlayerReviewedHandButton' );
+				this.addActionButton( reviewButtonID, _("Bummer! On to the next!"), 'onPlayerReviewedHandButton' );
 			}
 		},
 /////////
@@ -3285,7 +3308,7 @@ console.log( "[bmc] EXIT notifications subscriptions setup" );
 console.log("[bmc] ENTER notif_newHand");
 console.log(notif);
 			
-			if ( notif.args.length == 0 ) { // if it's just notify for the history log, do nothing
+			if ( notif.args.hand.length == 0 ) { // if it's just notify for the history log, do nothing
 				return;
 			}
 			
@@ -3672,6 +3695,7 @@ Animate a slide of the DOM object referred to by domNodeToSlide from its current
 					this.playerHand.removeFromStockById( card_ids[ card_id ]);
 				}
 			}
+			this.sortBoard();
 		},
 /////////
 /////////

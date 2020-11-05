@@ -115,6 +115,26 @@
 	height: 570px;
 }
 
+.rum_buyicon {
+	width: 20px;
+	height: 24px;
+	display: inline-block;
+    position: relative;
+    background-image: url( 'img/dollarSign20x24.png');
+    margin-top: 4px;
+    margin-right: 3px;
+}
+
+.rum_cardicon {
+	width: 20px;
+	height: 24px;
+	display: inline-block;
+    position: relative;
+    background-image: url( 'img/cardback.png');
+    margin-top: 4px;
+    margin-right: 3px;
+}
+
 .tiny {
 	float: Left;
 	width: 1px;
@@ -181,30 +201,6 @@
 	background: Teal;
 	width: 33%;
 	height: 140px;
-}
-
-.rum_buyicon {
-	width: 20px;
-	height: 24px;
-	display: inline-block;
-    position: relative;
-	object-fit: scale-down;
-    background-repeat: no-repeat;
-    background-image: url( 'img/dollarSign20x24.jpg');
-    background-position: 0px 0px;
-    margin-top: 0px;
-    margin-right: 0px;
-}
-
-.rum_cardicon {
-	width: 20px;
-	height: 24px;
-	display: inline-block;
-    position: relative;
-    background-repeat: no-repeat;
-    background-image: url( 'img/cardback.png');
-    margin-top: 4px;
-    margin-right: 3px;
 }
 
 .gmk_stoneicon {

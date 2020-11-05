@@ -36,15 +36,15 @@
 				</span>
 			</h3>
 				<span id="myHandArea" style="font-weight: bold">     My Hand (<span id="myHandSize"></span>):
-					<a href="#" id="buttonPlayerSortBySet" class="bgabutton bgabutton_blue">Sort Sets</a>
-					<a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue">Sort Runs</a>
+					<a href="#" id="buttonPlayerSortBySet" class="bgabutton bgabutton_blue spectatorMode">Sort Sets</a>
+					<a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue spectatorMode">Sort Runs</a>
 					<span style="margin-left:15px"></span>
-					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray"> Buy it! </a>
-					<a href="#" id="buttonNotBuy" class="bgabutton bgabutton_gray">Don't buy</a>
+					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray spectatorMode"> Buy it! </a>
+					<a href="#" id="buttonNotBuy" class="bgabutton bgabutton_gray spectatorMode">Don't buy</a>
 					<span style="margin-left:15px"></span>
-					<a href="#" id="buttonPrepAreaA" class="bgabutton bgabutton_gray">Prep A</a>
-					<a href="#" id="buttonPrepAreaB" class="bgabutton bgabutton_gray">Prep B</a>
-					<a href="#" id="buttonPrepAreaC" class="bgabutton bgabutton_gray">Prep C</a>
+					<a href="#" id="buttonPrepAreaA" class="bgabutton bgabutton_gray spectatorMode">Prep A</a>
+					<a href="#" id="buttonPrepAreaB" class="bgabutton bgabutton_gray spectatorMode">Prep B</a>
+					<a href="#" id="buttonPrepAreaC" class="bgabutton bgabutton_gray spectatorMode">Prep C</a>
 					<div id="myhand" class="myhand"></div>
 				</span>
 		</div>
