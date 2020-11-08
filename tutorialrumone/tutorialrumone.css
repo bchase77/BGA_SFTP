@@ -64,6 +64,11 @@
 .spectatorMode #myhand_wrap {
     display: none;
 }
+
+.pbInverse {
+	background: salmon;
+}
+
 .leftboxHandArea {
 	float: Left;
 	width: 100%;
@@ -112,8 +117,8 @@
 	border: 10px;
 	padding: 10px;
 	width: 95%;
-	height: 570px;
 }
+
 
 .rum_buyicon {
 	width: 20px;
@@ -165,7 +170,7 @@
   border-width: 1px;
 */
   border:0;
-  background: coral;
+  background: salmon;
 }
 
 .downPrep{
@@ -267,7 +272,3 @@
         background-repeat: none;
     }
 */
-
-
-
-

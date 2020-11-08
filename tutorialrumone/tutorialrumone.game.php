@@ -46,9 +46,9 @@ class TutorialRumOne extends Table
           //                         3 runs
 
             "currentHandType" => 10,
-			"area_A_target" => 11,
-			"area_B_target" => 12,
-			"area_C_target" => 13,
+//			"area_A_target" => 11,
+//			"area_B_target" => 12,
+//			"area_C_target" => 13,
 			"forJokerCard_id" => 20,
 			"forJokerBoardArea" => 21,
 			"forJokerBoardPlayer" => 22,
@@ -65,6 +65,7 @@ class TutorialRumOne extends Table
 			"numberOfDecks" => 100,
 			"buyTimeInSeconds" => 101,
 			"gameLengthOption" => 102,
+			"buyMethod" => 103
         ) );
 	
 		// NOTE: This is defined in 2 places and I'm not sure why it won't see the other one
@@ -152,9 +153,9 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			$this->handTypes = $this->handTypesShort;
 		}
 		
-        self::setGameStateInitialValue( 'area_A_target', $this->handTypes[$currentHandType]["Area_A"]);
-        self::setGameStateInitialValue( 'area_B_target', $this->handTypes[$currentHandType]["Area_B"]);
-        self::setGameStateInitialValue( 'area_C_target', $this->handTypes[$currentHandType]["Area_C"]);
+//        self::setGameStateInitialValue( 'area_A_target', $this->handTypes[$currentHandType]["Area_A"]);
+//        self::setGameStateInitialValue( 'area_B_target', $this->handTypes[$currentHandType]["Area_B"]);
+//        self::setGameStateInitialValue( 'area_C_target', $this->handTypes[$currentHandType]["Area_C"]);
 
         // Activate first player (which is in general a good idea :) )
         $player_id = $this->activeNextPlayer();
@@ -181,6 +182,33 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
         self::setGameStateInitialValue( 'skipFirstDeal', true );
 
 		$this->waiting = false; // This keeps the state machine from getting out of sync by requiring
+		
+		
+		
+		
+		// TODO: This may not work, but it might fix the missing player names on the board.
+		
+/*		
+		$template = self::getGameName() . "_" . self::getGameName();
+        
+        // this will inflate our goDownArea block with actual players data
+        $this->page->begin_block($template, "goDownArea");
+		
+        foreach ( $players as $player_id => $info ) {
+            //$dir = array_shift($directions);
+            $this->page->insert_block("goDownArea", array ("PLAYER_ID" => $player_id,
+                    "PLAYER_NAME" => $players [$player_id] ['player_name'],
+                    "PLAYER_COLOR" => $players [$player_id] ['player_color']
+					));
+        }
+*/
+
+
+
+
+
+
+
 		// all players to select BUY / NOT BUY before a player discards a 2nd time.
 
         /************ Start the game initialization *****/
@@ -714,6 +742,10 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 
 		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 
+		$currentHandType = $this->getGameStateValue( 'currentHandType' );
+		
+		self::dump("[bmc] currentHandType stEndHand:", $currentHandType );
+
 		self::dump("[bmc] Discarding player id:", $player_id );
 		self::dump("[bmc] Discarding card_id:", $card_id );
 		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
@@ -890,6 +922,16 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		self::setBuyTimerStatus( $player_id, 0 ); // 0 = Not running. 1 = Running.
 
 		$players = self::loadPlayersBasicInfos();
+		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
+		self::dump("[bmc] ATPI", $activeTurnPlayer_id );
+
+		// TODO Maybe change this to wait for timeout instead of actively setting nonmultiactive??
+		foreach ( $players as $pid => $player ){
+			self::dump("[bmc] $pid", $pid );
+			if ( $pid != $activeTurnPlayer_id ) {
+				$this->gamestate->setPlayerNonMultiactive( $pid, '' );
+			}
+		}
 
 		$currentCard = $this->cards->getCardOnTop( 'discardPile' );
 		self::dump( "[bmc] cardToBeBought:",  $currentCard );
@@ -902,13 +944,13 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
 		}
 		
-		$buyMessage = $players[ $player_id ][ 'player_name' ] . 
-			'<span style="color:#' . $players[ $player_id ][ "player_color" ] . ';">' . $players[ $player_id ][ "player_name" ] . '</span>';
-			' wants to buy ' . 
-			$value_displayed . 
-			$color_displayed;
+		// $buyMessage = $players[ $player_id ][ 'player_name' ] . 
+			// '<span style="color:#' . $players[ $player_id ][ "player_color" ] . ';">' . $players[ $player_id ][ "player_name" ] . '</span>';
+			// ' wants to buy ' . 
+			// $value_displayed . 
+			// $color_displayed;
 		
-		self::dump( "[bmc] buyMessage:",  $buyMessage );
+//		self::dump( "[bmc] buyMessage:",  $buyMessage );
 
 		if ( $currentCard[ 'type' ] == 5 ) {
 			$value_displayed = ' a joker';
@@ -923,6 +965,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			'${player_name} wants to buy ${value_displayed}${color_displayed}',
 			array(
 				'player_id' => $player_id,
+//				'player_name' => $players[ $player_id ][ 'player_name' ],
 				'player_name' => $players[ $player_id ][ 'player_name' ],
 				'cardToBeBought' => $currentCard,
 				'value_displayed' => $value_displayed,
@@ -1256,6 +1299,9 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 ////////
 	function playerGoDownFinish( $cardGroupA, $cardGroupB, $cardGroupC, $joker, $targetArea ) {
 		self::trace("[bmc] playerGoDownFinish");
+self::dump("[bmc] cardGroupA", $cardGroupA);
+self::dump("[bmc] cardGroupB", $cardGroupB);
+self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		// Verify the number of needed sets and runs is met
 
@@ -2078,6 +2124,130 @@ TODO: Maybe check if there were no more playable cards and show that message.
 				'player_name' => $players[ $activeTurnPlayer_id ][ 'player_name' ]
 			)
 		); 
+		
+		$this->calcDisplayScoreDialog();
+		self::debug("[bmc] EXIT stWentOut");
+	}
+////
+////
+////
+	function calcDisplayScoreDialog() {
+		self::trace("[bmc] ENTER calcDisplayScoreDialog");
+		
+        // Count and score points, then end the game or go to the next hand.
+        $players = self::loadPlayersBasicInfos();
+        // Cards 2 - 9 are 5 points each
+		// Cards 10, J, Q, K are 10 points each
+		// Cards A are 15 points each
+		// Cards Joker is 20 points each
+
+		$player_to_points = array ();
+		foreach ( $players as $player_id => $player) {
+            $player_to_points[ $player_id ] = 0;
+		}
+		$cards = $this->cards->getCardsInLocation("hand");
+		
+		foreach ( $cards as $card ) {
+			$player_id = $card[ 'location_arg' ];
+			if ( $card[ 'type' ] >= 1 and $card[ 'type' ] <= 4) { // If non-Joker
+				switch ( true ) {
+					case ( $card[ 'type_arg' ] >= 2 and $card[ 'type_arg' ] <= 9 ): // 5 points
+						self::trace("[bmc] 2-9");
+						$player_to_points[ $player_id ] += 5;
+						break;
+					case ( $card[ 'type_arg' ] >= 10 and $card[ 'type_arg' ] <= 13 ): // 10 points
+						self::trace("[bmc] 10,J,Q,K");
+						$player_to_points[ $player_id ] += 10;
+						break;
+					case ( $card[ 'type_arg' ] === 1 ): // 15 points	
+						self::trace("[bmc] Ace");
+						$player_to_points[ $player_id ] += 15;
+						break;
+				}
+			} else { // It must be a joker, 20 points
+				self::trace("[bmc] Joker");
+				$player_to_points [$player_id] += 20;
+			}
+		}
+
+        // Apply scores to players
+        foreach ( $player_to_points as $player_id => $points ) {
+            if ( $points != 0 ) {
+                $sql = "UPDATE player SET player_score=player_score-$points  WHERE player_id='$player_id'";
+                self::DbQuery( $sql );
+                $point_number = $player_to_points[ $player_id ];
+
+                self::notifyAllPlayers("points", clienttranslate( '${player_name} gets ${nbr} points' ), array (
+                        'player_id' => $player_id,'player_name' => $players[ $player_id ][ 'player_name' ],
+                        'nbr' => $point_number ));
+            } else {
+		        // No point lost (just notify)
+                self::notifyAllPlayers("points",
+					clienttranslate('${player_name} did not get any points'),
+					array (
+                        'player_id' => $player_id,
+						'player_name' => $players[ $player_id ][ 'player_name' ]
+					)
+				);
+            }
+        }
+		
+		// Get the score totals
+		$pn = array();
+		$sql = "SELECT player_id, player_score FROM player ";
+		$pn = self::getCollectionFromDB($sql, true);
+	
+		self::dump( "[bmc] pn: ", $pn );
+
+		// Show the scoring dialog box
+		
+		$firstRow = array( '' );
+		$secondRow = array( 'This Hand:' );
+		$thirdRow = array( 'Total:' );
+
+        foreach( $players as $player_id => $player ) {
+            $firstRow[] = array( 'str' => '${player_name}',
+                                 'args' => array( 'player_name' => $player[ 'player_name' ] ),
+                                 'type' => 'header'
+                               );
+			$secondRow[] = - $player_to_points[ $player_id ];
+			$thirdRow[] = $pn[ $player_id ];
+        }
+        $table = array( 
+			$firstRow,
+			$secondRow,
+			$thirdRow
+		);
+		self::dump( "[bmc] table: ", $table );
+		$player_id = $this->getCurrentPlayerId();
+
+		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
+
+		// Show a dialog of the scores for each player for this hand
+        foreach ( $player_to_points as $player_id => $points ) {
+			if ( $player_id == $activeTurnPlayer_id ) {
+				$this->notifyPlayer(
+					$player_id,
+					"tableWindow", '', array(
+						"id" => 'handScoring',
+						"title" => clienttranslate( "Woot! You went out! You want the most positive score:" ),
+						"table" => $table,
+						"closing" => clienttranslate( "On to the next!" )
+					)
+				); 
+			} else {
+				$this->notifyPlayer(
+					$player_id,
+					"tableWindow", '', array(
+						"id" => 'handScoring',
+						"title" => clienttranslate( "Bummer! " . $players[ $activeTurnPlayer_id ][ 'player_name' ] . " went out! Points are bad:" ),
+						"table" => $table,
+						"closing" => clienttranslate( "On to the next!" )
+					)
+				); 
+			}
+		}
+		self::trace("[bmc] EXIT calcDisplayScoreDialog");
 	}
 ////
 ////
@@ -2116,13 +2286,19 @@ TODO: Maybe check if there were no more playable cards and show that message.
         // Deal some cards to each players
         $players = self::loadPlayersBasicInfos();
 		
-		// Deal 10 cards to each player
+		// Deal 10 or 12 cards to each player
 		// Put 1 card in the discard pile
 		// Put the rest into the draw deck
 		// Notify players of the situation
 		
+		$currentHandType = $this->getGameStateValue( 'currentHandType' );
+		$qtyToDeal = $this->handTypes[ $currentHandType ][ "deal" ];
+		
+		self::dump( "[bmc] qtyToDeal:", $qtyToDeal );
+
 		foreach ( $players as $player_id => $player ) {
-			$this->cards->pickCards( 10, 'deck', $player_id );
+//			$this->cards->pickCards( 10, 'deck', $player_id );
+			$this->cards->pickCards( $qtyToDeal, 'deck', $player_id );
 			self::setPlayerGoneDown($player_id, 0 /* 0 (not gone down) or 1 (gone down) */);
 		}
 		
@@ -2130,9 +2306,10 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		$this->cards->moveCard( $this->cards->getCardOnTop ( 'deck' )[ 'id' ], 'discardPile', 100); 
 		
 		// The rest of the cards are in 'deck'
+
+//		$this->view->build_page();
 		
 		//Notify all players of their cards plus the deck and the discard pile
-		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		$handTarget = $this->handTypes[$currentHandType]["Target"]; // Pull the description
 		
 		self::dump("[bmc] currentHandType handTarget stNewHand:", $handTarget);
@@ -2176,8 +2353,14 @@ TODO: Maybe check if there were no more playable cards and show that message.
 			'newHand',
 			clienttranslate('New Hand! ${dealer} has dealt the cards. New target is ${handTarget}.'),
 			array(
+				'deck' => array_keys($this->cards->getCardsInLocation( 'deck' )),
+				'discardPile' => $this->cards->getCardsInLocation( 'discardPile' ),
+				'discardSize' => $discardSize,
+				'handTarget' => $handTarget,
+				'allHands' => $cardsByLocation,
+				'buyCount' => $buyCount,
 				'dealer' => $dealer_name,
-				'handTarget' => $handTarget
+				'drawDeckSize' => $drawDeckSize
 			)
 		);
 		
@@ -2194,6 +2377,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 					'allHands' => $cardsByLocation,
 					'buyCount' => $buyCount,
 					'dealer' => $dealer_name,
+					'dealer_id' => $dealer,
 					'discardSize' => $discardSize,
 					'drawDeckSize' => $drawDeckSize
 				)
@@ -2232,7 +2416,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 	
 			$this->cards->shuffle('deck');
 
-			$shuffleCount = self::incGameStateValue( 'shuffleCount' ); // Keep track of shuffles
+			$shuffleCount = self::incGameStateValue( 'shuffleCount', 1 ); // Keep track of shuffles
 
 			// Trigger the auto-shuffle by trying to draw a card:
 			// Put 1 card from the deck into the discard pile and give it a starting weight of 100
@@ -2369,7 +2553,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 						'player_name' => $players[ $someoneIsBuying ][ 'player_name' ],
 						'color_displayed' => $color_displayed,
 						'value_displayed' => $value_displayed,
-						'player_buying' => $someoneIsBuying,
+						'player_id' => $someoneIsBuying,
 						'buyCount' => $buyCount,
 						'allHands' => $cardsByLocation
 					)
@@ -2396,7 +2580,8 @@ TODO: Maybe check if there were no more playable cards and show that message.
 					'playerDidNotBuy',
 					clienttranslate('${player_name} tried but could not buy the discard.'),
 					array (
-						'player_name' => $players[ $someoneIsBuying ][ 'player_name' ]
+						'player_name' => $players[ $someoneIsBuying ][ 'player_name' ],
+						'player_id' => $someoneIsBuying
 					)
 				);
 			}
@@ -2493,8 +2678,12 @@ TODO: Maybe check if there were no more playable cards and show that message.
 	function buyRequest( $player_id ) {
 		self::trace("[bmc] ENTER buyRequest");
 		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
+		self::dump("[bmc] player_id:", $player_id);
 		// Check if can still buy or if someone else clicked the button
 
+		$players = self::loadPlayersBasicInfos();
+		self::dump("[bmc] players (buyRequest):", $players);
+		
 		self::checkAction('buyRequest');
 
 		self::setBuyTimerStatus( $player_id, 0 ); // 0 = Not running. 1 = Running.
@@ -2506,19 +2695,50 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		}
 		
 		// If there aren't enough cards, don't allow it
-		$countDeck = count($this->cards->countCardsByLocationArgs( 'deck' ));
-		$countDiscardPile = count($this->cards->countCardsByLocationArgs( 'discardPile' ));
+		$countDeck = count( $this->cards->countCardsByLocationArgs( 'deck' ) );
+		$countDiscardPile = count ($this->cards->countCardsByLocationArgs( 'discardPile' ) );
 
 		if (( $countDeck + $countDiscardPile ) < 2 ) {
-			throw new BgaUserException( self::_('Not enough cards for you to buy.') );
+			throw new BgaUserException( self::_('There are not enough down cards for you to buy.') );
 		}
 		
 		$buyers = self::getPlayerBuying();
 		self::dump("[bmc] Buyers Status1(buyRequest):", $buyers);
 		
-		foreach( $buyers as $buyer ) {
-			if ( $buyer == 2 ) {
-				throw new BgaUserException( self::_('Sorry someone else is buying it.') );
+		$buyMethod = self::getGameStateValue( 'buyMethod' );
+ 
+		if ( $buyMethod == '1' ) { // 1==Fastest player. 2==Seat order.
+			foreach( $buyers as $buyer ) {
+				if ( $buyer == 2 ) {
+					throw new BgaUserException( self::_('Sorry someone else wants to buy it.') );
+				}
+			}
+		} else { // $buyMethod == Seat order
+			$playerOrder = self::getNextPlayerTable();
+			foreach( $buyers as $buyer_id => $buyChoice ) {
+				self::dump("[bmc] buyer_id:", $buyer_id);
+				self::dump("[bmc] buyChoice:", $buyChoice);
+
+				self::dump("[bmc] p(pid)", $players[ $player_id ]);
+				self::dump("[bmc] p(pid)", $players[ $player_id ]['player_no']);
+//GOOD
+				// If the requester is lower than the discarder, then adjust for the wrap
+				if ( $players[ $activeTurnPlayer_id ][ 'player_no' ] > $players[ $player_id ][ 'player_no' ] ) {
+					$buyerCompare = $players[ $player_id ][ 'player_no' ] + count( $players );
+				} else {
+					$buyerCompare = $players[ $player_id ][ 'player_no' ];
+				}
+
+				self::dump("[bmc] buyerCompare:", $buyerCompare );
+//GOOD
+				if ( $buyChoice == 2 ) {
+					$deltaSeat = $players[ $buyer_id ][ 'player_no' ] - $buyerCompare;
+					self::dump("[bmc] deltaSeat:", $deltaSeat );
+					
+					if ( $deltaSeat > 0 ) {
+						throw new BgaUserException( self::_('Sorry someone ahead of you wants to buy it.') );
+					}
+				}
 			}
 		}
 		
@@ -2837,7 +3057,6 @@ TODO: Maybe check if there were no more playable cards and show that message.
 ////
 ////
 ////
-
     function makeCardIdsFromCards( $cards ) {
 		
 		$cardIds = [];
@@ -2852,62 +3071,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 ////
     function stEndHand() {
 		self::trace("[bmc] !!stEndHand!!");
-        // Count and score points, then end the game or go to the next hand.
-        $players = self::loadPlayersBasicInfos();
-        // Cards 2 - 9 are 5 points each
-		// Cards 10, J, Q, K are 10 points each
-		// Cards A are 15 points each
-		// Cards Joker is 20 points each
-
-		$player_to_points = array ();
-		foreach ( $players as $player_id => $player) {
-            $player_to_points [$player_id] = 0;
-		}
-		$cards = $this->cards->getCardsInLocation("hand");
-		
-		foreach ( $cards as $card ) {
-			$player_id = $card ['location_arg'];
-			if ($card['type'] >= 1 and $card['type'] <= 4) { // If non-Joker
-				switch ( true ) {
-					case ($card['type_arg'] >= 2 and $card['type_arg'] <= 9 ): // 5 points
-						self::trace("[bmc] 2-9");
-						$player_to_points [$player_id] += 5;
-						break;
-					case ($card['type_arg'] >= 10 and $card['type_arg'] <= 13 ): // 10 points
-						self::trace("[bmc] 10,J,Q,K");
-						$player_to_points [$player_id] += 10;
-						break;
-					case ($card['type_arg'] === 1 ): // 15 points	
-						self::trace("[bmc] Ace");
-						$player_to_points [$player_id] += 15;
-						break;
-				}
-			} else { // It must be a joker, 20 points
-				self::trace("[bmc] Joker");
-				$player_to_points [$player_id] += 20;
-			}
-		}
-
-        // Apply scores to players
-        foreach ( $player_to_points as $player_id => $points ) {
-            if ($points != 0) {
-                $sql = "UPDATE player SET player_score=player_score-$points  WHERE player_id='$player_id'";
-                self::DbQuery($sql);
-                $point_number = $player_to_points [$player_id];
-                self::notifyAllPlayers("points", clienttranslate('${player_name} gets ${nbr} points'), array (
-                        'player_id' => $player_id,'player_name' => $players[ $player_id ][ 'player_name' ],
-                        'nbr' => $point_number ));
-            } else {
-                // No point lost (just notify)
-                self::notifyAllPlayers("points",
-					clienttranslate('${player_name} did not get any points'),
-					array (
-                        'player_id' => $player_id,
-						'player_name' => $players[ $player_id ][ 'player_name' ]
-					)
-				);
-            }
-        }
+// SCORING WAS HERE PREVIOUSLY
 		
 		// Notify players and wait for them to confirm to move to the next hand		
 		
@@ -2942,8 +3106,11 @@ TODO: Maybe check if there were no more playable cards and show that message.
 
         ///// Test if this is the end of the game
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
+
+		self::dump("[bmc] currentHandType stEndHand:", $currentHandType );
+		self::dump("[bmc] handTypes stEndHand:", $this->handTypes );
 		
-		if ($currentHandType >= count($this->handTypes) - 1) { // Last one is fake
+		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
 			$this->gamestate->nextState("endGame");
 		} else {
 			$this->gamestate->nextState("newHand");

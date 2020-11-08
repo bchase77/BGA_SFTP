@@ -54,6 +54,7 @@ function (dojo, declare) {
 			this.playedSoundWentOut = false;
 			this.playedSoundWentDown = false;
 			this.actionTimerLabelDefault = "Don't Buy";
+			this.dealMeInClicked = false;
 
 			this.setsRuns = [ // Places in the downArea where the cards should go, per hand (set, set, set, run, run, run)
 				[ "Area_A", "Area_B", "None",   "None",   "None",   "None"],
@@ -83,15 +84,48 @@ function (dojo, declare) {
 ////////
 //
 // TODO:
-// 11/5:
-// 10/28: Change # of cards dealt each hand? and the rules for 3 runs???
-// 11/2: Ask group: Call Liverpool on another player?
-// 11/1: Single-sorting 1 card if an identical is there moves both cards.
-// 11/1: One player has BUY buttons shown but in fact cannot buy, but should be allowed (#0).
-// 11/1: Add game option of buyer precedence or buyer click-speed.
-// 10/24: When a buyer exists, update the action bar to show everyone "player wants to buy."
-// 10/29: Board names don't show up after new hand is dealt.
 //
+// 11/8: Only notify of buy requests, not not-buys.
+// 11/8: Make 6 across, and put prep area to the right of the discard pile.
+// 11/8: JS code between 244 and 340 takes ~12 seconds (slow!)
+// 11/7: Put BUYING and BUYTIMER in different tables so there is no deadlock. (PHP line 901)
+// 11/7: Make the DRAW DECK be a single card, not covering most of the table.
+// 11/7: Make the text of gray buttons also gray.
+// 11/7: Remove "play" from the options if you cannot play.
+// 11/7: Clear prepped coloring after the hand ends
+// 11/7: Put everyone's prep area just below the DECK.
+// 11/7: Review buttons reappear even though they were clicked
+// 11/7: Konni had A890jqk but ace is still on the left
+// 11/6: 2Runs: Going down with 568 spades and 456* hearts and ace of spaces swapping a joker. It did the swap but somehow the jokers have the same IDs! I think one of the functions took the wrong joker (in PHP).
+// 11/7: 3 people are light blue
+// 11/7: Make 2 side-by-side down areas (Spectator and Gary and Kristi cannot see whole board)
+// 11/7: Dad chose the 7s but 2c was discarded
+// 11/7: Some people cannot see coral BUY IT coloring.
+// 11/7: Add a table with the players in an oval.
+// 11/2: Ask group: Call Liverpool on another player?
+// 10/29: Board Player names don't show up after new hand is dealt.
+// 11/5: Cannot go down with 2356s and replacing a joker (can do it with 235s).
+// 11/1: [forum] If 2 of same card (e.g. 2x 6 of hearts) is in hand cannot move just one of them
+// 11/7: Limit the set size???
+//
+// X 11/1: One player has BUY buttons shown but in fact cannot buy, but should be allowed (#0).
+// X 11/5: Buy buttons don't appear after new hand but should (but buy works).
+// X 11/1: Add game option of buyer precedence or buyer click-speed.
+// X 11/7: Game option for no timers. 10 seconds is too quick to. Allow buy up to the next player discard.
+// X 11/7: Played card moves from my hand instead of the player board.
+// X 11/7: Put the GO DOWN button next to Prep ABC buttons.
+// X 11/7: Add confirmation screen after player prepped cards and hit DISCARD.
+// X 11/7: Shuffling deck threw JS error (2385).
+// X 11/5: After the hand, the SO FAR table shows only the current values, not the totals.
+// X 11/5: 7810** both jokers went to the 9 spot
+// X 11/5: Game ended after 2 runs and should have kept going
+// X 11/5: After someone goes out, show a page with points per player
+// X 11/5: 5 player table isn't big enough vertically.
+// X 11/5: "It's your turn!" should not be shown after BUY REQUEST.
+// X 11/5: Hard to know who wants to buy it. Make it more prominent, like a pop-up. Or color the board.
+// X 11/5: Make it so that if > 1 card is selected and discard pile is selected it will discad but should not
+// X 10/28: Change # of cards dealt each hand? and the rules for 3 runs???
+// X 10/24: When a buyer exists, update the action bar to show everyone "player wants to buy."
 // X 11/1: Runs on board, jokers always go to right when they sometimes should be elsewhere.
 // X 11/1: Runs on board, Aces always go to left but sometimes should go to right.
 // X 11/2: [B] Firefox doesn't show dollar sign and card images in the player board areas. Change to use only PNG.
@@ -235,7 +269,7 @@ console.log(this.gamedatas);
 
 			this.deck.image_items_per_row = 13;
 			this.deck.setOverlap( 0.1, 0 );
-
+//			this.deck.setOverlap( 100, 0 );
 			this.item_margin = 0;
 
 			// Item 54, color 5, value 3 is red back of the card
@@ -243,7 +277,10 @@ console.log(this.gamedatas);
 //console.log("[bmc] deckIDs");
 //console.log(this.gamedatas.deckIDs);
 
+//			if ( this.gamedatas.deckIDs.length != 0 ) {
+
 			for ( let i = 0 ; i < this.gamedatas.deckIDs.length; i++) {
+
 //console.log(i + " / " + this.gamedatas.deckIDs[i]);
 				this.deck.addToStockWithId(1, this.gamedatas.deckIDs[i]);
 			}
@@ -267,6 +304,7 @@ console.log(this.gamedatas);
             this.discardPile.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
             this.discardPile.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
             this.discardPile.setOverlap( 0.1 , 0 );
+
 			this.discardPile.item_margin = 0; 
 		
 			// Create the variables which show how many cards in each pile (deck, hand, discard)
@@ -452,6 +490,22 @@ console.log( discardPile );
 // console.log(value);
 					this.downArea_C_[ player ].addToStockWithId( this.getCardUniqueId( color, value ), card_id );
 				}
+				
+//console.log("DRAWING NAMES");
+//console.log($(playerText_DodyOaks0));
+				// Add playername text to down areas
+//				$(playerText_DodyOaks0).innerHTML = "alice";//{PLAYER_NAME};
+//console.log($(playerText_DodyOaks0));
+//console.log("player");
+//console.log("{player}");
+//console.log({player});
+
+//console.log( $("playerDown_A1_"+ player) );
+
+			$("playerDown_A_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
+			$("playerDown_B_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
+			$("playerDown_C_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
+
 			}
 /*			
 			// Add stock for a single card played by a player. Probably can delete this if slow
@@ -515,6 +569,7 @@ console.log( discardPile );
 			dojo.connect( $('buttonPrepAreaA'), 'onclick', this, 'onPlayerPrepArea_A_Button' );
 			dojo.connect( $('buttonPrepAreaB'), 'onclick', this, 'onPlayerPrepArea_B_Button' );
 			dojo.connect( $('buttonPrepAreaC'), 'onclick', this, 'onPlayerPrepArea_C_Button' );
+			dojo.connect( $('buttonGoDownStatic'), 'onclick', this, 'onPlayerGoDownButton' );
 
 			dojo.connect( $('buttonBuy'), 'onclick', this, 'onPlayerBuyButton' );
 			dojo.connect( $('buttonNotBuy'), 'onclick', this, 'onPlayerNotBuyButton' );
@@ -586,7 +641,23 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 
 			$(redTarget).innerHTML = this.gamedatas.handTarget;
 			console.log( $(redTarget) );
+			
+			// Highlight the potential buyer, if any
+			for ( let player_id in this.gamedatas.buyers ) {
+				console.log(player_id);
+				if ( this.gamedatas.buyers[ player_id ] == 2 ) {
+					dojo.addClass( 'overall_player_board_' + player_id, 'pbInverse' );
+				}
+			}
+			
+//			let gda = this.gamedatas.playerorder.length * 114;
+			let gda = ( Object.keys( this.gamedatas.playerOrderTrue ).length - 1 ) * 120;
+            console.log( "height: " + gda + "px;" );
+			dojo.setStyle( 'goDownArea_wrap', "height: " + gda + "px;" );
 
+			// Move the board jokers, if any, to appropriate places
+			this.sortBoard();
+			
             console.log( "[bmc] EXIT game setup" );
         },
 /////////
@@ -788,6 +859,7 @@ console.log( '[bmc] EXIT onUpdateActionButtons: ' + stateName );
 /////////
 		onPlayerReviewedHandButton : function() {
 console.log("[bmc] ENTER onPlayerReviewedHandButton");
+			this.dealMeInClicked = true;
 			this.clearButtons();
 			this.stopActionTimer2();
 			var action = 'playerHasReviewedHand';
@@ -891,11 +963,10 @@ console.log("[bmc] ENTER onPlayerReviewedHandButton");
             Here, you can defines some utility methods that you can use everywhere in your javascript
             script.
         */
-        // Get card unique identifier based on its color and value
+        // Get card unique identifier based on its color and value (e.g. Ace of clubs is 0)
         getCardUniqueId : function(color, value) {
-			var cui = (color - 1) * 13 + (value - 1);
+			var cui = (color - 1) * 13 + (value - 1); // Offset depending upon the image sprite file
 //			console.log("return: " + cui)
-            //return (color - 1) * 13 + (value - 2); // Offset depending upon the image sprite file
             return cui;
         },
 		
@@ -915,20 +986,31 @@ console.log("[bmc] ENTER onPlayerReviewedHandButton");
 		sortBoard : function( ) {
 console.log( "[bmc] ENTER sortBoard" );
 			for ( var player in this.gamedatas.players ) {
+console.log("SORTBOARD player");
+console.log(player);
 				cards = this.downArea_A_[ player ].getAllItems();
-				weightChange = this.sortRun( cards, 'playerDown_A' );
+console.log(cards);
+				if ( cards != null ) {
+					weightChange = this.sortRun( cards, 'playerDown_A' );
 console.log( weightChange );
-				this.downArea_A_[ player ].changeItemsWeight( weightChange );
+					this.downArea_A_[ player ].changeItemsWeight( weightChange );
+				}
 
 				cards = this.downArea_B_[ player ].getAllItems();
-				weightChange = this.sortRun( cards, 'playerDown_B' );
+console.log(cards);
+				if ( cards != null ) {
+					weightChange = this.sortRun( cards, 'playerDown_B' );
 console.log( weightChange );
-				this.downArea_B_[ player ].changeItemsWeight( weightChange );
-
+					this.downArea_B_[ player ].changeItemsWeight( weightChange );
+				}
+				
 				cards = this.downArea_C_[ player ].getAllItems();
-				weightChange = this.sortRun( cards, 'playerDown_C' );
+console.log(cards);
+				if ( cards != null ) {
+					weightChange = this.sortRun( cards, 'playerDown_C' );
 console.log( weightChange );
-				this.downArea_C_[ player ].changeItemsWeight( weightChange );
+					this.downArea_C_[ player ].changeItemsWeight( weightChange );
+				}
 			}
 console.log( "[bmc] EXIT sortBoard" );
 		},
@@ -940,6 +1022,8 @@ console.log( "[bmc] ENTER sortRun" );
 console.log( cards );
 console.log( downArea );
 
+			let weightChange = {};
+					
 			if ( cards.length != 0 ) {
 				var el = {};
 				var cardGroup = new Array();
@@ -976,62 +1060,97 @@ console.log( cardGroupNonJokers );
 
 				// Count number of jokers and track their IDs to set weights later
 				
-				type = 5; // Jokers are type 5
+				//type = 5; // Jokers are type 5
 				var jokerCount = 0;
-				jokers = new Array();
+				var jokers = new Array();
 				
 				for ( let i in cardGroup ) {
 console.log(i);
 					if ( cardGroup[ i ][ 'type' ] == 5 ) {
-						jokers[ jokerCount ] = cardGroup[ i ][ 'unique_id' ];
+						jokers[ jokerCount ] = {
+							"uid" : cardGroup[ i ][ 'unique_id' ],
+							"type_arg" : 0 };	 // Start jokers at value 0
 						jokerCount++;
 					}
 				}
+console.log("jokers");
 console.log( jokerCount );
 console.log( jokers );
 
 				cardGroupNonJokers.sort( this.compareTypeArg ); // Sort by value, but it changes the indices
-console.log( "cardGroupNonJokers aftersort" );
-console.log( cardGroupNonJokers );
-
-				lowestCard = cardGroupNonJokers.find(Boolean) ; // Store first non-joker value
-console.log( "lowestCard" );
-console.log( lowestCard );
 				
-				jokerIndex = 0;
+				// If there's an ace, move it to be high
+				// TODO: Don't know if this is really going to work. This is kinda hokey.
+				// The value of the ace to 14 so it goes next to the king.
 				
-				let weightChange = {};
-				
-				weightChange[ lowestCard.unique_id ] = 0; // Lowest card gets lowest weight
-
-				cgLength = Object.keys(cardGroupNonJokers).length;
-console.log(cgLength);
-
-				for ( let i = 1 ; i < cgLength ; i++ ) {
-console.log(i);
-console.log(cardGroupNonJokers[i]);
-					if ( cardGroupNonJokers[ i ][ 'type_arg' ] - lowestCard[ 'type_arg' ] > 1 ) {
-						weightChange[ jokers[ jokerIndex ]] = i + jokerIndex;
-						weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex + 1;
-						jokerIndex++;
-					} else {
-						weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex;
+				for ( card in cardGroupNonJokers ) {
+console.log("card");
+console.log(card);
+console.log(cardGroupNonJokers[ card ]);
+					if ( cardGroupNonJokers[ card ][ 'type_arg' ] == 1 ) {
+console.log("FOUND ACE");
+						var ace = cardGroupNonJokers[ card ][ 'id' ];
 					}
-					lowestCard = cardGroupNonJokers[ i ];
-console.log("weightChange");
-console.log(weightChange);			
-console.log(lowestCard);
 				}
-console.log("FINAL weightChange before ACE analysis");
-console.log(weightChange);
+console.log( "ace" );
+console.log( ace );
+				if ( ace ) { // If an ace and it's high then make it high
+					if ( cardGroupNonJokers[ Object.keys(cardGroupNonJokers).length - 1 ][ 'type_arg' ] + jokerCount > 12 ) {
+						cardGroup[ ace ][ 'type_arg' ] = 14;
+					}
+				}
+				
+	console.log( "cardGroupNonJokers aftersort" );
+	console.log( cardGroupNonJokers );
+
+				if ( jokerCount > 0 ) {
+					lowestCard = cardGroupNonJokers.find(Boolean) ; // Store first non-joker value
+	console.log( "lowestCard" );
+	console.log( lowestCard );
+					
+					jokerIndex = 0;
+					
+					weightChange[ lowestCard.unique_id ] = 0; // Lowest card gets lowest weight
+
+					cgLength = Object.keys(cardGroupNonJokers).length;
+	console.log(cgLength);
+
+					for ( let i = 1 ; i < cgLength ; i++ ) {
+	console.log(i);
+	console.log(cardGroupNonJokers[i]);
+						let delta = cardGroupNonJokers[ i ][ 'type_arg' ] - lowestCard[ 'type_arg' ];
+						
+						for ( let j = 1; j < delta; j++ ) {
+	console.log(jokerIndex);
+	console.log(jokers[jokerIndex]);
+	console.log(j);
+							weightChange[ jokers[ jokerIndex ][ 'uid' ]] = i + jokerIndex;
+							weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex + 1;
+							jokers[ jokerIndex ][ 'type_arg' ] = lowestCard[ 'type_arg' ] + 1;
+							lowestCard = jokers[ jokerIndex ];
+							jokerIndex++;
+	//					} else {
+						}
+						weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex;
+						lowestCard = cardGroupNonJokers[ i ];
+	//					}
+	console.log("weightChange");
+	console.log(weightChange);			
+	console.log(lowestCard);
+	console.log(jokers);
+					}
+	console.log("FINAL weightChange before ACE analysis");
+	console.log(weightChange);
+				}
 
 				if ( ace != null ) {
+	console.log("[bmc] There's an ace!");
 					// Check if ace needs to be highest.  Assuming it's already a run, ace is high when:
 					//   There is a King, or
 					//   There is a Queen and 1 joker, or
 					//   There is a Jack and 2 jokers, etc...
 	console.log(Object.keys(cardGroupNonJokers).length);
-					if ( cardGroupNonJokers[ Object.keys(cardGroupNonJokers).length - 1 ][ 'type_arg'] + jokerCount > 12 ) {
+					if ( cardGroupNonJokers[ Object.keys(cardGroupNonJokers).length - 1 ][ 'type_arg' ] + jokerCount > 12 ) {
 	console.log("Making Ace High");
 						weightChange[ ace.unique_id ] = 14; // King is highest at 13, so make it higher
 					}
@@ -1068,7 +1187,12 @@ console.log( this.playerHand );
 
 			// Set the discard pile size for players to see
 			this.discardSize.setValue( discardSize );
-			this.myHandSize.setValue( allHands[ this.player_id ] );
+			
+			if ( allHands[ this.player_id ] != undefined ) {
+				this.myHandSize.setValue( allHands[ this.player_id ] );
+			} else {
+				this.myHandSize.setValue( 0 );
+			}
 
 			// Remove any existing discard pile card
 			//if ( this.discardPile.items.length > 0 ) {
@@ -1334,12 +1458,13 @@ debug('Ignoring startActionTimer(' + buttonId + ')', 'debug=' + isDebug, 'readOn
 			}
 
 			this.actionTimerLabel = $(buttonId).innerHTML;
-			this.actionTimerSeconds = this.buyTimeInSeconds ; // BUY COUNTDOWN
+			if ( this.buyTimeInSeconds != 0 ) {
+				this.actionTimerSeconds = this.buyTimeInSeconds ; // BUY COUNTDOWN
+			} else {
+				return; // DO NOT START THE TIMER, players didn't want not-buy timers.
+			}
 		  
 console.log( "[bmc] Starting Timer! " + this.actionTimerSeconds );
-
-
-
 
 			this.actionTimerFunction = () => {
 console.log("[bmc] ENTER actionTimerFunction. Here is S(buttonId):");
@@ -1821,6 +1946,12 @@ console.log( boardArea );
 console.log( boardPlayer );
 console.log( allHands );
 			
+			if ( player_id == this.player_id) {
+				var from = 'myhand';
+			} else {
+				var from = 'overall_player_board_' + player_id;
+			}
+			
 			cardUniqueId = this.getCardUniqueId( color, value );
 console.log( cardUniqueId );
 
@@ -1840,7 +1971,8 @@ console.log(boardArea);
 				this.downArea_A_[boardPlayer].addToStockWithId(
 					cardUniqueId,
 					card_id,
-					'myhand' );
+					from );
+//					'myhand' );
 
 console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById( card_id );
@@ -1852,7 +1984,8 @@ console.log(boardArea);
 				this.downArea_B_[boardPlayer].addToStockWithId(
 					cardUniqueId,
 					card_id,
-					'myhand' );
+					from );
+//					'myhand' );
 
 console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById( card_id );
@@ -1863,7 +1996,8 @@ console.log("[bmc] Removed.");
 				this.downArea_C_[boardPlayer].addToStockWithId(
 					cardUniqueId,
 					card_id,
-					'myhand' );
+					from );
+//					'myhand' );
 console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById(card_id);
 console.log("[bmc] Removed.");
@@ -2005,7 +2139,31 @@ console.log( "[bmc] ENTER clearButtonsNotBuy" );
 /////////		
 		onPlayerDiscardButton : function() {
 console.log( "[bmc] ENTER onPlayerDiscardButton" );
+			let action = "reallyDiscard";
+console.log( this.prepAreas );
+
+			// If cards are in prep area, double check that the really want to discard and not go down.
+			if (( this.prepAreas > 0 ) && ( this.goneDown[ this.player_id ] == 0 )) { //0 = Not gone down; 1 = Gone down.
+console.log ("[bmc] CONFIRM");
+				this.confirmationDialog( _('Are you sure you want to discard? You have cards prepped.'),
+							 dojo.hitch( this, function() {
+								 this.reallyDiscard();
+							   // this.ajaxcall( '/' + this.game_name + "/" + this.game_name + "/" + action + ".html",
+									// { id:'', lock:true }, this, function( result ) {} );
+							}));
+			} else { // nothing prepped so discard the card
+console.log ("[bmc] Just discard");
+				this.reallyDiscard();
+			}
+console.log( "[bmc] EXIT onPlayerDiscardButton" );
+		},
+/////////
+/////////
+/////////		
+		reallyDiscard : function() {
+console.log( "[bmc] ENTER reallyDiscard" );
 console.log( this.player_id );
+
 			this.clearButtons();
 //		    this.removeActionButtons(); // Remove the button because they discarded
 //			this.showingButtons === 'No';
@@ -2102,8 +2260,8 @@ console.log( thisPlayerHand );
 						weightChange[ thisPlayerHand[ i ].unique_id ] = parseInt( thisPlayerHand[ i ].unique_id );
 					}
 				}
-// console.log("weightChange RUN");
-// console.log(weightChange);
+console.log("weightChange RUN");
+console.log(weightChange);
 				this.playerHand.changeItemsWeight(weightChange);
 				
 			} else {
@@ -2119,8 +2277,8 @@ console.log( thisPlayerHand );
 						weightChange[ thisPlayerHand[ i ].unique_id ] = parseInt( thisPlayerHand[ i ].type_arg );
 					}
 				}
-// console.log("weightChange SET");
-// console.log(weightChange);
+console.log("weightChange SET");
+console.log(weightChange);
 				this.playerHand.changeItemsWeight(weightChange);
 			}
 			this.showHideButtons();
@@ -2234,8 +2392,8 @@ console.log("[bmc] cardIds: " + cardIds );
 			for (let i in thisPlayerHand) {
                 weightChange[ thisPlayerHand[ i ].type ] = parseInt(i);
 			}
-// console.log("[bmc] WC");
-// console.log(weightChange);
+console.log("[bmc] WC");
+console.log(weightChange);
 			this.playerHand.changeItemsWeight(weightChange);
 			this.playerHand.unselectAll();
 		},
@@ -2506,7 +2664,8 @@ console.log("[bmc] Yikes!! Color or value is null! Need to fix this, this is fat
 			if ( drawingPlayer == this.player_id ) {
 				console.log("[bmc] player_id is me");
 				var addTo = 'myhand';
-
+// EXP 11/5
+//				let cardUniqueId = this.getCardUniqueId( color, value );
 				let cardUniqueId = this.getCardUniqueId( color, value );
 				
 				this.playerHand.addToStockWithId( cardUniqueId, card_id ); // Add the card to my hand from the board
@@ -2540,14 +2699,10 @@ console.log( '[bmc] A' );
 				}
 				if ( drawSource == 'playerDown_B' ) {
 console.log( '[bmc] B' );
-// EXPERIMENT: Shouldn't remove both, but not sure how to distinquish joker swap while going down
-//					this.downArea_B_[ player_id ].removeFromStockById( card_id, addTo );
 					this.downArea_B_[ drawPlayer ].removeFromStockById( card_id, addTo );
 				}
 				if ( drawSource == 'playerDown_C' ) {
 console.log( '[bmc] C' );
-//						this.downArea_C_[ drawPlayerInContext ].removeFromStockById( card_id );
-//					this.downArea_C_[ player_id ].removeFromStockById( card_id, addTo );
 					this.downArea_C_[ drawPlayer ].removeFromStockById( card_id, addTo );
 				}
 		console.log("[bmc] EXIT drawCard");
@@ -2555,13 +2710,6 @@ console.log( '[bmc] C' );
 /////////
 /////////
 /////////
-
-
-
-
-
-
-
 		drawCardSpect : function (
 			player_id,
 			card_id,
@@ -2619,25 +2767,6 @@ console.log(this.playerHand)
 	console.log("[bmc] Yikes!! Color or value is null! Need to fix this, this is fatal.");
 					exit(0);
 				}
-
-	//			if ( player_id == this.player_id ) {
-				// if ( drawingPlayer == this.player_id ) {
-					// console.log("[bmc] player_id is me");
-					// var addTo = 'myhand';
-
-					// let cardUniqueId = this.getCardUniqueId( color, value );
-					
-					// this.playerHand.addToStockWithId( cardUniqueId, card_id ); // Add the card to my hand from the board
-
-	// console.log(this.drawCounter)
-					
-					// let weightChange = {};
-					// weightChange[ cardUniqueId ] = this.playerHand.items.length + this.drawCounter;
-	// console.log(weightChange);
-
-					// this.playerHand.changeItemsWeight( weightChange );
-
-				// } else {
 				console.log("[bmc] player_id is NOT me");
 				var addTo = 'overall_player_board_' + drawPlayer;
 //			}
@@ -2658,39 +2787,15 @@ console.log( '[bmc] A' );
 				}
 				if ( drawSource == 'playerDown_B' ) {
 console.log( '[bmc] B' );
-// EXPERIMENT: Shouldn't remove both, but not sure how to distinquish joker swap while going down
-//					this.downArea_B_[ player_id ].removeFromStockById( card_id, addTo );
 					this.downArea_B_[ drawPlayer ].removeFromStockById( card_id, addTo );
 				}
 				if ( drawSource == 'playerDown_C' ) {
 console.log( '[bmc] C' );
-//						this.downArea_C_[ drawPlayerInContext ].removeFromStockById( card_id );
-//					this.downArea_C_[ player_id ].removeFromStockById( card_id, addTo );
 					this.downArea_C_[ drawPlayer ].removeFromStockById( card_id, addTo );
 				}
 			}
 		console.log("[bmc] EXIT drawCardSpect");
 		},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /////////
 /////////
 /////////
@@ -2702,7 +2807,7 @@ console.log( this.gamedatas );
 console.log( this.player_id );
 
 			// If the gamestate is play, then treat it as a discard.
-			// 
+
             var handCards = this.playerHand.getSelectedItems();
 
 			if (( this.gamedatas.gamestate.name == 'playerTurnPlay' ) &&
@@ -2711,14 +2816,12 @@ console.log( this.player_id );
 	
 			// If the gamestate is draw, then draw the top of discard pile (chosen in php).
 			} else if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ) {
-				//var card = this.discardPile.getSelectedItems()[ 0 ]; // Only ajax if a card was selected
 //console.log(card);
 
 				var items = new Array();
 				
 				items[0] = {id: "0", type: 0 }; // "Fake" card just used for discarding (i.e. we need to send *something* but
 				// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
-//				items.push( card );
 				this.drawCard2nd( items, 'discardPile' );
 			}
 		},
@@ -2742,8 +2845,6 @@ console.log( this.player_id );
 				
 				var from = 'myhand_item_' + card.id;
 				
-//				this.currentHandType = this.gamedatas.currentHandType;
-
 				if ( this.setsRuns[ this.currentHandType ][ this.prepSetLoc ] == "Area_A" ) {
 					 this.downArea_A_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
 					 dojo.addClass('playerDown_A_' + this.player_id, "border1");
@@ -2782,10 +2883,6 @@ console.log( this.player_id );
 				console.log(cardId);
 				console.log(this.player_id);
 				
-//				var from = 'myhand_item_' + card.id;
-				
-//				this.currentHandType = this.gamedatas.currentHandType;
-
 				if ( this.setsRuns[ this.currentHandType ][ this.prepRunLoc ] == "Area_A" ) {
 					 this.downArea_A_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
 					 dojo.addClass('playerDown_A_' + this.player_id, "border1");
@@ -2801,58 +2898,8 @@ console.log( this.player_id );
 				
 				this.cardDisplayClass = "downPrep";
 				
-//				console.log(from);
-				//console.log(to);
-				
-//				this.placeOnObject(from, to + this.player_id);
-//				this.slideToObject(from, to + this.player_id, 1000).play();
-//				this.slideToObjectPos(from, to + this.player_id, 1000).play();
-//				this.slideToObjectPos(from, to, 0, -50, 1000, 0).play();
-//				this.placeOnObject('myhand_item_' + card.id, 'playerDown_A_' + player_id);
-				// Slide to it's final destination
-//				this.slideToObject('myhand_item_' + card.id, 'playerDown_A_' + player_id, 1000).play();
 				this.playerHand.removeFromStockById(card.id);
-/*				this.play1card.removeFromStock(1);
-*/
 
-				
-/*
-				//let card = {};
-				//card.type = this.playerHand.getItemById(card_id).type; // This worked with 1 player
-				card.id = cardIDs[card_id];
-				card.type =  notif.args.card_type[card_id];
-				card.type_arg =  notif.args.card_type_arg[card_id];
-				console.log(card);
-				color = card.type;
-				value = card.type_arg;
-				console.log("[bmc] color and value");
-				console.log(color);
-				console.log(value);
-				
-				cardUniqueId = this.getCardUniqueId(color, value);
-				
-				//TODO I think overall_player_board is wrong... probably downArea_A_...
-				this.downArea_A_[player_id].addToStockWithId(cardUniqueId, card.id, 'overall_player_board_' + player_id);
-				
-				console.log("[bmc] PLAYERS");
-				console.log(player_id);
-				console.log(this.player_id);
-
-				if (player_id === this.player_id) {
-					var from = 'myhand_item_' + card.id;
-				} else {
-					this.play1card.addToStock(1); // Just a card back played by the other player
-					var from = 'play1card';
-				}
-
-				this.placeOnObject(from, 'playerDown_B_' + player_id);
-//				this.slideToObject(from, 'playerDown_B_' + player_id, 1000).play();
-//				this.placeOnObject('myhand_item_' + card.id, 'playerDown_A_' + player_id);
-				// Slide to it's final destination
-//				this.slideToObject('myhand_item_' + card.id, 'playerDown_A_' + player_id, 1000).play();
-				this.playerHand.removeFromStockById(card.id);
-				this.play1card.removeFromStock(1);
-*/
 			}
 		},
 /////////
@@ -2888,7 +2935,6 @@ console.log("[bmc] cardIds: " + cardIds);
 				console.log(this.prepAreas);
 				console.log("[bmc] INCREMENTED prepAreas");
 
-//				this.putSetDown( cards );
 				this.playerHand.unselectAll();
 				this.showHideButtons();
 			}
@@ -2924,7 +2970,6 @@ console.log("[bmc] cardIds: " + cardIds);
 				console.log(this.prepAreas);
 				console.log("[bmc] INCREMENTED prepAreas");
 
-//				this.putSetDown( cards );
 				this.playerHand.unselectAll();
 				this.showHideButtons();
 			}
@@ -2933,9 +2978,10 @@ console.log("[bmc] cardIds: " + cardIds);
 /////////
 /////////
 		onPlayerPrepArea_C_Button : function () {
-			console.log("[bmc] BUTTON onPlayerPrepAreaAButton");
-			console.log(this.player_id);
-			if ( this.goneDown[ this.player_id ] == 1 ) { // If player already went down, do nothing
+console.log("[bmc] BUTTON onPlayerPrepAreaAButton");
+console.log(this.player_id);
+			// If player already went down, do nothing
+			if ( this.goneDown[ this.player_id ] == 1 ) {
 				this.showMessage("You already went down");
 				return;
 			} else {
@@ -2960,7 +3006,6 @@ console.log("[bmc] cardIds: " + cardIds);
 				console.log(this.prepAreas);
 				console.log("[bmc] INCREMENTED prepAreas");
 
-//				this.putSetDown( cards );
 				this.playerHand.unselectAll();
 				this.showHideButtons();
 			}
@@ -2970,32 +3015,15 @@ console.log("[bmc] cardIds: " + cardIds);
 /////////
 		showHideButtons : function() {
 console.log("[bmc] ENTER ShowHideButtons");
-//			let buyButtonID = 'buttonPlayerBuy';
-//			let notBuyButtonID = 'buttonPlayerNotBuy';
 			let buyButtonID = 'buttonBuy';
 			let notBuyButtonID = 'buttonNotBuy';
 console.log( "[bmc] BUTTONIDs:" );
-//console.log( buyButtonID );
 console.log( notBuyButtonID );
 
 			this.clearButtons();
 
 			// Only show the buy buttons if they already don't exist
 			
-//			let notBuyButtonDOM = document.getElementById('buttonPlayerNotBuy');
-			// let notBuyButtonDOM = document.getElementById( notBuyButtonID );
-// console.log("[bmc] notBuyButtonDOM: ", notBuyButtonDOM);
-			
-			// if ( notBuyButtonDOM == null ) { // == null or undefined
-// console.log("[bmc] Button Null");
-				// this.clearButtons();
-				// dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-			// } else { // Wait for the buy to count out
-// console.log("[bmc] Buy buttons are blue");
-				//return;
-			// }
-
 			var showButtons = new Array();
 			
 console.log("this.playerSortBy");
@@ -3017,14 +3045,6 @@ console.log(this.playerSortBy);
 				}
 			}
 			
-//XTODO: Remove these buttons and hook up the dedicated ones.
-//XTODO: The CSS changing the widths doesn't move the discardpile right, not sure why.
-
-			// if ( this.playerSortBy == 'Run' ) {
-				// this.addActionButton( 'buttonPlayerSortBy', _("Sort By Sets"), 'onPlayerSortByButton');
-			// } else {
-				// this.addActionButton( 'buttonPlayerSortBy', _("Sort By Runs"), 'onPlayerSortByButton');
-			// }
 console.log( "[bmc] Player:" );
 console.log( this.player_id );
 console.log( this.gamedatas.gamestate.active_player );
@@ -3056,15 +3076,11 @@ console.log( this.gamedatas.activeTurnPlayer_id );
 					//this.addActionButton( 'buttonPlayerSort', _("Sort!"), 'onPlayerSortButton');
 				}
 			}
-			////
-			////
-			////
+
 			if ( this.prepRunLoc + this.prepSetLoc > 3) { // Starting positions are 0 and 3
 				showButtons['prepped'] = true;
 			}
-			////
-			////
-			////
+
 			console.log("[bmc] showButtons:");
 			console.log(showButtons);
 			console.log(this.prepAreas);
@@ -3080,8 +3096,11 @@ console.log( this.gamedatas.activeTurnPlayer_id );
 				  showButtons['myturn'] && 
 				( goDownDOM == null )) {
 
+				dojo.replaceClass( 'buttonGoDownStatic', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
 				this.addActionButton( 'buttonPlayerGoDown', _("Go Down!"), 'onPlayerGoDownButton' );
 				this.showingButtons === 'Yes';
+			} else {
+				dojo.replaceClass( 'buttonGoDownStatic', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 			}
 			//
 			// Show PREP SET/RUN buttons if those are a target and player not down
@@ -3121,14 +3140,6 @@ console.log( this.gamedatas.activeTurnPlayer_id );
 					this.showingButtons === 'Yes';
 				}
 			}
-
-/*
-			dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-			dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_gray", "bgabutton_blue" );
-			dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_gray", "bgabutton_blue" );
-			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-			dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" );
-*/
 			//
 			// Show DISCARD if card selected, it's not state playerTurnDraw, and it's my turn
 			//
@@ -3172,7 +3183,6 @@ console.log("[bmc] EXIT onPlayerHandDoubleClick");
         onPlayerHandSelectionChanged : function() {
 			console.log("[bmc] ENTER onPlayerHandSelectionChanged");
             var items = this.playerHand.getSelectedItems();
-//console.log("[bmc] on PlayerHand: items in OPHSC: ");
 console.log( items);
 
 console.log( "[bmc] gamedatas:" );
@@ -3230,10 +3240,11 @@ console.log( '[bmc] ENTER notifications subscriptions setup' );
             dojo.subscribe( 'deckShuffled' ,     this, "notif_deckShuffled");
             dojo.subscribe( 'playerNotBuying' ,  this, "notif_playerNotBuying");
             dojo.subscribe( 'playerWantsToBuy' , this, "notif_playerWantsToBuy");
-            dojo.subscribe( 'playerBought' ,     this, "notif_playerBought");
+            dojo.subscribe( 'playerBought' ,	 this, "notif_playerBought");
             dojo.subscribe( 'playerDidNotBuy' ,  this, "notif_playerDidNotBuy");
 			dojo.subscribe( 'wentOut' , 		 this, "notif_playerWentOut");
             dojo.subscribe( 'clearBuyers' ,      this, "notif_clearBuyers");
+			dojo.subscribe( 'close_btn' , 		 this, "onPlayerReviewedHandButton");
 //            dojo.subscribe( 'playerDidNotBuy' ,  this, "notif_NextPlayer");
 
 console.log( "[bmc] EXIT notifications subscriptions setup" );
@@ -3267,13 +3278,18 @@ console.log( "[bmc] EXIT notifications subscriptions setup" );
 /////////
 /////////
 /////////
-		showReviewButton : function( player_id) {
+		showReviewButton : function( player_id ) {
 			var reviewButtonID = 'buttonReview' + this.player_id;
 
-			if ( player_id == this.player_id ) {
-				this.addActionButton( reviewButtonID, _("AWESOME! WOOT! On to the next!"), 'onPlayerReviewedHandButton' );
-			} else {
-				this.addActionButton( reviewButtonID, _("Bummer! On to the next!"), 'onPlayerReviewedHandButton' );
+			var isReadOnly = this.isReadOnly();
+			if ( !isReadOnly ) { // Spectators are read only
+
+//				if (( player_id == this.player_id )  && ( this.dealMeInClicked == false )) {
+				if ( this.dealMeInClicked == false ) {
+					this.addActionButton( reviewButtonID, _("Deal me in!"), 'onPlayerReviewedHandButton' );
+				}// else {
+					// this.addActionButton( reviewButtonID, _("Deal me in!"), 'onPlayerReviewedHandButton' );
+				// }
 			}
 		},
 /////////
@@ -3304,14 +3320,7 @@ console.log( "[bmc] EXIT notifications subscriptions setup" );
 /////////
 /////////
 /////////
-        notif_newHand : function(notif) {
-console.log("[bmc] ENTER notif_newHand");
-console.log(notif);
-			
-			if ( notif.args.hand.length == 0 ) { // if it's just notify for the history log, do nothing
-				return;
-			}
-			
+		clearTable : function() {
 			// At the start of each hand give everyone time to see the first discard
 			// And clear the knowledge that they've reviewed the past hand.
 			this.firstLoad = 'Yes';
@@ -3333,9 +3342,92 @@ console.log(notif);
 			this.prepSetLoc = 0; // Nothing is prepped, so clear the counters
 			this.prepRunLoc = 3;
 			this.prepAreas = 0;
+		},
+/////////
+/////////
+/////////
+		setupDiscardPile : function(notif) {
+			// Set up the discard pile
+			var discardPileWeights = new Array();
+
+			if ( notif.args.discardPile != undefined ) {
+				for ( let i in notif.args.discardPile ) {
+					console.log("[bmc] NEW DISCARD PILE");
+					let card = notif.args.discardPile[i];
+					let color = card.type;
+					let value = card.type_arg;
+					this.discardPile.addToStockWithId( this.getCardUniqueId( color, value ), card.id );
+					let location_arg = parseInt( notif.args.discardPile[ i ][ 'location_arg' ]);
+					discardPileWeights[ this.getCardUniqueId( color, value )] = location_arg;
+				}
+				// Set the weights in the discard pile
+				this.discardPile.changeItemsWeight(discardPileWeights);
+	console.log("[bmc] this.discardPile");			
+	console.log(this.discardPile);
+
+				// Set to show the count of cards in the discard pile
+				this.discardSize.setValue( notif.args.discardSize );
+			}
+		},
+/////////
+/////////
+/////////
+		setupDeck : function(notif) {
+			// Set up the draw deck
+			if ( notif.args.deck != undefined ) {
+				for ( let i = 0 ; i < notif.args.deck.length; i++ ) {
+					this.deck.addToStockWithId( 1, notif.args.deck[i] );
+				}
+			}
+			if ( notif.args.drawDeckSize != undefined ) {
+				this.drawDeckSize.setValue( notif.args.drawDeckSize );
+			}
+console.log("[bmc] this.deck");			
+console.log(this.deck);
+		},
+/////////
+/////////
+/////////
+		clearPlayerBoards : function(notif) {
+			dojo.removeClass('playerDown_A_' + this.player_id, "border1");
+			dojo.removeClass('playerDown_B_' + this.player_id, "border1");
+			dojo.removeClass('playerDown_C_' + this.player_id, "border1");
+
+			if ( notif.args.buyCount != undefined ) {
+				for ( var player_id in this.gamedatas.players ) {
+console.log("[bmc] Updating buys and cards");
+					this.buyCount[ player_id ].setValue( notif.args.buyCount[ player_id ] );
+					this.handCount[ player_id ].setValue( notif.args.allHands[ player_id ] );
+				}
+			}
+		},
+/////////
+/////////
+/////////
+        notif_newHand : function(notif) {
+console.log("[bmc] ENTER notif_newHand");
+console.log(notif);
 			
-			// TODO: This is why all the hands are same. Need to look at each player_id.
-			
+			this.dealMeInClicked = false;
+			if ( notif.args.hand == undefined ) {
+console.log("Hand is undefined");
+				this.clearTable();
+				this.setupDiscardPile(notif);
+				this.setupDeck(notif);
+				this.clearPlayerBoards(notif);
+				return;
+				
+			} else 	if ( notif.args.hand != undefined ) {
+				if (notif.args.hand.length == 0 ) { // if it's just notify for the history log, do nothing
+console.log("empty arg");
+					return;
+				}
+			}
+			this.clearTable();
+			this.setupDiscardPile(notif);
+			this.setupDeck(notif);
+			this.clearPlayerBoards(notif);
+
 			var isReadOnly = this.isReadOnly();
 			if ( !isReadOnly ) { // Spectators are read only
 				// Set up the new hand for the player
@@ -3351,42 +3443,12 @@ console.log(notif);
 				}
 	console.log("[bmc] this.playerHand");			
 	console.log(this.playerHand);
-
-				this.buyCount[ this.player_id ].setValue( notif.args.buyCount[ this.player_id ] );
 			}
-
-			// Set up the discard pile
-			var discardPileWeights = new Array();
-
-            for ( let i in notif.args.discardPile ) {
-				console.log("[bmc] NEW DISCARD PILE");
-                let card = notif.args.discardPile[i];
-                let color = card.type;
-                let value = card.type_arg;
-                this.discardPile.addToStockWithId( this.getCardUniqueId( color, value ), card.id );
-				let location_arg = parseInt( notif.args.discardPile[ i ][ 'location_arg' ]);
-				discardPileWeights[ this.getCardUniqueId( color, value )] = location_arg;
-			}
-			// Set the weights in the discard pile
-			this.discardPile.changeItemsWeight(discardPileWeights);
-console.log("[bmc] this.discardPile");			
-console.log(this.discardPile);
-
-			// Set to show the count of cards in the discard pile
-			this.discardSize.setValue( notif.args.discardSize );
-
-			// Set up the draw deck
-			for ( let i = 0 ; i < notif.args.deck.length; i++ ) {
-				this.deck.addToStockWithId( 1, notif.args.deck[i] );
-			}
-console.log("[bmc] this.deck");			
-console.log(this.deck);
-
-			this.drawDeckSize.setValue( notif.args.drawDeckSize );
 
 			// Set all players to buy, except for the player whose turn it is
-			if ( this.player_id != notif.args.dealer ) {
-				this.buyCounterTimerShouldExist = 'Yes'; // A timer and a button should exit
+			if ( this.player_id != this.gamedatas.playerOrderTrue[ notif.args.dealer_id ] ) {
+				this.buyCounterTimerShouldExist = 'Yes'; // A timer and a button should exist
+				this.showBuyButton2();
 			}
 
 			// Set the hand counts for all players
@@ -3398,6 +3460,7 @@ console.log(this.deck);
 			
 			// Update the webpage with the new target
 			$(redTarget).innerHTML = notif.args.handTarget;
+
 			console.log( $(redTarget) );
 			console.log("[bmc] EXIT notif_newHand");
         },
@@ -3544,8 +3607,9 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 		notif_playerBought : function(notif) {
 			console.log("[bmc]notif_playerBought");
 			console.log(notif);
-			this.buyCount[  notif.args.player_buying ].setValue( notif.args.buyCount[ notif.args.player_buying ] );
-			this.handCount[ notif.args.player_buying ].setValue( notif.args.allHands[ notif.args.player_buying ] );
+			dojo.removeClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
+			this.buyCount[  notif.args.player_id ].setValue( notif.args.buyCount[ notif.args.player_id ] );
+			this.handCount[ notif.args.player_id ].setValue( notif.args.allHands[ notif.args.player_id ] );
 		},
 /////////
 /////////
@@ -3553,6 +3617,7 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 		notif_playerDidNotBuy : function(notif) {
 			console.log("[bmc]notif_playerDidNotBuy");
 			console.log(notif);
+			dojo.removeClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
 		},
 /////////
 /////////
@@ -3562,7 +3627,26 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 			console.log(notif);
 			this.stopActionTimer2();
 			this.showHideButtons();
+			console.log( this.gamedatas.players[ notif.args.player_id ].name  );
 			
+			console.log("[bmc] Adding class and showing bubble");
+			
+			dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
+			
+			this.showMessage( this.gamedatas.players[ notif.args.player_id ].name + ' wants to buy ' +
+				notif.args.value_displayed + notif.args.color_displayed,
+				'error' ); // 'info' or 'error'
+
+/*			anchor_id = 'overall_player_board_' + notif.args.player_id;
+			text = "I'll buy it!";
+			delay = 0;
+			duration = 7;
+			custom_class = '';
+			
+			console.log(anchor_id);
+			
+			this.showBubble(anchor_id, text, delay, duration, custom_class);
+*/			
 			// New variables for new timers on static buttons
 			this.enableDBStatic = 'No';
 			this.enableDBTimer = 'No'; // But let the timer run out if it's there
@@ -3689,9 +3773,6 @@ function( mobile_obj, target_obj, duration, delay )
 Return an dojo.fx animation that is sliding a DOM object from its current position over another one
 Animate a slide of the DOM object referred to by domNodeToSlide from its current position to the xpos, ypos relative to the object referred to by domNodeToSlideTo.
 */
-
-//					this.slideToObject('overall_player_board_' + downPlayer, downArea + downPlayer, 1000).play();
-// EXPERIMENT THIS TOO!					this.playerHand.removeFromStockById( card_id );
 					this.playerHand.removeFromStockById( card_ids[ card_id ]);
 				}
 			}

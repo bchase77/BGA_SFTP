@@ -39,12 +39,12 @@ $game_options = array(
 	101 => array(
 		'name' => totranslate( 'Buy timer (seconds)' ),
 		'values' => array(
+			0  => array ( 'name' => totranslate( 'Disable buy timer' )	),
 			10 => array ( 'name' => totranslate( '10 seconds' )	),
 			20 => array ( 'name' => totranslate( '20 seconds' ) ),
 			30 => array ( 'name' => totranslate( '30 seconds' ) ),
 			40 => array ( 'name' => totranslate( '40 seconds' ) ),
 			50 => array ( 'name' => totranslate( '50 seconds' ) ),
-			60 => array ( 'name' => totranslate( '60 seconds' )	)
 		),
 		'default' => 10
 	),
@@ -53,6 +53,14 @@ $game_options = array(
 		'values' => array(
 			1 => array ( 'name' => totranslate( 'Full length game (2Sets, 1Set1Run, 2Runs, 3Sets, 2Sets1Run, 2Run1Set, 3Runs)' )	),
 			2 => array ( 'name' => totranslate( 'Short game (2Sets, 2Runs, 2Sets1Run, 3Runs)' ) )
+		),
+		'default' => 10
+	),
+	103 => array(
+		'name' => totranslate( 'Buy-winner chosen' ),
+		'values' => array(
+			1 => array ( 'name' => totranslate( 'By fastest player' )	),
+			2 => array ( 'name' => totranslate( 'By seat order' ) )
 		),
 		'default' => 10
 	)

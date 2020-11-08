@@ -26,16 +26,15 @@
 <div id="myhand_wrap" class="myhand whiteblock">
 -->
 
+<h3>
+	<span>Target: 
+		<span id="redTarget" style="color:Blue"></span>
+	</span>
+</h3>
 <div id="myhand_wrap" class="myHandWrap whiteblock">
 	<div id="topBoxes">
 		<div id="TLeftBox" class="leftboxHandArea">
-			<h3>
-				<span>Target: 
-					<span id="redTarget" style="color:red">
-					</span>
-				</span>
-			</h3>
-				<span id="myHandArea" style="font-weight: bold">     My Hand (<span id="myHandSize"></span>):
+				<span id="myHandArea" class="spectatorMode" style="font-weight: bold">     My Hand (<span id="myHandSize"></span>):
 					<a href="#" id="buttonPlayerSortBySet" class="bgabutton bgabutton_blue spectatorMode">Sort Sets</a>
 					<a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue spectatorMode">Sort Runs</a>
 					<span style="margin-left:15px"></span>
@@ -45,6 +44,7 @@
 					<a href="#" id="buttonPrepAreaA" class="bgabutton bgabutton_gray spectatorMode">Prep A</a>
 					<a href="#" id="buttonPrepAreaB" class="bgabutton bgabutton_gray spectatorMode">Prep B</a>
 					<a href="#" id="buttonPrepAreaC" class="bgabutton bgabutton_gray spectatorMode">Prep C</a>
+					<a href="#" id="buttonGoDownStatic" class="bgabutton bgabutton_gray spectatorMode">Go Down</a>
 					<div id="myhand" class="myhand"></div>
 				</span>
 		</div>
@@ -65,9 +65,9 @@
 	</div>
 	<div id="downArea">
 		<!-- BEGIN goDownArea -->
-			<div id="playerDown_A_{PLAYER_ID}" class="downWhite"><span id=playerText>{PLAYER_NAME}<span></div>
-			<div id="playerDown_B_{PLAYER_ID}" class="downWhite"><span id=playerText>{PLAYER_NAME}<span></div>
-			<div id="playerDown_C_{PLAYER_ID}" class="downWhite"><span id=playerText>{PLAYER_NAME}<span></div>
+			<div id="playerDown_A_{PLAYER_ID}" class="downWhite"></div>
+			<div id="playerDown_B_{PLAYER_ID}" class="downWhite"></div>
+			<div id="playerDown_C_{PLAYER_ID}" class="downWhite"></div>
 		<!-- END goDownArea -->
 	</div>
 </div>
@@ -80,6 +80,13 @@
 <script type="text/javascript">
 
 	/* Javascript HTML templates */
+/*			<div id="playerDown_A1_{PLAYER_ID}" class="downWhite">M:</div>
+			<div id="playerDown_B1_{PLAYER_ID}" class="downWhite">N:</div>
+			<div id="playerDown_C1_{PLAYER_ID}" class="downWhite">O:</div>
+			<div id="playerDown_A2_{PLAYER_ID}" class="downWhite">P:</div>
+			<div id="playerDown_B2_{PLAYER_ID}" class="downWhite">Q:</div>
+			<div id="playerDown_C2_{PLAYER_ID}" class="downWhite">R:</div>
+*/
 /*
 var jstpl_handTarget = '<div id="handTarget"></div>';
 */
