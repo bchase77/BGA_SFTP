@@ -3415,6 +3415,7 @@ console.log("Hand is undefined");
 				this.setupDiscardPile(notif);
 				this.setupDeck(notif);
 				this.clearPlayerBoards(notif);
+				
 				return;
 				
 			} else 	if ( notif.args.hand != undefined ) {
@@ -3458,6 +3459,13 @@ console.log("empty arg");
 			
 			this.buyTimeInSeconds = 40;
 			
+			// Draw the names on the board
+			for ( var player in this.gamedatas.players) {
+				$("playerDown_A_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
+				$("playerDown_B_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
+				$("playerDown_C_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
+			}
+
 			// Update the webpage with the new target
 			$(redTarget).innerHTML = notif.args.handTarget;
 

@@ -2017,10 +2017,22 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// And notify of the played card
 	
 		self::trace("[bmc] Notify of played card");
-	
+
+//		$color_displayed = 'the ' . $this->colors[ $currentCard[ 'type' ]][ 'name' ] . ' ';
+//		$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
+
+		if ( $currentCard[ 'type' ] == 5 ) {
+			$value_displayed = ' a joker';
+			$color_displayed = '!';
+		} else {
+			$value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
+			$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
+		}
+
 		self::notifyAllPlayers(
 			'cardPlayed',
-			clienttranslate('${player_name} plays the ${color_displayed} ${value_displayed} '),
+//			clienttranslate('${player_name} plays the ${color_displayed} ${value_displayed} '),
+			clienttranslate('${player_name} plays ${value_displayed}${color_displayed}.'),
 			array (
 				'card_id' => $card_id,
 				'player_id' => $player_id,
