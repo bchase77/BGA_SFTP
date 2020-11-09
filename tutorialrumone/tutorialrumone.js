@@ -265,7 +265,7 @@ console.log(this.gamedatas);
             }
 
 			this.deck = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
-            this.deck.create( this, $('deck'), this.cardwidth, this.cardheight );            
+            //this.deck.create( this, $('deck'), this.cardwidth, this.cardheight );            
 
 			this.deck.image_items_per_row = 13;
 			this.deck.setOverlap( 0.1, 0 );
@@ -287,6 +287,17 @@ console.log(this.gamedatas);
 //console.log("[bmc] this.deck");			
 //console.log(this.deck);
 			
+//EXP Start 11/8			
+			// Create a single card to represent the card back
+			this.deckOne = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
+            this.deckOne.create( this, $('deck'), this.cardwidth, this.cardheight );            
+			this.deckOne.image_items_per_row = 13;
+
+			// Item 54, color 5, value 3 is red back of the card
+			this.deckOne.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
+			this.deckOne.addToStockWithId(1, this.gamedatas.deckIDs[i]);
+//EXP End 11/8
+
 			// Create stock for the discard pile (could be any face-up card)
             this.discardPile = new ebg.stock(); // new stock object for hand
             this.discardPile.create( this, $('discardPile'), this.cardwidth, this.cardheight );            
@@ -533,7 +544,8 @@ console.log( discardPile );
 			dojo.connect( $('myhand'), 'ondblclick', this, 'onPlayerHandDoubleClick' );
 
             dojo.connect( this.playerHand,  'onChangeSelection', this, 'onPlayerHandSelectionChanged' );
-            dojo.connect( this.deck,        'onChangeSelection', this, 'onDeckSelectionChanged' );
+//            dojo.connect( this.deck,        'onChangeSelection', this, 'onDeckSelectionChanged' );
+            dojo.connect( this.deckOne,        'onChangeSelection', this, 'onDeckSelectionChanged' );
             dojo.connect( this.discardPile, 'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
 			dojo.connect( $('discardPile' ), 'onclick', this, 'onDiscardPileSelectionChanged');
 			dojo.connect( $('myhand' ), 'onclick', this, 'onMyHandAreaClick');
@@ -2073,7 +2085,10 @@ console.log("[bmc] Removed.");
 /////////
 		onDeckSelectionChanged : function() {
 			console.log("[bmc] ENTER OnDeckSelectionChanged.");
-			var items = this.deck.getSelectedItems();
+//			var items = this.deck.getSelectedItems();
+			var items = this.deckOne.getSelectedItems();
+			this.deckOne.unselectAll();
+
 			//console.log( items[0] );
 			console.log("[bmc] GAMEDATAS and this.player_id.");
 			console.log(this.gamedatas);
@@ -2097,7 +2112,8 @@ console.log("[bmc] Removed.");
 					console.log( "[bmc] Action true. AJAX next" );
 					console.log( "/" + this.game_name + "/" + this.game_name + "/" + action + ".html");
 					
-					var card_id = items[0].id;
+//					var card_id = items[0].id;
+					var card_id = 0; // TODOfake number probably should remove it
 console.log(card_id);
 					this.ajaxcall( "/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
 						id : card_id,
@@ -2695,7 +2711,7 @@ console.log( '[bmc] addTo: ' + addTo );
 				
 				if ( drawSource == 'deck' ) {
 console.log( '[bmc] Deck' );
-					this.deck.removeFromStockById(card_id, addTo );
+					this.deckOne.removeFromStockById(card_id, addTo );
 				}
 				if ( drawSource == 'discardPile' ) {
 console.log( '[bmc] DP' );
@@ -2813,6 +2829,7 @@ console.log( "[bmc] GAMEDATAS and this.player_id" );
 //console.log(card);
 console.log( this.gamedatas );
 console.log( this.player_id );
+			this.discardPile.unselectAll();
 
 			// If the gamestate is play, then treat it as a discard.
 

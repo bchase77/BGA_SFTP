@@ -60,7 +60,9 @@
 		</div>
 		<div id = "rightbox" class="rightbox">
 			<h3>Discard Pile (<span id="discardSize"></span>)</h3>
-			<div id="discardPile"></div>
+			<div id="discardPile">
+Yelllow
+			</div>
 		</div>
 	</div>
 	<div id="downArea">

@@ -838,7 +838,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 ////////
     function drawCard( $card_id, $drawSource, $player_id ) {
 		self::trace("[bmc] STAND-IN: Draw Card (from JS)"); // Just see that we got here from the Javascript.
-		self::dump("card id:", $card_id );
+		self::dump("card id:", $card_id ); // Probably no longer need to send in card_id from JS
 		self::dump("drawSource:", $drawSource );
 		self::dump("Drawing player id:", $player_id );
         self::checkAction("drawCard");
@@ -860,7 +860,12 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 			self::dump( "[bmc] topDiscard: ", $topDiscard );
 			
 			$card_id = $topDiscard[ 'id' ];
-		} // else use the card which was passed in.
+		} else { // else use the top card of the deck
+			$topDeck = $this->cards->getCardOnTop( 'deck' );
+			self::dump( "[bmc] topDeck: ", $topDeck );
+			
+			$card_id = $topDeck[ 'id' ];
+		}
 		
         $this->cards->moveCard( $card_id, 'hand', $player_id );
 
@@ -903,7 +908,8 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 
 		self::notifyAllPlayers(
 			'playerNotBuying',
-			'${player_name} does not want the discard.',
+//			'${player_name} does not want the discard.',
+			'',
 			array(
 				'player_id' => $player_id,
 				'player_name' => $players[ $player_id ][ 'player_name' ],
@@ -2106,16 +2112,38 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
     */
     function stWentOut() {
 		self::debug("[bmc] ENTER stWentOut");
-		$this->gamestate->setAllPlayersMultiactive();
 
 		// Notify players to review their hands and click to continue
-
 		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
-
 		$players = self::loadPlayersBasicInfos();
-
 		$player_name = $players[ $activeTurnPlayer_id ][ 'player_name' ];
 
+        self::notifyAllPlayers(
+			'wentOut',
+			clienttranslate( '${player_name} went out!' ),
+			array(
+				'player_id' => $activeTurnPlayer_id,
+				'player_name' => $players[ $activeTurnPlayer_id ][ 'player_name' ]
+			)
+		); 
+		
+		// Check end of game condition here. Message and route the players accordingly.
+		
+        // Next hand target
+		$gameLengthOption = self::getGameStateValue( 'gameLengthOption' ); // 1 is full or 2 is short
+		self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
+		self::incGameStateValue( 'currentHandType', $gameLengthOption );
+		$currentHandType = $this->getGameStateValue( 'currentHandType' );
+
+		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
+			$scoreMessage = "Game Over!";
+			$this->calcDisplayScoreDialog( $scoreMessage );
+			$this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
+		} else {
+			$scoreMessage = "On to the next!";
+			$this->calcDisplayScoreDialog( $scoreMessage );
+			$this->gamestate->setAllPlayersMultiactive();
+		}
 /*
 TODO: Maybe check if there were no more playable cards and show that message.
 		$cardsInHd = $this->cards->countCardsByLocationArgs( 'hand' );
@@ -2128,22 +2156,13 @@ TODO: Maybe check if there were no more playable cards and show that message.
 			}
 		}
 */
-        self::notifyAllPlayers(
-			'wentOut',
-			clienttranslate( '${player_name} went out!' ),
-			array(
-				'player_id' => $activeTurnPlayer_id,
-				'player_name' => $players[ $activeTurnPlayer_id ][ 'player_name' ]
-			)
-		); 
-		
-		$this->calcDisplayScoreDialog();
+
 		self::debug("[bmc] EXIT stWentOut");
 	}
 ////
 ////
 ////
-	function calcDisplayScoreDialog() {
+	function calcDisplayScoreDialog( $scoreMessage ) {
 		self::trace("[bmc] ENTER calcDisplayScoreDialog");
 		
         // Count and score points, then end the game or go to the next hand.
@@ -2244,7 +2263,8 @@ TODO: Maybe check if there were no more playable cards and show that message.
 						"id" => 'handScoring',
 						"title" => clienttranslate( "Woot! You went out! You want the most positive score:" ),
 						"table" => $table,
-						"closing" => clienttranslate( "On to the next!" )
+//						"closing" => clienttranslate( "On to the next!" )
+						"closing" => clienttranslate( $scoreMessage )
 					)
 				); 
 			} else {
@@ -2254,7 +2274,8 @@ TODO: Maybe check if there were no more playable cards and show that message.
 						"id" => 'handScoring',
 						"title" => clienttranslate( "Bummer! " . $players[ $activeTurnPlayer_id ][ 'player_name' ] . " went out! Points are bad:" ),
 						"table" => $table,
-						"closing" => clienttranslate( "On to the next!" )
+//						"closing" => clienttranslate( "On to the next!" )
+						"closing" => clienttranslate( $scoreMessage )
 					)
 				); 
 			}
@@ -3087,16 +3108,10 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		
 		// Notify players and wait for them to confirm to move to the next hand		
 		
-        // Next hand target
-		$gameLengthOption = self::getGameStateValue( 'gameLengthOption' ); // 1 is full or 2 is short
-		self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
-		self::incGameStateValue( 'currentHandType', $gameLengthOption );
-
         ///// Test if this is the end of the game
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 
 		self::dump("[bmc] currentHandType stEndHand:", $currentHandType );
-		self::dump("[bmc] handTypes stEndHand:", $this->handTypes );
 		
 		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
 			$this->gamestate->nextState("endGame");
@@ -3113,6 +3128,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 				$this->handTypes = $this->handTypesShort;
 			}
 
+			self::dump("[bmc] handTypes stEndHand:", $this->handTypes );
 			$currentHandType = self::getGameStateValue( 'currentHandType' );
 			$handTarget = $this->handTypes[ $currentHandType ][ "Target" ]; // Pull the description
 			self::dump("[bmc] handTarget stEndHand:", $handTarget );
