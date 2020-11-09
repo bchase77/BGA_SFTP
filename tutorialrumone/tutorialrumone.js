@@ -502,31 +502,53 @@ console.log( discardPile );
 					this.downArea_C_[ player ].addToStockWithId( this.getCardUniqueId( color, value ), card_id );
 				}
 				
-//console.log("DRAWING NAMES");
-//console.log($(playerText_DodyOaks0));
-				// Add playername text to down areas
-//				$(playerText_DodyOaks0).innerHTML = "alice";//{PLAYER_NAME};
-//console.log($(playerText_DodyOaks0));
-//console.log("player");
-//console.log("{player}");
-//console.log({player});
-
-//console.log( $("playerDown_A1_"+ player) );
-
+			// Add playername text to down areas
 			$("playerDown_A_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
 			$("playerDown_B_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
 			$("playerDown_C_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
 
+			// New stock objects for the prep areas
+			this.myPrepA = new ebg.stock();
+			this.myPrepB = new ebg.stock();
+			this.myPrepC = new ebg.stock();
+			this.myPrepA.create( this, $('myPrepA'), this.cardwidth, this.cardheight );
+			this.myPrepB.create( this, $('myPrepB'), this.cardwidth, this.cardheight );
+			this.myPrepC.create( this, $('myPrepC'), this.cardwidth, this.cardheight );
+			
+			this.myPrepA.image_items_per_row = 13;
+            for (var color = 1; color <= 4; color++) {
+                for (var value = 1; value <= 13; value++) {
+					let card_type_id = this.getCardUniqueId(color, value);
+					this.myPrepA.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
+                }
+            }
+            this.myPrepA.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+            this.myPrepA.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+            this.myPrepA.setOverlap( 10, 0 );
+
+			this.myPrepB.image_items_per_row = 13;
+            for (var color = 1; color <= 4; color++) {
+                for (var value = 1; value <= 13; value++) {
+					let card_type_id = this.getCardUniqueId(color, value);
+					this.myPrepB.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
+                }
+            }
+            this.myPrepB.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+            this.myPrepB.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+            this.myPrepB.setOverlap( 10, 0 );
+
+			this.myPrepC.image_items_per_row = 13;
+            for (var color = 1; color <= 4; color++) {
+                for (var value = 1; value <= 13; value++) {
+					let card_type_id = this.getCardUniqueId(color, value);
+					this.myPrepC.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
+                }
+            }
+            this.myPrepC.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+            this.myPrepC.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+            this.myPrepC.setOverlap( 10, 0 );
 			}
-/*			
-			// Add stock for a single card played by a player. Probably can delete this if slow
-			this.play1card = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
-            this.play1card.create( this, $('play1card'), this.cardwidth, this.cardheight );            
-			this.play1card.image_items_per_row = 13;
-			this.play1card.setOverlap( 0.1, 0 );
-			this.item_margin = 0;
-			this.play1card.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54); // Color 5 Value 3 is red back of the card
-*/
+
 
 			this.goneDown = new Array();
 //			console.log(this.gamedatas);
@@ -563,18 +585,17 @@ console.log( discardPile );
 				dojo.connect( this.downArea_C_[player], 'onChangeSelection', this, 'onDownAreaSelect' );
 			}
 
-// this.player_id is defined by BGA according to the docs:
-// https://en.doc.boardgamearena.com/Game_interface_logic:_yourgamename.js
 
 			// Set the down area for this player only, to pull cards back to hand before they go down
-//			dojo.connect( $('playerDown_A_' + this.player_id), 'onclick', this, 'onDownAreaClick');
-			dojo.connect( $('playerDown_A_' + this.player_id), 'onclick', this, 'onDownAreaClick');
-			dojo.connect( $('playerDown_B_' + this.player_id), 'onclick', this, 'onDownAreaClick');
-			dojo.connect( $('playerDown_C_' + this.player_id), 'onclick', this, 'onDownAreaClick');
+			dojo.connect( $('myPrepA'), 'onclick', this, 'onDownAreaClick');
+			dojo.connect( $('myPrepB'), 'onclick', this, 'onDownAreaClick');
+			dojo.connect( $('myPrepC'), 'onclick', this, 'onDownAreaClick');
 
-//	I cannot get keypresses to work. The forum shows 1 guy got them working (pass through chat)			
-//			dojo.connect( this.playerHand, 'onkeypress', this, 'onPlayerHandKeypress' );
-			
+			dojo.connect( this.myPrepA, 'onChangeSelection', this, 'onDownAreaSelect' );
+			dojo.connect( this.myPrepB, 'onChangeSelection', this, 'onDownAreaSelect' );
+			dojo.connect( this.myPrepC, 'onChangeSelection', this, 'onDownAreaSelect' );
+
+			// Connect up the buy buttons
 			dojo.connect( $('buttonPlayerSortBySet'), 'onclick', this, 'onPlayerSortByButtonSet' );
 			dojo.connect( $('buttonPlayerSortByRun'), 'onclick', this, 'onPlayerSortByButtonRun' );
 
@@ -1863,6 +1884,10 @@ console.log("/" + this.game_name + "/" + this.game_name + "/" + action + ".html"
 				}
 			// If the player has not gone down and clicks, pull all the cards back to their hand
 			} else if ( this.goneDown[ this.player_id ] == 0 ) { //0 = Not gone down; 1 = Gone down.
+				var area_A_Items = this.myPrepA.getSelectedItems();
+				var area_B_Items = this.myPrepB.getSelectedItems();
+				var area_C_Items = this.myPrepC.getSelectedItems();
+			
 				if ( area_A_Items.length === 1 ) {
 console.log("[bmc] Card from prep A to hand");
 					let card = area_A_Items[ 0 ];
@@ -1870,8 +1895,10 @@ console.log("[bmc] Card from prep A to hand");
 					cardId = card.id;
 
 					this.playerHand.addToStockWithId( cardUniqueId, cardId, 'myhand'); // Pull back to hand
-					this.downArea_A_[ this.player_id ].removeFromStockById( card.id );
-					this.downArea_A_[ this.player_id ].unselectAll();
+					// this.downArea_A_[ this.player_id ].removeFromStockById( card.id );
+					// this.downArea_A_[ this.player_id ].unselectAll();
+					this.myPrepA.removeFromStockById( card.id );
+					this.myPrepA.unselectAll();
 
 				} else if ( area_B_Items.length === 1 ) {
 console.log("[bmc] Card from prep B to hand");
@@ -1880,8 +1907,10 @@ console.log("[bmc] Card from prep B to hand");
 					cardId = card.id;
 
 					this.playerHand.addToStockWithId( cardUniqueId, cardId, 'myhand'); // Pull back to hand
-					this.downArea_B_[ this.player_id ].removeFromStockById( card.id );
-					this.downArea_B_[ this.player_id ].unselectAll();
+					// this.downArea_B_[ this.player_id ].removeFromStockById( card.id );
+					// this.downArea_B_[ this.player_id ].unselectAll();
+					this.myPrepB.removeFromStockById( card.id );
+					this.myPrepB.unselectAll();
 
 				} else if ( area_C_Items.length === 1 ) {
 console.log("[bmc] Card from prep C to hand");
@@ -1890,8 +1919,10 @@ console.log("[bmc] Card from prep C to hand");
 					cardId = card.id;
 
 					this.playerHand.addToStockWithId( cardUniqueId, cardId, 'myhand'); // Pull back to hand
-					this.downArea_C_[ this.player_id ].removeFromStockById( card.id );
-					this.downArea_C_[ this.player_id ].unselectAll();
+					// this.downArea_C_[ this.player_id ].removeFromStockById( card.id );
+					// this.downArea_C_[ this.player_id ].unselectAll();
+					this.myPrepC.removeFromStockById( card.id );
+					this.myPrepC.unselectAll();
 
 				} else {
 					console.log("[bmc] No card in hand selected, do nothing");
@@ -2039,7 +2070,8 @@ console.log("[bmc] Removed.");
 			if ( this.goneDown[ player_id ] == 0 ) { //0 = Not gone down; 1 = Gone down.
 				console.log("[bmc] PULL BACK");
 				
-				var cards = this.downArea_A_[ player_id ].getAllItems();
+//				var cards = this.downArea_A_[ player_id ].getAllItems();
+				var cards = this.myPrepA.getAllItems();
 				console.log(cards);
 
 				for ( card of cards ) {
@@ -2047,9 +2079,23 @@ console.log("[bmc] Removed.");
 					cardUniqueId = card.type;
 					this.playerHand.addToStockWithId( cardUniqueId, card.id, 'myhand' ); // Pull back to hand
 				}
-				this.downArea_A_[ player_id ].removeAllTo( 'myhand' );
+//				this.downArea_A_[ player_id ].removeAllTo( 'myhand' );
+				this.myPrepA.removeAllTo( 'myhand' );
+
+//				var cards = this.downArea_B_[ player_id ].getAllItems();
+				var cards = this.myPrepB.getAllItems();
+				console.log(cards);
+
+				for ( card of cards ) {
+					console.log(card);
+					cardUniqueId = card.type;
+					this.playerHand.addToStockWithId( cardUniqueId, card.id, 'myhand' ); // Pull back to hand
+				}
+//				this.downArea_B_[ player_id ].removeAllTo( 'myhand' );
+				this.myPrepB.removeAllTo( 'myhand' );
 				//
-				var cards = this.downArea_B_[ player_id ].getAllItems();
+//				var cards = this.downArea_C_[ player_id ].getAllItems();
+				var cards = this.myPrepC.getAllItems();
 				console.log(cards);
 
 				for ( card of cards ) {
@@ -2057,21 +2103,16 @@ console.log("[bmc] Removed.");
 					cardUniqueId = card.type;
 					this.playerHand.addToStockWithId( cardUniqueId, card.id, 'myhand' ); // Pull back to hand
 				}
-				this.downArea_B_[ player_id ].removeAllTo( 'myhand' );
-				//
-				var cards = this.downArea_C_[ player_id ].getAllItems();
-				console.log(cards);
-
-				for ( card of cards ) {
-					console.log(card);
-					cardUniqueId = card.type;
-					this.playerHand.addToStockWithId( cardUniqueId, card.id, 'myhand' ); // Pull back to hand
-				}
-				this.downArea_C_[ player_id ].removeAllTo( 'myhand' );
+//				this.downArea_C_[ player_id ].removeAllTo( 'myhand' );
+				this.myPrepC.removeAllTo( 'myhand' );
 				
-				dojo.removeClass('playerDown_A_' + this.player_id, "border1");
-				dojo.removeClass('playerDown_B_' + this.player_id, "border1");
-				dojo.removeClass('playerDown_C_' + this.player_id, "border1");
+				// dojo.removeClass('playerDown_A_' + this.player_id, "border1");
+				// dojo.removeClass('playerDown_B_' + this.player_id, "border1");
+				// dojo.removeClass('playerDown_C_' + this.player_id, "border1");
+
+				dojo.removeClass('myPrepA', "border1");
+				dojo.removeClass('myPrepB', "border1");
+				dojo.removeClass('myPrepC', "border1");
 
 				this.prepSetLoc = 0; // Nothing is prepped, so clear the counters
 				this.prepRunLoc = 3; 
@@ -2475,9 +2516,13 @@ console.log(this.player_id)
 			
 		    this.removeActionButtons(); // Remove the button because they played
 
-			var cardGroupA = this.downArea_A_[this.player_id].getAllItems();
-			var cardGroupB = this.downArea_B_[this.player_id].getAllItems();
-			var cardGroupC = this.downArea_C_[this.player_id].getAllItems();
+			// var cardGroupA = this.downArea_A_[this.player_id].getAllItems();
+			// var cardGroupB = this.downArea_B_[this.player_id].getAllItems();
+			// var cardGroupC = this.downArea_C_[this.player_id].getAllItems();
+
+			var cardGroupA = this.myPrepA.getAllItems();
+			var cardGroupB = this.myPrepB.getAllItems();
+			var cardGroupC = this.myPrepC.getAllItems();
 
 			console.log(cardGroupA);
 			console.log(cardGroupB);
@@ -2494,7 +2539,7 @@ console.log("[bmc] cardIdsB: " + cardGroupBIds);
 console.log("[bmc] cardIdsC: " + cardGroupCIds);
 console.log("[bmc] handItemIds: " + handItemIds);
 
-			var [boardCard, boardArea, boardPlayer] = this.getSelectedDownAreaCards ();
+			var [boardCard, boardArea, boardPlayer] = this.getSelectedDownAreaCards();
 
 console.log( boardCard );
 console.log( boardArea );
@@ -2952,9 +2997,11 @@ console.log("[bmc] cardIds: " + cardIds);
 					cardId = card.id;
 
 					var from = 'myhand_item_' + card.id;
-					this.downArea_A_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					dojo.addClass('playerDown_A_' + this.player_id, "border1");
-					this.playerHand.removeFromStockById (card.id );
+//					this.downArea_A_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
+//					dojo.addClass( downArea_A_[ this.player_id ], "border1");
+					this.myPrepA.addToStockWithId( cardUniqueId, cardId, 'myhand' );
+					dojo.addClass( 'myPrepA', "border1" );
+					this.playerHand.removeFromStockById ( card.id );
 				}
 				this.prepAreas++;
 				console.log(this.prepAreas);
@@ -2987,8 +3034,10 @@ console.log("[bmc] cardIds: " + cardIds);
 					cardId = card.id;
 
 					var from = 'myhand_item_' + card.id;
-					this.downArea_B_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					dojo.addClass('playerDown_B_' + this.player_id, "border1");
+//					this.downArea_B_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
+//					dojo.addClass('playerDown_B_' + this.player_id, "border1");
+					this.myPrepB.addToStockWithId( cardUniqueId, cardId, 'myhand' );
+					dojo.addClass( 'myPrepB', "border1" );
 					this.playerHand.removeFromStockById (card.id );
 				}
 				this.prepAreas++;
@@ -3023,8 +3072,10 @@ console.log("[bmc] cardIds: " + cardIds);
 					cardId = card.id;
 
 					var from = 'myhand_item_' + card.id;
-					this.downArea_C_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					dojo.addClass('playerDown_C_' + this.player_id, "border1");
+//					this.downArea_C_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
+//					dojo.addClass('playerDown_C_' + this.player_id, "border1");
+					this.myPrepC.addToStockWithId( cardUniqueId, cardId, 'myhand' );
+					dojo.addClass( 'myPrepC', "border1" );
 					this.playerHand.removeFromStockById (card.id );
 				}
 				this.prepAreas++;
@@ -3727,9 +3778,37 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 			var isReadOnly = this.isReadOnly();
 			if ( !isReadOnly ) {
 				// Remove the borders around the prep area
-				dojo.removeClass('playerDown_A_' + notif.args.player_id, "border1");
-				dojo.removeClass('playerDown_B_' + notif.args.player_id, "border1");
-				dojo.removeClass('playerDown_C_' + notif.args.player_id, "border1");
+				// dojo.removeClass('playerDown_A_' + notif.args.player_id, "border1");
+				// dojo.removeClass('playerDown_B_' + notif.args.player_id, "border1");
+				// dojo.removeClass('playerDown_C_' + notif.args.player_id, "border1");
+				dojo.removeClass('myPrepA', "border1");
+				dojo.removeClass('myPrepB', "border1");
+				dojo.removeClass('myPrepC', "border1");
+				
+				// And move the cards from my prep area to the board
+				for ( card_id in card_ids ) {
+					color = card_type[ card_id ];
+					value = card_type_arg[ card_id ];
+
+					console.log(color);
+					console.log(value);
+					
+					cardUniqueId = this.getCardUniqueId( color, value );
+					console.log(cardUniqueId);
+					
+					if ( downArea === 'playerDown_A_' ) {
+						this.downArea_A_[ downPlayer ].addToStockWithId( cardUniqueId, card_ids[ card_id ], 'myPrepA' );
+						this.myPrepA.removeFromStockById( card_ids[ card_id ] );
+					}
+					if ( downArea === 'playerDown_B_' ) {
+						this.downArea_B_[ downPlayer ].addToStockWithId( cardUniqueId, card_ids[ card_id ], 'myPrepB' );
+						this.myPrepB.removeFromStockById( card_ids[ card_id ] );
+					}
+					if ( downArea === 'playerDown_C_' ) {
+						this.downArea_C_[ downPlayer ].addToStockWithId( cardUniqueId, card_ids[ card_id ], 'myPrepC' );
+						this.myPrepC.removeFromStockById( card_ids[ card_id ] );
+					}
+				}
 			}
 			
 			if ( this.gamedatas.gamestate.active_player == this.player_id ) {

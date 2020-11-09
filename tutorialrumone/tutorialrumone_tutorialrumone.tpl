@@ -58,13 +58,24 @@
 			<h3>Draw Deck (<span id="drawDeckSize"></span>)</h3>
 			<div id="deck"></div>
 		</div>
-		<div id = "rightbox" class="rightbox">
+		<div id = "mediumbox" class="mediumbox">
 			<h3>Discard Pile (<span id="discardSize"></span>)</h3>
-			<div id="discardPile">
-Yelllow
-			</div>
+			<div id="discardPile"></div>
+		</div>
+		<div id="myPrepA" class="prepbox">
+			<h3>Prep A</h3>
+			<div id="PrepA"></div>
+		</div>
+		<div id="myPrepB" class="prepbox">
+			<h3>Prep B</h3>
+			<div id="PrepB"></div>
+		</div>
+		<div id="myPrepC" class="prepbox">
+			<h3>Prep C</h3>
+			<div id="PrepC"></div>
 		</div>
 	</div>
+	<div></div>
 	<div id="downArea">
 		<!-- BEGIN goDownArea -->
 			<div id="playerDown_A_{PLAYER_ID}" class="downWhite"></div>
