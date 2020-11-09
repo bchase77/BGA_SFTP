@@ -3091,30 +3091,6 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		$gameLengthOption = self::getGameStateValue( 'gameLengthOption' ); // 1 is full or 2 is short
 		self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
 		self::incGameStateValue( 'currentHandType', $gameLengthOption );
-		$gameLengthOption = self::getGameStateValue( 'gameLengthOption' ); // 1 is full or 2 is short
-		self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
-		
-		if ( $gameLengthOption == 1 ) {
-			$this->setsRuns = $this->setsRunsFull;
-			$this->handTypes = $this->handTypesFull;
-		} else {
-			$this->setsRuns = $this->setsRunsShort;
-			$this->handTypes = $this->handTypesShort;
-		}
-
-		$currentHandType = self::getGameStateValue( 'currentHandType' );
-		$handTarget = $this->handTypes[ $currentHandType ][ "Target" ]; // Pull the description
-		self::dump("[bmc] handTarget stEndHand:", $handTarget );
-		
-		// Notify players to go to the next target hand
-		
-        $newScores = self::getCollectionFromDb("SELECT player_id, player_score FROM player", true );
-
-        self::notifyAllPlayers( "newScores", '', array(
-			'newScores' => $newScores,
-			'handTarget' => $handTarget,
-			'currentHandType' => $currentHandType
-			));
 
         ///// Test if this is the end of the game
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
@@ -3125,6 +3101,32 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
 			$this->gamestate->nextState("endGame");
 		} else {
+
+			$gameLengthOption = self::getGameStateValue( 'gameLengthOption' ); // 1 is full or 2 is short
+			self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
+			
+			if ( $gameLengthOption == 1 ) {
+				$this->setsRuns = $this->setsRunsFull;
+				$this->handTypes = $this->handTypesFull;
+			} else {
+				$this->setsRuns = $this->setsRunsShort;
+				$this->handTypes = $this->handTypesShort;
+			}
+
+			$currentHandType = self::getGameStateValue( 'currentHandType' );
+			$handTarget = $this->handTypes[ $currentHandType ][ "Target" ]; // Pull the description
+			self::dump("[bmc] handTarget stEndHand:", $handTarget );
+			
+			// Notify players to go to the next target hand
+			
+			$newScores = self::getCollectionFromDb("SELECT player_id, player_score FROM player", true );
+
+			self::notifyAllPlayers( "newScores", '', array(
+				'newScores' => $newScores,
+				'handTarget' => $handTarget,
+				'currentHandType' => $currentHandType
+				));
+
 			$this->gamestate->nextState("newHand");
 		}
     }

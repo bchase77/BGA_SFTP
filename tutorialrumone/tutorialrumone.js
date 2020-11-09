@@ -1079,6 +1079,8 @@ console.log( jokers );
 
 				cardGroupNonJokers.sort( this.compareTypeArg ); // Sort by value, but it changes the indices
 				
+console.log( "cardGroupNonJokers aftersort 1" );
+console.log( cardGroupNonJokers );
 				// If there's an ace, move it to be high
 				// TODO: Don't know if this is really going to work. This is kinda hokey.
 				// The value of the ace to 14 so it goes next to the king.
@@ -1089,19 +1091,25 @@ console.log(card);
 console.log(cardGroupNonJokers[ card ]);
 					if ( cardGroupNonJokers[ card ][ 'type_arg' ] == 1 ) {
 console.log("FOUND ACE");
-						var ace = cardGroupNonJokers[ card ][ 'id' ];
+						var ace = cardGroupNonJokers[ card ];
+						var aceid = card;
 					}
 				}
 console.log( "ace" );
 console.log( ace );
+console.log( aceid );
 				if ( ace ) { // If an ace and it's high then make it high
 					if ( cardGroupNonJokers[ Object.keys(cardGroupNonJokers).length - 1 ][ 'type_arg' ] + jokerCount > 12 ) {
-						cardGroup[ ace ][ 'type_arg' ] = 14;
+console.log("[bmc] Making Ace High");
+						cardGroupNonJokers[ aceid ][ 'type_arg' ] = 54; // The highest type is 53. Go to right of it.
+						cardGroup[ cardGroupNonJokers[ aceid ][ 'id' ]][ 'type_arg' ] = 54; // The highest type is 53. Go to right of it.
 					}
 				}
 				
-	console.log( "cardGroupNonJokers aftersort" );
-	console.log( cardGroupNonJokers );
+				cardGroupNonJokers.sort( this.compareTypeArg ); // Sort by value, but it changes the indices
+				
+console.log( "cardGroupNonJokers aftersort 2" );
+console.log( cardGroupNonJokers );
 
 				if ( jokerCount > 0 ) {
 					lowestCard = cardGroupNonJokers.find(Boolean) ; // Store first non-joker value
@@ -1152,7 +1160,7 @@ console.log( ace );
 	console.log(Object.keys(cardGroupNonJokers).length);
 					if ( cardGroupNonJokers[ Object.keys(cardGroupNonJokers).length - 1 ][ 'type_arg' ] + jokerCount > 12 ) {
 	console.log("Making Ace High");
-						weightChange[ ace.unique_id ] = 14; // King is highest at 13, so make it higher
+						weightChange[ ace.unique_id ] = 54; // Joker #2 is 53, so make it higher
 					}
 				}
 console.log("FINAL FINAL weightChange after ACE analysis");

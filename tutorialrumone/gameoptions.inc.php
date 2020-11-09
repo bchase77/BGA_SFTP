@@ -59,8 +59,8 @@ $game_options = array(
 	103 => array(
 		'name' => totranslate( 'Buy-winner chosen' ),
 		'values' => array(
-			1 => array ( 'name' => totranslate( 'By fastest player' )	),
-			2 => array ( 'name' => totranslate( 'By seat order' ) )
+			1 => array ( 'name' => totranslate( 'Fastest buyer' )	),
+			2 => array ( 'name' => totranslate( 'Seat order' ) )
 		),
 		'default' => 10
 	)
