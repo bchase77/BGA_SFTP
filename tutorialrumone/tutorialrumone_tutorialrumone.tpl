@@ -78,9 +78,11 @@
 	<div></div>
 	<div id="downArea">
 		<!-- BEGIN goDownArea -->
-			<div id="playerDown_A_{PLAYER_ID}" class="downWhite"></div>
-			<div id="playerDown_B_{PLAYER_ID}" class="downWhite"></div>
-			<div id="playerDown_C_{PLAYER_ID}" class="downWhite"></div>
+			<div>
+			<span id="playerDown_A_{PLAYER_ID}" class="downWhite"></span>
+			<span id="playerDown_B_{PLAYER_ID}" class="downWhite"></span>
+			<span id="playerDown_C_{PLAYER_ID}" class="downWhite"></span>
+			</div>
 		<!-- END goDownArea -->
 	</div>
 </div>
@@ -103,6 +105,19 @@
 /*
 var jstpl_handTarget = '<div id="handTarget"></div>';
 */
+
+/* WORKS 30% down Area
+	<div id="downArea">
+		<!-- BEGIN goDownArea -->
+			<div id="playerDown_A_{PLAYER_ID}" class="downWhite"></div>
+			<div id="playerDown_B_{PLAYER_ID}" class="downWhite"></div>
+			<div id="playerDown_C_{PLAYER_ID}" class="downWhite"></div>
+		<!-- END goDownArea -->
+	</div>
+
+*/
+
+
 
 /*
 var jstpl_buys = '<div id="player-status-${player_id}" class="player-status"><span>Buys Left: ${buy_number}/3</span></div>';

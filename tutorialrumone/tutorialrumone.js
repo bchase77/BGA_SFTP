@@ -85,17 +85,10 @@ function (dojo, declare) {
 //
 // TODO:
 //
-// 11/8: Only notify of buy requests, not not-buys.
-// 11/8: Make 6 across, and put prep area to the right of the discard pile.
+// 11/8: Make 6 across
 // 11/8: JS code between 244 and 340 takes ~12 seconds (slow!)
 // 11/7: Put BUYING and BUYTIMER in different tables so there is no deadlock. (PHP line 901)
-// 11/7: Make the DRAW DECK be a single card, not covering most of the table.
 // 11/7: Make the text of gray buttons also gray.
-// 11/7: Remove "play" from the options if you cannot play.
-// 11/7: Clear prepped coloring after the hand ends
-// 11/7: Put everyone's prep area just below the DECK.
-// 11/7: Review buttons reappear even though they were clicked
-// 11/7: Konni had A890jqk but ace is still on the left
 // 11/6: 2Runs: Going down with 568 spades and 456* hearts and ace of spaces swapping a joker. It did the swap but somehow the jokers have the same IDs! I think one of the functions took the wrong joker (in PHP).
 // 11/7: 3 people are light blue
 // 11/7: Make 2 side-by-side down areas (Spectator and Gary and Kristi cannot see whole board)
@@ -103,11 +96,18 @@ function (dojo, declare) {
 // 11/7: Some people cannot see coral BUY IT coloring.
 // 11/7: Add a table with the players in an oval.
 // 11/2: Ask group: Call Liverpool on another player?
-// 10/29: Board Player names don't show up after new hand is dealt.
 // 11/5: Cannot go down with 2356s and replacing a joker (can do it with 235s).
 // 11/1: [forum] If 2 of same card (e.g. 2x 6 of hearts) is in hand cannot move just one of them
 // 11/7: Limit the set size???
 //
+// X 11/7: Remove "play" from the options if you cannot play.
+// X 11/7: Put everyone's prep area just below the DECK.
+// X 11/7: Review buttons reappear even though they were clicked
+// X 11/7: Konni had A890jqk but ace is still on the left
+// X 11/8: Only notify of buy requests, not not-buys.
+// X 11/8: Put prep area to the right of the discard pile.
+// X 11/7: Clear prepped coloring after the hand ends
+// X 11/7: Make the DRAW DECK be a single card, not covering most of the table.
 // X 11/1: One player has BUY buttons shown but in fact cannot buy, but should be allowed (#0).
 // X 11/5: Buy buttons don't appear after new hand but should (but buy works).
 // X 11/1: Add game option of buyer precedence or buyer click-speed.
@@ -124,6 +124,7 @@ function (dojo, declare) {
 // X 11/5: "It's your turn!" should not be shown after BUY REQUEST.
 // X 11/5: Hard to know who wants to buy it. Make it more prominent, like a pop-up. Or color the board.
 // X 11/5: Make it so that if > 1 card is selected and discard pile is selected it will discad but should not
+// X 10/29: Board Player names don't show up after new hand is dealt.
 // X 10/28: Change # of cards dealt each hand? and the rules for 3 runs???
 // X 10/24: When a buyer exists, update the action bar to show everyone "player wants to buy."
 // X 11/1: Runs on board, jokers always go to right when they sometimes should be elsewhere.
@@ -914,6 +915,7 @@ console.log("[bmc] ENTER onPlayerBuyButton");
 			this.clearButtons();
 			this.stopActionTimer2();
 			var action = 'buyRequest';
+			
 			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 			dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 			console.log(this.firstLoad);
@@ -1106,7 +1108,7 @@ console.log(i);
 						jokerCount++;
 					}
 				}
-console.log("jokers");
+console.log("[bmc] jokers:");
 console.log( jokerCount );
 console.log( jokers );
 
@@ -1117,9 +1119,12 @@ console.log( cardGroupNonJokers );
 				// If there's an ace, move it to be high
 				// TODO: Don't know if this is really going to work. This is kinda hokey.
 				// The value of the ace to 14 so it goes next to the king.
+				//
+				// TODO: It doesn't work great because the delta value becomes 42, because
+				//       the ace has been given type_arg = 54. So it cannot bridge the gap.
 				
 				for ( card in cardGroupNonJokers ) {
-console.log("card");
+console.log("[bmc]card");
 console.log(card);
 console.log(cardGroupNonJokers[ card ]);
 					if ( cardGroupNonJokers[ card ][ 'type_arg' ] == 1 ) {
@@ -1134,8 +1139,8 @@ console.log( aceid );
 				if ( ace ) { // If an ace and it's high then make it high
 					if ( cardGroupNonJokers[ Object.keys(cardGroupNonJokers).length - 1 ][ 'type_arg' ] + jokerCount > 12 ) {
 console.log("[bmc] Making Ace High");
-						cardGroupNonJokers[ aceid ][ 'type_arg' ] = 54; // The highest type is 53. Go to right of it.
-						cardGroup[ cardGroupNonJokers[ aceid ][ 'id' ]][ 'type_arg' ] = 54; // The highest type is 53. Go to right of it.
+						cardGroupNonJokers[ aceid ][ 'type_arg' ] = 14; // The highest type is 13. Go to right of it.
+						cardGroup[ cardGroupNonJokers[ aceid ][ 'id' ]][ 'type_arg' ] = 14; // The highest type is 13. Go to right of it.
 					}
 				}
 				
@@ -1146,10 +1151,10 @@ console.log( cardGroupNonJokers );
 
 				if ( jokerCount > 0 ) {
 					lowestCard = cardGroupNonJokers.find(Boolean) ; // Store first non-joker value
-	console.log( "lowestCard" );
+	console.log( "[bmc]lowestCard:" );
 	console.log( lowestCard );
 					
-					jokerIndex = 0;
+//TEST11/9					jokerIndex = 0;
 					
 					weightChange[ lowestCard.unique_id ] = 0; // Lowest card gets lowest weight
 
@@ -1157,15 +1162,24 @@ console.log( cardGroupNonJokers );
 	console.log(cgLength);
 
 					for ( let i = 1 ; i < cgLength ; i++ ) {
+						jokerIndex = 0;
 	console.log(i);
 	console.log(cardGroupNonJokers[i]);
 						let delta = cardGroupNonJokers[ i ][ 'type_arg' ] - lowestCard[ 'type_arg' ];
 						
-						for ( let j = 1; j < delta; j++ ) {
+	console.log("[bmc] Trouble with Jokers sometimes");
+	console.log(delta);
+	console.log(downArea);
+	console.log(jokers);
 	console.log(jokerIndex);
 	console.log(jokers[jokerIndex]);
+	console.log("PROBLEM:");
+	console.log(jokers[ jokerIndex ][ 'uid' ]);
+						for ( let j = 1; j < delta; j++ ) {
 	console.log(j);
+							
 							weightChange[ jokers[ jokerIndex ][ 'uid' ]] = i + jokerIndex;
+							
 							weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex + 1;
 							jokers[ jokerIndex ][ 'type_arg' ] = lowestCard[ 'type_arg' ] + 1;
 							lowestCard = jokers[ jokerIndex ];
@@ -3170,6 +3184,7 @@ console.log( this.gamedatas.activeTurnPlayer_id );
 			if (( this.prepAreas > 0 ) &&
 				 !showButtons['goneDown'] &&
 				  showButtons['myturn'] && 
+				( this.gamedatas.gamestate.name != "playerTurnDraw" ) &&
 				( goDownDOM == null )) {
 
 				dojo.replaceClass( 'buttonGoDownStatic', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
@@ -3405,7 +3420,7 @@ console.log( "[bmc] EXIT notifications subscriptions setup" );
             // We received a new full hand of cards. Clear the table.
             this.playerHand.removeAll();
 			this.discardPile.removeAll();
-			this.deck.removeAll();
+			//this.deck.removeAll();
 			
 			for (var player in this.gamedatas.players) {
 				this.downArea_A_[ player ].removeAll();
@@ -3691,7 +3706,10 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 		notif_playerBought : function(notif) {
 			console.log("[bmc]notif_playerBought");
 			console.log(notif);
-			dojo.removeClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
+			for ( player_id in this.gamedatas.players ) { 
+//				dojo.removeClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
+				dojo.removeClass( 'overall_player_board_' + player_id, 'pbInverse' );
+			}
 			this.buyCount[  notif.args.player_id ].setValue( notif.args.buyCount[ notif.args.player_id ] );
 			this.handCount[ notif.args.player_id ].setValue( notif.args.allHands[ notif.args.player_id ] );
 		},
@@ -3701,7 +3719,13 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 		notif_playerDidNotBuy : function(notif) {
 			console.log("[bmc]notif_playerDidNotBuy");
 			console.log(notif);
-			dojo.removeClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
+			
+			if ( notif.args.buyingPlayers != null ) {
+				for ( var player_id of notif.args.buyingPlayers ) {
+					console.log('overall_player_board_' + player_id);
+					dojo.removeClass( 'overall_player_board_' + player_id, 'pbInverse' );
+				}
+			}
 		},
 /////////
 /////////
@@ -3709,33 +3733,41 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 		notif_playerWantsToBuy : function(notif) {
 			console.log("[bmc]notif_playerWantsToBuy");
 			console.log(notif);
-			this.stopActionTimer2();
-			this.showHideButtons();
-			console.log( this.gamedatas.players[ notif.args.player_id ].name  );
-			
-			console.log("[bmc] Adding class and showing bubble");
 			
 			dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
-			
-			this.showMessage( this.gamedatas.players[ notif.args.player_id ].name + ' wants to buy ' +
-				notif.args.value_displayed + notif.args.color_displayed,
-				'error' ); // 'info' or 'error'
 
-/*			anchor_id = 'overall_player_board_' + notif.args.player_id;
-			text = "I'll buy it!";
-			delay = 0;
-			duration = 7;
-			custom_class = '';
-			
-			console.log(anchor_id);
-			
-			this.showBubble(anchor_id, text, delay, duration, custom_class);
-*/			
-			// New variables for new timers on static buttons
-			this.enableDBStatic = 'No';
-			this.enableDBTimer = 'No'; // But let the timer run out if it's there
-			this.enDisStaticBuyButtons();
-			this.stopActionTimerStatic(); // Stop the timer, someone else is buying
+			// If by timer then run stop timers and hide the buttons
+			// If by seat order then do not
+			if ( this.gamedatas.options.buyMethod == 1 ) {
+				this.stopActionTimer2();
+				this.showHideButtons();
+				console.log( this.gamedatas.players[ notif.args.player_id ].name  );
+				
+				console.log("[bmc] Adding class and showing bubble");
+				
+//				dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
+				
+				// this.showMessage( this.gamedatas.players[ notif.args.player_id ].name + ' wants to buy ' +
+					// notif.args.value_displayed + notif.args.color_displayed,
+					// 'error' ); // 'info' or 'error'
+
+	/*			anchor_id = 'overall_player_board_' + notif.args.player_id;
+				text = "I'll buy it!";
+				delay = 0;
+				duration = 7;
+				custom_class = '';
+				
+				console.log(anchor_id);
+				
+				this.showBubble(anchor_id, text, delay, duration, custom_class);
+	*/			
+				// New variables for new timers on static buttons
+				this.enableDBStatic = 'No';
+				this.enableDBTimer = 'No'; // But let the timer run out if it's there
+				this.enDisStaticBuyButtons();
+				this.stopActionTimerStatic(); // Stop the timer, someone else is buying
+			} else { // Do nothing just wait for the draw
+			}
 		},
 /////////
 /////////

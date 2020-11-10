@@ -157,7 +157,7 @@
 
 .downWhite{
 	float: Left;
-	width: 30%;
+	width: 15%;
 	height: 80px;
 	margin: 2px;
 	border: 2px;
@@ -199,21 +199,21 @@
 	float: Left;
 	position:relative;
 	background: Orange;
-	width: 33%;
+	width: 20%;
 	height: 140px;
 }
 .downMiddle {
 	float: Left;
 	position:relative;
 	background: Gray;
-	width: 34%;
+	width: 20%;
 	height: 140px;
 }
 .downRight {
 	float: Left;
 	position:relative;
 	background: Teal;
-	width: 33%;
+	width: 20%;
 	height: 140px;
 }
 
