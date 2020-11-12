@@ -52,27 +52,7 @@
             return explode( ';', $number_list_arg );
         }
     }
-/*    function parseNumberList($number_list_arg)
-    {
-		self::dump("[bmc] number_list_arg", $number_list_arg);
-		
-        // Removing last ';' if exists
-//        if (substr( $number_list_arg, -1 ) == ';' ) {
-        if (substr( $number_list_arg, -1 ) == ',' ) {
-            $number_list_arg = substr( $number_list_arg, 0, -1 );
-        }
-
-        if( $number_list_arg == '' ) {
-			self::dump("[bmc] number_list_arg2", $number_list_arg);
-            return array();
-        } else {
-			self::dump("[bmc] number_list_arg3", $number_list_arg);
-//            return explode( ';', $number_list_arg );
-            return explode( ',', $number_list_arg );
-        }
-    }
-*/
-  	// TODO: defines your action entry points there
+ 	// TODO: defines your action entry points there
 
 		public function playerHasReviewedHand()
 		{
@@ -91,21 +71,6 @@
             $this->game->discardCard( $card_id, $player_id );
             self::ajaxResponse();
         }
-/*
-		public function playerGoDown()
-		{
-			self::trace("[bmc] ajaxcall for playerGoDown");
-			self::setAjaxMode();
-			$cardGroupA = self::parseNumberList(self::getArg('cardGroupA', AT_numberlist, true));
-			$cardGroupB = self::parseNumberList(self::getArg('cardGroupB', AT_numberlist, true));
-			$cardGroupC = self::parseNumberList(self::getArg('cardGroupC', AT_numberlist, true));
-			self::dump("[bmc] A:", $cardGroupA);
-			self::dump("[bmc] B:", $cardGroupB);
-			self::dump("[bmc] C:", $cardGroupC);
-			$this->game->playerGoDown($cardGroupA, $cardGroupB, $cardGroupC);
-			self::ajaxResponse();
-		}
-*/
 		public function playerGoDown()
 		{
 			self::trace("[bmc] ajaxcall for playerGoDown");
@@ -128,47 +93,6 @@
 			$this->game->playerGoDown( $cardIDGroupA, $cardIDGroupB, $cardIDGroupC, $boardCardId, $boardArea, $boardPlayer, $handItems);
 			self::ajaxResponse();
 		}
-
-		// public function playSeveralCards()
-		// {
-			// self::setAjaxMode();
-			// $card_ids = self::parseNumberList(self::getArg('card_ids', AT_numberlist, true));
-			// $this->game->playSeveralCards($card_ids);
-			// self::ajaxResponse();
-		// }
-
-/*
-        public function playSeveralCards() {
-		    self::setAjaxMode();
-			self::dump("[bmc] inPSC: ", self::getArg('card_ids', AT_numberlist, true));
-		    $card_ids = self::parseNumberList(self::getArg('card_ids', AT_numberlist, true));
-		    $this->game->playSeveralCards($card_ids);
-		    self::ajaxResponse();
-		}
-*/
-
-/*
-        public function playCards()
-        {
-			self::trace("[bmc] ajaxcall for playCards");
-            self::setAjaxMode();
-			
-			$card_ids_raw = self::getArg( "cardArray", AT_numberlist, true);
-
-			// Removing last ';' if exists
-			if( substr( $card_ids_raw, -1 ) == ';' )
-				$card_ids_raw = substr( $card_ids_raw, 0, -1 );
-			if( $card_ids_raw == '' )
-				$card_ids = array();
-			else
-				$card_ids = explode( ';', $card_ids_raw );
-
-			self::dump("[bmc] ajax playcards: ", $card_ids);
-
-           $this->game->playCards($card_ids);
-           self::ajaxResponse();
-        }
-*/
         public function buyRequest()
         {
             self::setAjaxMode();
@@ -177,7 +101,6 @@
             $this->game->buyRequest( $player_id ); 
             self::ajaxResponse();
         }
-
         public function notBuyRequest()
         {
             self::setAjaxMode();
@@ -186,7 +109,6 @@
             $this->game->notBuyRequest( $player_id ); 
             self::ajaxResponse();
         }
-
         public function drawCard()
         {
             self::setAjaxMode();
@@ -198,7 +120,6 @@
             $this->game->drawCard( $card_id, $drawSource, $player_id );
             self::ajaxResponse();
         }
-
         public function playCard()
         {
             self::setAjaxMode();
@@ -210,7 +131,6 @@
             $this->game->playCard($card_id, $player_id, $boardArea, $boardPlayer); 
             self::ajaxResponse();
         }
-
         public function playCardMultiple()
         {
             self::setAjaxMode();
@@ -223,17 +143,6 @@
             $this->game->playCardMultiple( $card_ids, $player_id, $boardArea, $boardPlayer ); 
             self::ajaxResponse();
         }
-
-/*
-        public function drawDiscard()
-        {
-            self::setAjaxMode();
-			self::trace("[bmc] ajaxcall for drawDiscard");
-//            $card_id = self::getArg("id", AT_posint, true);
-            $this->game->drawDiscard();
-            self::ajaxResponse();
-        }
-*/
     /*
     
     Example:

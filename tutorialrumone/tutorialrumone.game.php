@@ -69,28 +69,6 @@ class TutorialRumOne extends Table
 			"buyMethod" => 103
         ) );
 	
-		// NOTE: This is defined in 2 places and I'm not sure why it won't see the other one
-/*
-        $this->handTypes = array(
-		  0 => "2 Sets",
-		  1 => "1 Set and 1 Run",
-		  2 => "2 Runs",
-		  3 => "3 Sets",
-		  4 => "2 Sets and 1 Run",
-		  5 => "1 Set and 2 Runs",
-		  6 => "3 Runs",
-		  7 => "END" // Just put this here to simplify the PHP when checking game end.
-		);
-$this->handTypes = array( // Qty of Sets, Qty of Runs
-  0 => array( "8 Sets", 2, 0),
-  1 => array( "1 Set and 1 Run", 1, 1),
-  2 => array( "2 Runs", 0, 2),
-  3 => array( "3 Sets", 3, 0),
-  4 => array( "2 Sets and 1 Run", 2, 1),
-  5 => array( "1 Set and 2 Runs", 1, 2),
-  6 => array( "3 Runs", 0, 3)
-);
-*/
         $this->cards = self::getNew( "module.common.deck" );
         $this->cards->init( "card" );
 	}
@@ -921,13 +899,14 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
 		self::dump("[bmc] ATPI", $activeTurnPlayer_id );
 
-		// TODO Maybe change this to wait for timeout instead of actively setting nonmultiactive??
-		foreach ( $players as $pid => $player ){
-			self::dump("[bmc] pid", $pid );
-			if ( $pid != $activeTurnPlayer_id ) {
-				$this->gamestate->setPlayerNonMultiactive( $pid, '' );
-			}
-		}
+		// TODO: Trying to resolve the deadlock issue, so comment this out. Players
+		//       can still signal that they want to buy.
+		// foreach ( $players as $pid => $player ){
+			// self::dump("[bmc] pid", $pid );
+			// if ( $pid != $activeTurnPlayer_id ) {
+				// $this->gamestate->setPlayerNonMultiactive( $pid, '' );
+			// }
+		// }
 
 		$currentCard = $this->cards->getCardOnTop( 'discardPile' );
 		self::dump( "[bmc] cardToBeBought:",  $currentCard );
@@ -2021,6 +2000,8 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 		// TODO: Fix the play weight on the board for runs:
 		$playWeight = $this->cards->countCardInLocation( $boardArea ) + 100;
 		$this->cards->moveCard( $card_id, $boardArea, $boardPlayer, $playWeight );
+		
+		$cardsByLocationHand  = $this->cards->countCardsByLocationArgs( 'hand' );
 
 		// And notify of the played card
 	
@@ -2050,6 +2031,7 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
 				'color' => $currentCard ['type'],
 				'color_displayed' => $color_displayed,
 				'boardArea' => $boardArea,
+				'allHands' => $cardsByLocationHand,
 				'boardPlayer' => $boardPlayer
 			)
 		);
@@ -3146,6 +3128,9 @@ TODO: Maybe check if there were no more playable cards and show that message.
 			
 			$activePlayerId = $this->getActivePlayerId();
 			self::dump( "[bmc] activePlayerId (after change):", $activePlayerId );
+			
+			// Give extra time to player
+			self::giveExtraTime( $active_player_id );
 
 			// Store the previous player so they don't get the offer to buy their own discard.
 			// Cannot do this in a multiactive state, so we must do it right before it.

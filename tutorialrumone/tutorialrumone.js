@@ -85,21 +85,38 @@ function (dojo, declare) {
 //
 // TODO:
 //
-// 11/8: Make 6 across
-// 11/8: JS code between 244 and 340 takes ~12 seconds (slow!)
-// 11/7: Put BUYING and BUYTIMER in different tables so there is no deadlock. (PHP line 901)
+// 11/10: Remove NOT BUY button (and timer?)
+// 11/10: Add tooltips for how to play, definition of set and run, buy, cards left...
+// 11/10: Add KNOCK requirement feature, or you can't go down next turn
+// 11/10: Play a differnt sound when it's your turn and/or another message
+// 11/10: IT"S NOT YOUR TURN is not needed
+// 11/10: ipad the cards are too big, wrap on table. PC looks fine
+// 11/10: ipad mini doesn't load studio
+// 11/10: Set it up to start after 1S1R or 2Runs or 3Runs, and skip 2sets.
+// 11/10: Remove jokers with more players or decks
+// 11/10: In 2 sets with many players, allow every other player one more play
+// 11/10: Got Nice Try doesn't reach from 89 on 0*QKA, but they played OK individually.
 // 11/7: Make the text of gray buttons also gray.
 // 11/6: 2Runs: Going down with 568 spades and 456* hearts and ace of spaces swapping a joker. It did the swap but somehow the jokers have the same IDs! I think one of the functions took the wrong joker (in PHP).
-// 11/7: 3 people are light blue
-// 11/7: Make 2 side-by-side down areas (Spectator and Gary and Kristi cannot see whole board)
-// 11/7: Dad chose the 7s but 2c was discarded
-// 11/7: Some people cannot see coral BUY IT coloring.
-// 11/7: Add a table with the players in an oval.
-// 11/2: Ask group: Call Liverpool on another player?
-// 11/5: Cannot go down with 2356s and replacing a joker (can do it with 235s).
 // 11/1: [forum] If 2 of same card (e.g. 2x 6 of hearts) is in hand cannot move just one of them
 // 11/7: Limit the set size???
 //
+// X 11/10: Add graphic explaining how to go down with joker
+// 11/2: Maybe Not: Ask group: Call Liverpool on another player?
+// 11/8: Maybe Not: (it's loading the deck cards) In JS code between 244 and 340 takes ~12 seconds (slow!)
+// 11/5: Maybe not: Cannot go down with 2356s and replacing a joker (can do it with 235s).
+// 11/7: Maybe not: Add a table with the players in an oval.
+// 11/10: Maybe not: Get bonus if you go out? NO.
+// 11/10: Maybe not: Notify players are prepping cards
+// X 11/10: in TARGET area, add definition of runs and sets
+// X 11/7: (Deleted by timer) Put BUYING & BUYTIMER in different tables to remove deadlock. (PHP line 901)
+// X 11/8: Make 6 across
+// X 11/7: 3 people are light blue (changed to 12 players)
+// X 11/7: Some people cannot see coral BUY IT coloring.
+// X 11/7: Dad chose the 7s but 2c was discarded
+// X 11/7: Make 2 side-by-side down areas (Spectator and Gary and Kristi cannot see whole board)
+// X 11/10: Run of *QKA shows as QK*A
+// X 11/10: When player plays on a run, their card count is not updated
 // X 11/7: Remove "play" from the options if you cannot play.
 // X 11/7: Put everyone's prep area just below the DECK.
 // X 11/7: Review buttons reappear even though they were clicked
@@ -516,6 +533,9 @@ console.log( discardPile );
 			this.myPrepB.create( this, $('myPrepB'), this.cardwidth, this.cardheight );
 			this.myPrepC.create( this, $('myPrepC'), this.cardwidth, this.cardheight );
 			
+			let tooltip_myPrepA = 'Select cards for a meld. Click button Prep A.';
+			this.addTooltipHtmlToClass('myPrepA', tooltip_myPrepA);
+
 			this.myPrepA.image_items_per_row = 13;
             for (var color = 1; color <= 4; color++) {
                 for (var value = 1; value <= 13; value++) {
@@ -691,6 +711,9 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 
 			// Move the board jokers, if any, to appropriate places
 			this.sortBoard();
+			
+//TODO 11/10 trying to make points window wider. Trouble is the window is not there on reload.
+//			dojo.setStyle( 'popin_tableWindow', "width: 1600px;" );
 			
             console.log( "[bmc] EXIT game setup" );
         },
@@ -1052,6 +1075,42 @@ console.log( "[bmc] EXIT sortBoard" );
 /////////
 /////////
 /////////
+		sortArea_A : function( boardPlayer ) {
+			console.log("[bmc] sortArea_A");
+			cards = this.downArea_A_[ boardPlayer ].getAllItems();
+			if ( cards != null ) {
+				weightChange = this.sortRun( cards, 'playerDown_A' );
+console.log( weightChange );
+				this.downArea_A_[ boardPlayer ].changeItemsWeight( weightChange );
+			}
+		},
+/////////
+/////////
+/////////
+		sortArea_B : function( boardPlayer ) {
+			console.log("[bmc] sortArea_B");
+			cards = this.downArea_B_[ boardPlayer ].getAllItems();
+			if ( cards != null ) {
+				weightChange = this.sortRun( cards, 'playerDown_B' );
+console.log( weightChange );
+				this.downArea_B_[ boardPlayer ].changeItemsWeight( weightChange );
+			}
+		},
+/////////
+/////////
+/////////
+		sortArea_C : function( boardPlayer ) {
+			console.log("[bmc] sortArea_C");
+			cards = this.downArea_C_[ boardPlayer ].getAllItems();
+			if ( cards != null ) {
+				weightChange = this.sortRun( cards, 'playerDown_C' );
+console.log( weightChange );
+				this.downArea_C_[ boardPlayer ].changeItemsWeight( weightChange );
+			}
+		},
+/////////
+/////////
+/////////
 		sortRun : function( cards, downArea ) {
 console.log( "[bmc] ENTER sortRun" );
 console.log( cards );
@@ -1149,6 +1208,9 @@ console.log("[bmc] Making Ace High");
 console.log( "cardGroupNonJokers aftersort 2" );
 console.log( cardGroupNonJokers );
 
+				var jokerIndex = 0;
+				var jokersUsed = 0;
+				
 				if ( jokerCount > 0 ) {
 					lowestCard = cardGroupNonJokers.find(Boolean) ; // Store first non-joker value
 	console.log( "[bmc]lowestCard:" );
@@ -1183,7 +1245,10 @@ console.log( cardGroupNonJokers );
 							weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex + 1;
 							jokers[ jokerIndex ][ 'type_arg' ] = lowestCard[ 'type_arg' ] + 1;
 							lowestCard = jokers[ jokerIndex ];
+	console.log("[bmc] Used joker: ", jokers[ jokerIndex ]);
+	console.log( jokerIndex );
 							jokerIndex++;
+							jokersUsed++;
 	//					} else {
 						}
 						weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex;
@@ -1198,6 +1263,11 @@ console.log( cardGroupNonJokers );
 	console.log(weightChange);
 				}
 
+	console.log("[bmc] JokerCount & jokersUsed after placement:");
+	console.log(jokerCount);
+	console.log(jokersUsed);
+	//so if jokercount > jokerindex then there's an extra joker, so put it on the left if the ace is high
+
 				if ( ace != null ) {
 	console.log("[bmc] There's an ace!");
 					// Check if ace needs to be highest.  Assuming it's already a run, ace is high when:
@@ -1208,6 +1278,16 @@ console.log( cardGroupNonJokers );
 					if ( cardGroupNonJokers[ Object.keys(cardGroupNonJokers).length - 1 ][ 'type_arg' ] + jokerCount > 12 ) {
 	console.log("Making Ace High");
 						weightChange[ ace.unique_id ] = 54; // Joker #2 is 53, so make it higher
+						
+						// Now check if jokers need to be moved to low (i.e. if there are extras)
+						if ( jokerCount > jokersUsed ) {
+							for ( let i = jokersUsed; i < jokerCount; i++ ){
+	console.log(i);
+	console.log(jokers[i]);
+	console.log(jokers[i]['uid']);
+								weightChange[ jokers[ i ][ 'uid' ]] = -1; // Just put all on the left
+							}
+						}
 					}
 				}
 console.log("FINAL FINAL weightChange after ACE analysis");
@@ -1235,6 +1315,14 @@ console.log( "discardPile and playerhand:" );
 console.log( this.discardPile );
 console.log( this.playerHand );
 
+			// If it is us, play a special sound and show an alert
+			
+			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
+				this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
+				
+				playSound( 'tutorialrumone_itsyourdraw' );
+				//this.disableNextMoveSound();
+			}
 			// Adjust all hand card-counts because of the discard
 			for ( var p_id in allHands ) {
 				this.handCount[ p_id ].setValue( allHands[ p_id ] );
@@ -1313,6 +1401,17 @@ console.log("[bmc] EXIT discardCard");
 /////////
 		startActionTimerStatic: function () {
 console.log("[bmc] ENTER startActionTimerStatic");
+
+
+
+
+
+			return;
+
+
+
+
+
 			if( this.actionTimerIdStatic ) { // Don't create a new timer if one already exists.
 console.log( "[bmc] Timer already exists, not need to create.");
 				return;
@@ -2042,6 +2141,7 @@ console.log(boardArea);
 console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById( card_id );
 console.log("[bmc] Removed.");
+				this.sortArea_A( boardPlayer );
 			}
 			
 			if ( boardArea === 'playerDown_B' ) {
@@ -2055,6 +2155,7 @@ console.log(boardArea);
 console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById( card_id );
 console.log("[bmc] Removed.");
+				this.sortArea_B( boardPlayer );
 			}
 			if ( boardArea === 'playerDown_C' ) {
 			console.log(boardArea);
@@ -2066,8 +2167,9 @@ console.log("[bmc] Removed.");
 console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById(card_id);
 console.log("[bmc] Removed.");
+				this.sortArea_C( boardPlayer );
 			}
-			this.sortBoard();
+			//this.sortBoard();
 			console.log("[bmc] (from PHP) EXIT cardWasPlayed");
 		},
 /////////
@@ -2227,8 +2329,6 @@ console.log ("[bmc] CONFIRM");
 				this.confirmationDialog( _('Are you sure you want to discard? You have cards prepped.'),
 							 dojo.hitch( this, function() {
 								 this.reallyDiscard();
-							   // this.ajaxcall( '/' + this.game_name + "/" + this.game_name + "/" + action + ".html",
-									// { id:'', lock:true }, this, function( result ) {} );
 							}));
 			} else { // nothing prepped so discard the card
 console.log ("[bmc] Just discard");
@@ -3860,14 +3960,17 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 						if ( targetArea === 'playerDown_A' ) {
 							console.log("[bmc] Adding Joker to AREA A");
 							this.downArea_A_[ downPlayer ].addToStockWithId( jokerUniqueID, joker.id, 'myhand' );
+							// this.sortArea_A( downPlayer );
 						}
 						if ( targetArea === 'playerDown_B' ) {
 							console.log("[bmc] Adding Joker to AREA B");
 							this.downArea_B_[ downPlayer ].addToStockWithId( jokerUniqueID, joker.id, 'myhand' );
+							// this.sortArea_B( downPlayer );
 						}
 						if ( targetArea === 'playerDown_C' ) {
 							console.log("[bmc] Adding Joker to AREA C");
 							this.downArea_C_[ downPlayer ].addToStockWithId( jokerUniqueID, joker.id, 'myhand' );
+							// this.sortArea_C( downPlayer );
 						}
 						this.playerHand.removeFromStockById(joker.id);
 					}
@@ -3897,6 +4000,7 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 						this.downArea_A_[ downPlayer ].addToStockWithId( cardUniqueId, card_ids[ card_id ], 'overall_player_board_' + downPlayer );
 						
 //						dojo.removeClass('playerDown_A_' + this.player_id, "border1");
+						// this.sortArea_A( downPlayer );
 
 					}
 					if ( downArea === 'playerDown_B_' ) {
@@ -3904,12 +4008,14 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 //						this.downArea_B_[ downPlayer ].addToStockWithId( cardUniqueId, card_id, 'overall_player_board_' + downPlayer );
 						this.downArea_B_[ downPlayer ].addToStockWithId( cardUniqueId, card_ids[ card_id ], 'overall_player_board_' + downPlayer );
 //						dojo.removeClass('playerDown_B_' + this.player_id, "border1");
+						// this.sortArea_B( downPlayer );
 					}
 					if ( downArea === 'playerDown_C_' ) {
 						console.log("[bmc] Adding to AREA C");
 //						this.downArea_C_[ downPlayer ].addToStockWithId( cardUniqueId, card_id, 'overall_player_board_' + downPlayer );
 						this.downArea_C_[ downPlayer ].addToStockWithId( cardUniqueId, card_ids[ card_id ], 'overall_player_board_' + downPlayer );
 //						dojo.removeClass('playerDown_C_' + this.player_id, "border1");						
+						//this.sortArea_C( downPlayer );
 					}
 /*
 slideToObject
@@ -3920,7 +4026,9 @@ Animate a slide of the DOM object referred to by domNodeToSlide from its current
 					this.playerHand.removeFromStockById( card_ids[ card_id ]);
 				}
 			}
-			this.sortBoard();
+			if ( notif.args.targetArea != null ) {
+				this.sortBoard();
+			}
 		},
 /////////
 /////////
