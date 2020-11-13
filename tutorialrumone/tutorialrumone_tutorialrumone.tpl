@@ -39,12 +39,12 @@
 					<a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue spectatorMode">Sort Runs</a>
 					<span style="margin-left:15px"></span>
 					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray spectatorMode"> Buy it! </a>
-					<a href="#" id="buttonNotBuy" class="bgabutton bgabutton_gray spectatorMode">Don't buy</a>
 					<span style="margin-left:15px"></span>
-					<a href="#" id="buttonPrepAreaA" class="bgabutton bgabutton_gray spectatorMode">Prep A</a>
-					<a href="#" id="buttonPrepAreaB" class="bgabutton bgabutton_gray spectatorMode">Prep B</a>
-					<a href="#" id="buttonPrepAreaC" class="bgabutton bgabutton_gray spectatorMode">Prep C</a>
-					<a href="#" id="buttonGoDownStatic" class="bgabutton bgabutton_gray spectatorMode">Go Down</a>
+					<a href="#" id="buttonPrepAreaA" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep A</a>
+					<a href="#" id="buttonPrepAreaB" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep B</a>
+					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep C</a>
+					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep Joker</a>
+					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode">Go Down</a>
 					<div id="myhand" class="myhand"></div>
 				</span>
 		</div>
@@ -54,11 +54,11 @@
 
 <div id="goDownArea_wrap" class="goDownWrap whiteblock">
 	<div id="boxes">
-		<div id = "leftbox" class="leftbox">
+		<div id = "deckbox" class="deckbox">
 			<h3>Draw Deck (<span id="drawDeckSize"></span>)</h3>
 			<div id="deck"></div>
 		</div>
-		<div id = "mediumbox" class="mediumbox">
+		<div id = "discardbox" class="discardbox">
 			<h3>Discard Pile (<span id="discardSize"></span>)</h3>
 			<div id="discardPile"></div>
 		</div>
@@ -73,6 +73,10 @@
 		<div id="myPrepC" class="prepbox">
 			<h3>Prep C</h3>
 			<div id="PrepC"></div>
+		</div>
+		<div id="myPrepJoker" class="prepjoker">
+			<h3>Prep Joker</h3>
+			<div id="prepjoker"></div>
 		</div>
 	</div>
 	<div></div>
@@ -94,47 +98,9 @@
 
 <script type="text/javascript">
 
-	/* Javascript HTML templates */
-/*			<div id="playerDown_A1_{PLAYER_ID}" class="downWhite">M:</div>
-			<div id="playerDown_B1_{PLAYER_ID}" class="downWhite">N:</div>
-			<div id="playerDown_C1_{PLAYER_ID}" class="downWhite">O:</div>
-			<div id="playerDown_A2_{PLAYER_ID}" class="downWhite">P:</div>
-			<div id="playerDown_B2_{PLAYER_ID}" class="downWhite">Q:</div>
-			<div id="playerDown_C2_{PLAYER_ID}" class="downWhite">R:</div>
-*/
-/*
-var jstpl_handTarget = '<div id="handTarget"></div>';
-*/
-
-/* WORKS 30% down Area
-	<div id="downArea">
-		<!-- BEGIN goDownArea -->
-			<div id="playerDown_A_{PLAYER_ID}" class="downWhite"></div>
-			<div id="playerDown_B_{PLAYER_ID}" class="downWhite"></div>
-			<div id="playerDown_C_{PLAYER_ID}" class="downWhite"></div>
-		<!-- END goDownArea -->
-	</div>
-
-*/
-
-
-
-/*
-var jstpl_buys = '<div id="player-status-${player_id}" class="player-status"><span>Buys Left: ${buy_number}/3</span></div>';
-*/
-
-/* var jstpl_player_board = '\<div class="player_score">\ */
 var jstpl_player_board = '\<div class="cp_board">\
     <span id="buycount_p${id}"></span> <img class="rum_buyicon"></img> <span id="handcount_p${id}"></span> <img class="rum_cardicon"></img></div>';
 
-/* This works, but trying to show it in 1 line:
-var jstpl_player_board = '\<div class="cp_board">\
-    <div id="stoneicon_p${id}" class="gmk_stoneicon"></div><span id="buycount_p${id}">Buys Left</span></div>';
-*/
-/* This jstpl_playerPlayButton works but I'm doing the button in the white bar now.
-var jstpl_playerPlayButton = '<a href="#" id="currentPlayerPlayButton_id" class="bgabutton bgabutton_blue">\
-<span>Play Card</span></a>';
-*/ 
 /*
 // Example:
 var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_ID}"></div>';

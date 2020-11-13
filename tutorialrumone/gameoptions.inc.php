@@ -36,6 +36,7 @@ $game_options = array(
 		),
 		'default' => 2
 	),
+	/*
 	101 => array(
 		'name' => totranslate( 'Buy timer (seconds)' ),
 		'values' => array(
@@ -48,6 +49,7 @@ $game_options = array(
 		),
 		'default' => 10
 	),
+	*/
 	102 => array(
 		'name' => totranslate( 'Game Length (Sets and Runs targets needed for each hand)' ),
 		'values' => array(
@@ -55,15 +57,22 @@ $game_options = array(
 			2 => array ( 'name' => totranslate( 'Short game (2Sets, 2Runs, 2Sets1Run, 3Runs)' ) )
 		),
 		'default' => 10
-	),
-	103 => array(
-		'name' => totranslate( 'Buy-winner chosen' ),
-		'values' => array(
-			1 => array ( 'name' => totranslate( 'Fastest buyer' )	),
-			2 => array ( 'name' => totranslate( 'Seat order' ) )
-		),
-		'default' => 10
+	// 200 => array(
+		// 'name' => totranslate( 'Game Speed' ),
+		// 'values' => array(
+			// 1 => array ( 'name' => totranslate( 'Full length game (2Sets, 1Set1Run, 2Runs, 3Sets, 2Sets1Run, 2Run1Set, 3Runs)' )	),
+			// 2 => array ( 'name' => totranslate( 'Short game (2Sets, 2Runs, 2Sets1Run, 3Runs)' ) )
+		// ),
 	)
+	// ,
+	// 103 => array(
+		// 'name' => totranslate( 'Buy-winner chosen' ),
+		// 'values' => array(
+			// 1 => array ( 'name' => totranslate( 'Fastest buyer' )	),
+			// 2 => array ( 'name' => totranslate( 'Seat order' ) )
+		// ),
+		// 'default' => 10
+	// )
 /*
 
 // note: game variant ID should start at 100 (ie: 100, 101, 102, ...). The maximum is 199.

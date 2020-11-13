@@ -45,8 +45,8 @@ function (dojo, declare) {
 			this.firstLoad = 'Yes';
 			this.handReviewed = 'No';
 			this.drawCounter = 400; // Start with a number bigger than the # of cards
-			this.buyTimeInSecondsDefault = 10;
-			this.buyTimeInSeconds = this.buyTimeInSecondsDefault;
+			// this.buyTimeInSecondsDefault = 10;
+			// this.buyTimeInSeconds = this.buyTimeInSecondsDefault;
 			this.prepAreas = 0; // No card are prepped on the board upon refresh
 			// New variables for new timers on static buttons
 			this.enableDBStatic = 'Yes'; // (except the player whose turn it is
@@ -529,13 +529,16 @@ console.log( discardPile );
 			this.myPrepA = new ebg.stock();
 			this.myPrepB = new ebg.stock();
 			this.myPrepC = new ebg.stock();
+			this.myPrepJoker = new ebg.stock();
+			
 			this.myPrepA.create( this, $('myPrepA'), this.cardwidth, this.cardheight );
 			this.myPrepB.create( this, $('myPrepB'), this.cardwidth, this.cardheight );
 			this.myPrepC.create( this, $('myPrepC'), this.cardwidth, this.cardheight );
+			this.myPrepJoker.create( this, $('myPrepJoker'), this.cardwidth, this.cardheight );
 			
-			let tooltip_myPrepA = 'Select cards for a meld. Click button Prep A.';
-			this.addTooltipHtmlToClass('myPrepA', tooltip_myPrepA);
+			var tooltip_myPrep = 'To go down, put 1 meld per prep area per the Target Hand. To take a joker, PREP full melds and 1 partial meld. Prep the card to replace the joker. Select board joker. Click GO DOWN.';
 
+			this.addTooltipHtmlToClass('myPrepA', tooltip_myPrep);
 			this.myPrepA.image_items_per_row = 13;
             for (var color = 1; color <= 4; color++) {
                 for (var value = 1; value <= 13; value++) {
@@ -547,6 +550,7 @@ console.log( discardPile );
             this.myPrepA.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
             this.myPrepA.setOverlap( 10, 0 );
 
+			this.addTooltipHtmlToClass('myPrepB', tooltip_myPrep);
 			this.myPrepB.image_items_per_row = 13;
             for (var color = 1; color <= 4; color++) {
                 for (var value = 1; value <= 13; value++) {
@@ -558,6 +562,7 @@ console.log( discardPile );
             this.myPrepB.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
             this.myPrepB.setOverlap( 10, 0 );
 
+			this.addTooltipHtmlToClass('myPrepC', tooltip_myPrep);
 			this.myPrepC.image_items_per_row = 13;
             for (var color = 1; color <= 4; color++) {
                 for (var value = 1; value <= 13; value++) {
@@ -569,6 +574,18 @@ console.log( discardPile );
             this.myPrepC.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
             this.myPrepC.setOverlap( 10, 0 );
 			}
+			
+			this.addTooltipHtmlToClass('myPrepJoker', tooltip_myPrep);
+			this.myPrepJoker.image_items_per_row = 13;
+            for (var color = 1; color <= 4; color++) {
+                for (var value = 1; value <= 13; value++) {
+					let card_type_id = this.getCardUniqueId(color, value);
+					this.myPrepJoker.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
+                }
+            }
+            this.myPrepJoker.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+            this.myPrepJoker.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+            this.myPrepJoker.setOverlap( 10, 0 );			
 
 
 			this.goneDown = new Array();
@@ -608,13 +625,20 @@ console.log( discardPile );
 
 
 			// Set the down area for this player only, to pull cards back to hand before they go down
-			dojo.connect( $('myPrepA'), 'onclick', this, 'onDownAreaClick');
-			dojo.connect( $('myPrepB'), 'onclick', this, 'onDownAreaClick');
-			dojo.connect( $('myPrepC'), 'onclick', this, 'onDownAreaClick');
+			dojo.connect( $('myPrepA'), 'onclick', this, 'onDownAreaAClick');
+			dojo.connect( $('myPrepB'), 'onclick', this, 'onDownAreaBClick');
+			dojo.connect( $('myPrepC'), 'onclick', this, 'onDownAreaCClick');
+			dojo.connect( $('myPrepJoker'), 'onclick', this, 'onDownAreaJokerClick');
 
-			dojo.connect( this.myPrepA, 'onChangeSelection', this, 'onDownAreaSelect' );
-			dojo.connect( this.myPrepB, 'onChangeSelection', this, 'onDownAreaSelect' );
-			dojo.connect( this.myPrepC, 'onChangeSelection', this, 'onDownAreaSelect' );
+			// dojo.connect( this.myPrepA, 'onChangeSelection', this, 'onDownAreaSelect' );
+			// dojo.connect( this.myPrepB, 'onChangeSelection', this, 'onDownAreaSelect' );
+			// dojo.connect( this.myPrepC, 'onChangeSelection', this, 'onDownAreaSelect' );
+			// dojo.connect( this.myPrepJoker, 'onChangeSelection', this, 'onDownAreaSelect' );
+
+			dojo.connect( this.myPrepA, 'onChangeSelection', this, 'onDownAreaAClick' );
+			dojo.connect( this.myPrepB, 'onChangeSelection', this, 'onDownAreaBClick' );
+			dojo.connect( this.myPrepC, 'onChangeSelection', this, 'onDownAreaCClick' );
+			dojo.connect( this.myPrepJoker, 'onChangeSelection', this, 'onDownAreaJokerClick' );
 
 			// Connect up the buy buttons
 			dojo.connect( $('buttonPlayerSortBySet'), 'onclick', this, 'onPlayerSortByButtonSet' );
@@ -623,10 +647,18 @@ console.log( discardPile );
 			dojo.connect( $('buttonPrepAreaA'), 'onclick', this, 'onPlayerPrepArea_A_Button' );
 			dojo.connect( $('buttonPrepAreaB'), 'onclick', this, 'onPlayerPrepArea_B_Button' );
 			dojo.connect( $('buttonPrepAreaC'), 'onclick', this, 'onPlayerPrepArea_C_Button' );
+			dojo.connect( $('buttonPrepJoker'), 'onclick', this, 'onPlayerPrepJoker_Button' );
+			
 			dojo.connect( $('buttonGoDownStatic'), 'onclick', this, 'onPlayerGoDownButton' );
 
 			dojo.connect( $('buttonBuy'), 'onclick', this, 'onPlayerBuyButton' );
-			dojo.connect( $('buttonNotBuy'), 'onclick', this, 'onPlayerNotBuyButton' );
+//			dojo.connect( $('buttonNotBuy'), 'onclick', this, 'onPlayerNotBuyButton' );
+
+
+
+			let tooltip_myPrepA = 'To go down, select cards for one meld & click a PREP button. To take a joker, PREP all melds and 1 partial meld. Also prep the card to replace the joker. Select the board joker.  Click GO DOWN.';
+
+			this.addTooltipHtmlToClass('prepButton', tooltip_myPrepA);
 
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -651,8 +683,8 @@ console.log( discardPile );
 			// then show BUY buttons.
 			// (0==unknown, 1==Not buying 2==Buying) 
 
-			this.buyTimeInSecondsDefault = this.gamedatas.options.buyTimeInSeconds;
-			console.log( this.buyTimeInSecondsDefault );
+			// this.buyTimeInSecondsDefault = this.gamedatas.options.buyTimeInSeconds;
+			// console.log( this.buyTimeInSecondsDefault );
 			
 console.log("[bmc] Buy setup");
 console.log(this.firstLoad);
@@ -918,7 +950,7 @@ console.log( '[bmc] EXIT onUpdateActionButtons: ' + stateName );
 console.log("[bmc] ENTER onPlayerReviewedHandButton");
 			this.dealMeInClicked = true;
 			this.clearButtons();
-			this.stopActionTimer2();
+			// this.stopActionTimer2();
 			var action = 'playerHasReviewedHand';
 
 			if (this.checkAction( action, true)) {
@@ -936,11 +968,12 @@ console.log("[bmc] ENTER onPlayerReviewedHandButton");
 		onPlayerBuyButton : function() {
 console.log("[bmc] ENTER onPlayerBuyButton");
 			this.clearButtons();
-			this.stopActionTimer2();
+			// this.stopActionTimer2();
 			var action = 'buyRequest';
 			
-			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-			dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
+			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+//			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
+			// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 			console.log(this.firstLoad);
 
 			//if ( this.player_id == currentplayer then just ignore. But for now I'll throw a BGA error from PHP.
@@ -964,7 +997,7 @@ console.log("[bmc] ENTER onPlayerBuyButton");
 		onPlayerNotBuyButton : function() {
 console.log("[bmc] ENTER onPlayerNotBuyButton");
 			this.clearButtons();
-			this.stopActionTimer2();
+			// this.stopActionTimer2();
 			console.log(this.gamedatas);
 			
 			var action = 'notBuyRequest';
@@ -1320,9 +1353,14 @@ console.log( this.playerHand );
 			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
 				this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
 				
+				dojo.addClass('myhand_wrap', "borderDrawer");				
+				
 				playSound( 'tutorialrumone_itsyourdraw' );
 				//this.disableNextMoveSound();
+			} else {
+				dojo.removeClass('myhand_wrap', "borderDrawer");				
 			}
+			
 			// Adjust all hand card-counts because of the discard
 			for ( var p_id in allHands ) {
 				this.handCount[ p_id ].setValue( allHands[ p_id ] );
@@ -1401,17 +1439,13 @@ console.log("[bmc] EXIT discardCard");
 /////////
 		startActionTimerStatic: function () {
 console.log("[bmc] ENTER startActionTimerStatic");
-
-
-
-
-
+console.log("[bmc] EXIT(nothing) startActionTimerStatic");
 			return;
 
 
 
 
-
+/*
 			if( this.actionTimerIdStatic ) { // Don't create a new timer if one already exists.
 console.log( "[bmc] Timer already exists, not need to create.");
 				return;
@@ -1452,9 +1486,11 @@ debug('Timer #' + this.actionTimerIdStatic + ' ' + notBuyButtonID + ' start');
 
 console.log("[bmc] EXIT startActionTimerStatic");
 		},
+*/
 /////////
 /////////
 /////////
+/*
 		startActionTimer2: function ( buttonId ) {
 console.log("this.firstLoad");
 console.log(this.firstLoad);
@@ -1575,21 +1611,21 @@ console.log( "[bmc] EXIT stopActionTimerStatic" );
 
 
 
+*/
 
 
 
 
 
+/*
 
 
 
 
 
-
-
-		/*
-		 * Add a timer to an action and trigger action when timer is done (from Kingdom Builder)
-		 */
+		 // 
+		 //  Add a timer to an action and trigger action when timer is done (from Kingdom Builder)
+		 // 
 		startActionTimer: function ( buttonId ) {
 console.log( "[bmc] ENTER startActionTimer" );
 console.log( buttonId );
@@ -1630,7 +1666,7 @@ console.log( button );
 console.log( this.actionTimerId );	
 
 				if ( button == null ) {
-console.log( "[bmc] NO LONGEER DOING: this.stopActionTimer" );
+console.log( "[bmc] NO LONGER DOING: this.stopActionTimer" );
 console.log( this.actionTimerId );	
 
 					//this.stopActionTimer();
@@ -1675,6 +1711,7 @@ console.log( this.actionTimerId );
 				window.clearInterval( this.actionTimerId );
 				delete this.actionTimerId;
 			}
+*/
 /*			if ( this.actionTimerId == null ) {
 console.log( "this.actionTimerId is null or undefined" );
 console.log( this.actionTimerId );	
@@ -1773,8 +1810,9 @@ console.log( this.buyCounterTimerExists );
 //EXP 10/26				this.addActionButton( buyButtonID, _("Buy!"), 'onPlayerBuyButton' );
 //				this.addActionButton( notBuyButtonID , _("Not Buy!"), 'onPlayerNotBuyButton' );
 				
-				dojo.replaceClass( 'buttonBuy', "bgabutton_blue", "bgabutton_gray" );
-				dojo.replaceClass( 'buttonNotBuy', "bgabutton_blue", "bgabutton_gray" );
+//				dojo.replaceClass( 'buttonBuy', "bgabutton_blue", "bgabutton_gray" );
+				dojo.replaceClass( 'buttonBuy', "bgabutton_red", "bgabutton_gray" );
+				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_blue", "bgabutton_gray" );
 
 console.log("[bmc] Action buttons were just created.");
 
@@ -1788,18 +1826,20 @@ console.log("[bmc] EXIT showBuyButton2");
 console.log(this.enableDBStatic);
 			if ( this.enableDBStatic == 'Yes' ) {
 console.log("[bmc] YES enDisStaticBuyButtons");
-				dojo.replaceClass( 'buttonBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
-				dojo.replaceClass( 'buttonNotBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
+//				dojo.replaceClass( 'buttonBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
+				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
+				dojo.replaceClass( 'buttonBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
 				
 				// Only start the timer if active during hand, not during game start nor hand start.
 				if ( this.enableDBTimer == 'Yes' ) {
 console.log("[bmc] YES enableDBTimer");
-					this.startActionTimerStatic();
+					// this.startActionTimerStatic();
 				}
 			} else {
 console.log("[bmc] NO enDisStaticBuyButtons");
-				dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-				dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
+//				dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
+				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
+				dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
 			}
 		},
 		
@@ -1849,7 +1889,7 @@ console.log("[bmc] Action buttons were just created.");
 console.log( document.getElementById( notBuyButtonID ));
 
 					if ( this.buyCounterTimerExists != 'Yes' ) {
-						this.startActionTimer( notBuyButtonID );
+						// this.startActionTimer( notBuyButtonID );
 					}
 //exit(0);
 				} else {
@@ -1928,6 +1968,63 @@ console.log("[bmc] EXIT onMyHandAreaClick");
 /////////
 /////////
 /////////
+		onDownAreaAClick : function() {
+			console.log("[bmc] ENTER onDownAreaAClick");
+
+			var handItems = this.playerHand.getSelectedItems();
+//			if ( handItems.length >= 1 ) {
+				this.prepAreaClicked = 'areaA';
+				this.onDownAreaSelect();
+			// } else {
+				// this.prepAreaClicked = 'areaA';
+				// this.onDownAreaClick();
+			// }
+		},
+/////////
+/////////
+/////////
+		onDownAreaBClick : function() {
+			console.log("[bmc] ENTER onDownAreaBClick");
+			var handItems = this.playerHand.getSelectedItems();
+			// if ( handItems.length >= 1 ) {
+				this.prepAreaClicked = 'areaB';
+				this.onDownAreaSelect();
+			// } else {
+				// this.prepAreaClicked = 'areaB';
+				// this.onDownAreaClick();
+			// }
+		},
+/////////
+/////////
+/////////
+		onDownAreaCClick : function() {
+			console.log("[bmc] ENTER onDownAreaCClick");
+			var handItems = this.playerHand.getSelectedItems();
+			// if ( handItems.length >= 1 ) {
+				this.prepAreaClicked = 'areaC';
+				this.onDownAreaSelect();
+			// } else {
+				// this.prepAreaClicked = 'areaC';
+				// this.onDownAreaClick();
+			// }
+		},
+/////////
+/////////
+/////////
+		onDownAreaJokerClick : function() {
+			console.log("[bmc] ENTER onDownAreaJokerClick");
+			var handItems = this.playerHand.getSelectedItems();
+			// if ( handItems.length == 1 ) {
+				this.prepAreaClicked = 'areaJoker';
+				this.onDownAreaSelect();
+			// } else {
+				// this.prepAreaClicked = 'areaJoker';
+				// this.onDownAreaClick();
+			// }
+		},
+/////////
+/////////
+/////////
 		onDownAreaSelect : function() {
 console.log("[bmc] ENTER onDownAreaSelect");
 console.log(this.player_id);
@@ -1947,12 +2044,22 @@ console.log(area_B_Items);
 console.log(area_C_Items);
 			
 			// TODO: These if conditions overlap, could be simplified
+			
 			if (( this.goneDown[ this.player_id ] == 0 ) &&  //0 = Not gone down; 1 = Gone down.
-				( handItems.length === 1 )) { // Just 1 card in hand
-				// Then just highlight it in prep for GO DOWN button (i.e. do nothing)
-				return;
-				
+				( handItems.length >= 1 )) {
+				// Then put it into a prep area
+				if        ( this.prepAreaClicked == 'areaA' ) {
+					this.onPlayerPrepArea_A_Button();
+				} else if ( this.prepAreaClicked == 'areaB' ) {
+					this.onPlayerPrepArea_B_Button();
+				} else if ( this.prepAreaClicked == 'areaC' ) {
+					this.onPlayerPrepArea_C_Button();
+				} else if ( this.prepAreaClicked == 'areaJoker' ) {
+					this.onPlayerPrepJoker_Button();
+				}
 			} else if ( handItems.length === 1 )  { // Then try to play the card
+console.log("try to play 1 card");
+
 				var [ boardCard, boardArea, boardPlayer ] = this.getSelectedDownAreaCards ();
 				
 				let playerCard = handItems[ 0 ];
@@ -1995,11 +2102,14 @@ console.log("/" + this.game_name + "/" + this.game_name + "/" + action + ".html"
 				} else {
 					console.log("[bmc] No card on board selected, do nothing (one card)");
 				}
-			// If the player has not gone down and clicks, pull all the cards back to their hand
+			// If the player has not gone down and clicks, pull the card back to their hand
 			} else if ( this.goneDown[ this.player_id ] == 0 ) { //0 = Not gone down; 1 = Gone down.
+console.log("Pull 1 card back");
+
 				var area_A_Items = this.myPrepA.getSelectedItems();
 				var area_B_Items = this.myPrepB.getSelectedItems();
 				var area_C_Items = this.myPrepC.getSelectedItems();
+				var area_Joker_Items = this.myPrepJoker.getSelectedItems();
 			
 				if ( area_A_Items.length === 1 ) {
 console.log("[bmc] Card from prep A to hand");
@@ -2037,10 +2147,24 @@ console.log("[bmc] Card from prep C to hand");
 					this.myPrepC.removeFromStockById( card.id );
 					this.myPrepC.unselectAll();
 
+				} else if ( area_Joker_Items.length === 1 ) {
+console.log("[bmc] Card from prep Joker to hand");
+					let card = area_Joker_Items[ 0 ];
+					cardUniqueId = card.type;
+					cardId = card.id;
+
+					this.playerHand.addToStockWithId( cardUniqueId, cardId, 'myhand'); // Pull back to hand
+					// this.downArea_C_[ this.player_id ].removeFromStockById( card.id );
+					// this.downArea_C_[ this.player_id ].unselectAll();
+					this.myPrepJoker.removeFromStockById( card.id );
+					this.myPrepJoker.unselectAll();
+
 				} else {
 					console.log("[bmc] No card in hand selected, do nothing");
 				}
+
 			} else if ( handItems.length > 1 )  { // Then try to play multiple cards
+console.log("mulitple");
 				var [ boardCard, boardArea, boardPlayer ] = this.getSelectedDownAreaCards ();
 
 				if  (( boardCard != {} ) &&
@@ -2080,21 +2204,29 @@ console.log("/" + this.game_name + "/" + this.game_name + "/" + action + ".html"
 				}
 			}
 			
-			var area_A_Items = this.downArea_A_[ this.player_id ].getAllItems();
-			var area_B_Items = this.downArea_B_[ this.player_id ].getAllItems();
-			var area_C_Items = this.downArea_C_[ this.player_id ].getAllItems();
+			var area_A_Items = this.myPrepA.getAllItems();
+			var area_B_Items = this.myPrepB.getAllItems();
+			var area_C_Items = this.myPrepC.getAllItems();
+			var area_Joker_Items = this.myPrepJoker.getAllItems();
 
+			console.log( area_A_Items );
+			console.log( area_B_Items );
+			console.log( area_C_Items );
+			console.log( area_Joker_Items );
+			
 			if ( area_A_Items.length == 0 ) {
-				dojo.removeClass('playerDown_A_' + this.player_id, "border1");
+				dojo.removeClass('myPrepA', "border1");
 			}
 			if ( area_B_Items.length == 0 ) {
-				dojo.removeClass('playerDown_B_' + this.player_id, "border1");
+				dojo.removeClass('myPrepB', "border1");
 			}
 			if ( area_C_Items.length == 0 ) {
-				dojo.removeClass('playerDown_C_' + this.player_id, "border1");
+				dojo.removeClass('myPrepC', "border1");
+			}
+			if ( area_Joker_Items.length == 0 ) {
+				dojo.removeClass('myPrepJoker', "border1");
 			}
 			console.log("[bmc] EXIT onDownAreaSelect");
-
 		},
 ////////
 ////////
@@ -2181,6 +2313,9 @@ console.log("[bmc] Removed.");
 			//player_id = this.gamedatas.playerorder[ 0 ];
 			console.log( player_id );
 			console.log( this.goneDown[player_id] );
+			
+			console.log("[bmc] EXIT onDownAreaClick");
+			return;
 			
 			// If the player has not gone down and clicks, pull all the cards back to their hand
 			if ( this.goneDown[ player_id ] == 0 ) { //0 = Not gone down; 1 = Gone down.
@@ -2323,8 +2458,13 @@ console.log( "[bmc] ENTER onPlayerDiscardButton" );
 			let action = "reallyDiscard";
 console.log( this.prepAreas );
 
+			let selectedDiscards = this.discardPile.getSelectedItems();
+console.log("selectedDiscards:");
+console.log(selectedDiscards);
 			// If cards are in prep area, double check that the really want to discard and not go down.
-			if (( this.prepAreas > 0 ) && ( this.goneDown[ this.player_id ] == 0 )) { //0 = Not gone down; 1 = Gone down.
+			if (( this.prepAreas > 0 ) &&
+				( this.goneDown[ this.player_id ] == 0 ) &&  //0 = Not gone down; 1 = Gone down.
+				( selectedDiscards != undefined )) {
 console.log ("[bmc] CONFIRM");
 				this.confirmationDialog( _('Are you sure you want to discard? You have cards prepped.'),
 							 dojo.hitch( this, function() {
@@ -2342,6 +2482,7 @@ console.log( "[bmc] EXIT onPlayerDiscardButton" );
 		reallyDiscard : function() {
 console.log( "[bmc] ENTER reallyDiscard" );
 console.log( this.player_id );
+			this.discardPile.unselectAll();
 
 			this.clearButtons();
 //		    this.removeActionButtons(); // Remove the button because they discarded
@@ -2626,7 +2767,8 @@ console.log("[bmc] No more sets needed.");
 		onPlayerGoDownButton : function() {
 console.log("[bmc] ENTER onPlayerGoDownButton!");
 console.log(this.player_id)
-			var handItems = this.playerHand.getSelectedItems(); // Get the card for joker swap, if any
+			// var handItems = this.playerHand.getSelectedItems(); // Get the card for joker swap, if any
+			var handItems = this.myPrepJoker.getAllItems(); // Get the card for joker swap (should be just 1 if any)
 			
 		    this.removeActionButtons(); // Remove the button because they played
 
@@ -2988,7 +3130,6 @@ console.log( "[bmc] GAMEDATAS and this.player_id" );
 //console.log(card);
 console.log( this.gamedatas );
 console.log( this.player_id );
-			this.discardPile.unselectAll();
 
 			// If the gamestate is play, then treat it as a discard.
 
@@ -3124,6 +3265,58 @@ console.log("[bmc] cardIds: " + cardIds);
 				this.playerHand.unselectAll();
 				this.showHideButtons();
 			}
+			this.myPrepA.unselectAll();
+			this.myPrepB.unselectAll();
+			this.myPrepC.unselectAll();
+			this.myPrepJoker.unselectAll();
+		},
+/////////
+/////////
+/////////
+		onPlayerPrepJoker_Button : function() {
+			console.log("[bmc] BUTTON onPlayerPrepJoker_Button");
+			console.log(this.player_id);
+			if ( this.goneDown[ this.player_id ] == 1 ) { // If player already went down, do nothing
+				this.showMessage("You already went down");
+				return;
+			} else {
+				this.clearButtons();
+
+				var cards = this.playerHand.getSelectedItems(); // It can be >1 card
+console.log(cards);
+				
+//				var cardIds = this.getItemIds( cards ); // Just pick 1 card
+
+//				for ( card of cards ) {
+					cardUniqueId = cards[0].type;
+					cardId = cards[0].id;
+
+					// if there was a card there, store it so later move it back to hand
+					let card = this.myPrepJoker.getAllItems(); // It should just be 1 card
+
+					var from = 'myhand_item_' + cards[0].id;
+					this.myPrepJoker.addToStockWithId( cardUniqueId, cardId, 'myhand' );
+					dojo.addClass( 'myPrepJoker', "border1" );
+					this.playerHand.removeFromStockById (cards[0].id );
+
+console.log( card ) ;
+					if ( card.length != 0 ) {
+						cardUniqueId = card[0].type;
+						cardId = card[0].id;
+console.log( cardUniqueId ) ;
+console.log( cardId ) ;
+						this.playerHand.addToStockWithId( cardUniqueId, cardId, 'myhand'); // Pull back
+						this.myPrepJoker.removeFromStockById( cardId );
+//					}
+
+				}
+				this.prepAreas++;
+console.log(this.prepAreas);
+console.log("[bmc] INCREMENTED prepAreas");
+
+				this.playerHand.unselectAll();
+				this.showHideButtons();
+			}
 		},
 /////////
 /////////
@@ -3166,7 +3359,7 @@ console.log("[bmc] cardIds: " + cardIds);
 /////////
 /////////
 		onPlayerPrepArea_C_Button : function () {
-console.log("[bmc] BUTTON onPlayerPrepAreaAButton");
+console.log("[bmc] BUTTON onPlayerPrepAreaCButton");
 console.log(this.player_id);
 			// If player already went down, do nothing
 			if ( this.goneDown[ this.player_id ] == 1 ) {
@@ -3206,9 +3399,9 @@ console.log("[bmc] cardIds: " + cardIds);
 		showHideButtons : function() {
 console.log("[bmc] ENTER ShowHideButtons");
 			let buyButtonID = 'buttonBuy';
-			let notBuyButtonID = 'buttonNotBuy';
+			// let notBuyButtonID = 'buttonNotBuy';
 console.log( "[bmc] BUTTONIDs:" );
-console.log( notBuyButtonID );
+// console.log( notBuyButtonID );
 
 			this.clearButtons();
 
@@ -3227,11 +3420,14 @@ console.log(this.playerSortBy);
 					dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
 					dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_blue", "bgabutton_gray" );
 					dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_blue", "bgabutton_gray" );
+					dojo.replaceClass( 'buttonPrepJoker', "bgabutton_blue", "bgabutton_gray" );
+					
 				} else {
 	console.log("[bmc] prepbuttons OFF");
 					dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 					dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_gray", "bgabutton_blue" );
 					dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_gray", "bgabutton_blue" );
+					dojo.replaceClass( 'buttonPrepJoker', "bgabutton_gray", "bgabutton_blue" );
 				}
 			}
 			
@@ -3288,7 +3484,7 @@ console.log( this.gamedatas.activeTurnPlayer_id );
 				( goDownDOM == null )) {
 
 				dojo.replaceClass( 'buttonGoDownStatic', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
-				this.addActionButton( 'buttonPlayerGoDown', _("Go Down!"), 'onPlayerGoDownButton' );
+				//this.addActionButton( 'buttonPlayerGoDown', _("Go Down!"), 'onPlayerGoDownButton' );
 				this.showingButtons === 'Yes';
 			} else {
 				dojo.replaceClass( 'buttonGoDownStatic', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
@@ -3391,11 +3587,14 @@ console.log( items.length );
 					dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
 					dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_blue", "bgabutton_gray" );
 					dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_blue", "bgabutton_gray" );
+					dojo.replaceClass( 'buttonPrepJoker', "bgabutton_blue", "bgabutton_gray" );
 				} else if ( items.length == 0 ) {
 	console.log("[bmc] prepbuttons OFF");
 					dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_gray", "bgabutton_blue" );
 					dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_gray", "bgabutton_blue" );
 					dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_gray", "bgabutton_blue" );
+					dojo.replaceClass( 'buttonPrepJoker', "bgabutton_gray", "bgabutton_blue" );
+					
 				}
 			}
 			this.showHideButtons();			
@@ -3492,8 +3691,10 @@ console.log( "[bmc] EXIT notifications subscriptions setup" );
 			
 			// If someone went out, remove the BUY buttons, kill the timers and let them review.
 			//this.stopActionTimer2();
-			this.stopActionTimerStatic();
+			// this.stopActionTimerStatic();
 			this.clearButtons();
+			
+			dojo.removeClass('myhand_wrap', "border1");				
 			
 			// If someone clicked their button 'On To The Next' just ignore it
 			// and replace the button. The state machine will continue after ALL have clicked.
@@ -3648,7 +3849,7 @@ console.log("empty arg");
 				this.handCount[ p_id ].setValue( notif.args.allHands[ p_id ] );
 			}
 			
-			this.buyTimeInSeconds = 40;
+			// this.buyTimeInSeconds = 40;
 			
 			// Draw the names on the board
 			for ( var player in this.gamedatas.players) {
@@ -3717,15 +3918,17 @@ console.log("[bmc] EXIT notif_discardCard");
 console.log("[bmc] ENTER notif_drawcard");
 console.log( notif );
 
-			this.buyTimeInSeconds = this.buyTimeInSecondsDefault;
+			// this.buyTimeInSeconds = this.buyTimeInSecondsDefault;
 
 			// If we drew or someone else drew the discard, then stop any timers.
 			if (( this.gamedatas.gamestate.active_player == notif.player_id ) ||
 				( notif.args.drawSource == 'discardPile' )) {
 				this.clearButtons();
-				this.stopActionTimer2();
+				// this.stopActionTimer2();
 			}
 			
+			this.clearButtons();
+
 			// Steadily increment every time a card is drawn to set the weight properly
 			this.drawCounter++;
 			
@@ -3769,12 +3972,12 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 			console.log("[bmc]notif_clearBuyers");
 			// No one is buying because the next-next player has discarded!
 			console.log(notif);
-			this.stopActionTimer2();
+//			this.stopActionTimer2();
 			this.showHideButtons();
 			this.enableDBStatic = 'No';
 			this.enableDBTimer = 'No'; // But let the timer run out if it's there
 			this.enDisStaticBuyButtons();
-			this.stopActionTimerStatic(); // Stop the timer, we are not buying			
+			// this.stopActionTimerStatic(); // Stop the timer, we are not buying			
 		},
 /////////
 /////////
@@ -3785,7 +3988,7 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 //			if ( this.gamedatas.playerOrderTrue[ 0 ] == this.player_id ) {
 //			if ( this.gamedatas.activeTurnPlayer_id == this.player_id ) {
 			if ( this.gamedatas.gamestate.active_player == notif.player_id ) {
-				this.stopActionTimer2();
+				// this.stopActionTimer2();
 			}
 			this.showHideButtons();
 			
@@ -3797,7 +4000,7 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 				this.enableDBStatic = 'No';
 				this.enableDBTimer = 'No'; // But let the timer run out if it's there
 				this.enDisStaticBuyButtons();
-				this.stopActionTimerStatic(); // Stop the timer, we are not buying
+				// this.stopActionTimerStatic(); // Stop the timer, we are not buying
 			}
 		},
 /////////
@@ -3839,7 +4042,7 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 			// If by timer then run stop timers and hide the buttons
 			// If by seat order then do not
 			if ( this.gamedatas.options.buyMethod == 1 ) {
-				this.stopActionTimer2();
+				// this.stopActionTimer2();
 				this.showHideButtons();
 				console.log( this.gamedatas.players[ notif.args.player_id ].name  );
 				
@@ -3865,7 +4068,7 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 				this.enableDBStatic = 'No';
 				this.enableDBTimer = 'No'; // But let the timer run out if it's there
 				this.enDisStaticBuyButtons();
-				this.stopActionTimerStatic(); // Stop the timer, someone else is buying
+				// this.stopActionTimerStatic(); // Stop the timer, someone else is buying
 			} else { // Do nothing just wait for the draw
 			}
 		},
@@ -3913,9 +4116,6 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 				// dojo.removeClass('playerDown_A_' + notif.args.player_id, "border1");
 				// dojo.removeClass('playerDown_B_' + notif.args.player_id, "border1");
 				// dojo.removeClass('playerDown_C_' + notif.args.player_id, "border1");
-				dojo.removeClass('myPrepA', "border1");
-				dojo.removeClass('myPrepB', "border1");
-				dojo.removeClass('myPrepC', "border1");
 				
 				// And move the cards from my prep area to the board
 				for ( card_id in card_ids ) {
@@ -3945,6 +4145,11 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 			
 			if ( this.gamedatas.gamestate.active_player == this.player_id ) {
 				console.log("[bmc] I went down!");
+
+				// Remove the highlighted border
+				dojo.removeClass('myPrepA', "border1");
+				dojo.removeClass('myPrepB', "border1");
+				dojo.removeClass('myPrepC', "border1");
 				
 				this.goneDown[ this.player_id ] = 1;
 				

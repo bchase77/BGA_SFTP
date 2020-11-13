@@ -64,7 +64,7 @@ class TutorialRumOne extends Table
 			"skipFirstDeal" => 32,
 			"findBuyerFailsafe" => 33,
 			"numberOfDecks" => 100,
-			"buyTimeInSeconds" => 101,
+			// "buyTimeInSeconds" => 101,
 			"gameLengthOption" => 102,
 			"buyMethod" => 103
         ) );
@@ -392,7 +392,7 @@ class TutorialRumOne extends Table
 //		self::dump("[bmc] cardsInBb:", $cardsInBb);
 //		self::dump("[bmc] cardsInBc:", $cardsInBc);
 
-		$result[ 'options' ][ 'buyTimeInSeconds' ] = self::getGameStateValue( 'buyTimeInSeconds' );
+		// $result[ 'options' ][ 'buyTimeInSeconds' ] = self::getGameStateValue( 'buyTimeInSeconds' );
 		
 		$numberOfDecks = self::getGameStateValue( 'numberOfDecks' );
 		
@@ -2164,6 +2164,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		
 		foreach ( $cards as $card ) {
 			$player_id = $card[ 'location_arg' ];
+			self::dump("[bmc] Scoring: ", $card );
 			if ( $card[ 'type' ] >= 1 and $card[ 'type' ] <= 4) { // If non-Joker
 				switch ( true ) {
 					case ( $card[ 'type_arg' ] >= 2 and $card[ 'type_arg' ] <= 9 ): // 5 points
@@ -2174,7 +2175,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 						self::trace("[bmc] 10,J,Q,K");
 						$player_to_points[ $player_id ] += 10;
 						break;
-					case ( $card[ 'type_arg' ] === 1 ): // 15 points	
+					case ( $card[ 'type_arg' ] == 1 ): // 15 points	
 						self::trace("[bmc] Ace");
 						$player_to_points[ $player_id ] += 15;
 						break;
@@ -2677,6 +2678,9 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		
 		if ( $skipFirstDeal == false ) {
 			self::setPlayerBuying( $discardingPlayer_id, 1 ) ; // 1 = not buying, they just discarded it
+			// Discarding player is no longer active
+			$this->gamestate->setPlayerNonMultiactive( $discardingPlayer_id, '' );
+		
 		} else {
 			self::setGameStateValue( 'skipFirstDeal' , false );
 		}
@@ -3130,7 +3134,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 			self::dump( "[bmc] activePlayerId (after change):", $activePlayerId );
 			
 			// Give extra time to player
-			self::giveExtraTime( $active_player_id );
+			self::giveExtraTime( $activePlayerId );
 
 			// Store the previous player so they don't get the offer to buy their own discard.
 			// Cannot do this in a multiactive state, so we must do it right before it.
