@@ -84,8 +84,8 @@ $this->handTypes = array( // Hand targets associate with the down areas:
 		
 		$handTarget = $this->handTypes[$htNumber]["Target"];
 		
-//		self::dump("[bmc] this->handtypes[]:", $this->handTypes[$htNumber]);
-		self::dump("[bmc] this->handtypes[]:", $this->handTypes[$htNumber]["Target"]);
+//		self::dump("[bmc] this->handTypes[]:", $this->handTypes[$htNumber]);
+		self::dump("[bmc] this->handTypes[]:", $this->handTypes[$htNumber]["Target"]);
 		
         $this->tpl['CURRENT_HAND_TYPE'] = " " . $handTarget;
 

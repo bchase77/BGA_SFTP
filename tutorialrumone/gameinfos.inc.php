@@ -37,7 +37,7 @@ $gameinfos = array(
 'bgg_id' => 15878,
 
 // Players configuration that can be played (ex: 2 to 4 players)
-'players' => array( 2,3,4,5,6,7,8,9,10,11,12 ),    
+'players' => array( 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 ),    
 
 // Suggest players to play with this number of players. Must be null if there is no such advice, or if there is only one possible player configuration.
 'suggest_player_number' => 4,
@@ -89,7 +89,7 @@ $gameinfos = array(
 'diplomacy' => 1,    
 
 // Colors attributed to players
-'player_colors' => array( "ff0000", "008000", "0000ff", "ffa500", "773300", "00ff00", "ff8000", "7780ff","330077", "00ff77", "807700", "33ff77" ),
+'player_colors' => array( "ff0000", "008000", "0000ff", "ffa500", "773300", "00a500", "ff8033", "7780ff","330077", "00ff77", "807700", "33ff77", "8000ff", "80ff00", "80a533", "a5a533" ),
 
 // Favorite colors support : if set to "true", support attribution of favorite colors based on player's preferences (see reattributeColorsBasedOnPreferences PHP method)
 'favorite_colors_support' => true,

@@ -85,28 +85,37 @@ function (dojo, declare) {
 //
 // TODO:
 //
-// 11/14: Going down with a joke and a card in a set is broken (not sure if it worked
-//TODO: Trace through the PLAYERGODOWN and the joker swapping in PHP line 1222 and such.
-// X 11/10: Remove NOT BUY button (and timer?)
-// 11/10: Add tooltips for how to play, definition of set and run, buy, cards left...
+// X 11/14: After a hand, 1st player didn't turn green
+// X 11/14: Change must discard or go down (and then play if you go down).
+// 11/14: If click BUY after draw, it lights up but doesn't let you draw
+// 11/14: Buy it button turns red when you cannot buy
+// 11/14: Buy should be allowed until the next person discards
+// 11/14: After putting a card into PREP it should unselect
+// 11/14: I CONFIRM button appears twice, should be only once
+// 11/14: Need to end the game after the last person goes out
 // 11/10: Add KNOCK requirement feature, or you can't go down next turn
-// 11/10: Play a different sound when it's your turn and/or another message
-// 11/10: IT"S NOT YOUR TURN is not needed
+// 11/10: IT'S NOT YOUR TURN is not needed
 // 11/10: Remove jokers with more players or decks
 // 11/10: In 2 sets with many players, allow every other player one more play
 // 11/10: Got Nice Try doesn't reach from 89 on 0*QKA, but they played OK individually.
-// 11/7: Make the text of gray buttons also gray.
-// 11/6: 2Runs: Going down with 568 spades and 456* hearts and ace of spaces swapping a joker. It did the swap but somehow the jokers have the same IDs! I think one of the functions took the wrong joker (in PHP).
-// 11/1: [forum] If 2 of same card (e.g. 2x 6 of hearts) is in hand cannot move just one of them
-// 11/7: Limit the set size???
+// 11/7:  Make the text of gray buttons also gray.
+// 11/1:  [forum] If 2 of same card (e.g. 2x 6 of hearts) is in hand cannot move just one of them
+// 11/7:  MAYBE Limit the set size???
 //
-// 11/2: Maybe Not: Ask group: Call Liverpool on another player?
-// 11/8: Maybe Not: (it's loading the deck cards) In JS code between 244 and 340 takes ~12 seconds (slow!)
-// 11/5: Maybe not: Cannot go down with 2356s and replacing a joker (can do it with 235s).
-// 11/7: Maybe not: Add a table with the players in an oval.
+// 11/14: (how to debug?) Mark's PREP cards and salmon did not refresh
+// 11/14: MAYBE: Player should not be able to buy their own discard
+// 11/2:  Maybe Not: Ask group: Call Liverpool on another player?
+// 11/8:  Maybe Not: (it's loading the deck cards) In JS code between 244 and 340 takes ~12 seconds (slow!)
+// 11/5:  Maybe not: Cannot go down with 2356s and replacing a joker (can do it with 235s).
+// 11/7:  Maybe not: Add a table with the players in an oval.
 // 11/10: Maybe not: Get bonus if you go out? NO.
 // 11/10: Maybe not: Notify players are prepping cards
 //
+// X 11/10: Add tooltips for how to play, definition of set and run, buy, cards left...
+// X 11/6: 2Runs: Going down with 568 spades and 456* hearts and ace of spaces swapping a joker. It did the swap but somehow the jokers have the same IDs! I think one of the functions took the wrong joker (in PHP).
+// X 11/10: Play a different sound when it's your turn and/or another message
+// X 11/14: Going down with a joke and a card in a set is broken (not sure if it worked
+// X 11/10: Remove NOT BUY button (and timer?)
 // X 11/10: Add graphic explaining how to go down with joker
 // X 11/10: ipad the cards are too big, wrap on table. PC looks fine
 // X 11/10: ipad mini doesn't load studio
@@ -611,12 +620,12 @@ console.log( discardPile );
 
 			dojo.connect( $('myhand'), 'ondblclick', this, 'onPlayerHandDoubleClick' );
 
-            dojo.connect( this.playerHand,  'onChangeSelection', this, 'onPlayerHandSelectionChanged' );
-//            dojo.connect( this.deck,        'onChangeSelection', this, 'onDeckSelectionChanged' );
-            dojo.connect( this.deckOne,        'onChangeSelection', this, 'onDeckSelectionChanged' );
-            dojo.connect( this.discardPile, 'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
-			dojo.connect( $('discardPile' ), 'onclick', this, 'onDiscardPileSelectionChanged');
-			dojo.connect( $('myhand' ), 'onclick', this, 'onMyHandAreaClick');
+            dojo.connect( this.playerHand,   'onChangeSelection', this, 'onPlayerHandSelectionChanged' );
+//            dojo.connect( this.deck,         'onChangeSelection', this, 'onDeckSelectionChanged' );
+            dojo.connect( this.deckOne,      'onChangeSelection', this, 'onDeckSelectionChanged' );
+            dojo.connect( this.discardPile,  'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
+			dojo.connect( $('discardPile' ), 'onclick',           this, 'onDiscardPileSelectionChanged');
+			dojo.connect( $('myhand' ),      'onclick',           this, 'onMyHandAreaClick');
 
 			//dojo.connect( $('deck'), 'onclick', this, 'onDeckSelectionChanged');
 
@@ -803,6 +812,12 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 				case 'endHand':
 					console.log("[bmc] FOUND endHand");
 					this.playedSoundWentOut = false; // Reset to play the sound only once
+					break;
+				case 'resolveBuyers':
+					console.log("[bmc] FOUND resolveBuyers");
+					for ( player_id in this.gamedatas.players ) { 
+						dojo.removeClass( 'overall_player_board_' + player_id, 'pbInverse' );
+					}
 					break;
 				case 'playerWantsToBuy':
 					console.log("[bmc] FOUND playerWantsToBuy");
@@ -3172,6 +3187,11 @@ console.log( this.player_id );
 				// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
 				this.drawCard2nd( items, 'discardPile' );
 			}
+			
+			// Click the 
+			if ( this.gamedatas.gamestate.active_player != this.player_id ) {
+				this.onPlayerBuyButton();
+			}
 		},
 /////////
 /////////
@@ -3292,6 +3312,7 @@ console.log("[bmc] cardIds: " + cardIds);
 			this.myPrepB.unselectAll();
 			this.myPrepC.unselectAll();
 			this.myPrepJoker.unselectAll();
+			this.playerHand.unselectAll();
 		},
 /////////
 /////////
@@ -3337,9 +3358,13 @@ console.log( cardId ) ;
 console.log(this.prepAreas);
 console.log("[bmc] INCREMENTED prepAreas");
 
-				this.playerHand.unselectAll();
 				this.showHideButtons();
 			}
+			this.myPrepA.unselectAll();
+			this.myPrepB.unselectAll();
+			this.myPrepC.unselectAll();
+			this.myPrepJoker.unselectAll();
+			this.playerHand.unselectAll();
 		},
 /////////
 /////////
@@ -3374,9 +3399,13 @@ console.log("[bmc] cardIds: " + cardIds);
 				console.log(this.prepAreas);
 				console.log("[bmc] INCREMENTED prepAreas");
 
-				this.playerHand.unselectAll();
 				this.showHideButtons();
 			}
+			this.myPrepA.unselectAll();
+			this.myPrepB.unselectAll();
+			this.myPrepC.unselectAll();
+			this.myPrepJoker.unselectAll();
+			this.playerHand.unselectAll();
 		},
 /////////
 /////////
@@ -3412,9 +3441,13 @@ console.log("[bmc] cardIds: " + cardIds);
 				console.log(this.prepAreas);
 				console.log("[bmc] INCREMENTED prepAreas");
 
-				this.playerHand.unselectAll();
 				this.showHideButtons();
 			}
+			this.myPrepA.unselectAll();
+			this.myPrepB.unselectAll();
+			this.myPrepC.unselectAll();
+			this.myPrepJoker.unselectAll();
+			this.playerHand.unselectAll();
 		},
 /////////
 /////////
@@ -3692,17 +3725,26 @@ console.log( "[bmc] EXIT notifications subscriptions setup" );
 /////////
 /////////
 		showReviewButton : function( player_id ) {
-			var reviewButtonID = 'buttonReview' + this.player_id;
+console.log("[bmc] ENTER showReviewButton");
+console.log( $('close_btn'));
 
-			var isReadOnly = this.isReadOnly();
-			if ( !isReadOnly ) { // Spectators are read only
+			if ( $('close_btn') != null ) {
+console.log( $('close_btn').innerHTML );
+				if ( $('close_btn').innerHTML.includes( 'Game Over!' )) {
+					buttonMessage = "See Final Standings";
+					this.onPlayerReviewedHandButton(); // click the 'review' button for them so it ends faster
+				} else {
+					buttonMessage = "Deal me in!";
+				}
 
-//				if (( player_id == this.player_id )  && ( this.dealMeInClicked == false )) {
-				if ( this.dealMeInClicked == false ) {
-					this.addActionButton( reviewButtonID, _("Deal me in!"), 'onPlayerReviewedHandButton' );
-				}// else {
-					// this.addActionButton( reviewButtonID, _("Deal me in!"), 'onPlayerReviewedHandButton' );
-				// }
+				var reviewButtonID = 'buttonReview' + this.player_id;
+
+				var isReadOnly = this.isReadOnly();
+				if ( !isReadOnly ) { // Spectators are read only, no need to show buttons
+					if ( this.dealMeInClicked == false ) {
+						this.addActionButton( reviewButtonID, _( buttonMessage ), 'onPlayerReviewedHandButton' );
+					}
+				}
 			}
 		},
 /////////
@@ -3715,7 +3757,7 @@ console.log( "[bmc] EXIT notifications subscriptions setup" );
 			// If someone went out, remove the BUY buttons, kill the timers and let them review.
 			//this.stopActionTimer2();
 			// this.stopActionTimerStatic();
-			this.clearButtons();
+			//this.clearButtons();
 			
 			dojo.removeClass('myhand_wrap', "border1");				
 			
@@ -3865,6 +3907,13 @@ console.log("empty arg");
 			if ( this.player_id != this.gamedatas.playerOrderTrue[ notif.args.dealer_id ] ) {
 				this.buyCounterTimerShouldExist = 'Yes'; // A timer and a button should exist
 				this.showBuyButton2();
+
+				// Notify them it's their turn
+				this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
+				dojo.addClass('myhand_wrap', "borderDrawer");				
+				playSound( 'tutorialrumone_itsyourdraw' );
+			} else {
+				dojo.removeClass('myhand_wrap', "borderDrawer");				
 			}
 
 			// Set the hand counts for all players

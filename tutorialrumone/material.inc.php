@@ -78,6 +78,25 @@ $this->setsRunsFull = array ( // Places in the downArea where the cards should g
 $this->handTypesShort = array( // Hand targets associate with the down areas:
   0 => array( "Target" => "2 Sets; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
 	"QtySets" => 2, "QtyRuns" => 0, "deal" => 10, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Empty" ),
+  // 2 => array( "Target" => "2 Runs; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
+	// "QtySets" => 0, "QtyRuns" => 2, "deal" => 10, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Empty" ),
+  // 4 => array( "Target" => "2 Sets and 1 Run; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
+	// "QtySets" => 2, "QtyRuns" => 1, "deal" => 12, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Run" ),
+  // 6 => array( "Target" => "3 Runs; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
+	// "QtySets" => 0, "QtyRuns" => 3, "deal" => 12, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Run" )
+);
+
+$this->setsRunsShort = array ( // Places in the downArea where the cards should go, per hand
+ 0 => array( "Area_A", "Area_B", "None",   "None",   "None",   "None" ),
+ // 2 => array( "None",   "None",   "None",   "Area_A", "Area_B", "None" ),
+ // 4 => array( "Area_A", "Area_B", "None",   "Area_C", "None",   "None" ),
+ // 6 => array( "None",   "None",   "None",   "Area_A", "Area_B", "Area_C" )
+);
+
+/*
+$this->handTypesShort = array( // Hand targets associate with the down areas:
+  0 => array( "Target" => "2 Sets; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
+	"QtySets" => 2, "QtyRuns" => 0, "deal" => 10, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Empty" ),
   2 => array( "Target" => "2 Runs; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
 	"QtySets" => 0, "QtyRuns" => 2, "deal" => 10, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Empty" ),
   4 => array( "Target" => "2 Sets and 1 Run; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
@@ -92,7 +111,7 @@ $this->setsRunsShort = array ( // Places in the downArea where the cards should 
  4 => array( "Area_A", "Area_B", "None",   "Area_C", "None",   "None" ),
  6 => array( "None",   "None",   "None",   "Area_A", "Area_B", "Area_C" )
 );
-
+*/
 /*
   0 => array( "m2 Sets", 2, 0),
   1 => array( "m1 Set and 1 Run", 1, 1),

@@ -121,7 +121,7 @@ class TutorialRumOne extends Table
         self::setGameStateInitialValue( 'currentHandType', 0 );
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		
-		//self::dump("[bmc] handtypes(line138):", $this->handTypes[$currentHandType]);
+		//self::dump("[bmc] handTypes(line138):", $this->handTypes[$currentHandType]);
 
 		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
 
@@ -524,7 +524,7 @@ class TutorialRumOne extends Table
 		if ( $playerGoneDown[ $activeTurnPlayer_id ] == 1 ) {
 			$thingsCanDo = 'play or discard.';
 		} else {
-			$thingsCanDo = 'discard or go down (and then play if you go down).';
+			$thingsCanDo = 'discard or go down (must go down to play on other melds).';
 		}
 		
 		//self::dump("[bmc] currentHandType argPlayerTurnPlay:", $this->handTypes[$currentHandType]["Target"] );
@@ -729,7 +729,7 @@ class TutorialRumOne extends Table
 
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		
-		self::dump("[bmc] currentHandType stEndHand:", $currentHandType );
+		self::dump("[bmc] currentHandType discardCard:", $currentHandType );
 
 		self::dump("[bmc] Discarding player id:", $player_id );
 		self::dump("[bmc] Discarding card_id:", $card_id );
@@ -1109,6 +1109,16 @@ class TutorialRumOne extends Table
 			return;
 		} else {
 			// Else got card from a true draw (deck or discard), so resolve buyers and whatnot.
+			
+			
+			
+			// TODO: BMC allow buying to continue after draw deck was chosen, but not discard.
+			
+			
+			
+			
+			
+			
 			self::trace("[bmc] MAYBE ERROR AREA IN DRAWNOTIFY");
 			$this->gamestate->nextState( 'resolveBuyers' );
 		}
@@ -2211,11 +2221,15 @@ class TutorialRumOne extends Table
 		self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
 		self::incGameStateValue( 'currentHandType', $gameLengthOption );
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
+		
+		$countHandTypes = count( $this->handTypes );
 
-		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
+//		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
+		if ( $currentHandType > $countHandTypes ) { // The 7 hand numbers are 0 through 6
 			$scoreMessage = "Game Over!";
 			$this->calcDisplayScoreDialog( $scoreMessage );
-			$this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
+			$this->gamestate->setAllPlayersMultiactive();
+			// $this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
 		} else {
 			$scoreMessage = "On to the next!";
 			$this->calcDisplayScoreDialog( $scoreMessage );
@@ -2350,7 +2364,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 					$player_id,
 					"tableWindow", '', array(
 						"id" => 'handScoring',
-						"title" => clienttranslate( "Bummer! " . $players[ $activeTurnPlayer_id ][ 'player_name' ] . " went out! Points are bad:" ),
+						"title" => clienttranslate( "Bummer! " . $players[ $activeTurnPlayer_id ][ 'player_name' ] . " went out! You want the most positive score:" ),
 						"table" => $table,
 //						"closing" => clienttranslate( "On to the next!" )
 						"closing" => clienttranslate( $scoreMessage )
@@ -3384,7 +3398,8 @@ TODO: Maybe check if there were no more playable cards and show that message.
 
 		self::dump("[bmc] currentHandType stEndHand:", $currentHandType );
 		
-		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
+//		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
+		if ( $currentHandType > count( $this->handTypes )) { // The 7 hand numbers are 0 through 6
 			$this->gamestate->nextState("endGame");
 		} else {
 
