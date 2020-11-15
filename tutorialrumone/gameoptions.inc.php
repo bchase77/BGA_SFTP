@@ -57,13 +57,31 @@ $game_options = array(
 			2 => array ( 'name' => totranslate( 'Short game (2Sets, 2Runs, 2Sets1Run, 3Runs)' ) )
 		),
 		'default' => 10
+	),
+	104 => array(
+		'name' => totranslate( 'Maximum number of Jokers (normally 2x per deck)' ),
+		'values' => array(
+			0  => array ( 'name' => totranslate( '0 no jokers' )	),
+			1  => array ( 'name' => totranslate( '1 joker' ) ),
+			2  => array ( 'name' => totranslate( '2 jokers' ) ),
+			3  => array ( 'name' => totranslate( '3 jokers' ) ),
+			4  => array ( 'name' => totranslate( '4 jokers' ) ),
+			5  => array ( 'name' => totranslate( '5 jokers' ) ),
+			6  => array ( 'name' => totranslate( '6 jokers' ) ),
+			7  => array ( 'name' => totranslate( '7 jokers' ) ),
+			8  => array ( 'name' => totranslate( '8 jokers' ) ),
+			9  => array ( 'name' => totranslate( '9 jokers' ) ),
+			10 => array ( 'name' => totranslate( 'All (2x number of decks)' ) ),
+		),
+		'default' => 10
+	)
 	// 200 => array(
 		// 'name' => totranslate( 'Game Speed' ),
 		// 'values' => array(
 			// 1 => array ( 'name' => totranslate( 'Full length game (2Sets, 1Set1Run, 2Runs, 3Sets, 2Sets1Run, 2Run1Set, 3Runs)' )	),
 			// 2 => array ( 'name' => totranslate( 'Short game (2Sets, 2Runs, 2Sets1Run, 3Runs)' ) )
 		// ),
-	)
+	//)
 	// ,
 	// 103 => array(
 		// 'name' => totranslate( 'Buy-winner chosen' ),

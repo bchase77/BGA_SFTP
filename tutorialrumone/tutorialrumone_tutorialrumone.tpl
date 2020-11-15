@@ -91,6 +91,8 @@
 	</div>
 </div>
 
+<audio id="audiosrc_tutorialrumone_itsyourdraw" src="{GAMETHEMEURL}img/tutorialrumone_itsyourdraw.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_o_tutorialrumone_itsyourdraw" src="{GAMETHEMEURL}img/tutorialrumone_itsyourdraw.ogg" preload="none" autobuffer></audio>
 <audio id="audiosrc_tutorialrumone_wentOutYeah" src="{GAMETHEMEURL}img/tutorialrumone_wentOutYeah.mp3" preload="none" autobuffer></audio>
 <audio id="audiosrc_o_tutorialrumone_wentOutYeah" src="{GAMETHEMEURL}img/tutorialrumone_wentOutYeah.ogg" preload="none" autobuffer></audio>
 <audio id="audiosrc_tutorialrumone_GoingDown" src="{GAMETHEMEURL}img/tutorialrumone_GoingDown.mp3" preload="none" autobuffer></audio>

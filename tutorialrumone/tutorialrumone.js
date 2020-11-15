@@ -85,14 +85,13 @@ function (dojo, declare) {
 //
 // TODO:
 //
-// 11/10: Remove NOT BUY button (and timer?)
+// 11/14: Going down with a joke and a card in a set is broken (not sure if it worked
+//TODO: Trace through the PLAYERGODOWN and the joker swapping in PHP line 1222 and such.
+// X 11/10: Remove NOT BUY button (and timer?)
 // 11/10: Add tooltips for how to play, definition of set and run, buy, cards left...
 // 11/10: Add KNOCK requirement feature, or you can't go down next turn
-// 11/10: Play a differnt sound when it's your turn and/or another message
+// 11/10: Play a different sound when it's your turn and/or another message
 // 11/10: IT"S NOT YOUR TURN is not needed
-// 11/10: ipad the cards are too big, wrap on table. PC looks fine
-// 11/10: ipad mini doesn't load studio
-// 11/10: Set it up to start after 1S1R or 2Runs or 3Runs, and skip 2sets.
 // 11/10: Remove jokers with more players or decks
 // 11/10: In 2 sets with many players, allow every other player one more play
 // 11/10: Got Nice Try doesn't reach from 89 on 0*QKA, but they played OK individually.
@@ -101,13 +100,17 @@ function (dojo, declare) {
 // 11/1: [forum] If 2 of same card (e.g. 2x 6 of hearts) is in hand cannot move just one of them
 // 11/7: Limit the set size???
 //
-// X 11/10: Add graphic explaining how to go down with joker
 // 11/2: Maybe Not: Ask group: Call Liverpool on another player?
 // 11/8: Maybe Not: (it's loading the deck cards) In JS code between 244 and 340 takes ~12 seconds (slow!)
 // 11/5: Maybe not: Cannot go down with 2356s and replacing a joker (can do it with 235s).
 // 11/7: Maybe not: Add a table with the players in an oval.
 // 11/10: Maybe not: Get bonus if you go out? NO.
 // 11/10: Maybe not: Notify players are prepping cards
+//
+// X 11/10: Add graphic explaining how to go down with joker
+// X 11/10: ipad the cards are too big, wrap on table. PC looks fine
+// X 11/10: ipad mini doesn't load studio
+// X 11/10: Set it up to start after 1S1R or 2Runs or 3Runs, and skip 2sets.
 // X 11/10: in TARGET area, add definition of runs and sets
 // X 11/7: (Deleted by timer) Put BUYING & BUYTIMER in different tables to remove deadlock. (PHP line 901)
 // X 11/8: Make 6 across
@@ -292,15 +295,20 @@ console.log(this.gamedatas);
 
 			// Item 54, color 5, value 3 is red back of the card
 			this.deck.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
+			this.deck.addItemType( 2, 2, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
 //console.log("[bmc] deckIDs");
-//console.log(this.gamedatas.deckIDs);
+console.log(this.gamedatas.deckIDs);
 
 //			if ( this.gamedatas.deckIDs.length != 0 ) {
 
-			for ( let i = 0 ; i < this.gamedatas.deckIDs.length; i++) {
-
+			// Color half the deck blue and half red
+			for ( let i = 0 ; i < ( this.gamedatas.deckIDs.length / 2 ); i++) {
 //console.log(i + " / " + this.gamedatas.deckIDs[i]);
-				this.deck.addToStockWithId(1, this.gamedatas.deckIDs[i]);
+				this.deck.addToStockWithId( 1, this.gamedatas.deckIDs[i] );
+			}
+			for ( let i = ( this.gamedatas.deckIDs.length / 2 ) ; i < this.gamedatas.deckIDs.length ; i++) {
+//console.log(i + " / " + this.gamedatas.deckIDs[i]);
+				this.deck.addToStockWithId( 2, this.gamedatas.deckIDs[i] );
 			}
 //console.log("[bmc] this.deck");			
 //console.log(this.deck);
@@ -677,6 +685,10 @@ console.log( discardPile );
 			
 			this.turnPlayer = this.gamedatas.activeTurnPlayer_id;
 			
+			if (this.player_id == this.turnPlayer ) {
+				dojo.addClass('myhand_wrap', "borderDrawer");				
+			}
+			
 			// If this the first load and it's not our turn, then show the BUY buttons. Or,
 			// if buy status is unknown and it's not our turn and not
 			// the next player's turn, and the state is playerTurnDraw
@@ -873,7 +885,7 @@ console.log( this.player_id );
 				return;
 			}
 
-			this.showHideButtons();
+			//this.showHideButtons();
 		},
 /*
 		onUpdateActionButtons : function( stateName, args ) {
@@ -977,7 +989,8 @@ console.log("[bmc] ENTER onPlayerBuyButton");
 			console.log(this.firstLoad);
 
 			//if ( this.player_id == currentplayer then just ignore. But for now I'll throw a BGA error from PHP.
-			if ( this.checkAction( action, true )  ||
+//			if ( this.checkAction( action, true )  ||
+			if ( this.checkPossibleActions( action, true )  ||
 			   ( this.firstLoad == 'Yes' )) {
 				console.log("[bmc] ajax " + action );
 
@@ -1811,6 +1824,7 @@ console.log( this.buyCounterTimerExists );
 //				this.addActionButton( notBuyButtonID , _("Not Buy!"), 'onPlayerNotBuyButton' );
 				
 //				dojo.replaceClass( 'buttonBuy', "bgabutton_blue", "bgabutton_gray" );
+console.log("[bmc] BUY BUTTON RED!");
 				dojo.replaceClass( 'buttonBuy', "bgabutton_red", "bgabutton_gray" );
 				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_blue", "bgabutton_gray" );
 
@@ -2272,6 +2286,8 @@ console.log(boardArea);
 
 console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById( card_id );
+				this.myPrepJoker.removeFromStockById( card_id );
+				dojo.removeClass('myPrepJoker', "border1");
 console.log("[bmc] Removed.");
 				this.sortArea_A( boardPlayer );
 			}
@@ -2286,6 +2302,8 @@ console.log(boardArea);
 
 console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById( card_id );
+				this.myPrepJoker.removeFromStockById( card_id );
+				dojo.removeClass('myPrepJoker', "border1");
 console.log("[bmc] Removed.");
 				this.sortArea_B( boardPlayer );
 			}
@@ -2298,6 +2316,8 @@ console.log("[bmc] Removed.");
 //					'myhand' );
 console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById(card_id);
+				this.myPrepJoker.removeFromStockById( card_id );
+				dojo.removeClass('myPrepJoker', "border1");
 console.log("[bmc] Removed.");
 				this.sortArea_C( boardPlayer );
 			}
@@ -2439,6 +2459,7 @@ console.log( "[bmc] ENTER clearButtons" );
 			// dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 			// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 
+			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
 			this.showingButtons === 'No';
 		},
 /////////
@@ -2779,6 +2800,7 @@ console.log(this.player_id)
 			var cardGroupA = this.myPrepA.getAllItems();
 			var cardGroupB = this.myPrepB.getAllItems();
 			var cardGroupC = this.myPrepC.getAllItems();
+			var cardGroupJoker = this.myPrepJoker.getAllItems();
 
 			console.log(cardGroupA);
 			console.log(cardGroupB);
@@ -2788,7 +2810,8 @@ console.log(this.player_id)
             var cardGroupAIds = this.getItemIds(cardGroupA);
             var cardGroupBIds = this.getItemIds(cardGroupB);
             var cardGroupCIds = this.getItemIds(cardGroupC);
-			var handItemIds = this.getItemIds(handItems);
+//			var handItemIds = this.getItemIds(handItems);
+			var handItemIds = this.getItemIds(cardGroupJoker);
 
 console.log("[bmc] cardIdsA: " + cardGroupAIds);
 console.log("[bmc] cardIdsB: " + cardGroupBIds);
@@ -4039,6 +4062,11 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 			
 			dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
 
+			return;
+			
+			
+			
+			
 			// If by timer then run stop timers and hide the buttons
 			// If by seat order then do not
 			if ( this.gamedatas.options.buyMethod == 1 ) {
@@ -4084,6 +4112,7 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 
 			//this.disableNextMoveSound();
 			playSound( 'tutorialrumone_GoingDown' );
+
 			//this.disableNextMoveSound();
 			
 			// Update card-counts when someone goes down:
@@ -4155,7 +4184,7 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 				
 				// Move the joker, if any, to the down position, everything else is already in place because of the prep
 				
-				if (joker != undefined ) { // Per JS must check undefined before checking for a property of the variable
+				if ( joker != undefined ) { // Per JS must check undefined before checking for a property of the variable
 					if ( joker.id != 'None' ) { // Then there's a joker; Move it
 				
 						jokerUniqueID = this.getCardUniqueId( joker.type, joker.type_arg );
