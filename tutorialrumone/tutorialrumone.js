@@ -3710,7 +3710,7 @@ console.log( player_id );
 			if ( $('close_btn') != null ) {
 console.log( $('close_btn').innerHTML );
 				if ( $('close_btn').innerHTML.includes( 'Game Over!' )) {
-					this.buttonMessage = "See Final Standings";
+					this.buttonMessage = "Final Standings" ;
 					this.onPlayerReviewedHandButton(); // click the 'review' button for them so it ends faster
 				}
 			}

@@ -742,7 +742,7 @@ class TutorialRumOne extends Table
 			// Notifying players potentially buying the previous one that they were too slow!
 			self::notifyAllPlayers(
 				'clearBuyers',
-				clienttranslate(''),
+				'',
 				array (
 //					'discardWeight' => $discardWeight
 				)
@@ -2233,12 +2233,12 @@ class TutorialRumOne extends Table
 
 //		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
 		if ( $currentHandType > $countHandTypes ) { // The 7 hand numbers are 0 through 6
-			$scoreMessage = "Game Over!";
+			$scoreMessage = clienttranslate( "Game Over!" );
 			$this->calcDisplayScoreDialog( $scoreMessage );
 			$this->gamestate->setAllPlayersMultiactive();
 			// $this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
 		} else {
-			$scoreMessage = "On to the next!";
+			$scoreMessage = clienttranslate( "On to the next!") ;
 			$this->calcDisplayScoreDialog( $scoreMessage );
 			$this->gamestate->setAllPlayersMultiactive();
 		}
@@ -2332,8 +2332,8 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		// Show the scoring dialog box
 		
 		$firstRow = array( '' );
-		$secondRow = array( 'This Hand:' );
-		$thirdRow = array( 'Total:' );
+		$secondRow = array( clienttranslate( 'This Hand:' ));
+		$thirdRow = array( clienttranslate( 'Total:' ));
 
         foreach( $players as $player_id => $player ) {
             $firstRow[] = array( 'str' => '${player_name}',
@@ -2353,6 +2353,8 @@ TODO: Maybe check if there were no more playable cards and show that message.
 
 		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
 
+		$otherMessage = clienttranslate( "Bummer! " ) . $players[ $activeTurnPlayer_id ][ 'player_name' ] . clienttranslate( " went out! You want the most positive score:");
+
 		// Show a dialog of the scores for each player for this hand
         foreach ( $player_to_points as $player_id => $points ) {
 			if ( $player_id == $activeTurnPlayer_id ) {
@@ -2363,7 +2365,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 						"title" => clienttranslate( "Woot! You went out! You want the most positive score:" ),
 						"table" => $table,
 //						"closing" => clienttranslate( "On to the next!" )
-						"closing" => clienttranslate( $scoreMessage )
+						"closing" => $scoreMessage
 					)
 				); 
 			} else {
@@ -2371,10 +2373,10 @@ TODO: Maybe check if there were no more playable cards and show that message.
 					$player_id,
 					"tableWindow", '', array(
 						"id" => 'handScoring',
-						"title" => clienttranslate( "Bummer! " . $players[ $activeTurnPlayer_id ][ 'player_name' ] . " went out! You want the most positive score:" ),
+						"title" => $otherMessage,
 						"table" => $table,
 //						"closing" => clienttranslate( "On to the next!" )
-						"closing" => clienttranslate( $scoreMessage )
+						"closing" => $scoreMessage
 					)
 				); 
 			}
@@ -2682,7 +2684,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 				$this->drawNotify( $currentCard, $buyer_id, 'discardPile', $buyer_id, $buyer_id );
 				
 				if ( $currentCard[ 'type' ] == 5 ) {
-					$value_displayed = ' a joker';
+					$value_displayed = clienttranslate( ' a joker' );
 					$color_displayed = '';
 				} else {
 					$value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';

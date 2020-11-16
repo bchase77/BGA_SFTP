@@ -13,7 +13,6 @@
  * TutorialRumOne game states description
  *
  */
-
 /*
    Game state machine is a tool used to facilitate game developpement by doing common stuff that can be set up
    in a very easy way from this configuration file.
@@ -46,9 +45,7 @@
    _ updateGameProgression: when specified, the game progression is updated (=> call to your getGameProgression
                             method).
 */
-
 //    !! It is not a good idea to modify this file when a game is running !!
-
  
 $machinestates = array(
 
@@ -60,7 +57,6 @@ $machinestates = array(
         "action" => "stGameSetup", // ACTION: Do this upon entering the state
         "transitions" => array( "" => 10 )
     ),
-    
     // Create new deck and deal
     10 => array(
         "name" => "deckSetup",
@@ -81,8 +77,6 @@ $machinestates = array(
     ),    
     30 => array(
         "name" => "playerTurnDraw",
-//		"description" => clienttranslate('Target: ${handTarget}. ${buyMessage}${turnPlayerName} must draw from deck or discard pile. Others might buy.  (st30a)'),
-//		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must draw from the deck or the discard pile. Others might buy.  (st30b)'),
 		"description" => clienttranslate('${buyMessage}${turnPlayerName} must draw from deck or discard pile. Others might buy (st30a).'),
 		"descriptionmyturn" => clienttranslate('${turnPlayerName} must draw from the deck or the discard pile. Others might buy (st20b).'),
 //        "type" => "multipleactiveplayer",
@@ -108,15 +102,11 @@ $machinestates = array(
     ), 
     35 => array(
         "name" => "playerTurnPlay",
-//		"description" => clienttranslate('Target: ${handTarget}. ${turnPlayerName} must ${thingsCanDo}  (st35a)'),
-//		"descriptionmyturn" => clienttranslate('Target: ${handTarget}. ${you} must ${thingsCanDo}  (st35b)'),
 		"description" => clienttranslate('${turnPlayerName} must ${thingsCanDo}'),
 		"descriptionmyturn" => clienttranslate('${you} must ${thingsCanDo}'),
         "type" => "activeplayer", //multipleactiveplayer
 		"action" => "stPlayerTurnPlay", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnPlay",
-//        "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple'),
-//        "transitions" => array( "playerGoDown" => 70, "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35 )
         "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple', "zombiePass", "notBuyRequest", "buyRequest"),
         "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35, "zombiePass" => 37 )
     ), 
@@ -125,8 +115,6 @@ $machinestates = array(
 		"description" => "(st36)",
         "type" => "game",
         "action" => "stWaitForAll", // ACTION: Do this upon entering the state
-//		"possibleactions" => array( "notFullyResolved", "fullyResolved" ),
-//		"transitions" => array( "notFullyResolved" => 36, "fullyResolved" => 37 )
 		"transitions" => array( "fullyResolved" => 37 )
     ), 
     37 => array(
@@ -134,7 +122,6 @@ $machinestates = array(
         "description" => "(st36)",
         "type" => "game",
         "action" => "stNextPlayer", // ACTION: Do this upon entering the state
-        //"transitions" => array( "nextPlayer" => 30, "endHand" => 40, "waitForAllBuyers" => 37 )
         "transitions" => array( "nextPlayer" => 30, "endHand" => 40 )
     ), 
     // End of the hand. Let players look at their hand and the board
@@ -148,8 +135,6 @@ $machinestates = array(
 		"possibleactions" => array( "playerHasReviewedHand" ),
         "transitions" => array( "" => 45 )
     ),
-	// Update the scoring; Shuffle the cards; 
-	// Increment through the types of goals: 2 sets, 1 run & 1 set, etc...
     45 => array(
         "name" => "endHand",
         "description" => "(st45)",
@@ -165,37 +150,7 @@ $machinestates = array(
         "action" => "stResolveBuyers", // ACTION: Do this upon entering the state
         "transitions" => array( "checkEmptyDeck" => 32, "drawDiscard" => 33, "other" => 35 )
     ),
-
-/*
-    50 => array(    // Someone wants to buy a discarded card
-        "name" => "playerWantsToBuy",
-        "description" => clienttranslate('State 50: Someone wants to buy the discard.'),
-        "descriptionmyturn" => clienttranslate('State 50b: ${you} want to buy the discard.'),
-        "type" => "game",
-        "action" => "stBuyRequest", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 30 )
-    ),
-*/
-/*
-    53 => array(    // Someone does not want to buy a discarded card
-        "name" => "playerDoesNotWantToBuy",
-        "description" => clienttranslate('State 53: Someone DOES NOT want to buy the discard.'),
-        "descriptionmyturn" => clienttranslate('State 50b: ${you} DO NOT WANT to buy the discard.'),
-        "type" => "game",
-        "action" => "stNotBuyCard", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 30 )
-    ),
-*/
-/*
-    55 => array(    // The turn-player is drawing a card from the deck, first check if there's a buyer
-        "name" => "turnPlayerDrawingResolveBuyers",
-        "description" => clienttranslate('State 55: ${actplayer} is drawing from the deck. Resolve buyers first.'),
-        "descriptionmyturn" => clienttranslate('State 55b: ${you} are drawing from the deck. Resolve buyers first.'),
-        "type" => "game",
-        "action" => "stResolveBuyers", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 32 )
-    ),     
-*/    57 => array(    // The turn-player is drawing a card from the deck
+    57 => array(    // The turn-player is drawing a card from the deck
         "name" => "turnPlayerDrawFromDeck",
         "description" => clienttranslate('${actplayer} is drawing from the deck.(st57a)'),
         "descriptionmyturn" => clienttranslate('${you} are drawing from the deck.(st57b)'),
@@ -203,37 +158,17 @@ $machinestates = array(
         "action" => "stDrawDeck", // ACTION: Do this upon entering the state
         "transitions" => array( "" => 35 )
     ),   
-
     // Someone is trying to play a card
-     60 => array(
-         "name" => "playCard",
-         "description" => "Someone is trying to play a card.(st60a)",
-         "descriptionmyturn" => clienttranslate('${you} are trying to play a card.(st60b)'),
-         "type" => "activeplayer",
-         "action" => "stPlayCard", // ACTION: Do this upon entering the state
-         "transitions" => array( "" => 33 )
-    ),     
-    // Someone is going down: Nope, stay in the PLAY state.
-/*    70 => array(
-        "name" => "playerGoDown",
-        "description" => clienttranslate('${actplayer} is going down.(st70a)'),
-        "descriptionmyturn" => clienttranslate('${you} are going down.(st70b)'),
+    60 => array(
+        "name" => "playCard",
+        "description" => "Someone is trying to play a card.(st60a)",
+        "descriptionmyturn" => clienttranslate('${you} are trying to play a card.(st60b)'),
         "type" => "activeplayer",
-		"action" => "stPlayCards", // ACTION: Do this upon entering the state
+        "action" => "stPlayCard", // ACTION: Do this upon entering the state
         "transitions" => array( "" => 33 )
     ),     
-*/    // Someone is playing a card
-    // 70 => array(
-        // "name" => "playSeveralCards",
-        // "description" => "State 70: Someone is playing cards.",
-        // "descriptionmyturn" => clienttranslate('State 70b: ${you} are playing cards.'),
-        // "type" => "activeplayer",
-		// "action" => "stPlayCards",
-        // "transitions" => array( "" => 33 )
-    // ),     
 /*
     Examples:
-    
     2 => array(
         "name" => "nextPlayer",
         "description" => '',
@@ -242,7 +177,6 @@ $machinestates = array(
         "updateGameProgression" => true,   
         "transitions" => array( "endGame" => 99, "nextPlayer" => 10 )
     ),
-    
     10 => array(
         "name" => "playerTurn",
         "description" => clienttranslate('${actplayer} must play a card or pass'),
@@ -251,9 +185,7 @@ $machinestates = array(
         "possibleactions" => array( "playCard", "pass" ),
         "transitions" => array( "playCard" => 2, "pass" => 2 )
     ), 
-
 */    
-   
     // Final state.
     // Please do not modify (and do not overload action/args methods).
     99 => array(
@@ -263,5 +195,4 @@ $machinestates = array(
         "action" => "stGameEnd",
         "args" => "argGameEnd"
     )
-
 );
