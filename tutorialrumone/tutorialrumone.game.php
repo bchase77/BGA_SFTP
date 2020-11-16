@@ -725,6 +725,8 @@ class TutorialRumOne extends Table
 	function discardCard( $card_id, $player_id ) {
 		self::trace( "[bmc] ENTER discardCard (from JS via action.php)" );
 
+		self::checkAction("discardCard");
+		
 		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
@@ -1131,6 +1133,7 @@ class TutorialRumOne extends Table
 ////////
 	function playerGoDown( $cardIDGroupA, $cardIDGroupB, $cardIDGroupC, $boardCardId, $boardArea, $boardPlayer, $handItemIds ) {
 		self::trace("[bmc] ENTER playerGoDown");
+		
 		$active_player_id = self::getActivePlayerId();
 		self::dump("[bmc] playerGoDown: ", $active_player_id);
 		self::checkAction('playerGoDown');
@@ -1824,6 +1827,7 @@ class TutorialRumOne extends Table
 		//   If the target card is a joker, take the joker & replace
 		// Move the card(s) around
 		// Notify the players
+		self::checkAction("playCard");
 
 		// Validate the player has already gone down
 		$playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
@@ -1853,6 +1857,7 @@ class TutorialRumOne extends Table
 		//   If the target card is a joker, take the joker & replace
 		// Move the card(s) around
 		// Notify the players
+		self::checkAction("playCardMultiple");
 
 		// Validate the player has already gone down
 		$playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
@@ -2382,6 +2387,8 @@ TODO: Maybe check if there were no more playable cards and show that message.
 	function playerHasReviewedHand() {
 		self::trace("[bmc] playerHasReviewedHand");
 		// May not need to pass the player_id to the function
+		self::checkAction('playerHasReviewedHand');
+
 		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
 		 
         self::notifyAllPlayers(
@@ -2829,6 +2836,8 @@ TODO: Maybe check if there were no more playable cards and show that message.
 ////
 	function buyRequest( $player_id ) {
 		self::trace("[bmc] ENTER buyRequest-NEW");
+		//self::checkAction("buyRequest"); // Cannot do checkAction or the server blocks with "It's not your turn"
+
 		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
 		self::dump("[bmc] player_id:", $player_id);
 		

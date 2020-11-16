@@ -1050,37 +1050,6 @@ console.log("[bmc] ENTER onPlayerNotBuyButton");
 /////////
 /////////
 /////////
-/*
-		onPlayerReviewedHandButton : function() {
-console.log("[bmc] ENTER onPlayerReviewedHandButton");
-			var action = 'playerHasReviewedHand';
-			
-			if (this.checkAction( action, true)) {
-				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-//						player_id : this.player_id,
-						lock : true
-					}, this, function(result) {
-					}, function(is_error) {
-				});
-			}
-		},
-*/
-/*
-                 Example:
- 
-                 case 'myGameState':
-                    
-                    // Add 3 action buttons in the action status bar:
-                    
-                    this.addActionButton( 'button_1_id', _('Button 1 label'), 'onMyMethodToCall1' ); 
-                    this.addActionButton( 'button_2_id', _('Button 2 label'), 'onMyMethodToCall2' ); 
-                    this.addActionButton( 'button_3_id', _('Button 3 label'), 'onMyMethodToCall3' ); 
-                    break;
-
-                }
-            }
-        },        
-*/
         ///////////////////////////////////////////////////
         //// Utility methods
         /*
@@ -1816,32 +1785,7 @@ debug('Timer #' + this.actionTimerId + ' stop');
         
         onMyMethodToCall1: function( evt )
         {
-            console.log( 'onMyMethodToCall1' );
-            
-            // Preventing default browser reaction
-            dojo.stopEvent( evt );
-
-            // Check that this action is possible (see "possibleactions" in states.inc.php)
-            if( ! this.checkAction( 'myAction' ) )
-            {   return; }
-
-            this.ajaxcall( "/tutorialrumone/tutorialrumone/myAction.html", { 
-                                                                    lock: true, 
-                                                                    myArgument1: arg1, 
-                                                                    myArgument2: arg2,
-                                                                    ...
-                                                                 }, 
-                         this, function( result ) {
-                            
-                            // What to do after the server call if it succeeded
-                            // (most of the time: nothing)
-                            
-                         }, function( is_error) {
-
-                            // What to do after the server call in anyway (success or failure)
-                            // (most of the time: nothing)
-
-                         } );        
+			function remove because the project analyzer wouldn't pass
         },        
         */
 /////////
@@ -3167,10 +3111,10 @@ console.log(this.playerHand)
 				
 console.log( '[bmc] addTo: ' + addTo );
 				
-				if ( drawSource == 'deck' ) {
-console.log( '[bmc] Deck' );
-					this.deck.removeFromStockById(card_id, addTo );
-				}
+				// if ( drawSource == 'deck' ) {
+// console.log( '[bmc] Deck' );
+					// this.deck.removeFromStockById(card_id, addTo );
+				// }
 				if ( drawSource == 'discardPile' ) {
 console.log( '[bmc] DP' );
 					this.discardPile.removeFromStockById( card_id, addTo );
@@ -3759,23 +3703,23 @@ console.log( "[bmc] EXIT notifications subscriptions setup" );
 		showReviewButton : function( player_id ) {
 console.log("[bmc] ENTER showReviewButton");
 console.log( $('close_btn'));
+console.log( player_id );
 
+			this.buttonMessage = 'Deal me in!';
+			
 			if ( $('close_btn') != null ) {
 console.log( $('close_btn').innerHTML );
 				if ( $('close_btn').innerHTML.includes( 'Game Over!' )) {
-					buttonMessage = "See Final Standings";
+					this.buttonMessage = "See Final Standings";
 					this.onPlayerReviewedHandButton(); // click the 'review' button for them so it ends faster
-				} else {
-					buttonMessage = "Deal me in!";
 				}
+			}
+			var reviewButtonID = 'buttonReview' + this.player_id;
 
-				var reviewButtonID = 'buttonReview' + this.player_id;
-
-				var isReadOnly = this.isReadOnly();
-				if ( !isReadOnly ) { // Spectators are read only, no need to show buttons
-					if ( this.dealMeInClicked == false ) {
-						this.addActionButton( reviewButtonID, _( buttonMessage ), 'onPlayerReviewedHandButton' );
-					}
+			var isReadOnly = this.isReadOnly();
+			if ( !isReadOnly ) { // Spectators are read only, no need to show buttons
+				if ( this.dealMeInClicked == false ) {
+					this.addActionButton( reviewButtonID, _( this.buttonMessage ), 'onPlayerReviewedHandButton' );
 				}
 			}
 		},
@@ -3878,9 +3822,15 @@ console.log(this.deck);
 /////////
 /////////
 		clearPlayerBoards : function(notif) {
-			dojo.removeClass('playerDown_A_' + this.player_id, "border1");
-			dojo.removeClass('playerDown_B_' + this.player_id, "border1");
-			dojo.removeClass('playerDown_C_' + this.player_id, "border1");
+			var isReadOnly = this.isReadOnly();
+			console.log("isReadOnly");
+			console.log(isReadOnly);
+			
+			if ( !isReadOnly ) { // if not spectator
+				dojo.removeClass('playerDown_A_' + this.player_id, "border1");
+				dojo.removeClass('playerDown_B_' + this.player_id, "border1");
+				dojo.removeClass('playerDown_C_' + this.player_id, "border1");
+			}
 
 			if ( notif.args.buyCount != undefined ) {
 				for ( var player_id in this.gamedatas.players ) {
@@ -3944,7 +3894,6 @@ console.log("empty arg");
 				this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
 				dojo.addClass('myhand_wrap', "borderDrawer");				
 				playSound( 'tutorialrumone_itsyourdraw' );
-				pause(5);
 			} else {
 				dojo.removeClass('myhand_wrap', "borderDrawer");				
 			}
