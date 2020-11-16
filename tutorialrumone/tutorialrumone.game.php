@@ -773,6 +773,9 @@ class TutorialRumOne extends Table
 
 			$currentCard = $this->cards->getCard( $card_id );
 			
+			$buyers = self::getPlayerBuying();
+			self::dump("[bmc] Buyers Status(discardCard):", $buyers);
+
 			if ( $currentCard[ 'type' ] == 5 ) {
 				$value_displayed = ' a joker';
 				$color_displayed = '!';
@@ -795,12 +798,11 @@ class TutorialRumOne extends Table
 					'card_id' => $card_id,
 					'nextTurnPlayer' => $nextTurnPlayer,
 					'allHands' => $cardsByLocationHand,
-					'discardSize' => $discardSize
+					'discardSize' => $discardSize,
+					'buyers' => $buyers
 				)
 			);
 			
-			$buyers = self::getPlayerBuying();
-			self::dump("[bmc] Buyers Status(discardCard):", $buyers);
 
 			self::trace( "[bmc] About to EXIT discardCard (via nextState'discardCard')." );
 
@@ -2578,15 +2580,6 @@ TODO: Maybe check if there were no more playable cards and show that message.
 ////
 ////
 ////
-// TODO: Fix this: Now every client shows YOU MUST DRAW A CARD. But JS knows whose turn it really is.
-// TODO: Probably should split the states into:
-//      1: Draw cards first available players have not yet determined buy / not buy
-//      2: As players determine buy / not buy, jump to buy resolution state
-//      3: In buy resolution state, keep track of all the players buying and not buying
-//      4: In buy resolution, if active player take the discard then no one else can buy it
-//      5: If they draw the deck card, then someone else can buy. The main player cannot discard until the buy is resolved.
-// 
-
 	function stDrawDeck() {
 		self::trace( "[bmc] ENTER stDrawDeck:" );
         $this->gamestate->nextState("");
@@ -2654,10 +2647,8 @@ TODO: Maybe check if there were no more playable cards and show that message.
 				$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 				
 				self::dump( "[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
-//				self::dump( "[bmc] findSTART:", $playerOrder[ $playerOrder[ $activeTurnPlayer_id ]] );
 				self::dump( "[bmc] findSTART:", $playerOrder[ $activeTurnPlayer_id ] );
 				
-				// $buyer_id = $this->findBuyer( $buyingPlayers, $playerOrder[ $playerOrder[ $activeTurnPlayer_id ]] );
 				$buyer_id = $this->findBuyer( $buyingPlayers, $playerOrder[ $activeTurnPlayer_id ] );
 				
 				self::setGameStateValue( 'findBuyerFailsafe', 0 );
@@ -3397,9 +3388,13 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 
 		self::dump("[bmc] currentHandType stEndHand:", $currentHandType );
+		self::dump("[bmc] this->handTypes stEndHand:", $this->handTypes );
 		
-//		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
-		if ( $currentHandType > count( $this->handTypes )) { // The 7 hand numbers are 0 through 6
+		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
+
+// This next line throws an error Undefined property: TutorialRumOne::$handTypes
+//		if ( $currentHandType > count( $this->handTypes )) { // The 7 hand numbers are 0 through 6
+
 			$this->gamestate->nextState("endGame");
 		} else {
 

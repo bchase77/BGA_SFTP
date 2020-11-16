@@ -85,23 +85,14 @@ function (dojo, declare) {
 //
 // TODO:
 //
-// X 11/14: After a hand, 1st player didn't turn green
-// X 11/14: Change must discard or go down (and then play if you go down).
 // 11/14: If click BUY after draw, it lights up but doesn't let you draw
-// 11/14: Buy it button turns red when you cannot buy
-// 11/14: Buy should be allowed until the next person discards
-// 11/14: After putting a card into PREP it should unselect
-// 11/14: I CONFIRM button appears twice, should be only once
-// 11/14: Need to end the game after the last person goes out
 // 11/10: Add KNOCK requirement feature, or you can't go down next turn
 // 11/10: IT'S NOT YOUR TURN is not needed
-// 11/10: Remove jokers with more players or decks
-// 11/10: In 2 sets with many players, allow every other player one more play
 // 11/10: Got Nice Try doesn't reach from 89 on 0*QKA, but they played OK individually.
-// 11/7:  Make the text of gray buttons also gray.
 // 11/1:  [forum] If 2 of same card (e.g. 2x 6 of hearts) is in hand cannot move just one of them
-// 11/7:  MAYBE Limit the set size???
 //
+// 11/7:  MAYBE Limit the set size???
+// 11/10: Maybe In 2 sets with many players, allow every other player one more play
 // 11/14: (how to debug?) Mark's PREP cards and salmon did not refresh
 // 11/14: MAYBE: Player should not be able to buy their own discard
 // 11/2:  Maybe Not: Ask group: Call Liverpool on another player?
@@ -111,6 +102,16 @@ function (dojo, declare) {
 // 11/10: Maybe not: Get bonus if you go out? NO.
 // 11/10: Maybe not: Notify players are prepping cards
 //
+// X 11/7:  Make the text of gray buttons also gray.
+// X 11/14: Hard to see white text on yellow background
+// X 11/10: Remove jokers with more players or decks
+// X 11/14: After a hand, 1st player didn't turn green
+// X 11/14: Change must discard or go down (and then play if you go down).
+// X 11/14: Buy it button turns red when you cannot buy
+// X 11/14: Buy should be allowed until the next person discards (added 5 second timer)
+// X 11/14: After putting a card into PREP it should unselect
+// X 11/14: I CONFIRM button appears twice, should be only once
+// X 11/14: Need to end the game after the last person goes out
 // X 11/10: Add tooltips for how to play, definition of set and run, buy, cards left...
 // X 11/6: 2Runs: Going down with 568 spades and 456* hearts and ace of spaces swapping a joker. It did the swap but somehow the jokers have the same IDs! I think one of the functions took the wrong joker (in PHP).
 // X 11/10: Play a different sound when it's your turn and/or another message
@@ -710,6 +711,7 @@ console.log( discardPile );
 console.log("[bmc] Buy setup");
 console.log(this.firstLoad);
 console.log(this.player_id);
+console.log(this.gamedatas.buyCount[ this.player_id ]);
 // TODO: Remove this?
 			if ((( this.firstLoad == 'Yes' ) && 
 			     ( this.player_id != this.gamedatas.activeTurnPlayer_id ) &&
@@ -721,7 +723,8 @@ console.log(this.player_id);
 			    (( this.gamedatas.buyers[ this.player_id ] == 0 ) && // buy status undefined
 				 ( this.turnPlayer != this.player_id ) && // the current player
 				 ( this.player_id != this.gamedatas.playerOrderTrue[ this.player_id ] ) && // the next player
-				 ( this.gamedatas.gamestate.action == 'playerTurnDraw' ))) { // draw state
+				 ( this.gamedatas.gamestate.action == 'playerTurnDraw' ) && // draw state
+				 ( this.gamedatas.buyCount[ this.player_id ] > 0 ))) { // Player has buys left
 					
 				console.log("[bmc] Decided yes, should show BUY button.");
 				this.buyCounterTimerShouldExist = 'Yes'; // A timer and a button should exist
@@ -733,7 +736,8 @@ console.log(this.player_id);
 			     ( this.player_id != this.gamedatas.activeTurnPlayer_id ) && // It's not our turn
 			     ( this.gamedatas.buyers[ this.player_id ] == 0 ) && // buy status undefined
 				 //( this.player_id != this.gamedatas.playerOrderTrue[ this.gamedatas.activeTurnPlayer_id ] ) && // the next player
-				 ( this.gamedatas.gamestate.name == 'playerTurnDraw' ))) { // draw state
+				 ( this.gamedatas.gamestate.name == 'playerTurnDraw' )) && // draw state
+				 ( this.gamedatas.buyCount[ this.player_id ] > 0 )) { // Player has buys left
 				
 console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 			// New variables for new timers on static buttons
@@ -999,6 +1003,7 @@ console.log("[bmc] ENTER onPlayerBuyButton");
 			var action = 'buyRequest';
 			
 			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+			dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
 //			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 			// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 			console.log(this.firstLoad);
@@ -1360,7 +1365,15 @@ console.log( "[bmc] EXIT sortRun" );
 /////////
 /////////
 /////////
-        discardCard : function( player_id, color, value, card_id, nextTurnPlayer, allHands, discardSize ) {
+		// wait : function (timeout) {
+			// return new Promise(resolve => {
+				// setTimeout(resolve,timeout);
+			// });
+		// },
+/////////
+/////////
+/////////
+        discardCard : function( player_id, color, value, card_id, nextTurnPlayer, allHands, discardSize, buyers ) {
 			// (from PHP) Purpose is to show the played cards on the table, not really to play the card.
 			// Playing of the card is done on the server side (PHP).
 console.log( "[bmc] ENTER discardCard" );
@@ -1375,16 +1388,27 @@ console.log( discardSize );
 console.log( "discardPile and playerhand:" );
 console.log( this.discardPile );
 console.log( this.playerHand );
+console.log( buyers );
 
 			// If it is us, play a special sound and show an alert
 			
 			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
-				this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
 				
-				dojo.addClass('myhand_wrap', "borderDrawer");				
+				// var delay = ( function() {
+					// var timer = 0;
+					// return function(callback, ms) {
+						// clearTimeout (timer);
+						// timer = setTimeout(callback, ms);
+					// };
+				// })();
 				
-				playSound( 'tutorialrumone_itsyourdraw' );
-				//this.disableNextMoveSound();
+console.log("[bmc] Trying to wait 5 seconds but it doesn't work");
+				// Wait 5 seconds to give others a chance to buy but I cannot make it work
+
+					this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
+					dojo.addClass('myhand_wrap', "borderDrawer");				
+					playSound( 'tutorialrumone_itsyourdraw' );
+					this.disableNextMoveSound();
 			} else {
 				dojo.removeClass('myhand_wrap', "borderDrawer");				
 			}
@@ -1430,12 +1454,11 @@ console.log("[bmc] Card played by me");
                 if ($('myhand_item_' + card_id)) {
 console.log("[bmc] Was in hand");
                     this.placeOnObject('myhand_item_' + card_id, 'discardPile');
-					// Slide to it's final destination
-//TODO TRY REMOVING THIS:					this.slideToObject('myhand_item_' + card_id, 'discardPile', 1000).play();
                     this.playerHand.removeFromStockById(card_id);
                 }
-            } else if ( this.player_id != nextTurnPlayer ) {
-				// If we are not the next player then show the buttons
+            } else if (( this.player_id != nextTurnPlayer ) && 
+					   ( buyers[ this.player_id ] > 0 )) {
+				// If we are not the next player and we have buys left then show the BUY button
 
 console.log("[bmc] Card played not by me");
 				this.buyCounterTimerShouldExist = 'Yes'; // A timer and a button should exit
@@ -1838,10 +1861,11 @@ console.log( this.buyCounterTimerExists );
 //EXP 10/26				this.addActionButton( buyButtonID, _("Buy!"), 'onPlayerBuyButton' );
 //				this.addActionButton( notBuyButtonID , _("Not Buy!"), 'onPlayerNotBuyButton' );
 				
-//				dojo.replaceClass( 'buttonBuy', "bgabutton_blue", "bgabutton_gray" );
+//				dojo.replaceClass( 'buttonBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
 console.log("[bmc] BUY BUTTON RED!");
-				dojo.replaceClass( 'buttonBuy', "bgabutton_red", "bgabutton_gray" );
-				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_blue", "bgabutton_gray" );
+				dojo.replaceClass( 'buttonBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+				dojo.replaceClass( 'buttonBuy', "textWhite", "textGray" ); // item, add, remove
+				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
 
 console.log("[bmc] Action buttons were just created.");
 
@@ -1858,7 +1882,7 @@ console.log("[bmc] YES enDisStaticBuyButtons");
 //				dojo.replaceClass( 'buttonBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
 				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
 				dojo.replaceClass( 'buttonBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
-				
+				dojo.replaceClass( 'buttonBuy', "textWhite", "textGray" ); // item, add, remove
 				// Only start the timer if active during hand, not during game start nor hand start.
 				if ( this.enableDBTimer == 'Yes' ) {
 console.log("[bmc] YES enableDBTimer");
@@ -1869,6 +1893,7 @@ console.log("[bmc] NO enDisStaticBuyButtons");
 //				dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 				dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+				dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
 			}
 		},
 		
@@ -2494,37 +2519,43 @@ console.log( "[bmc] ENTER onPlayerDiscardButton" );
 			let action = "reallyDiscard";
 console.log( this.prepAreas );
 
-			let selectedDiscards = this.discardPile.getSelectedItems();
+			var selectedDiscards = this.playerHand.getSelectedItems();
 console.log("selectedDiscards:");
 console.log(selectedDiscards);
 			// If cards are in prep area, double check that the really want to discard and not go down.
 			if (( this.prepAreas > 0 ) &&
 				( this.goneDown[ this.player_id ] == 0 ) &&  //0 = Not gone down; 1 = Gone down.
-				( selectedDiscards != undefined )) {
+				( selectedDiscards.length != 0 )) { // Only show dialog when there's a card
 console.log ("[bmc] CONFIRM");
 				this.confirmationDialog( _('Are you sure you want to discard? You have cards prepped.'),
 							 dojo.hitch( this, function() {
-								 this.reallyDiscard();
+								this.playerHand.unselectAll();
+								this.reallyDiscard( selectedDiscards );
 							}));
 			} else { // nothing prepped so discard the card
 console.log ("[bmc] Just discard");
-				this.reallyDiscard();
+				this.playerHand.unselectAll();
+				this.reallyDiscard( selectedDiscards );
 			}
 console.log( "[bmc] EXIT onPlayerDiscardButton" );
 		},
 /////////
 /////////
 /////////		
-		reallyDiscard : function() {
+		reallyDiscard : function( selectedDiscards ) {
 console.log( "[bmc] ENTER reallyDiscard" );
 console.log( this.player_id );
+console.log("selectedDiscards:");
+console.log(selectedDiscards);
 			this.discardPile.unselectAll();
+			this.playerHand.unselectAll();
 
 			this.clearButtons();
 //		    this.removeActionButtons(); // Remove the button because they discarded
 //			this.showingButtons === 'No';
 			
-			var card = this.playerHand.getSelectedItems()[ 0 ]; // It must be 1 card only
+//			var card = this.playerHand.getSelectedItems()[ 0 ]; // It must be 1 card only
+			var card = selectedDiscards[0];
 			console.log(card);
 			
 			this.firstLoad = 'No'; // Since we're discarding, enable future timers
@@ -3187,9 +3218,10 @@ console.log( this.player_id );
 				// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
 				this.drawCard2nd( items, 'discardPile' );
 			}
-			
-			// Click the 
-			if ( this.gamedatas.gamestate.active_player != this.player_id ) {
+
+			// Click the BUY button if it's not our turn and it's DRAW state
+			if (( this.gamedatas.gamestate.active_player != this.player_id ) &&
+				( this.gamedatas.gamestate.name == 'playerTurnDraw' )) {
 				this.onPlayerBuyButton();
 			}
 		},
@@ -3912,6 +3944,7 @@ console.log("empty arg");
 				this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
 				dojo.addClass('myhand_wrap', "borderDrawer");				
 				playSound( 'tutorialrumone_itsyourdraw' );
+				pause(5);
 			} else {
 				dojo.removeClass('myhand_wrap', "borderDrawer");				
 			}
@@ -3979,7 +4012,8 @@ console.log( notif );
 				notif.args.card_id,
 				notif.args.nextTurnPlayer,
 				notif.args.allHands,
-				notif.args.discardSize
+				notif.args.discardSize,
+				notif.args.buyers
 			);
 console.log("[bmc] EXIT notif_discardCard");
 		},
