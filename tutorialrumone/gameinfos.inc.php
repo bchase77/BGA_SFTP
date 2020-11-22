@@ -13,7 +13,7 @@
 $gameinfos = array( 
 
 // Name of the game in English (will serve as the basis for translation) 
-'game_name' => "Cozy Oaks Rummy First Try",
+'game_name' => "Liverpool (Cozy Oaks) Rummy",
 
 // Game designer (or game designers, separated by commas)
 'designer' => 'Bryan Chase',
@@ -123,12 +123,12 @@ $gameinfos = array(
 //    totranslate("This wonderful game is about geometric shapes!"),
 //    totranslate("It was awarded best triangle game of the year in 2005 and nominated for the Spiel des Jahres."),
 //    ...
-totranslate("Cozy Oaks Rummy is prototype of an adaptation of our family's"),
-totranslate("version of Liverpool Rummy. The game is divided into 7 hands which are"),
+totranslate("Liverpool Rummy (aka Cozy Oaks Rummy) is our family's adaptation of"),
+totranslate("a classic rummy game. Gameplay is divided into 4 or 7 hands which are"),
 totranslate("progressively harder to complete. Players are dealt cards and can"),
-totranslate("'buy' up to 3 discard cards during other player's turns. When a player"),
-totranslate("has the target ready in their hand (e.g. 2 runs and 1 set), they 'go"),
-totranslate("down' and place those cards face up on the table. They can then play"),
+totranslate("'buy' up to 3 discarded cards from other players. When a player has"),
+totranslate("specific target melds ready in their hand (e.g. 2 runs and 1 set), they"),
+totranslate("'go down' and place those cards face up on the table. They can then play"),
 totranslate("on other down cards, attempting to get rid of all their cards.")
 ),
 

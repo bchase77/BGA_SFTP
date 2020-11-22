@@ -3399,11 +3399,11 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 
 		self::dump("[bmc] currentHandType stEndHand:", $currentHandType );
-		self::dump("[bmc] this->handTypes stEndHand:", $this->handTypes );
+		//self::dump("[bmc] this->handTypes stEndHand:", $this->handTypes );
 		
 		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
 
-// This next line throws an error Undefined property: TutorialRumOne::$handTypes
+// This next line throws an error Undefined property: <gamename>::$handTypes
 //		if ( $currentHandType > count( $this->handTypes )) { // The 7 hand numbers are 0 through 6
 
 			$this->gamestate->nextState("endGame");

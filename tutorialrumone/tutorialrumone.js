@@ -85,6 +85,13 @@ function (dojo, declare) {
 //
 // TODO:
 //
+// 11/21: After first hand was done, wrong plaeyres were green.
+// 11/21: GO DOWN button caused NOT ENOUGH SETS
+// 11/21: When card pu in discard and then brought back, it still asks for CONFIRM when discaRDING
+// 11/21: Buy BUTTON NOT LIGHTING UP W
+// 11/21: Change prep TO meld
+// 11/21: Change prep joker to swap joker
+
 // 11/14: If click BUY after draw, it lights up but doesn't let you draw
 // 11/10: Add KNOCK requirement feature, or you can't go down next turn
 // 11/10: IT'S NOT YOUR TURN is not needed
@@ -3772,6 +3779,15 @@ console.log( $('close_btn').innerHTML );
 				this.goneDown[ player ] = 0;
 			}
 			
+			this.myPrepA.removeAll();
+			this.myPrepB.removeAll();
+			this.myPrepC.removeAll();
+			this.myPrepJoker.removeAll();
+			dojo.removeClass('myPrepA', "border1");
+			dojo.removeClass('myPrepB', "border1");
+			dojo.removeClass('myPrepC', "border1");
+			dojo.removeClass('myPrepJoker', "border1");
+
 			this.prepSetLoc = 0; // Nothing is prepped, so clear the counters
 			this.prepRunLoc = 3;
 			this.prepAreas = 0;
@@ -3822,9 +3838,11 @@ console.log(this.deck);
 /////////
 /////////
 		clearPlayerBoards : function(notif) {
+			console.log("[bmc] ENTER clearPlayerBoards");
 			var isReadOnly = this.isReadOnly();
 			console.log("isReadOnly");
 			console.log(isReadOnly);
+			console.log(this.player_id);
 			
 			if ( !isReadOnly ) { // if not spectator
 				dojo.removeClass('playerDown_A_' + this.player_id, "border1");
@@ -3839,6 +3857,7 @@ console.log("[bmc] Updating buys and cards");
 					this.handCount[ player_id ].setValue( notif.args.allHands[ player_id ] );
 				}
 			}
+			console.log("[bmc] EXIT clearPlayerBoards");
 		},
 /////////
 /////////
@@ -4092,12 +4111,10 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 			console.log("[bmc]notif_playerWantsToBuy");
 			console.log(notif);
 			
+			//playSound( 'tutorialrumone_IllBuyIt' );
 			dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
-
+			
 			return;
-			
-			
-			
 			
 			// If by timer then run stop timers and hide the buttons
 			// If by seat order then do not

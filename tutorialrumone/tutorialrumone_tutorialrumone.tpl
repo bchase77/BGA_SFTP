@@ -40,10 +40,10 @@
 					<span style="margin-left:15px"></span>
 					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray spectatorMode"> Buy it! </a>
 					<span style="margin-left:15px"></span>
-					<a href="#" id="buttonPrepAreaA" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep A</a>
-					<a href="#" id="buttonPrepAreaB" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep B</a>
-					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep C</a>
-					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep Joker</a>
+					<a href="#" id="buttonPrepAreaA" class="bgabutton prepButton bgabutton_gray spectatorMode">Meld A</a>
+					<a href="#" id="buttonPrepAreaB" class="bgabutton prepButton bgabutton_gray spectatorMode">Meld B</a>
+					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode">Meld C</a>
+					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode">Swap For Joker</a>
 					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode">Go Down</a>
 					<div id="myhand" class="myhand"></div>
 				</span>
@@ -63,19 +63,19 @@
 			<div id="discardPile"></div>
 		</div>
 		<div id="myPrepA" class="prepbox">
-			<h3>Prep A</h3>
+			<h3>Meld A</h3>
 			<div id="PrepA"></div>
 		</div>
 		<div id="myPrepB" class="prepbox">
-			<h3>Prep B</h3>
+			<h3>Meld B</h3>
 			<div id="PrepB"></div>
 		</div>
 		<div id="myPrepC" class="prepbox">
-			<h3>Prep C</h3>
+			<h3>Meld C</h3>
 			<div id="PrepC"></div>
 		</div>
 		<div id="myPrepJoker" class="prepjoker">
-			<h3>Prep Joker</h3>
+			<h3>Card For Joker</h3>
 			<div id="prepjoker"></div>
 		</div>
 	</div>
@@ -97,7 +97,8 @@
 <audio id="audiosrc_o_tutorialrumone_wentOutYeah" src="{GAMETHEMEURL}img/tutorialrumone_wentOutYeah.ogg" preload="none" autobuffer></audio>
 <audio id="audiosrc_tutorialrumone_GoingDown" src="{GAMETHEMEURL}img/tutorialrumone_GoingDown.mp3" preload="none" autobuffer></audio>
 <audio id="audiosrc_o_tutorialrumone_GoingDown" src="{GAMETHEMEURL}img/tutorialrumone_GoingDown.ogg" preload="none" autobuffer></audio>
-
+<audio id="audiosrc_tutorialrumone_IllBuyIt" src="{GAMETHEMEURL}img/tutorialrumone_IllBuyIt.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_o_tutorialrumone_IllBuyIt" src="{GAMETHEMEURL}img/tutorialrumone_IllBuyIt.ogg" preload="none" autobuffer></audio>
 <script type="text/javascript">
 
 var jstpl_player_board = '\<div class="cp_board">\
