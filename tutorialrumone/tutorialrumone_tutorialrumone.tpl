@@ -43,7 +43,7 @@
 					<a href="#" id="buttonPrepAreaA" class="bgabutton prepButton bgabutton_gray spectatorMode">Meld A</a>
 					<a href="#" id="buttonPrepAreaB" class="bgabutton prepButton bgabutton_gray spectatorMode">Meld B</a>
 					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode">Meld C</a>
-					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode">Swap For Joker</a>
+					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode">Card For Joker</a>
 					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode">Go Down</a>
 					<div id="myhand" class="myhand"></div>
 				</span>

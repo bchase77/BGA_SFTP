@@ -3904,17 +3904,17 @@ console.log("empty arg");
 	console.log(this.playerHand);
 			}
 
-			// Set all players to buy, except for the player whose turn it is
+			// Set all players to buy, except for the player whose turn it is, and light them green
 			if ( this.player_id != this.gamedatas.playerOrderTrue[ notif.args.dealer_id ] ) {
 				this.buyCounterTimerShouldExist = 'Yes'; // A timer and a button should exist
 				this.showBuyButton2();
 
+				dojo.removeClass('myhand_wrap', "borderDrawer");				
+			} else { // It's this player's turn
+				dojo.addClass('myhand_wrap', "borderDrawer");				
 				// Notify them it's their turn
 				this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
-				dojo.addClass('myhand_wrap', "borderDrawer");				
 				playSound( 'tutorialrumone_itsyourdraw' );
-			} else {
-				dojo.removeClass('myhand_wrap', "borderDrawer");				
 			}
 
 			// Set the hand counts for all players
