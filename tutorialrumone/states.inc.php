@@ -69,7 +69,7 @@ $machinestates = array(
     /// New hand
     20 => array(
         "name" => "newHand",
-        "description" => clienttranslate('New Hand <span style:"color:gray">(st20)</span>'),
+        "description" => clienttranslate('New Hand <span style:"color:gray"></span>'),
         "type" => "game", // game
         "action" => "stNewHand", // ACTION: Do this upon entering the state
         "updateGameProgression" => true,   
@@ -77,8 +77,8 @@ $machinestates = array(
     ),    
     30 => array(
         "name" => "playerTurnDraw",
-		"description" => clienttranslate('${buyMessage}${turnPlayerName} must draw from deck or discard pile. Others might buy (st30a).'),
-		"descriptionmyturn" => clienttranslate('${turnPlayerName} must draw from the deck or the discard pile. Others might buy (st20b).'),
+		"description" => clienttranslate('${buyMessage}${turnPlayerName} must draw from deck or discard pile. Others might buy.'),
+		"descriptionmyturn" => clienttranslate('${turnPlayerName} must draw from the deck or the discard pile. Others might buy.'),
 //        "type" => "multipleactiveplayer",
         "type" => "activeplayer",
         "action" => "stShowBUYButtons", // ACTION: Do this upon entering the state
@@ -119,7 +119,7 @@ $machinestates = array(
     ), 
     37 => array(
         "name" => "nextPlayer",
-        "description" => "(st36)",
+        "description" => "(st37)",
         "type" => "game",
         "action" => "stNextPlayer", // ACTION: Do this upon entering the state
         "transitions" => array( "nextPlayer" => 30, "endHand" => 40 )
@@ -144,16 +144,16 @@ $machinestates = array(
     ),
     50 => array(    // Resolve the potential buyers of the discard card
         "name" => "resolveBuyers",
-        "description" => clienttranslate('Resolve discard buyers. (st50a)'),
-        "descriptionmyturn" => clienttranslate('Resolve discard buyers.  (st50b)'),
+        "description" => clienttranslate('Resolve discard buyers.'),
+        "descriptionmyturn" => clienttranslate('Resolve discard buyers.'),
         "type" => "game",
         "action" => "stResolveBuyers", // ACTION: Do this upon entering the state
         "transitions" => array( "checkEmptyDeck" => 32, "drawDiscard" => 33, "other" => 35 )
     ),
     57 => array(    // The turn-player is drawing a card from the deck
         "name" => "turnPlayerDrawFromDeck",
-        "description" => clienttranslate('${actplayer} is drawing from the deck.(st57a)'),
-        "descriptionmyturn" => clienttranslate('${you} are drawing from the deck.(st57b)'),
+        "description" => clienttranslate('${actplayer} is drawing from the deck.'),
+        "descriptionmyturn" => clienttranslate('${you} are drawing from the deck.'),
         "type" => "game",
         "action" => "stDrawDeck", // ACTION: Do this upon entering the state
         "transitions" => array( "" => 35 )
@@ -161,8 +161,8 @@ $machinestates = array(
     // Someone is trying to play a card
     60 => array(
         "name" => "playCard",
-        "description" => "Someone is trying to play a card.(st60a)",
-        "descriptionmyturn" => clienttranslate('${you} are trying to play a card.(st60b)'),
+        "description" => "Someone is trying to play a card.",
+        "descriptionmyturn" => clienttranslate('${you} are trying to play a card.'),
         "type" => "activeplayer",
         "action" => "stPlayCard", // ACTION: Do this upon entering the state
         "transitions" => array( "" => 33 )

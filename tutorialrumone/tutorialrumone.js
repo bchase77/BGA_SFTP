@@ -85,22 +85,17 @@ function (dojo, declare) {
 //
 // TODO:
 //
-// 11/21: After first hand was done, wrong plaeyres were green.
-// 11/21: GO DOWN button caused NOT ENOUGH SETS
-// 11/21: When card pu in discard and then brought back, it still asks for CONFIRM when discaRDING
-// 11/21: Buy BUTTON NOT LIGHTING UP W
-// 11/21: Change prep TO meld
-// 11/21: Change prep joker to swap joker
+// 11/24: Have an elegant way to end the game early.
+// 11/21: SAFARI: GO DOWN button caused NOT ENOUGH SETS
 
-// 11/14: If click BUY after draw, it lights up but doesn't let you draw
 // 11/10: Add KNOCK requirement feature, or you can't go down next turn
 // 11/10: IT'S NOT YOUR TURN is not needed
 // 11/10: Got Nice Try doesn't reach from 89 on 0*QKA, but they played OK individually.
 // 11/1:  [forum] If 2 of same card (e.g. 2x 6 of hearts) is in hand cannot move just one of them
 //
+// 11/14: MABYE If click BUY after draw, it lights up but doesn't let you draw
 // 11/7:  MAYBE Limit the set size???
-// 11/10: Maybe In 2 sets with many players, allow every other player one more play
-// 11/14: (how to debug?) Mark's PREP cards and salmon did not refresh
+// 11/10: MAYBE In 2 sets with many players, allow every other player one more play
 // 11/14: MAYBE: Player should not be able to buy their own discard
 // 11/2:  Maybe Not: Ask group: Call Liverpool on another player?
 // 11/8:  Maybe Not: (it's loading the deck cards) In JS code between 244 and 340 takes ~12 seconds (slow!)
@@ -109,6 +104,14 @@ function (dojo, declare) {
 // 11/10: Maybe not: Get bonus if you go out? NO.
 // 11/10: Maybe not: Notify players are prepping cards
 //
+// X 11/24: Remove state numbers from the ACTIION BAR.
+// X 11/21: When card put in discard and then brought back, it still asks for CONFIRM when discarding
+// X 11/21: After first hand was done, wrong players were green.
+// X 11/24: Can go down with 3 sets, but should not.
+// X 11/21: Buy BUTTON NOT LIGHTING UP When they can buy
+// X 11/21: Change prep TO meld
+// X 11/21: Change prep joker to swap joker
+// X 11/14: Mark's PREP cards and salmon did not refresh
 // X 11/7:  Make the text of gray buttons also gray.
 // X 11/14: Hard to see white text on yellow background
 // X 11/10: Remove jokers with more players or decks
@@ -681,7 +684,7 @@ console.log( discardPile );
 
 
 
-			let tooltip_myPrepA = 'To go down, select cards for one meld & click a PREP button. To take a joker, PREP all melds and 1 partial meld. Also prep the card to replace the joker. Select the board joker.  Click GO DOWN.';
+			let tooltip_myPrepA = 'To go down, select cards for one meld & click a meld button or meld area (1 meld per area). See the cards move. To take a joker while going down, prepare all melds and 1 partial meld. Select the board joker. Put an appropriate card to replace the joker in CARD FOR JOKER. Click GO DOWN.';
 
 			this.addTooltipHtmlToClass('prepButton', tooltip_myPrepA);
 
@@ -1086,29 +1089,32 @@ console.log("[bmc] ENTER onPlayerNotBuyButton");
 		sortBoard : function( ) {
 console.log( "[bmc] ENTER sortBoard" );
 			for ( var player in this.gamedatas.players ) {
-console.log("SORTBOARD player");
-console.log(player);
+// console.log("SORTBOARD player");
+// console.log(player);
 				cards = this.downArea_A_[ player ].getAllItems();
-console.log(cards);
-				if ( cards != null ) {
+//console.log(cards);
+//				if ( cards != null ) {
+				if ( cards.length != 0 ) {
 					weightChange = this.sortRun( cards, 'playerDown_A' );
-console.log( weightChange );
+// console.log( weightChange );
 					this.downArea_A_[ player ].changeItemsWeight( weightChange );
 				}
 
 				cards = this.downArea_B_[ player ].getAllItems();
-console.log(cards);
-				if ( cards != null ) {
+// console.log(cards);
+//				if ( cards != null ) {
+				if ( cards.length != 0 ) {
 					weightChange = this.sortRun( cards, 'playerDown_B' );
-console.log( weightChange );
+// console.log( weightChange );
 					this.downArea_B_[ player ].changeItemsWeight( weightChange );
 				}
 				
 				cards = this.downArea_C_[ player ].getAllItems();
-console.log(cards);
-				if ( cards != null ) {
+// console.log(cards);
+//				if ( cards != null ) {
+				if ( cards.length != 0 ) {
 					weightChange = this.sortRun( cards, 'playerDown_C' );
-console.log( weightChange );
+// console.log( weightChange );
 					this.downArea_C_[ player ].changeItemsWeight( weightChange );
 				}
 			}
@@ -1118,11 +1124,11 @@ console.log( "[bmc] EXIT sortBoard" );
 /////////
 /////////
 		sortArea_A : function( boardPlayer ) {
-			console.log("[bmc] sortArea_A");
+console.log("[bmc] sortArea_A");
 			cards = this.downArea_A_[ boardPlayer ].getAllItems();
 			if ( cards != null ) {
 				weightChange = this.sortRun( cards, 'playerDown_A' );
-console.log( weightChange );
+// console.log( weightChange );
 				this.downArea_A_[ boardPlayer ].changeItemsWeight( weightChange );
 			}
 		},
@@ -1130,11 +1136,11 @@ console.log( weightChange );
 /////////
 /////////
 		sortArea_B : function( boardPlayer ) {
-			console.log("[bmc] sortArea_B");
+console.log("[bmc] sortArea_B");
 			cards = this.downArea_B_[ boardPlayer ].getAllItems();
 			if ( cards != null ) {
 				weightChange = this.sortRun( cards, 'playerDown_B' );
-console.log( weightChange );
+// console.log( weightChange );
 				this.downArea_B_[ boardPlayer ].changeItemsWeight( weightChange );
 			}
 		},
@@ -1142,11 +1148,11 @@ console.log( weightChange );
 /////////
 /////////
 		sortArea_C : function( boardPlayer ) {
-			console.log("[bmc] sortArea_C");
+console.log("[bmc] sortArea_C");
 			cards = this.downArea_C_[ boardPlayer ].getAllItems();
 			if ( cards != null ) {
 				weightChange = this.sortRun( cards, 'playerDown_C' );
-console.log( weightChange );
+// console.log( weightChange );
 				this.downArea_C_[ boardPlayer ].changeItemsWeight( weightChange );
 			}
 		},
@@ -1155,8 +1161,8 @@ console.log( weightChange );
 /////////
 		sortRun : function( cards, downArea ) {
 console.log( "[bmc] ENTER sortRun" );
-console.log( cards );
-console.log( downArea );
+// console.log( cards );
+// console.log( downArea );
 
 			let weightChange = {};
 					
@@ -1166,7 +1172,7 @@ console.log( downArea );
 				var cardGroupNonJokers = new Array();
 				
 				for ( let i in cards ) {
-					//console.log(i);
+//console.log(i);
 					
 					var [ color, value ] = this.getColorValue( cards[ i ]['type'] );
 
@@ -1187,12 +1193,12 @@ console.log( downArea );
 						if ( value == 1 ) {
 							var ace = el ;
 						}
-console.log( ace );
+// console.log( ace );
 					}
 				}
-console.log( "cardGroup:" );
-console.log( cardGroup );
-console.log( cardGroupNonJokers );
+// console.log( "cardGroup:" );
+// console.log( cardGroup );
+// console.log( cardGroupNonJokers );
 
 				// Count number of jokers and track their IDs to set weights later
 				
@@ -1201,7 +1207,7 @@ console.log( cardGroupNonJokers );
 				var jokers = new Array();
 				
 				for ( let i in cardGroup ) {
-console.log(i);
+// console.log(i);
 					if ( cardGroup[ i ][ 'type' ] == 5 ) {
 						jokers[ jokerCount ] = {
 							"uid" : cardGroup[ i ][ 'unique_id' ],
@@ -1209,14 +1215,14 @@ console.log(i);
 						jokerCount++;
 					}
 				}
-console.log("[bmc] jokers:");
-console.log( jokerCount );
-console.log( jokers );
+// console.log("[bmc] jokers:");
+// console.log( jokerCount );
+// console.log( jokers );
 
 				cardGroupNonJokers.sort( this.compareTypeArg ); // Sort by value, but it changes the indices
 				
-console.log( "cardGroupNonJokers aftersort 1" );
-console.log( cardGroupNonJokers );
+// console.log( "cardGroupNonJokers aftersort 1" );
+// console.log( cardGroupNonJokers );
 				// If there's an ace, move it to be high
 				// TODO: Don't know if this is really going to work. This is kinda hokey.
 				// The value of the ace to 14 so it goes next to the king.
@@ -1225,16 +1231,16 @@ console.log( cardGroupNonJokers );
 				//       the ace has been given type_arg = 54. So it cannot bridge the gap.
 				
 				for ( card in cardGroupNonJokers ) {
-console.log("[bmc]card");
-console.log(card);
-console.log(cardGroupNonJokers[ card ]);
+// console.log("[bmc]card");
+// console.log(card);
+// console.log(cardGroupNonJokers[ card ]);
 					if ( cardGroupNonJokers[ card ][ 'type_arg' ] == 1 ) {
 console.log("FOUND ACE");
 						var ace = cardGroupNonJokers[ card ];
 						var aceid = card;
 					}
 				}
-console.log( "ace" );
+// console.log( "ace" );
 console.log( ace );
 console.log( aceid );
 				if ( ace ) { // If an ace and it's high then make it high
@@ -1247,48 +1253,47 @@ console.log("[bmc] Making Ace High");
 				
 				cardGroupNonJokers.sort( this.compareTypeArg ); // Sort by value, but it changes the indices
 				
-console.log( "cardGroupNonJokers aftersort 2" );
-console.log( cardGroupNonJokers );
+// console.log( "cardGroupNonJokers aftersort 2" );
+// console.log( cardGroupNonJokers );
 
 				var jokerIndex = 0;
 				var jokersUsed = 0;
 				
 				if ( jokerCount > 0 ) {
 					lowestCard = cardGroupNonJokers.find(Boolean) ; // Store first non-joker value
-	console.log( "[bmc]lowestCard:" );
-	console.log( lowestCard );
-					
-//TEST11/9					jokerIndex = 0;
+// console.log( "[bmc]lowestCard:" );
+// console.log( lowestCard );
+// TBD: TODO: This might need this line here: jokerIndex = 0; 
 					
 					weightChange[ lowestCard.unique_id ] = 0; // Lowest card gets lowest weight
 
 					cgLength = Object.keys(cardGroupNonJokers).length;
-	console.log(cgLength);
+	// console.log(cgLength);
 
 					for ( let i = 1 ; i < cgLength ; i++ ) {
 						jokerIndex = 0;
-	console.log(i);
-	console.log(cardGroupNonJokers[i]);
+	// console.log(i);
+	// console.log(cardGroupNonJokers[i]);
 						let delta = cardGroupNonJokers[ i ][ 'type_arg' ] - lowestCard[ 'type_arg' ];
 						
 	console.log("[bmc] Trouble with Jokers sometimes");
-	console.log(delta);
-	console.log(downArea);
-	console.log(jokers);
-	console.log(jokerIndex);
-	console.log(jokers[jokerIndex]);
-	console.log("PROBLEM:");
-	console.log(jokers[ jokerIndex ][ 'uid' ]);
+	// console.log(delta);
+	// console.log(downArea);
+	// console.log(jokers);
+	// console.log(jokerIndex);
+	// console.log(jokers[jokerIndex]);
+	// console.log("PROBLEM:");
+	// console.log(jokers[ jokerIndex ][ 'uid' ]);
 						for ( let j = 1; j < delta; j++ ) {
-	console.log(j);
+	// console.log(j);
 							
 							weightChange[ jokers[ jokerIndex ][ 'uid' ]] = i + jokerIndex;
 							
 							weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex + 1;
 							jokers[ jokerIndex ][ 'type_arg' ] = lowestCard[ 'type_arg' ] + 1;
 							lowestCard = jokers[ jokerIndex ];
-	console.log("[bmc] Used joker: ", jokers[ jokerIndex ]);
-	console.log( jokerIndex );
+	// console.log("[bmc] Used joker: ", jokers[ jokerIndex ]);
+	// console.log( jokerIndex );
 							jokerIndex++;
 							jokersUsed++;
 	//					} else {
@@ -1296,37 +1301,37 @@ console.log( cardGroupNonJokers );
 						weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex;
 						lowestCard = cardGroupNonJokers[ i ];
 	//					}
-	console.log("weightChange");
-	console.log(weightChange);			
-	console.log(lowestCard);
-	console.log(jokers);
+	// console.log("weightChange");
+	// console.log(weightChange);			
+	// console.log(lowestCard);
+	// console.log(jokers);
 					}
-	console.log("FINAL weightChange before ACE analysis");
-	console.log(weightChange);
+	// console.log("FINAL weightChange before ACE analysis");
+	// console.log(weightChange);
 				}
 
-	console.log("[bmc] JokerCount & jokersUsed after placement:");
-	console.log(jokerCount);
-	console.log(jokersUsed);
+	// console.log("[bmc] JokerCount & jokersUsed after placement:");
+	// console.log(jokerCount);
+	// console.log(jokersUsed);
 	//so if jokercount > jokerindex then there's an extra joker, so put it on the left if the ace is high
 
 				if ( ace != null ) {
-	console.log("[bmc] There's an ace!");
+	// console.log("[bmc] There's an ace!");
 					// Check if ace needs to be highest.  Assuming it's already a run, ace is high when:
 					//   There is a King, or
 					//   There is a Queen and 1 joker, or
 					//   There is a Jack and 2 jokers, etc...
-	console.log(Object.keys(cardGroupNonJokers).length);
+	// console.log(Object.keys(cardGroupNonJokers).length);
 					if ( cardGroupNonJokers[ Object.keys(cardGroupNonJokers).length - 1 ][ 'type_arg' ] + jokerCount > 12 ) {
-	console.log("Making Ace High");
+	// console.log("Making Ace High");
 						weightChange[ ace.unique_id ] = 54; // Joker #2 is 53, so make it higher
 						
 						// Now check if jokers need to be moved to low (i.e. if there are extras)
 						if ( jokerCount > jokersUsed ) {
 							for ( let i = jokersUsed; i < jokerCount; i++ ){
-	console.log(i);
-	console.log(jokers[i]);
-	console.log(jokers[i]['uid']);
+	// console.log(i);
+	// console.log(jokers[i]);
+	// console.log(jokers[i]['uid']);
 								weightChange[ jokers[ i ][ 'uid' ]] = -1; // Just put all on the left
 							}
 						}
@@ -1956,10 +1961,10 @@ console.log("[bmc] FOUND C");
 					boardPlayer = player;
 				}
 			}
-console.log("[bmc] Selected Board Card(s):");
-console.log(selectedCards_A_);
-console.log(selectedCards_B_);
-console.log(selectedCards_C_);
+// console.log("[bmc] Selected Board Card(s):");
+// console.log(selectedCards_A_);
+// console.log(selectedCards_B_);
+// console.log(selectedCards_C_);
 			return [boardCard, boardArea, boardPlayer];
 		},
 /////////
@@ -2219,17 +2224,27 @@ console.log("/" + this.game_name + "/" + this.game_name + "/" + action + ".html"
 			console.log( area_C_Items );
 			console.log( area_Joker_Items );
 			
+			var i = 0;
 			if ( area_A_Items.length == 0 ) {
 				dojo.removeClass('myPrepA', "border1");
+				i++;
 			}
 			if ( area_B_Items.length == 0 ) {
 				dojo.removeClass('myPrepB', "border1");
+				i++;
 			}
 			if ( area_C_Items.length == 0 ) {
 				dojo.removeClass('myPrepC', "border1");
+				i++;
 			}
 			if ( area_Joker_Items.length == 0 ) {
 				dojo.removeClass('myPrepJoker', "border1");
+				i++;
+			}
+console.log("[bmc]AreasPrepped(i):");
+console.log(i);
+			if ( i > 0 ) {
+				this.prepAreas = 0;
 			}
 			console.log("[bmc] EXIT onDownAreaSelect");
 		},
@@ -3782,6 +3797,7 @@ console.log( $('close_btn').innerHTML );
 			this.myPrepA.removeAll();
 			this.myPrepB.removeAll();
 			this.myPrepC.removeAll();
+			this.prepAreas = 0;
 			this.myPrepJoker.removeAll();
 			dojo.removeClass('myPrepA', "border1");
 			dojo.removeClass('myPrepB', "border1");
@@ -4111,7 +4127,7 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 			console.log("[bmc]notif_playerWantsToBuy");
 			console.log(notif);
 			
-			//playSound( 'tutorialrumone_IllBuyIt' );
+			playSound( 'tutorialrumone_IllBuyIt' );
 			dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
 			
 			return;

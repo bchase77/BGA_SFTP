@@ -123,15 +123,17 @@ class TutorialRumOne extends Table
 		
 		//self::dump("[bmc] handTypes(line138):", $this->handTypes[$currentHandType]);
 
-		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
+		self::setGameLength();
 
-		if ( $gameLengthOption == 1 ) {
-			$this->setsRuns = $this->setsRunsFull;
-			$this->handTypes = $this->handTypesFull;
-		} else {
-			$this->setsRuns = $this->handTypesShort;
-			$this->handTypes = $this->handTypesShort;
-		}
+		// $gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
+
+		// if ( $gameLengthOption == 1 ) {
+			// $this->setsRuns = $this->setsRunsFull;
+			// $this->handTypes = $this->handTypesFull;
+		// } else {
+			// $this->setsRuns = $this->handTypesShort;
+			// $this->handTypes = $this->handTypesShort;
+		// }
 		
 //        self::setGameStateInitialValue( 'area_A_target', $this->handTypes[$currentHandType]["Area_A"]);
 //        self::setGameStateInitialValue( 'area_B_target', $this->handTypes[$currentHandType]["Area_B"]);
@@ -159,7 +161,7 @@ class TutorialRumOne extends Table
 		
 		self::setGameStateInitialValue( 'discardWeightHistory', 300 ); // Start higher than any game will have qty of cards
 
-        self::setGameStateInitialValue( 'skipFirstDeal', true );
+        self::setGameStateInitialValue( 'skipFirstDeal', 1 ); // 0 is false. 1 is true. It seems to want integers.
 
 		$this->waiting = false; // This keeps the state machine from getting out of sync by requiring
 		
@@ -325,15 +327,16 @@ class TutorialRumOne extends Table
 		$playersNumber = self::getPlayersNumber();
 		$result['dbgPlayersNumber'] = $playersNumber ;
 		
-		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
+		self::setGameLength();
+		// $gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
 
-		if ( $gameLengthOption == 1 ) {
-			$this->setsRuns = $this->setsRunsFull;
-			$this->handTypes = $this->handTypesFull;
-		} else {
-			$this->setsRuns = $this->setsRunsShort;
-			$this->handTypes = $this->handTypesShort;
-		}
+		// if ( $gameLengthOption == 1 ) {
+			// $this->setsRuns = $this->setsRunsFull;
+			// $this->handTypes = $this->handTypesFull;
+		// } else {
+			// $this->setsRuns = $this->setsRunsShort;
+			// $this->handTypes = $this->handTypesShort;
+		// }
 		
 		$result['handTypes']["Target"] = $this->handTypes; // Pull the description
 		
@@ -457,15 +460,16 @@ class TutorialRumOne extends Table
 		
 		$buyMessage = '';
 		
-		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
+		self::setGameLength();
+		// $gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
 
-		if ( $gameLengthOption == 1 ) {
-			$this->setsRuns = $this->setsRunsFull;
-			$this->handTypes = $this->handTypesFull;
-		} else {
-			$this->setsRuns = $this->setsRunsShort;
-			$this->handTypes = $this->handTypesShort;
-		}
+		// if ( $gameLengthOption == 1 ) {
+			// $this->setsRuns = $this->setsRunsFull;
+			// $this->handTypes = $this->handTypesFull;
+		// } else {
+			// $this->setsRuns = $this->setsRunsShort;
+			// $this->handTypes = $this->handTypesShort;
+		// }
 
 		//self::dump("[bmc] currentHandType argPlayerTurnDraw:", $this->handTypes[$currentHandType]["Target"] );
 		//self::dump("[bmc] thingsCanDo:", $thingsCanDo );
@@ -531,15 +535,16 @@ class TutorialRumOne extends Table
 		//self::dump("[bmc] thingsCanDo:", $thingsCanDo );
 		//self::dump("[bmc] activePlayer(PTP):", $activePlayer );
 
-		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
+		self::setGameLength();
+		// $gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
 
-		if ( $gameLengthOption == 1 ) {
-			$this->setsRuns = $this->setsRunsFull;
-			$this->handTypes = $this->handTypesFull;
-		} else {
-			$this->setsRuns = $this->setsRunsShort;
-			$this->handTypes = $this->handTypesShort;
-		}
+		// if ( $gameLengthOption == 1 ) {
+			// $this->setsRuns = $this->setsRunsFull;
+			// $this->handTypes = $this->handTypesFull;
+		// } else {
+			// $this->setsRuns = $this->setsRunsShort;
+			// $this->handTypes = $this->handTypesShort;
+		// }
 
 		$tpn = '<span style="color:#' . $players[ $activeTurnPlayer_id ]["player_color"] . ';">' . $players[ $activeTurnPlayer_id ]["player_name"] . '</span>';
 		
@@ -571,15 +576,16 @@ class TutorialRumOne extends Table
 		self::trace("bmc] ENTER getGameProgression");
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		
-		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
+		self::setGameLength();
+		// $gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
 
-		if ( $gameLengthOption == 1 ) {
-			$this->setsRuns = $this->setsRunsFull;
-			$this->handTypes = $this->handTypesFull;
-		} else {
-			$this->setsRuns = $this->setsRunsShort;
-			$this->handTypes = $this->handTypesShort;
-		}
+		// if ( $gameLengthOption == 1 ) {
+			// $this->setsRuns = $this->setsRunsFull;
+			// $this->handTypes = $this->handTypesFull;
+		// } else {
+			// $this->setsRuns = $this->setsRunsShort;
+			// $this->handTypes = $this->handTypesShort;
+		// }
 
 		self::dump("[bmc] Progression:", $currentHandType );
 		self::dump("[bmc] Progression:", count( $this->handTypes ));
@@ -602,6 +608,24 @@ class TutorialRumOne extends Table
         In this space, you can put any utility methods useful for your game logic
     */
 
+	function setGameLength() {
+		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
+
+		if ( $gameLengthOption == 1 ) {
+			$this->setsRuns = $this->setsRunsOne;
+			$this->handTypes = $this->handTypesOne;
+		} else if ( $gameLengthOption == 2 ) {
+			$this->setsRuns = $this->setsRunsTwo;
+			$this->handTypes = $this->handTypesTwo;
+		} else if ( $gameLengthOption == 3 ) {
+			$this->setsRuns = $this->handTypesShort;
+			$this->handTypes = $this->handTypesShort;
+		} else {
+			$this->setsRuns = $this->setsRunsFull;
+			$this->handTypes = $this->handTypesFull;
+		}
+	}
+	
     function argMyArgumentMethod() {
 		self::trace("bmc] ENTER argMyArgumentMethod");
 
@@ -1341,9 +1365,9 @@ class TutorialRumOne extends Table
 ////////
 	function playerGoDownFinish( $cardGroupA, $cardGroupB, $cardGroupC, $joker, $targetArea ) {
 		self::trace("[bmc] ENTER playerGoDownFinish");
-// self::dump("[bmc] cardGroupA", $cardGroupA);
-// self::dump("[bmc] cardGroupB", $cardGroupB);
-// self::dump("[bmc] cardGroupC", $cardGroupC);
+self::dump("[bmc] cardGroupA", $cardGroupA);
+self::dump("[bmc] cardGroupB", $cardGroupB);
+self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		// Verify the number of needed sets and runs is met
 
@@ -1394,10 +1418,16 @@ class TutorialRumOne extends Table
 		if ( $runsHave < $runsNeeded ) {
 			 $notEnoughSetRun += 10;
 		}
+		if ( $setsHave > $setsNeeded ) {
+			 $notEnoughSetRun += 100;
+		}
+		if ( $runsHave > $runsNeeded ) {
+			 $notEnoughSetRun += 1000;
+		}
 
 		self::dump("[bmc] notEnoughSetRun:", $notEnoughSetRun);
 		
-		switch ($notEnoughSetRun) {
+		switch ( $notEnoughSetRun ) {
 			case 0:  // Valid goDown
 				break;
 			case 1:  // Not enough sets
@@ -1409,8 +1439,29 @@ class TutorialRumOne extends Table
 			case 11: // Not enough sets and not enough runs
 				throw new BgaUserException( self::_('Not enough Sets and not enough Runs.') );
 				break;
+			case 100: // Too many sets
+			case 101: // Can never happen
+				throw new BgaUserException( self::_('Too many Sets.') );
+				break;
+			case 110: // Too many sets, not enough runs
+			case 111: // Can never happen
+				throw new BgaUserException( self::_('Too many Sets and not enough Runs.') );
+				break;
+			case 1000: // Too many runs
+			case 1010: // Can never happen
+				throw new BgaUserException( self::_('Too many Runs.') );
+				break;
+			case 1001: // Too many runs, not enough sets
+			case 1011: // Can never happen
+				throw new BgaUserException( self::_('Not enough Sets and too many Runs.') );
+				break;
+			case 1100: // Too many sets and too many runs
+			case 1101: // Can never happen
+			case 1110: // Can never happen
+			case 1111: // Can never happen
+				throw new BgaUserException( self::_('Too many Sets and too many Runs.') );
+				break;
 		}
-		
 		$active_player_id = self::getActivePlayerId();
 
 		// If all cards besides the board joker are in the hand, then continue
@@ -2224,9 +2275,22 @@ class TutorialRumOne extends Table
 		// Check end of game condition here. Message and route the players accordingly.
 		
         // Next hand target
-		$gameLengthOption = self::getGameStateValue( 'gameLengthOption' ); // 1 is full or 2 is short
+		$gameLengthOption = self::getGameStateValue( 'gameLengthOption' );
 		self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
-		self::incGameStateValue( 'currentHandType', $gameLengthOption );
+		
+		if ( $gameLengthOption == 1 ) {
+			$incLength = 7;
+		} else if (( $gameLengthOption == 2 ) && ( currentHandType == 1 )) {
+			$incLength = 1;
+		} else if (( $gameLengthOption == 2 ) && ( currentHandType == 2 )) {
+			$incLength = 5;
+		} else if ( $gameLengthOption == 3 ) {
+			$incLength = 2;
+		} else {
+			$incLength = 1;
+		}
+		
+		self::incGameStateValue( 'currentHandType', $incLength );
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		
 		$countHandTypes = count( $this->handTypes );
@@ -2783,13 +2847,13 @@ TODO: Maybe check if there were no more playable cards and show that message.
 
 		$skipFirstDeal = self::getGameStateValue( 'skipFirstDeal' );
 		
-		if ( $skipFirstDeal == false ) {
+		if ( $skipFirstDeal == 0 ) {  // 0 is false. 1 is true. It seems to want integers.
 			self::setPlayerBuying( $discardingPlayer_id, 1 ) ; // 1 = not buying, they just discarded it
 			// Discarding player is no longer active
 			$this->gamestate->setPlayerNonMultiactive( $discardingPlayer_id, '' );
 		
 		} else {
-			self::setGameStateValue( 'skipFirstDeal' , false );
+			self::setGameStateValue( 'skipFirstDeal' , 0 ); // 0 is false. 1 is true. It seems to want integers.
 		}
 		
 		$buyers = self::getPlayerBuying();
@@ -3409,7 +3473,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 			$this->gamestate->nextState("endGame");
 		} else {
 
-			$gameLengthOption = self::getGameStateValue( 'gameLengthOption' ); // 1 is full or 2 is short
+			$gameLengthOption = self::getGameStateValue( 'gameLengthOption' );
 			self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
 			
 			if ( $gameLengthOption == 1 ) {
