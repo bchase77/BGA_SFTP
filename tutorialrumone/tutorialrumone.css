@@ -65,6 +65,23 @@
     display: none;
 }
 
+.selectedGlow {
+	border-color: red;
+	border-style: solid;
+    border-width: 3px;
+}
+
+/*
+.stockitem_selected{
+	border-color: red !important;
+	border-width: 4px;
+	border-style: solid;
+	border-radius: 5px;}
+*/
+.stockitem_selected {
+	border: 4px solid red !important;
+}
+
 .pbInverse {
 	background: salmon;
 }

@@ -305,6 +305,8 @@ console.log(this.gamedatas);
                 this.playerHand.addToStockWithId(this.getCardUniqueId(color, value), card.id);
             }
 
+			this.playerHand.setSelectionAppearance( 'class' );
+
 			this.deck = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
             //this.deck.create( this, $('deck'), this.cardwidth, this.cardheight );            
 
@@ -547,60 +549,65 @@ console.log( discardPile );
 // console.log(value);
 					this.downArea_C_[ player ].addToStockWithId( this.getCardUniqueId( color, value ), card_id );
 				}
+
+				// Use the CSS style definition .stockitem_selected
+				this.downArea_A_[ player ].setSelectionAppearance( 'class' );
+				this.downArea_B_[ player ].setSelectionAppearance( 'class' );
+				this.downArea_C_[ player ].setSelectionAppearance( 'class' );
 				
-			// Add playername text to down areas
-			$("playerDown_A_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
-			$("playerDown_B_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
-			$("playerDown_C_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
+				// Add playername text to down areas
+				$("playerDown_A_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
+				$("playerDown_B_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
+				$("playerDown_C_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
 
-			// New stock objects for the prep areas
-			this.myPrepA = new ebg.stock();
-			this.myPrepB = new ebg.stock();
-			this.myPrepC = new ebg.stock();
-			this.myPrepJoker = new ebg.stock();
-			
-			this.myPrepA.create( this, $('myPrepA'), this.cardwidth, this.cardheight );
-			this.myPrepB.create( this, $('myPrepB'), this.cardwidth, this.cardheight );
-			this.myPrepC.create( this, $('myPrepC'), this.cardwidth, this.cardheight );
-			this.myPrepJoker.create( this, $('myPrepJoker'), this.cardwidth, this.cardheight );
-			
-			var tooltip_myPrep = 'To go down, put 1 meld per prep area per the Target Hand. To take a joker, PREP full melds and 1 partial meld. Prep the card to replace the joker. Select board joker. Click GO DOWN.';
+				// New stock objects for the prep areas
+				this.myPrepA = new ebg.stock();
+				this.myPrepB = new ebg.stock();
+				this.myPrepC = new ebg.stock();
+				this.myPrepJoker = new ebg.stock();
+				
+				this.myPrepA.create( this, $('myPrepA'), this.cardwidth, this.cardheight );
+				this.myPrepB.create( this, $('myPrepB'), this.cardwidth, this.cardheight );
+				this.myPrepC.create( this, $('myPrepC'), this.cardwidth, this.cardheight );
+				this.myPrepJoker.create( this, $('myPrepJoker'), this.cardwidth, this.cardheight );
+				
+				var tooltip_myPrep = 'To go down, put 1 meld per prep area per the Target Hand. To take a joker, PREP full melds and 1 partial meld. Prep the card to replace the joker. Select board joker. Click GO DOWN.';
 
-			this.addTooltipHtmlToClass('myPrepA', tooltip_myPrep);
-			this.myPrepA.image_items_per_row = 13;
-            for (var color = 1; color <= 4; color++) {
-                for (var value = 1; value <= 13; value++) {
-					let card_type_id = this.getCardUniqueId(color, value);
-					this.myPrepA.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
-                }
-            }
-            this.myPrepA.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
-            this.myPrepA.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
-            this.myPrepA.setOverlap( 10, 0 );
+				this.addTooltipHtmlToClass('myPrepA', tooltip_myPrep);
+				this.myPrepA.image_items_per_row = 13;
+				for (var color = 1; color <= 4; color++) {
+					for (var value = 1; value <= 13; value++) {
+						let card_type_id = this.getCardUniqueId(color, value);
+						this.myPrepA.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
+					}
+				}
+				this.myPrepA.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+				this.myPrepA.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+				this.myPrepA.setOverlap( 10, 0 );
 
-			this.addTooltipHtmlToClass('myPrepB', tooltip_myPrep);
-			this.myPrepB.image_items_per_row = 13;
-            for (var color = 1; color <= 4; color++) {
-                for (var value = 1; value <= 13; value++) {
-					let card_type_id = this.getCardUniqueId(color, value);
-					this.myPrepB.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
-                }
-            }
-            this.myPrepB.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
-            this.myPrepB.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
-            this.myPrepB.setOverlap( 10, 0 );
+				this.addTooltipHtmlToClass('myPrepB', tooltip_myPrep);
+				this.myPrepB.image_items_per_row = 13;
+				for (var color = 1; color <= 4; color++) {
+					for (var value = 1; value <= 13; value++) {
+						let card_type_id = this.getCardUniqueId(color, value);
+						this.myPrepB.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
+					}
+				}
+				this.myPrepB.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+				this.myPrepB.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+				this.myPrepB.setOverlap( 10, 0 );
 
-			this.addTooltipHtmlToClass('myPrepC', tooltip_myPrep);
-			this.myPrepC.image_items_per_row = 13;
-            for (var color = 1; color <= 4; color++) {
-                for (var value = 1; value <= 13; value++) {
-					let card_type_id = this.getCardUniqueId(color, value);
-					this.myPrepC.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
-                }
-            }
-            this.myPrepC.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
-            this.myPrepC.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
-            this.myPrepC.setOverlap( 10, 0 );
+				this.addTooltipHtmlToClass('myPrepC', tooltip_myPrep);
+				this.myPrepC.image_items_per_row = 13;
+				for (var color = 1; color <= 4; color++) {
+					for (var value = 1; value <= 13; value++) {
+						let card_type_id = this.getCardUniqueId(color, value);
+						this.myPrepC.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
+					}
+				}
+				this.myPrepC.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+				this.myPrepC.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+				this.myPrepC.setOverlap( 10, 0 );
 			}
 			
 			this.addTooltipHtmlToClass('myPrepJoker', tooltip_myPrep);
@@ -2246,6 +2253,7 @@ console.log(i);
 			if ( i > 0 ) {
 				this.prepAreas = 0;
 			}
+			
 			console.log("[bmc] EXIT onDownAreaSelect");
 		},
 ////////
@@ -3623,7 +3631,10 @@ console.log("[bmc] EXIT onPlayerHandDoubleClick");
 /////////
         onPlayerHandSelectionChanged : function() {
 			console.log("[bmc] ENTER onPlayerHandSelectionChanged");
-            var items = this.playerHand.getSelectedItems();
+			var items = this.playerHand.getSelectedItems();
+
+console.log( myhand );
+
 console.log( items);
 
 console.log( "[bmc] gamedatas:" );
@@ -3928,6 +3939,7 @@ console.log("empty arg");
 				dojo.removeClass('myhand_wrap', "borderDrawer");				
 			} else { // It's this player's turn
 				dojo.addClass('myhand_wrap', "borderDrawer");				
+				
 				// Notify them it's their turn
 				this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
 				playSound( 'tutorialrumone_itsyourdraw' );
