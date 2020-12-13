@@ -56,7 +56,7 @@
 	<div id="boxes">
 		<div id = "deckbox" class="deckbox">
 			<h3>Draw Deck (<span id="drawDeckSize"></span>)</h3>
-			<div id="deck"></div>
+			<div id="deckOne"></div>
 		</div>
 		<div id = "discardbox" class="discardbox">
 			<h3>Discard Pile (<span id="discardSize"></span>)</h3>
@@ -99,6 +99,8 @@
 <audio id="audiosrc_o_tutorialrumone_GoingDown" src="{GAMETHEMEURL}img/tutorialrumone_GoingDown.ogg" preload="none" autobuffer></audio>
 <audio id="audiosrc_tutorialrumone_IllBuyIt" src="{GAMETHEMEURL}img/tutorialrumone_IllBuyIt.mp3" preload="none" autobuffer></audio>
 <audio id="audiosrc_o_tutorialrumone_IllBuyIt" src="{GAMETHEMEURL}img/tutorialrumone_IllBuyIt.ogg" preload="none" autobuffer></audio>
+<audio id="audiosrc_tutorialrumone_ItsYourTurn" src="{GAMETHEMEURL}img/tutorialrumone_ItsYourTurn.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_o_tutorialrumone_ItsYourTurn" src="{GAMETHEMEURL}img/tutorialrumone_ItsYourTurn.ogg" preload="none" autobuffer></audio>
 <script type="text/javascript">
 
 var jstpl_player_board = '\<div class="cp_board">\

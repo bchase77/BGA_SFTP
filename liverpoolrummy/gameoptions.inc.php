@@ -51,14 +51,21 @@ $game_options = array(
 	),
 	*/
 	102 => array(
-		'name' => totranslate( 'Game Length (Sets and Runs targets needed for each hand)' ),
+		'name' => totranslate( 'Game Length (Set and Run targets needed for each hand)' ),
 		'values' => array(
-			1 => array ( 'name' => totranslate( '1 hand (2 Sets)' ) ),
-			2 => array ( 'name' => totranslate( '2 hands (2 Sets, 2 Runs)' ) ),
-			3 => array ( 'name' => totranslate( 'Short game (2 Sets, 2 Runs, 2 Sets & 1 Run, 3 Runs)' ) ),
-			4 => array ( 'name' => totranslate( 'Full game (2Sets, 1Set1Run, 2Runs, 3Sets, 2Sets1Run, 2Run1Set, 3Runs)' )	)
+			1  => array ( 'name' => totranslate( '1 hand (2 Sets)' ) ),
+			2  => array ( 'name' => totranslate( '1 hand (1 Set & 1 Run)' ) ),
+			3  => array ( 'name' => totranslate( '1 hand (2 Runs)' ) ),
+			4  => array ( 'name' => totranslate( '1 hand (3 Sets)' ) ),
+			5  => array ( 'name' => totranslate( '1 hand (2 Sets & 1 Run)' ) ),
+			6  => array ( 'name' => totranslate( '1 hand (1 Set & 2 Runs)' ) ),
+			7  => array ( 'name' => totranslate( '1 hand (3 Runs)' ) ),
+			8  => array ( 'name' => totranslate( '2 hand game (2Sets, 2Runs)' ) ),
+			9  => array ( 'name' => totranslate( '3 hand game (2Sets, 1Set2Runs, 3Runs)' ) ),
+			10 => array ( 'name' => totranslate( 'Short game (2Sets, 2Runs, 2Sets1Run, 3Runs)' ) ),
+			11 => array ( 'name' => totranslate( 'Full game (2Sets, 1Set1Run, 2Runs, 3Sets, 2Sets1Run, 2Run1Set, 3Runs)' )	)
 		),
-		'default' => 3
+		'default' => 9
 	),
 	104 => array(
 		'name' => totranslate( 'Maximum number of Jokers (normally 2x per deck)' ),
@@ -66,13 +73,13 @@ $game_options = array(
 			0  => array ( 'name' => totranslate( '0 no jokers' )	),
 			1  => array ( 'name' => totranslate( '1 joker' ) ),
 			2  => array ( 'name' => totranslate( '2 jokers' ) ),
-			3  => array ( 'name' => totranslate( '3 jokers' ) ),
-			4  => array ( 'name' => totranslate( '4 jokers' ) ),
-			5  => array ( 'name' => totranslate( '5 jokers' ) ),
-			6  => array ( 'name' => totranslate( '6 jokers' ) ),
-			7  => array ( 'name' => totranslate( '7 jokers' ) ),
-			8  => array ( 'name' => totranslate( '8 jokers' ) ),
-			9  => array ( 'name' => totranslate( '9 jokers' ) ),
+			3  => array ( 'name' => totranslate( '3 or fewer jokers' ) ),
+			4  => array ( 'name' => totranslate( '4 or fewer jokers' ) ),
+			5  => array ( 'name' => totranslate( '5 or fewer jokers' ) ),
+			6  => array ( 'name' => totranslate( '6 or fewer jokers' ) ),
+			7  => array ( 'name' => totranslate( '7 or fewer jokers' ) ),
+			8  => array ( 'name' => totranslate( '8 or fewer jokers' ) ),
+			9  => array ( 'name' => totranslate( '9 or fewer jokers' ) ),
 			10 => array ( 'name' => totranslate( 'All (2x number of decks)' ) ),
 		),
 		'default' => 10

@@ -317,6 +317,8 @@ class LiverpoolRummy extends Table
 //        $result['deckCount'] = $this->cards->countCardInLocation( 'deck' );
 		
 		$result['deckIDs'] = array_keys($this->cards->getCardsInLocation( 'deck' ));
+		$deckTopCard = $this->cards->getCardOnTop( 'deck' );
+		$result['deckTopCard'] = $this->cards->getCardOnTop( 'deck' )[ 'id' ];
 		
 		$result['allHands'] = $cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
 		
@@ -482,7 +484,7 @@ class LiverpoolRummy extends Table
 		self::dump("[bmc] tpn: ", $tpn );
 	
         return array(
-			'handTarget' => $this->handTypes[$currentHandType]["Target"], // Pull the description
+			'handTarget' => $this->handTypes[ $currentHandType ][ "Target" ], // Pull the description
 			'thingsCanDo' => $thingsCanDo,
 			'turnPlayerName' => $tpn,
 			'buyMessage' => $buyMessage,
@@ -555,7 +557,7 @@ class LiverpoolRummy extends Table
 		self::trace("[bmc] EXIT argPlayerTurnPlay");
 
         return array(
-			'handTarget' => $this->handTypes[$currentHandType]["Target"], // Pull the description
+			'handTarget' => $this->handTypes[ $currentHandType ][ "Target" ], // Pull the description
 			'thingsCanDo' => $thingsCanDo,
 			'turnPlayerName' => $tpn,
 			'where' => 'PTP'
@@ -614,16 +616,26 @@ class LiverpoolRummy extends Table
 		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
 
 		if ( $gameLengthOption == 1 ) {
-			// $this->setsRuns = $this->setsRunsOne;
-			$this->handTypes = $this->handTypesOne;
+			$this->handTypes = $this->handTypes2S0R;
 		} else if ( $gameLengthOption == 2 ) {
-			// $this->setsRuns = $this->setsRunsTwo;
-			$this->handTypes = $this->handTypesTwo;
+			$this->handTypes = $this->handTypes1S1R;
 		} else if ( $gameLengthOption == 3 ) {
-			// $this->setsRuns = $this->handTypesShort;
+			$this->handTypes = $this->handTypes0S2R;
+		} else if ( $gameLengthOption == 4 ) {
+			$this->handTypes = $this->handTypes3S0R;
+		} else if ( $gameLengthOption == 5 ) {
+			$this->handTypes = $this->handTypes2S1R;
+		} else if ( $gameLengthOption == 6 ) {
+			$this->handTypes = $this->handTypes1S2R;
+		} else if ( $gameLengthOption == 7 ) {
+			$this->handTypes = $this->handTypes0S3R;
+		} else if ( $gameLengthOption == 8 ) {
+			$this->handTypes = $this->handTypesTwo;
+		} else if ( $gameLengthOption == 9 ) {
+			$this->handTypes = $this->handTypesThree;
+		} else if ( $gameLengthOption == 10 ) {
 			$this->handTypes = $this->handTypesShort;
 		} else {
-			// $this->setsRuns = $this->setsRunsFull;
 			$this->handTypes = $this->handTypesFull;
 		}
 	}
@@ -637,7 +649,7 @@ class LiverpoolRummy extends Table
 		
 		return array(
             'currentPlayer' => $currentPlayer,
-			'handTarget' => $this->handTypes[$currentHandType]["Target"] // Pull the description
+			'handTarget' => $this->handTypes[ $currentHandType ][ "Target" ] // Pull the description
         );    
     }
 /////
@@ -757,6 +769,8 @@ class LiverpoolRummy extends Table
 		
 		$this->resolveBuyers();
 		
+		self::clearPlayersBuyCount();
+
 		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
@@ -875,6 +889,25 @@ class LiverpoolRummy extends Table
 		$countCardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
 		//self::dump("[bmc] CCBL:", $countCardsByLocation);
 
+		// drawSource Sources (OLD):
+		// 0 == 'deck' (buyer gets it + 1 down card; Increment buy counter)
+		// 1 == 'discardPile' (buyer gets nothing)
+		// 2 == Other sources (other conditions like playing a card for a joker)
+		
+		// drawSourceValue needs to be set properly before resolveBuyers
+		if ( $drawSource == 'discardPile' ) {
+			self::trace("[bmc] drawSource == discardPile" );
+			self::setGameStateValue( 'drawSourceValue', 1 );
+		} else if ( $drawSource == 'deck' ) {
+			self::trace("[bmc] drawSource == deck" );
+			self::setGameStateValue( 'drawSourceValue', 0 );
+		} else {
+			self::trace("[bmc] drawSource == other, some place on the board" );
+			self::setGameStateValue( 'drawSourceValue', 2 );
+		}
+
+
+
 		// If drawing from the discard pile then the player get the top card, not necessarily the one they clicked
 		if ( $drawSource == 'discardPile' ) {
 			$topDiscard = $this->cards->getCardOnTop( 'discardPile' );
@@ -884,7 +917,59 @@ class LiverpoolRummy extends Table
 		} else { // else use the top card of the deck
 		
 			$this->checkEmptyDeck(); // Make sure the deck has cards
+
+
+
+// I screwed up the drawing of cards. This is how it works now (and it is wrong):
+// 1) Player discards
+// 2) Another player tries to buy it
+// 3) Next player draws
+// 4) Drawn card goes to the BUYING player. The bought card does not move. The DRAWING player gets nothing.
+
+// It should be that the buying player gets 2 cards and the drawing player gets 1 card.
+
+
+
+
+
+
+			// If the most senior player wants to buy then resolve it immediately without waiting for next discard
+			$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
+			$bossBuyer = $this->getPlayerAfter( $activeTurnPlayer_id );
+			
+			$buyers = self::getPlayerBuying();
 		
+			self::dump("[bmc] buyers(drawCard):", $buyers);
+			
+			$players = self::loadPlayersBasicInfos();
+
+			$buyingPlayers = [];
+
+			// Change to p_id because the loop will change the value
+			foreach( $buyers as $p_id => $buyChoice ) {
+				self::dump("bmc] player_id(p_id): ", $p_id);
+				self::dump("bmc] buyChoice: ", $buyChoice);
+				
+				if ( $buyChoice == 2 ) { // 0=Not decided, 1=Not buying, 2=Buying
+					self::dump("[bmc] player_id(p_id)", $p_id);
+					self::dump("[bmc] ATPI", $activeTurnPlayer_id);
+					self::dump("[bmc] bossBuyer", $bossBuyer);
+
+					if ( $p_id == $bossBuyer ) {
+						self::trace("[bmc] Resolving Buyers early!");
+						$this->resolveBuyers();
+						self::clearPlayersBuyCount();
+					}
+				} else {
+					self::trace("[bmc] Found no buyers when player drew.");
+				}
+			}
+
+
+
+
+
+
 			$topDeck = $this->cards->getCardOnTop( 'deck' );
 			self::dump( "[bmc] topDeck: ", $topDeck );
 			
@@ -898,22 +983,6 @@ class LiverpoolRummy extends Table
 
         $currentCard = $this->cards->getCard( $card_id );
 		
-		// drawSource Sources (OLD):
-		// 0 == 'deck' (buyer gets it + 1 down card; Increment buy counter)
-		// 1 == 'discardPile' (buyer gets nothing)
-		// 2 == Other sources (other conditions like playing a card for a joker)
-		 
-		if ( $drawSource == 'discardPile' ) {
-			self::trace("[bmc] drawSource == discardPile" );
-			self::setGameStateValue( 'drawSourceValue', 1 );
-		} else if ( $drawSource == 'deck' ) {
-			self::trace("[bmc] drawSource == deck" );
-			self::setGameStateValue( 'drawSourceValue', 0 );
-		} else {
-			self::trace("[bmc] drawSource == other, some place on the board" );
-			self::setGameStateValue( 'drawSourceValue', 2 );
-		}
-
 		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
 		$this->drawNotify( $currentCard, $player_id, $drawSource, $player_id, $activeTurnPlayer_id );
 		self::trace("bmc] EXIT drawCard");
@@ -1098,9 +1167,9 @@ class LiverpoolRummy extends Table
 						'player_id' => $playingPlayer_id,
 						'player_name' => $activePlayer,
 						'card_id' => $card_id,
-						'value' => '',
+						'value' => $currentCard[ 'type_arg' ],
 						'value_displayed' => '',
-						'color' => '',
+						'color' => $currentCard [ 'type' ],
 						'color_displayed' => '',
 						'drawSource' => $drawSource,
 						'drawSourceText' => $drawSourceText,
@@ -1381,8 +1450,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		self::dump("[bmc] CHT", $currentHandType);
 
-		$setsNeeded = $this->handTypes[$currentHandType]["QtySets"];
-		$runsNeeded = $this->handTypes[$currentHandType]["QtyRuns"];
+		$setsNeeded = $this->handTypes[ $currentHandType ][ "QtySets" ];
+		$runsNeeded = $this->handTypes[ $currentHandType ][ "QtyRuns" ];
 		
 		self::dump("[bmc] SN", $setsNeeded);
 		self::dump("[bmc] RN", $runsNeeded);
@@ -2286,22 +2355,26 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 
-		if ( $gameLengthOption == 1 ) {
-			$incLength = 7;
-		} else if (( $gameLengthOption == 2 ) && ( $currentHandType == 1 )) {
-			$incLength = 1;
-		} else if (( $gameLengthOption == 2 ) && ( $currentHandType == 2 )) {
-			$incLength = 5;
-		} else if ( $gameLengthOption == 3 ) {
-			$incLength = 2;
-		} else {
-			$incLength = 1;
-		}
+		// if ( $gameLengthOption == 1 ) {
+			// $incLength = 7;
+		// } else if (( $gameLengthOption == 2 ) && ( $currentHandType == 1 )) {
+			// $incLength = 1;
+		// } else if (( $gameLengthOption == 2 ) && ( $currentHandType == 2 )) {
+			// $incLength = 5;
+		// } else if ( $gameLengthOption == 3 ) {
+			// $incLength = 2;
+		// } else {
+			// $incLength = 1;
+		// }
 		
-		self::incGameStateValue( 'currentHandType', $incLength );
+//		self::incGameStateValue( 'currentHandType', $incLength );
+		self::incGameStateValue( 'currentHandType', 1 );
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		
 		$countHandTypes = count( $this->handTypes );
+
+		self::dump( "[bmc] countHandTypes:", $countHandTypes );
+
 
 //		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
 		if ( $currentHandType > $countHandTypes ) { // The 7 hand numbers are 0 through 6
@@ -2673,6 +2746,9 @@ TODO: Maybe check if there were no more playable cards and show that message.
         $this->gamestate->nextState("");
 		self::trace( "[bmc] EXIT stDrawDeck:" );
 	}
+////
+////
+////
 	function stDrawDiscard() {
 		self::trace( "[bmc] ENTER stDrawDiscard:" );
         $this->gamestate->nextState("");
@@ -2680,6 +2756,9 @@ TODO: Maybe check if there were no more playable cards and show that message.
 	}
 //	function stResolveBuyers() {
 //		self::trace( "[bmc] ENTER stResolveBuyers:" );
+////
+////
+////
 	function resolveBuyers() {
 		self::trace( "[bmc] ENTER resolveBuyers:" );
 		
@@ -2927,17 +3006,21 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		// Check if it's the player's turn, so no need to buy (TODO: Or buy it for free???)
 		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 		if ( $player_id == $activeTurnPlayer_id ) {
-			throw new BgaUserException( self::_("You don't need to buy it, it's your turn.") );
-			
-				self::notifyPlayer(
-					$player_id,
-					'itsYourTurn',
-					'',
-					array(
-					)
-				);
+			self::trace("[bmc] Sending notif for itsYourTurn");
+			self::notifyPlayer(
+				$player_id,
+				'itsYourTurn',
+				"It's your turn",
+				array()
+			);
 		}
-		
+
+		// Splitting it into 2, not sure why I have to
+		if ( $player_id == $activeTurnPlayer_id ) {
+			self::trace("[bmc] Sending notif for itsYourTurn2");
+			throw new BgaUserException( self::_("You don't need to buy it, it's your turn.") );
+		}
+
 		// If there aren't enough cards, don't allow it
 		$countDeck = count( $this->cards->countCardsByLocationArgs( 'deck' ) );
 		$countDiscardPile = count ($this->cards->countCardsByLocationArgs( 'discardPile' ) );
@@ -3471,11 +3554,18 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		
         ///// Test if this is the end of the game
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
+		
+		self::setGameLength(); // This sets this->handTypes, not sure why it gets removed.
 
 		self::dump("[bmc] currentHandType stEndHand:", $currentHandType );
-		//self::dump("[bmc] this->handTypes stEndHand:", $this->handTypes );
+		self::dump("[bmc] this->handTypes stEndHand:", $this->handTypes );
 		
-		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
+//		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
+
+		$countHandTypes = count( $this->handTypes );
+		self::dump("[bmc] countHandTypes stEndHand:", $countHandTypes );
+		
+		if ( $currentHandType >= $countHandTypes ) {
 
 // This next line throws an error Undefined property: <gamename>::$handTypes
 //		if ( $currentHandType > count( $this->handTypes )) { // The 7 hand numbers are 0 through 6

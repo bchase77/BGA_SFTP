@@ -86,27 +86,33 @@ function (dojo, declare) {
 ////////
 //
 // TODO:
-// 12/5:  If the next-next player is a buyer then let them buy, no need to wait for discard.
+// 12/4: Add notify if buyers were not allowed.
+//
 // 11/28: Unexpected error: Error while processing Database request (2.boardgamearena.com 29/11 07:36:08)
 // Table #127686730
 // Move #136
 // Progression 99%
-// 11/27: Mention the source when a card is drawn.
+//
+// 12/13: Javascript error:
+// Script error.
+// Script:
+// Url: https://studio.boardgamearena.com/1/liverpoolrummy?table=218457&testuser=2333743#
+// BGA version 201211-1532
+// U=2333743
+// Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36
+//
+// 12/13: After a new hand is dealt the discard pile doesn't border red
+// 12/11: The buy counter isn't right
 // 11/28: After playing last card, got NaN in number of cards
-// 11/29: Add 1 mode per hand per game
-// 11/26: for the runs, deal 11 cards
 // 11/26: Get everyone at least 2 turns, or half points
 // 11/26: For early hands, make 4 cards needed for a set
 // 11/26: if it's your turn and you click BUY then treat it like you drew the card
-// 11/26: Show a bigger message that you need to draw a card
 // 11/26: After 1 hand, the PREP areas didn't have their titles on the board
-// 11/26: Only 10 cards dealt to 2 RUNS, should be 11 (just changed options)
 // 11/26: Chrome 87 vs. Chrome 86 the 87 people saw a run placed as 4235. Chrome 86 saw 2345.
 // 11/27: With expelled players, the active turn player's table did not turn green.
 // 
-// 11/26: let all players have at least 1 turn
+// 11/26: Let all players have at least 1 turn
 // 11/26: Add a graphic show progression
-// 11/26: Once you have clicked I'll buy it don't let them do it again
 // 11/26: Have the board joker selection be automatic
 // 11/24: Have an elegant way to end the game early.
 // 11/21: SAFARI: GO DOWN button caused NOT ENOUGH SETS
@@ -128,6 +134,15 @@ function (dojo, declare) {
 // 11/10: Maybe not: Get bonus if you go out? NO.
 // 11/10: Maybe not: Notify players are prepping cards
 //
+// X 11/27: Mention the source when a card is drawn.
+// X 11/26: Make the deck and discard piles red, to show that you need to draw a card
+// X 11/26: Once you have clicked I'll buy it don't let them do it again
+// X 11/26: Only 10 cards dealt to 2 RUNS, should be 11 (just changed options)
+// X 11/29: Add 1 mode per hand per game
+// X 11/26: for the runs, deal 11 cards
+// X 12/4: If the highest priority buyer is buying, resolve it
+// X 12/10: Don't AJAX for a buy if the discard pile is empty.
+// X 12/4:  Remove definition of runs if not runs needed.
 // X 11/24: Remove state numbers from the ACTIION BAR.
 // X 11/21: When card put in discard and then brought back, it still asks for CONFIRM when discarding
 // X 11/21: After first hand was done, wrong players were green.
@@ -331,43 +346,44 @@ console.log(this.gamedatas);
 
 			this.playerHand.setSelectionAppearance( 'class' );
 
-			this.deck = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
+			// this.deck = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
             //this.deck.create( this, $('deck'), this.cardwidth, this.cardheight );            
 
-			this.deck.image_items_per_row = 13;
-			this.deck.setOverlap( 0.1, 0 );
+			// this.deck.image_items_per_row = 13;
+			// this.deck.setOverlap( 0.1, 0 );
 //			this.deck.setOverlap( 100, 0 );
-			this.item_margin = 0;
+			// this.item_margin = 0;
 
 			// Item 54, color 5, value 3 is red back of the card
-			this.deck.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
-			this.deck.addItemType( 2, 2, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
+			// this.deck.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
+			// this.deck.addItemType( 2, 2, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
 //console.log("[bmc] deckIDs");
 console.log(this.gamedatas.deckIDs);
 
 //			if ( this.gamedatas.deckIDs.length != 0 ) {
 
 			// Color half the deck blue and half red
-			for ( let i = 0 ; i < ( this.gamedatas.deckIDs.length / 2 ); i++) {
-//console.log(i + " / " + this.gamedatas.deckIDs[i]);
-				this.deck.addToStockWithId( 1, this.gamedatas.deckIDs[i] );
-			}
-			for ( let i = ( this.gamedatas.deckIDs.length / 2 ) ; i < this.gamedatas.deckIDs.length ; i++) {
-//console.log(i + " / " + this.gamedatas.deckIDs[i]);
-				this.deck.addToStockWithId( 2, this.gamedatas.deckIDs[i] );
-			}
+			// for ( let i = 0 ; i < ( this.gamedatas.deckIDs.length / 2 ); i++) {
+// console.log(i + " / " + this.gamedatas.deckIDs[i]);
+				// this.deck.addToStockWithId( 1, this.gamedatas.deckIDs[i] );
+			// }
+			// for ( let i = ( this.gamedatas.deckIDs.length / 2 ) ; i < this.gamedatas.deckIDs.length ; i++) {
+// console.log(i + " / " + this.gamedatas.deckIDs[i]);
+				// this.deck.addToStockWithId( 2, this.gamedatas.deckIDs[i] );
+			// }
 //console.log("[bmc] this.deck");			
 //console.log(this.deck);
 			
 //EXP Start 11/8			
 			// Create a single card to represent the card back
 			this.deckOne = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
-            this.deckOne.create( this, $('deck'), this.cardwidth, this.cardheight );            
+            this.deckOne.create( this, $('deckOne'), this.cardwidth, this.cardheight );            
 			this.deckOne.image_items_per_row = 13;
 
 			// Item 54, color 5, value 3 is red back of the card
 			this.deckOne.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
-			this.deckOne.addToStockWithId(1, this.gamedatas.deckIDs[i]);
+			this.deckOne.addToStockWithId(1, this.gamedatas.deckTopCard );
+			//this.deckOne.addToStockWithId(1, 2 );
 //EXP End 11/8
 
 			// Create stock for the discard pile (could be any face-up card)
@@ -848,6 +864,37 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 					break;
 				case 'playerTurnDraw':
 					console.log("[bmc] FOUND PlayerTurnDraw");
+
+
+
+
+
+
+
+
+
+					// Make it clear to the player they need to draw a card (border around card)
+					if ( args.active_player == this.player_id ) {
+						var items = this.deckOne.getAllItems();
+	console.log("[bmc] ALL deckOne:");
+	console.log(items);
+						dojo.addClass('deckOne_item_' + items[0]['id'], 'stockitem_selected');
+
+						var items = this.discardPile.getAllItems();
+	console.log("[bmc] ALL discardPile:");
+	console.log(items);
+						for ( let i in items ) {
+							dojo.addClass('discardPile_item_' + items[i]['id'], 'stockitem_selected');
+						}
+					}
+
+
+
+
+
+
+
+
 					break;
 				case 'checkEmptyDeck':
 					console.log("[bmc] FOUND checkEmptyDeck");
@@ -928,7 +975,7 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
            */
             case 'dummmy':
                 break;
-            }               
+            }            
 		}, 
 /////////
 /////////
@@ -1048,33 +1095,38 @@ console.log("[bmc] ENTER onPlayerReviewedHandButton");
 console.log("[bmc] ENTER onPlayerBuyButton");
 			this.clearButtons();
 			// this.stopActionTimer2();
-			var action = 'buyRequest';
-			
-			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
-			dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
-//			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-			// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-			console.log(this.firstLoad);
 
-			//if ( this.player_id == currentplayer then just ignore. But for now I'll throw a BGA error from PHP.
-//			if ( this.checkAction( action, true )  ||
-			if (( this.checkPossibleActions( action, true )  ||
-			    ( this.firstLoad == 'Yes' )) && 
-			    ( this.buyRequested != true)) {
+			// Make sure there is a card to buy
+			if ( this.discardPile.length != 0 ) {
+
+				var action = 'buyRequest';
 				
-				// Keep track so the button can only be hit once
-				this.buyRequested = true;
+				dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+				dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
+	//			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
+				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
+				console.log(this.firstLoad);
 
-				console.log("[bmc] ajax " + action );
+				//if ( this.player_id == currentplayer then just ignore. But for now I'll throw a BGA error from PHP.
+	//			if ( this.checkAction( action, true )  ||
+				if (( this.checkPossibleActions( action, true )  ||
+					( this.firstLoad == 'Yes' )) && 
+					( this.buyRequested != true)) {
+					
+					// Keep track so the button can only be hit once
+					this.buyRequested = true;
 
-				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-						player_id : this.player_id,
-						lock : true
-					}, this, function(result) {
-					}, function(is_error) {
-				});
-			} else {
-				console.log("[bmc] Buy not allowed now");
+					console.log("[bmc] ajax " + action );
+
+					this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+							player_id : this.player_id,
+							lock : true
+						}, this, function(result) {
+						}, function(is_error) {
+					});
+				} else {
+					console.log("[bmc] Buy not allowed now");
+				}
 			}
 		},
 /////////
@@ -1304,53 +1356,55 @@ console.log("[bmc] Making Ace High");
 				
 				if ( jokerCount > 0 ) {
 					lowestCard = cardGroupNonJokers.find(Boolean) ; // Store first non-joker value
-// console.log( "[bmc]lowestCard:" );
-// console.log( lowestCard );
+console.log( "[bmc]lowestCard:" );
+console.log( lowestCard );
 // TBD: TODO: This might need this line here: jokerIndex = 0; 
-					
-					weightChange[ lowestCard.unique_id ] = 0; // Lowest card gets lowest weight
 
-					cgLength = Object.keys(cardGroupNonJokers).length;
-	// console.log(cgLength);
+					if ( lowestCard != null ) {
+						weightChange[ lowestCard.unique_id ] = 0; // Lowest card gets lowest weight
 
-					for ( let i = 1 ; i < cgLength ; i++ ) {
-						jokerIndex = 0;
-	// console.log(i);
-	// console.log(cardGroupNonJokers[i]);
-						let delta = cardGroupNonJokers[ i ][ 'type_arg' ] - lowestCard[ 'type_arg' ];
-						
-	console.log("[bmc] Trouble with Jokers sometimes");
-	// console.log(delta);
-	// console.log(downArea);
-	// console.log(jokers);
-	// console.log(jokerIndex);
-	// console.log(jokers[jokerIndex]);
-	// console.log("PROBLEM:");
-	// console.log(jokers[ jokerIndex ][ 'uid' ]);
-						for ( let j = 1; j < delta; j++ ) {
-	// console.log(j);
+						cgLength = Object.keys(cardGroupNonJokers).length;
+		// console.log(cgLength);
+
+						for ( let i = 1 ; i < cgLength ; i++ ) {
+							jokerIndex = 0;
+		// console.log(i);
+		// console.log(cardGroupNonJokers[i]);
+							let delta = cardGroupNonJokers[ i ][ 'type_arg' ] - lowestCard[ 'type_arg' ];
 							
-							weightChange[ jokers[ jokerIndex ][ 'uid' ]] = i + jokerIndex;
-							
-							weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex + 1;
-							jokers[ jokerIndex ][ 'type_arg' ] = lowestCard[ 'type_arg' ] + 1;
-							lowestCard = jokers[ jokerIndex ];
-	// console.log("[bmc] Used joker: ", jokers[ jokerIndex ]);
-	// console.log( jokerIndex );
-							jokerIndex++;
-							jokersUsed++;
-	//					} else {
+		console.log("[bmc] Trouble with Jokers sometimes");
+		// console.log(delta);
+		// console.log(downArea);
+		// console.log(jokers);
+		// console.log(jokerIndex);
+		// console.log(jokers[jokerIndex]);
+		// console.log("PROBLEM:");
+		// console.log(jokers[ jokerIndex ][ 'uid' ]);
+							for ( let j = 1; j < delta; j++ ) {
+		// console.log(j);
+								
+								weightChange[ jokers[ jokerIndex ][ 'uid' ]] = i + jokerIndex;
+								
+								weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex + 1;
+								jokers[ jokerIndex ][ 'type_arg' ] = lowestCard[ 'type_arg' ] + 1;
+								lowestCard = jokers[ jokerIndex ];
+		// console.log("[bmc] Used joker: ", jokers[ jokerIndex ]);
+		// console.log( jokerIndex );
+								jokerIndex++;
+								jokersUsed++;
+		//					} else {
+							}
+							weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex;
+							lowestCard = cardGroupNonJokers[ i ];
+		//					}
+		// console.log("weightChange");
+		// console.log(weightChange);			
+		// console.log(lowestCard);
+		// console.log(jokers);
 						}
-						weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex;
-						lowestCard = cardGroupNonJokers[ i ];
-	//					}
-	// console.log("weightChange");
-	// console.log(weightChange);			
-	// console.log(lowestCard);
-	// console.log(jokers);
+		// console.log("FINAL weightChange before ACE analysis");
+		// console.log(weightChange);
 					}
-	// console.log("FINAL weightChange before ACE analysis");
-	// console.log(weightChange);
 				}
 
 	// console.log("[bmc] JokerCount & jokersUsed after placement:");
@@ -1417,6 +1471,7 @@ console.log( buyers );
 			// Clear the buy status because a new card has been discarded
 			this.buyRequested = false;
 
+
 			// If it is us, play a special sound and show an alert
 			
 			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
@@ -1436,6 +1491,14 @@ console.log("[bmc] Trying to wait 5 seconds but it doesn't work");
 					dojo.addClass('myhand_wrap', "borderDrawer");				
 					playSound( 'tutorialrumone_itsyourdraw' );
 					this.disableNextMoveSound();
+
+					// Make it clear to the player they need to draw a card (border around card)
+					var items = this.deckOne.getAllItems();
+console.log("[bmc] ALL deckOne:");
+console.log(items);
+					dojo.addClass('deckOne_item_' + items[0]['id'], 'stockitem_selected');
+//ALSO THE BUY WASN'T ALLOWED TO HAPPEN.
+
 			} else {
 				dojo.removeClass('myhand_wrap', "borderDrawer");				
 			}
@@ -1464,9 +1527,21 @@ console.log("[bmc] Trying to wait 5 seconds but it doesn't work");
 			
 			if ( player_id == this.player_id ) {
 				this.discardPile.addToStockWithId( cardUniqueId, card_id, 'myhand' );
+
 			} else {
 				this.discardPile.addToStockWithId( cardUniqueId, card_id, 'overall_player_board_' + player_id );
 			}
+			
+
+			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
+				var items = this.discardPile.getAllItems();
+console.log("[bmc] ALL discardPile:");
+console.log(items);
+				for ( let i in items ) {
+					dojo.addClass('discardPile_item_' + items[i]['id'], 'stockitem_selected');
+				}
+			}
+			
 			// Discarding a card means the turn shifts to the next player
 			this.turnPlayer = player_id;
 
@@ -2454,7 +2529,21 @@ console.log("[bmc] Removed.");
 			var items = this.deckOne.getSelectedItems();
 			this.deckOne.unselectAll();
 
-			//console.log( items[0] );
+			// Remove the borders from the deck and discard pile after the player draws
+			var deck_items = this.deckOne.getAllItems();
+			var dp_items = this.discardPile.getAllItems();
+console.log("[bmc] ALL deckOne:");
+console.log(deck_items);
+console.log(dp_items);
+
+			for ( let i in deck_items ) {
+				dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+			}
+			for ( let i in dp_items ) {
+				dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+			}
+			
+			console.log( items );
 			console.log("[bmc] GAMEDATAS and this.player_id.");
 			console.log(this.gamedatas);
 			console.log(this.player_id);
@@ -2477,8 +2566,8 @@ console.log("[bmc] Removed.");
 					console.log( "[bmc] Action true. AJAX next" );
 					console.log( "/" + this.game_name + "/" + this.game_name + "/" + action + ".html");
 					
-//					var card_id = items[0].id;
-					var card_id = 0; // TODOfake number probably should remove it
+					var card_id = items[0].id;
+//					var card_id = 0; // TODOfake number probably should remove this
 console.log(card_id);
 					this.ajaxcall( "/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
 						id : card_id,
@@ -2492,7 +2581,23 @@ console.log(card_id);
 					console.log("[bmc] Cannot Draw. Action false");
 				}
 				this.discardPile.unselectAll();
-				this.deck.unselectAll();
+				this.deckOne.unselectAll();
+				
+				// Remove the borders from the deck and discard pile after the player draws
+				var deck_items = this.deckOne.getAllItems();
+				var dp_items = this.discardPile.getAllItems();
+	console.log("[bmc] ALL deckOne:");
+	console.log(deck_items);
+	console.log(dp_items);
+
+				for ( let i in deck_items ) {
+	console.log(i);
+					dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+				}
+				for ( let i in dp_items ) {
+					dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+				}
+								
 			} else {
 				console.log("[bmc] No items; ignoring click on deck.");
 			}
@@ -3041,6 +3146,23 @@ console.log(drawDeckSize);
 				this.handCount[ p_id ].setValue( allHands[ p_id ] );
 			}
 
+
+			// Remove the borders from the deck and discard pile after the player draws
+			var deck_items = this.deckOne.getAllItems();
+			var dp_items = this.discardPile.getAllItems();
+console.log("[bmc] ALL deckOne:");
+console.log(deck_items);
+console.log(dp_items);
+
+			for ( let i in deck_items ) {
+				dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+			}
+			for ( let i in dp_items ) {
+				dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+			}
+
+
+
 console.log(this.handCount);
 			if ( drawSource.match(/playerDown/g) ) {
 				var from = drawSource + '_' + drawPlayer;
@@ -3060,7 +3182,9 @@ console.log(from);
 console.log(this.playerHand)
 
 			if (( color == null ) ||
-				( value == null )) {
+				( color == ''   ) ||
+				( value == null ) ||
+				( value == '')) {
 console.log("[bmc] Yikes!! Color or value is null! Need to fix this, this is fatal.");
 				exit(0);
 			}
@@ -3092,7 +3216,8 @@ console.log( '[bmc] addTo: ' + addTo );
 				
 				if ( drawSource == 'deck' ) {
 console.log( '[bmc] Deck' );
-					this.deckOne.removeFromStockById(card_id, addTo );
+// There is always only 1 card on the draw deck so just leave it there
+					// this.deckOne.removeFromStockById(card_id, addTo );
 				}
 				if ( drawSource == 'discardPile' ) {
 console.log( '[bmc] DP' );
@@ -3211,6 +3336,7 @@ console.log( "[bmc] GAMEDATAS and this.player_id" );
 console.log( this.gamedatas );
 console.log( this.player_id );
 
+
 			// If the gamestate is play, then treat it as a discard.
 
             var handCards = this.playerHand.getSelectedItems();
@@ -3222,6 +3348,19 @@ console.log( this.player_id );
 			// If the gamestate is draw, then draw the top of discard pile (chosen in php).
 			} else if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ) {
 //console.log(card);
+
+				// Remove the borders from the deck and discard pile after the player draws
+				var deck_items = this.deckOne.getAllItems();
+				var dp_items = this.discardPile.getAllItems();
+
+				for ( let i in deck_items ) {
+					dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+				}
+				for ( let i in dp_items ) {
+					dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+				}
+				// dojo.removeClass('deckOne_item_' + deck_items[0]['id'], 'stockitem_selected');
+				// dojo.removeClass('discardPile_item_' + dp_items[0]['id'], 'stockitem_selected');
 
 				var items = new Array();
 				
@@ -3890,16 +4029,16 @@ console.log( $('close_btn').innerHTML );
 /////////
 		setupDeck : function(notif) {
 			// Set up the draw deck
-			if ( notif.args.deck != undefined ) {
-				for ( let i = 0 ; i < notif.args.deck.length; i++ ) {
-					this.deck.addToStockWithId( 1, notif.args.deck[i] );
-				}
-			}
+			// if ( notif.args.deck != undefined ) {
+				// for ( let i = 0 ; i < notif.args.deck.length; i++ ) {
+					// this.deck.addToStockWithId( 1, notif.args.deck[i] );
+				// }
+			// }
 			if ( notif.args.drawDeckSize != undefined ) {
 				this.drawDeckSize.setValue( notif.args.drawDeckSize );
 			}
-console.log("[bmc] this.deck");			
-console.log(this.deck);
+//console.log("[bmc] this.deck");			
+//console.log(this.deck);
 		},
 /////////
 /////////
@@ -4003,6 +4142,7 @@ console.log("empty arg");
 			$(redTarget).innerHTML = notif.args.handTarget;
 
 			console.log( $(redTarget) );
+
 			console.log("[bmc] EXIT notif_newHand");
         },
 /////////
@@ -4013,12 +4153,12 @@ console.log("empty arg");
 			console.log("[bmc] Shuffle Cards:");
 			console.log(notif);
 			
-			for ( let i = 0 ; i < notif.args.deck.length; i++ ) {
-				this.deck.addToStockWithId( 1, notif.args.deck[i] );
-			}
+			// for ( let i = 0 ; i < notif.args.deck.length; i++ ) {
+				// this.deck.addToStockWithId( 1, notif.args.deck[i] );
+			// }
 			this.discardPile.removeAll();
-console.log("[bmc] Shuffled New Deck:");			
-console.log(this.deck);
+// console.log("[bmc] Shuffled New Deck:");			
+// console.log(this.deck);
 		},
 		
 		notif_cardPlayed : function( notif ) {

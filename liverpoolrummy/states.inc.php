@@ -150,15 +150,15 @@ $machinestates = array(
         "action" => "stEndHand", // ACTION: Do this upon entering the state
         "transitions" => array( "newHand" => 20, "endGame" => 99 )
     ),
-    50 => array(    // Resolve the potential buyers of the discard card
-        "name" => "resolveBuyers",
-        "description" => clienttranslate('Resolve discard buyers.'),
-        "descriptionmyturn" => clienttranslate('Resolve discard buyers.'),
-        "type" => "game",
-        "action" => "stResolveBuyers", // ACTION: Do this upon entering the state
-//        "transitions" => array( "checkEmptyDeck" => 32, "drawDiscard" => 33, "other" => 35 )
-        "transitions" => array( "checkEmptyDeck" => 32, "buyNotAllowed" => 37, "other" => 35 )
-    ),
+    // 50 => array(    // Resolve the potential buyers of the discard card
+        // "name" => "resolveBuyers",
+        // "description" => clienttranslate('Resolve discard buyers.'),
+        // "descriptionmyturn" => clienttranslate('Resolve discard buyers.'),
+        // "type" => "game",
+        // "action" => "stResolveBuyers", // ACTION: Do this upon entering the state
+////        "transitions" => array( "checkEmptyDeck" => 32, "drawDiscard" => 33, "other" => 35 )
+        // "transitions" => array( "checkEmptyDeck" => 32, "buyNotAllowed" => 37, "other" => 35 )
+    // ),
     57 => array(    // The turn-player is drawing a card from the deck
         "name" => "turnPlayerDrawFromDeck",
         "description" => clienttranslate('${actplayer} is drawing from the deck.'),
