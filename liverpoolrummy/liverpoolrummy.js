@@ -875,16 +875,25 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 
 					// Make it clear to the player they need to draw a card (border around card)
 					if ( args.active_player == this.player_id ) {
-						var items = this.deckOne.getAllItems();
+						var deck_items = this.deckOne.getAllItems();
 	console.log("[bmc] ALL deckOne:");
-	console.log(items);
-						dojo.addClass('deckOne_item_' + items[0]['id'], 'stockitem_selected');
+	console.log(deck_items);
+						for ( let i in deck_items ) {
+							dojo.addClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+						}
 
-						var items = this.discardPile.getAllItems();
+						var dp_items = this.discardPile.getAllItems();
 	console.log("[bmc] ALL discardPile:");
-	console.log(items);
-						for ( let i in items ) {
-							dojo.addClass('discardPile_item_' + items[i]['id'], 'stockitem_selected');
+	console.log(dp_items);
+						for ( let i in dp_items ) {
+							dojo.addClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+						}
+					} else {
+						for ( let i in deck_items ) {
+							dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+						}
+						for ( let i in dp_items ) {
+							dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
 						}
 					}
 
@@ -1493,10 +1502,10 @@ console.log("[bmc] Trying to wait 5 seconds but it doesn't work");
 					this.disableNextMoveSound();
 
 					// Make it clear to the player they need to draw a card (border around card)
-					var items = this.deckOne.getAllItems();
+					var deck_items = this.deckOne.getAllItems();
 console.log("[bmc] ALL deckOne:");
-console.log(items);
-					dojo.addClass('deckOne_item_' + items[0]['id'], 'stockitem_selected');
+console.log( deck_items );
+					dojo.addClass('deckOne_item_' + deck_items[0]['id'], 'stockitem_selected');
 //ALSO THE BUY WASN'T ALLOWED TO HAPPEN.
 
 			} else {
@@ -1534,11 +1543,11 @@ console.log(items);
 			
 
 			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
-				var items = this.discardPile.getAllItems();
+				var dp_items = this.discardPile.getAllItems();
 console.log("[bmc] ALL discardPile:");
-console.log(items);
-				for ( let i in items ) {
-					dojo.addClass('discardPile_item_' + items[i]['id'], 'stockitem_selected');
+console.log( dp_items );
+				for ( let i in dp_items ) {
+					dojo.addClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
 				}
 			}
 			

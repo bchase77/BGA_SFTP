@@ -344,6 +344,8 @@ class LiverpoolRummy extends Table
 		
 		$result['handTypes']["Target"] = $this->handTypes; // Pull the description
 		
+		$buyers = self::getPlayerBuying();
+
 		$players = self::loadPlayersBasicInfos();
 		
 //		self::dump( "[bmc] players:", $players );
@@ -769,7 +771,7 @@ class LiverpoolRummy extends Table
 		
 		$this->resolveBuyers();
 		
-		self::clearPlayersBuyCount();
+		self::clearPlayersBuying();
 
 		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 
@@ -958,7 +960,7 @@ class LiverpoolRummy extends Table
 					if ( $p_id == $bossBuyer ) {
 						self::trace("[bmc] Resolving Buyers early!");
 						$this->resolveBuyers();
-						self::clearPlayersBuyCount();
+						self::clearPlayersBuying();
 					}
 				} else {
 					self::trace("[bmc] Found no buyers when player drew.");
@@ -3014,13 +3016,13 @@ TODO: Maybe check if there were no more playable cards and show that message.
 				array()
 			);
 		}
-
+/*
 		// Splitting it into 2, not sure why I have to
 		if ( $player_id == $activeTurnPlayer_id ) {
 			self::trace("[bmc] Sending notif for itsYourTurn2");
 			throw new BgaUserException( self::_("You don't need to buy it, it's your turn.") );
 		}
-
+*/
 		// If there aren't enough cards, don't allow it
 		$countDeck = count( $this->cards->countCardsByLocationArgs( 'deck' ) );
 		$countDiscardPile = count ($this->cards->countCardsByLocationArgs( 'discardPile' ) );
