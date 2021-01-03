@@ -1254,7 +1254,7 @@ console.log( "[bmc] ENTER sortBoard" );
 //				if ( cards != null ) {
 				if ( cards.length != 0 ) {
 					weightChange = this.sortRun( cards, 'playerDown_A', player );
-console.log("[bmc] NEWRUN" );
+console.log("[bmc] NEWRUN_board_a" );
 console.log( weightChange );
 					this.downArea_A_[ player ].items = weightChange;
 					// this.downArea_A_[ player ].changeItemsWeight( weightChange );
@@ -1268,7 +1268,7 @@ console.log(this.downArea_B_[ player ]);
 				if ( cards.length != 0 ) {
 					weightChange = this.sortRun( cards, 'playerDown_B', player );
 // console.log( weightChange );
-console.log("[bmc] NEWRUN" );
+console.log("[bmc] NEWRUN_board_b" );
 console.log( weightChange );
 					this.downArea_B_[ player ].items = weightChange;
 //					this.downArea_B_[ player ].changeItemsWeight( weightChange );
@@ -1279,7 +1279,7 @@ console.log( weightChange );
 //				if ( cards != null ) {
 				if ( cards.length != 0 ) {
 					weightChange = this.sortRun( cards, 'playerDown_C', player );
-console.log("[bmc] NEWRUN" );
+console.log("[bmc] NEWRUN_board_c" );
 console.log( weightChange );
 					this.downArea_C_[ player ].items = weightChange;
 //					this.downArea_C_[ player ].changeItemsWeight( weightChange );
@@ -1296,10 +1296,10 @@ console.log( boardPlayer );
 			cards = this.downArea_A_[ boardPlayer ].getAllItems();
 			if ( cards != null ) {
 				weightChange = this.sortRun( cards, 'playerDown_A', boardPlayer );
-console.log("[bmc] NEWRUN" );
+console.log("[bmc] NEWRUN_SAA" );
 console.log( weightChange );
-				this.downArea_A_[ player ].items = weightChange;
-				// this.downArea_A_[ boardPlayer ].changeItemsWeight( weightChange );
+				this.downArea_A_[ boardPlayer ].items = weightChange;
+				//this.downArea_A_[ boardPlayer ].changeItemsWeight();
 			}
 		},
 /////////
@@ -1309,12 +1309,22 @@ console.log( weightChange );
 console.log("[bmc] sortArea_B");
 console.log( boardPlayer );
 			cards = this.downArea_B_[ boardPlayer ].getAllItems();
+console.log(cards);
 			if ( cards != null ) {
 				weightChange = this.sortRun( cards, 'playerDown_B', boardPlayer );
-console.log("[bmc] NEWRUN" );
+console.log("[bmc] NEWRUN_SAB" );
 console.log( weightChange );
-				this.downArea_B_[ player ].items = weightChange;
-				//this.downArea_B_[ boardPlayer ].changeItemsWeight( weightChange );
+				this.downArea_B_[ boardPlayer ].items = weightChange;
+
+//exit(0);
+				// var fakeWeightChange = { 
+					// 0 : weightChange[0]['type']
+				// };
+// console.log(fakeWeightChange);
+				// this.downArea_B_[ boardPlayer ].changeItemsWeight(fakeWeightChange);
+				// cards2 = this.downArea_B_[ boardPlayer ].getAllItems();
+// console.log("cards2");
+// console.log(cards2);
 			}
 		},
 /////////
@@ -1326,10 +1336,10 @@ console.log( boardPlayer );
 			cards = this.downArea_C_[ boardPlayer ].getAllItems();
 			if ( cards != null ) {
 				weightChange = this.sortRun( cards, 'playerDown_C', boardPlayer );
-console.log("[bmc] NEWRUN" );
+console.log("[bmc] NEWRUN_SAC" );
 console.log( weightChange );
-				this.downArea_C_[ player ].items = weightChange;
-				// this.downArea_C_[ boardPlayer ].changeItemsWeight( weightChange );
+				this.downArea_C_[ boardPlayer ].items = weightChange;
+				//this.downArea_C_[ boardPlayer ].changeItemsWeight();
 			}
 		},
 /////////
@@ -1666,25 +1676,41 @@ console.log( leftOverJokers );
 console.log( jokers );
 console.log( cards );
 
+				// Put extra jokers on the right (position 15, which is beyond the high ace(14)
+				for ( let i = jokerIndex; i < jokerCount; i++ ) {
+					cards[ i ][ 'boardLieIndex' ] = 15;
+				}
 				// for ( let i = jokerIndex; i < jokerCount; i++ ) {
 //					dojo.addclass( downArea + '_' + boardPlayer + '_item_' + cards[i]['id'], 'stockitem_extraJoker' );
 				// }
 	console.log("[bmc] usedPositions:");
 	console.log(usedPositions);
 
-				// If 1st card is an ace
-				if ( cards[ 0 ][ 'type' ] == 1 ) {
-					
-					// If there is a King then make the ace 14 so it sits to the right of the king
-					if ( usedPositions.includes( 12 )) {
-						cards[ 0 ][ 'boardLieIndex' ] = 14;
-						
-						// If the 2nd card is also an ace then make it sit to the left of all
-						if ( cards[ 1 ][ 'type' ] == 1) {
-							cards[ 1 ][ 'boardLieIndex' ] = 0;
+//TODO: The ACE is not the first card, the joker is. Not sure why. So, it doesn't get a boardlieindex.
+
+				for (let i in cards ) {
+					if ( cards[ i ][ 'type' ] == 1 ) {
+						if ( usedPositions.includes( 13 )) {
+							cards[ i ][ 'boardLieIndex' ] = 14;
+						} else {
+							cards[ i ][ 'boardLieIndex' ] = 1;
 						}
 					}
 				}
+					 
+				// If 1st card is an ace
+				// if ( cards[ 0 ][ 'type' ] == 1 ) {
+					
+					// If there is a King then make the ace 14 so it sits to the right of the king
+					// if ( usedPositions.includes( 13 )) {
+						// cards[ 0 ][ 'boardLieIndex' ] = 14;
+						
+						// If the 2nd card is also an ace then make it sit to the left of all
+						// if ( cards[ 1 ][ 'type' ] == 1) {
+							// cards[ 1 ][ 'boardLieIndex' ] = 0;
+						// }
+					// }
+				// }
 				
 console.log("[bmc] cards:");
 console.log( cards );
@@ -1699,21 +1725,25 @@ console.log( weightChange );
 
 				// Sort the boardcards by boardLieIndex
 				cards.sort( this.compareBoardLieIndex );
-console.log("[bmc] cards:" );
+console.log("[bmc] SORTED cards:" );
 console.log( cards );
 				
 				var newRunItems = new Array();
 				
 				for ( let i in cards ) {
 					index = boardCards.map( function(e) {return e.id; }).indexOf(cards[ i ][ 'id' ]);
-console.log("[bmc] index:");
+console.log("[bmc] i, cards[], index, boardCards[]:");
+console.log(i);
+console.log(cards[ i ][ 'id' ]);
 console.log(index);
+console.log(boardCards[ index ][ 'type' ]);
 					newRunItems[ i ] = {
 						id: cards[ i ][ 'id' ],
 						type: boardCards[ index ][ 'type' ]
 					};
+console.log(newRunItems);
 				}
-console.log("[bmc] newRunItems");
+console.log("[bmc] FINAL newRunItems");
 console.log(newRunItems);
 
 console.log( "[bmc] EXIT sortRun2" );
@@ -2724,7 +2754,7 @@ console.log("[bmc] Added.");
 				this.myPrepJoker.removeFromStockById( card_id );
 				dojo.removeClass('myPrepJoker', "border1");
 console.log("[bmc] Removed.");
-				this.sortArea_A( boardPlayer );
+				// this.sortArea_A( boardPlayer );
 			}
 			
 			if ( boardArea === 'playerDown_B' ) {
@@ -2740,7 +2770,7 @@ console.log("[bmc] Added.");
 				this.myPrepJoker.removeFromStockById( card_id );
 				dojo.removeClass('myPrepJoker', "border1");
 console.log("[bmc] Removed.");
-				this.sortArea_B( boardPlayer );
+				// this.sortArea_B( boardPlayer );
 			}
 			if ( boardArea === 'playerDown_C' ) {
 			console.log(boardArea);
@@ -2754,11 +2784,26 @@ console.log("[bmc] Added.");
 				this.myPrepJoker.removeFromStockById( card_id );
 				dojo.removeClass('myPrepJoker', "border1");
 console.log("[bmc] Removed.");
-				this.sortArea_C( boardPlayer );
+				//this.sortArea_C( boardPlayer );
 			}
-			//this.sortBoard();
+			this.sortBoard();
+			//this.updateCardsDisplay();
+			
 			console.log("[bmc] (from PHP) EXIT cardWasPlayed");
 		},
+/////////
+/////////
+/////////
+		updateCardsDisplay : function(){
+console.log("[bmc] ENTER UPDATECARDSDISPLAY");
+			// $( "#game_play_area" ).load( " #game_play_area > *" );
+			var gpa = document.getElementById( 'goDownArea_wrap' );
+console.log(gpa);
+			var content = gpa.innerHTML;
+			gpa.innerHTML = content;
+console.log(content);
+console.log("[bmc] EXIT UPDATECARDSDISPLAY");
+		},		
 /////////
 /////////
 /////////
