@@ -109,6 +109,31 @@ function (dojo, declare) {
 ////////
 //
 // TODO:
+// 12/26: ONly 1 person's BUY it is red on game launch. Clicking SORT RUNS may delight it.
+// 12/26: After someone draws the DISCARD, the player board is still lit up as a BUYER and should not be.
+// 12/26: Should not be able to buy own discard (or if double-click then CONFIRM)
+// 12/26: When drawing a card, if the same card is in player hand they both go to the right. Only the
+//        new card should move.
+// 12/26: Konni discarded at same time as I clicked BUY it. It was my turn. TGame thought i wanted to buy Konni's discard. I drew, but now it won't let me discard: "You cannot buy any more this hand(decPlayerBuyCount)."
+// In PHP:
+// [Sun Dec 27 07:14:39.479873 2020] [php7:notice] [pid 9172] [client 51.178.130.161:59540] PHP Notice: Undefined index: in /var/tournoi/release/games/liverpoolrummy/201214-0437/liverpoolrummy.game.php on line 717, referer: https://boardgamearena.com/2/liverpoolrummy?table=134280648
+//
+// 12/26: Show the options in the message log when the game starts.
+// 12/26: Once discard was chosen as the draw card, don't let anyone try to buy. (Now it still allows the buy-try to be registered).
+// 12/26 Marc's board did not light up when I went to buy, but it did after he drew a card. It should have
+//       lit up when I clicked the BUY, and not waited until he drew.
+// 12/26: Show the floating jokers as ghosted on the board instead of solid.
+// 12/26: Hover-over a joker shows what cards can be substituted.
+// 12/26: Spectator should not see MELD A, MELD B, MELD and CARD FOR JOKER
+// 12/26: Spectators are offered a button: THIS PLAYER IS NOT PLAYING WHAT CAN I DO.
+// 12/26: When try to buy and it's your turn, should not hear "I"LL BUT IT" Jo is sending me a console log.
+// 12/26: Landscape to portrait shows every card in discard pile.
+// 12/26: Remove the DEAL ME IN when the game is over.
+// 12/26: "Tried but could not buy" does not show up but should.
+// 12/26: Mark could not 
+// 12/26: player clicked BUY IT button to buy but it's there turn causes DAD, but should hear my Mom.
+// 12/26: Allow go down with deficient joker and have it figure out that it's in the middle of the run.
+// 
 // 12/4: Add notify if buyers were not allowed.
 //
 // 11/28: Unexpected error: Error while processing Database request (2.boardgamearena.com 29/11 07:36:08)
@@ -123,7 +148,8 @@ function (dojo, declare) {
 // BGA version 201211-1532
 // U=2333743
 // Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36
-//
+// x 12/24: ENTIRELY Remove nag screen when discarding with prepped cards.
+// 12/24: Add the ranking of each player to the player boards
 // 12/13: After a new hand is dealt the discard pile doesn't border red
 // 12/11: The buy counter isn't right
 // 11/28: After playing last card, got NaN in number of cards
@@ -136,7 +162,7 @@ function (dojo, declare) {
 // 
 // 11/26: Let all players have at least 1 turn
 // 11/26: Add a graphic show progression
-// 11/26: Have the board joker selection be automatic
+// 11/26: Have the board joker selection be automatic if there is only 1 joker
 // 11/24: Have an elegant way to end the game early.
 // 11/21: SAFARI: GO DOWN button caused NOT ENOUGH SETS
 // 11/26: https://boardgamearena.com/2/liverpoolrummy?table=127049675# Mom couldn't end 
@@ -1128,38 +1154,43 @@ console.log("[bmc] ENTER onPlayerBuyButton");
 			this.clearButtons();
 			// this.stopActionTimer2();
 
-			// Make sure there is a card to buy
-			if ( this.discardPile.length != 0 ) {
+// console.log(this.player_id);
+// console.log(this.turnPlayer);
 
-				var action = 'buyRequest';
-				
-				dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
-				dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
-	//			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-				console.log(this.firstLoad);
+			// Do not acknowledge the buy if it's not our turn
+			// if ( this.player_id == this.turnPlayer ) {
+// console.log("[bmc] sound: It's Your Turn");
+				// playSound( 'tutorialrumone_ItsYourTurn' );
+			// } else {
+				// Make sure there is a card to buy
+				if ( this.discardPile.length != 0 ) {
 
-				//if ( this.player_id == currentplayer then just ignore. But for now I'll throw a BGA error from PHP.
-	//			if ( this.checkAction( action, true )  ||
-				if (( this.checkPossibleActions( action, true )  ||
-					( this.firstLoad == 'Yes' )) && 
-					( this.buyRequested != true)) {
+					var action = 'buyRequest';
 					
-					// Keep track so the button can only be hit once
-					this.buyRequested = true;
+					dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+					dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
+console.log(this.firstLoad);
 
-					console.log("[bmc] ajax " + action );
+					if (( this.checkPossibleActions( action, true )  ||
+						( this.firstLoad == 'Yes' )) && 
+						( this.buyRequested != true)) {
+						
+						// Keep track so the button can only be hit once
+						this.buyRequested = true;
 
-					this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-							player_id : this.player_id,
-							lock : true
-						}, this, function(result) {
-						}, function(is_error) {
-					});
-				} else {
-					console.log("[bmc] Buy not allowed now");
+						console.log("[bmc] ajax " + action );
+
+						this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+								player_id : this.player_id,
+								lock : true
+							}, this, function(result) {
+							}, function(is_error) {
+						});
+					} else {
+						console.log("[bmc] Buy not allowed now");
+					}
 				}
-			}
+			// }
 		},
 /////////
 /////////
@@ -1219,30 +1250,39 @@ console.log( "[bmc] ENTER sortBoard" );
 // console.log("SORTBOARD player");
 // console.log(player);
 				cards = this.downArea_A_[ player ].getAllItems();
-//console.log(cards);
-//				if ( cards != null ) {
-				if ( cards.length != 0 ) {
-					weightChange = this.sortRun( cards, 'playerDown_A' );
-// console.log( weightChange );
-					this.downArea_A_[ player ].changeItemsWeight( weightChange );
-				}
-
-				cards = this.downArea_B_[ player ].getAllItems();
 // console.log(cards);
 //				if ( cards != null ) {
 				if ( cards.length != 0 ) {
-					weightChange = this.sortRun( cards, 'playerDown_B' );
+					weightChange = this.sortRun( cards, 'playerDown_A', player );
+console.log("[bmc] NEWRUN" );
+console.log( weightChange );
+					this.downArea_A_[ player ].items = weightChange;
+					// this.downArea_A_[ player ].changeItemsWeight( weightChange );
+				}
+
+				cards = this.downArea_B_[ player ].getAllItems();
+console.log("[bmc] BOSS CARDS");
+console.log(cards);
+console.log(this.downArea_B_[ player ]);
+//				if ( cards != null ) {
+				if ( cards.length != 0 ) {
+					weightChange = this.sortRun( cards, 'playerDown_B', player );
 // console.log( weightChange );
-					this.downArea_B_[ player ].changeItemsWeight( weightChange );
+console.log("[bmc] NEWRUN" );
+console.log( weightChange );
+					this.downArea_B_[ player ].items = weightChange;
+//					this.downArea_B_[ player ].changeItemsWeight( weightChange );
 				}
 				
 				cards = this.downArea_C_[ player ].getAllItems();
 // console.log(cards);
 //				if ( cards != null ) {
 				if ( cards.length != 0 ) {
-					weightChange = this.sortRun( cards, 'playerDown_C' );
-// console.log( weightChange );
-					this.downArea_C_[ player ].changeItemsWeight( weightChange );
+					weightChange = this.sortRun( cards, 'playerDown_C', player );
+console.log("[bmc] NEWRUN" );
+console.log( weightChange );
+					this.downArea_C_[ player ].items = weightChange;
+//					this.downArea_C_[ player ].changeItemsWeight( weightChange );
 				}
 			}
 console.log( "[bmc] EXIT sortBoard" );
@@ -1252,11 +1292,14 @@ console.log( "[bmc] EXIT sortBoard" );
 /////////
 		sortArea_A : function( boardPlayer ) {
 console.log("[bmc] sortArea_A");
+console.log( boardPlayer );
 			cards = this.downArea_A_[ boardPlayer ].getAllItems();
 			if ( cards != null ) {
-				weightChange = this.sortRun( cards, 'playerDown_A' );
-// console.log( weightChange );
-				this.downArea_A_[ boardPlayer ].changeItemsWeight( weightChange );
+				weightChange = this.sortRun( cards, 'playerDown_A', boardPlayer );
+console.log("[bmc] NEWRUN" );
+console.log( weightChange );
+				this.downArea_A_[ player ].items = weightChange;
+				// this.downArea_A_[ boardPlayer ].changeItemsWeight( weightChange );
 			}
 		},
 /////////
@@ -1264,11 +1307,14 @@ console.log("[bmc] sortArea_A");
 /////////
 		sortArea_B : function( boardPlayer ) {
 console.log("[bmc] sortArea_B");
+console.log( boardPlayer );
 			cards = this.downArea_B_[ boardPlayer ].getAllItems();
 			if ( cards != null ) {
-				weightChange = this.sortRun( cards, 'playerDown_B' );
-// console.log( weightChange );
-				this.downArea_B_[ boardPlayer ].changeItemsWeight( weightChange );
+				weightChange = this.sortRun( cards, 'playerDown_B', boardPlayer );
+console.log("[bmc] NEWRUN" );
+console.log( weightChange );
+				this.downArea_B_[ player ].items = weightChange;
+				//this.downArea_B_[ boardPlayer ].changeItemsWeight( weightChange );
 			}
 		},
 /////////
@@ -1276,17 +1322,20 @@ console.log("[bmc] sortArea_B");
 /////////
 		sortArea_C : function( boardPlayer ) {
 console.log("[bmc] sortArea_C");
+console.log( boardPlayer );
 			cards = this.downArea_C_[ boardPlayer ].getAllItems();
 			if ( cards != null ) {
-				weightChange = this.sortRun( cards, 'playerDown_C' );
-// console.log( weightChange );
-				this.downArea_C_[ boardPlayer ].changeItemsWeight( weightChange );
+				weightChange = this.sortRun( cards, 'playerDown_C', boardPlayer );
+console.log("[bmc] NEWRUN" );
+console.log( weightChange );
+				this.downArea_C_[ player ].items = weightChange;
+				// this.downArea_C_[ boardPlayer ].changeItemsWeight( weightChange );
 			}
 		},
 /////////
 /////////
 /////////
-		sortRun : function( cards, downArea ) {
+		sortRunOrig : function( cards, downArea ) {
 console.log( "[bmc] ENTER sortRun" );
 // console.log( cards );
 // console.log( downArea );
@@ -1475,11 +1524,238 @@ console.log( "[bmc] EXIT sortRun" );
 /////////
 /////////
 /////////
-		// wait : function (timeout) {
-			// return new Promise(resolve => {
-				// setTimeout(resolve,timeout);
-			// });
-		// },
+		sortRun : function( boardCards, downArea, boardPlayer ) {
+console.log( "[bmc] ENTER sortRun2" );
+console.log( boardPlayer );
+console.log( boardCards );
+
+			let weightChange = {};
+			
+					
+			if ( boardCards.length != 0 ) {
+				var cards = new Array();
+
+				// Reconstruct the card values from the type
+				for ( cidx in boardCards ) {
+console.log("[bmc] In The Loop");
+console.log(cidx);
+console.log(boardCards[ cidx ]);
+					cards[ cidx ] = {};
+					
+console.log(boardCards[ cidx ][ 'type' ] );
+					if (( boardCards[ cidx ][ 'type' ] == 52 ) || 
+					    ( boardCards[ cidx ][ 'type' ] == 53 )) {
+console.log("[bmc] 1");
+						cards[ cidx ][ 'value' ] = 0; // Arbitrarily choosing value 0 for joker
+						cards[ cidx ][ 'type' ] = 0;
+					} else {
+console.log("[bmc] 2");
+						cards[ cidx ][ 'value' ] = (boardCards[ cidx ][ 'type' ] % 13 ) + 1;
+						cards[ cidx ][ 'type' ] = (boardCards[ cidx ][ 'type' ] % 13 ) + 1;
+					}
+					cards[ cidx ][ 'id' ] = boardCards[ cidx ][ 'id' ];
+				}
+	
+				cards.sort( this.compareValue );
+
+console.log("[bmc] cards:");
+console.log(cards);
+console.log(downArea);
+//exit(0);
+				// if ( cards [ 0 ] != null ) {
+					// cards[ 0 ][ 'boardLieIndex' ] = 0;
+				// }
+				// if ( cards [ 1 ] != null ) {
+					// cards[ 1 ][ 'boardLieIndex' ] = 1;
+				// }
+				
+				// for ( let i in cards ) {
+// console.log("[bmc] for removing class");
+// console.log( downArea + '_' + boardPlayer + '_item_' + cards[i]['id'], 'stockitem_extraJoker' );
+
+//					dojo.removeClass( downArea + '_' + boardPlayer + '_item_' + cards[i]['id'], 'stockitem_extraJoker' );
+				// }
+
+				// Count number of jokers and track their IDs to set weights later
+				
+				//type = 5; // Jokers are type 5
+				var jokerCount = 0;
+				var jokers = new Array();
+				
+				for ( let i in cards ) {
+					if ( cards[ i ][ 'type' ] == 0 ) {
+							jokers[ jokerCount ] = {
+								"id" : cards[ i ][ 'id' ],
+								"type" : 0 };	 // Start jokers at value 0
+							jokerCount++;
+					}
+				}
+console.log("[bmc] jokers:");
+console.log(jokers);
+				
+				var cardValuesHard = new Array();
+				
+				for ( let i in cards ) {
+					if ( cards[ i ][ 'type' ] != 52 ) {
+						cardValuesHard[ cards[ i ][ 'type' ]] = cards[ i ][ 'type' ];
+					}
+				}
+					
+				// var cardValuesHard = cards.map( a => a.type);
+console.log("[bmc] cardValuesHard");
+console.log(cardValuesHard);
+				
+				var usedPositions = new Array();
+				
+				var jokerIndex = 0;
+console.log("Looping over hard cards");				
+				var foundFirst = false;
+				
+				// Reindex cards with the IDs as the indices
+				
+				// Go through positions 2 through King and track 'real' cards if they exist
+				for ( let i = 2; i < 14 ; i++) {
+console.log( i );
+console.log(cardValuesHard[ i ]);
+console.log(foundFirst);
+					if ( cardValuesHard[ i ] != null ) { 
+console.log("notNull");
+						foundFirst = true;
+						
+						index = cards.map( function(e) { return e.type; }).indexOf( i );
+console.log("index");						
+console.log(index);						
+						cards[ index ][ 'boardLieIndex' ] = i;
+						usedPositions.push(i);
+					} else {
+console.log("Null");
+						if ( foundFirst ) {
+console.log("foundFirst");
+console.log(foundFirst);
+console.log(cardValuesHard.length);
+							// if this is the last of the hard cards then ignore
+							if ( i < cardValuesHard.length ) {
+								if ( jokerIndex < jokerCount ) {
+									// index = cards.map( function(e) { return e.id; }).indexOf( i );
+	// console.log("index");
+	// console.log(index);
+console.log("[bmc] Assigning Joker!");
+console.log(i);
+console.log(jokerIndex);
+console.log(jokerCount);
+									cards[ jokerIndex ][ 'boardLieIndex' ] = i;
+									usedPositions.push(i);
+									jokerIndex++;
+								} else {
+	this.showMessage( "YIKES! That's not a sortable run!", 'error' ); // 'info' or 'error'
+	console.log("[bmc] Yikes!! This never should have been a run.");
+	//exit(0);
+								}
+							} else {
+console.log("[bmc] FINISHED HARD CARDS");
+							}
+						}
+					}
+				}
+				
+				leftOverJokers = jokerCount - jokerIndex;
+console.log("[bmc] Assess remaining jokers");
+console.log( jokerCount);
+console.log( jokerIndex );
+console.log( leftOverJokers );
+console.log( jokers );
+console.log( cards );
+
+				// for ( let i = jokerIndex; i < jokerCount; i++ ) {
+//					dojo.addclass( downArea + '_' + boardPlayer + '_item_' + cards[i]['id'], 'stockitem_extraJoker' );
+				// }
+	console.log("[bmc] usedPositions:");
+	console.log(usedPositions);
+
+				// If 1st card is an ace
+				if ( cards[ 0 ][ 'type' ] == 1 ) {
+					
+					// If there is a King then make the ace 14 so it sits to the right of the king
+					if ( usedPositions.includes( 12 )) {
+						cards[ 0 ][ 'boardLieIndex' ] = 14;
+						
+						// If the 2nd card is also an ace then make it sit to the left of all
+						if ( cards[ 1 ][ 'type' ] == 1) {
+							cards[ 1 ][ 'boardLieIndex' ] = 0;
+						}
+					}
+				}
+				
+console.log("[bmc] cards:");
+console.log( cards );
+
+				for ( let i = 0; i < 15 ; i++ ) {
+					if ( cards[ i ] != null ) {
+						weightChange[ i ] = cards[ i ][ 'boardLieIndex' ];
+					}
+				}
+console.log("[bmc] weightChange" );
+console.log( weightChange );
+
+				// Sort the boardcards by boardLieIndex
+				cards.sort( this.compareBoardLieIndex );
+console.log("[bmc] cards:" );
+console.log( cards );
+				
+				var newRunItems = new Array();
+				
+				for ( let i in cards ) {
+					index = boardCards.map( function(e) {return e.id; }).indexOf(cards[ i ][ 'id' ]);
+console.log("[bmc] index:");
+console.log(index);
+					newRunItems[ i ] = {
+						id: cards[ i ][ 'id' ],
+						type: boardCards[ index ][ 'type' ]
+					};
+				}
+console.log("[bmc] newRunItems");
+console.log(newRunItems);
+
+console.log( "[bmc] EXIT sortRun2" );
+				return newRunItems;
+			}
+
+	// Create array downRunCards of all cards sorted by value.				
+	// For each card, dojo.removeclass(greenborder);				
+	// Make a group of the joker IDs.				
+	// Set the jokerCount = number of jokers.				
+	// Set the jokerIndex = 0.				
+	// Loop over loopValues 2 to 13.				
+	//	If there is a card in downRunCards with the value==loopValue then:			
+	//		Give that card the boardLieIndex[loopValue].		
+		// If not then:			
+			// If the jokerIndex < jokerCount then:		
+				// Give the joker[jokerIndex] the boardLieIndex[loopValue].	
+				// Increment the jokerIndex.	
+			// If not then throw a fatal error.		
+	// Loop;				
+	//LeftoverJokers = jokerCount - jokerIndex.				
+	// Loop from 0 to LeftoverJokers				
+		// dojo.addclass(greenborder);			
+	// Loop;
+	// If the 1st downRunCard is an ace then:				
+		// If there is a card in boardLieIndex[13] then give the ace boardLieIndex=14.			
+		// If the 2nd downRunCard is an ace then:			
+			// Give it boardLieIndex=1		
+	// Sort all by the boardLieIndex.				
+		},
+/////////
+/////////
+/////////
+		ctxt : function ( toLog ) {
+			console.log("[bmc] " + toLog );
+		},
+/////////
+/////////
+/////////
+		craw : function ( toLog ) {
+			console.log( toLog );
+		},
 /////////
 /////////
 /////////
@@ -1517,7 +1793,6 @@ console.log( buyers );
 				// })();
 				
 console.log("[bmc] Trying to wait 5 seconds but it doesn't work");
-				// Wait 5 seconds to give others a chance to buy but I cannot make it work
 
 					this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
 					dojo.addClass('myhand_wrap', "borderDrawer");				
@@ -2673,20 +2948,20 @@ console.log( this.prepAreas );
 console.log("selectedDiscards:");
 console.log(selectedDiscards);
 			// If cards are in prep area, double check that the really want to discard and not go down.
-			if (( this.prepAreas > 0 ) &&
-				( this.goneDown[ this.player_id ] == 0 ) &&  //0 = Not gone down; 1 = Gone down.
-				( selectedDiscards.length != 0 )) { // Only show dialog when there's a card
-console.log ("[bmc] CONFIRM");
-				this.confirmationDialog( _('Are you sure you want to discard? You have cards prepped.'),
-							 dojo.hitch( this, function() {
-								this.playerHand.unselectAll();
-								this.reallyDiscard( selectedDiscards );
-							}));
-			} else { // nothing prepped so discard the card
+			// if (( this.prepAreas > 0 ) &&
+				// ( this.goneDown[ this.player_id ] == 0 ) &&  //0 = Not gone down; 1 = Gone down.
+				// ( selectedDiscards.length != 0 )) { // Only show dialog when there's a card
+// console.log ("[bmc] CONFIRM");
+				// this.confirmationDialog( _('Are you sure you want to discard? You have cards prepped.'),
+							 // dojo.hitch( this, function() {
+								// this.playerHand.unselectAll();
+								// this.reallyDiscard( selectedDiscards );
+							// }));
+			// } else { // nothing prepped so discard the card
 console.log ("[bmc] Just discard");
-				this.playerHand.unselectAll();
-				this.reallyDiscard( selectedDiscards );
-			}
+			this.playerHand.unselectAll();
+			this.reallyDiscard( selectedDiscards );
+			// }
 console.log( "[bmc] EXIT onPlayerDiscardButton" );
 		},
 /////////
@@ -2784,7 +3059,6 @@ console.log( thisPlayerHand );
 			
 			if ( this.playerSortBy == 'Set' ) {
 				this.playerSortBy = 'Run';
-//				this.onPlayerSortByButtonRun( thisPlayerHand );
 				thisPlayerHand.sort( this.compareId ) ;
 console.log( "thisPlayerHand after sort:");
 console.log( thisPlayerHand );
@@ -2803,7 +3077,6 @@ console.log(weightChange);
 				
 			} else {
 				this.playerSortBy = 'Set';
-//				this.onPlayerSortByButtonSet( thisPlayerHand );
 				thisPlayerHand.sort( this.compareTypeArg ) ;
 
 				let weightChange = {};
@@ -2818,7 +3091,7 @@ console.log("weightChange SET");
 console.log(weightChange);
 				this.playerHand.changeItemsWeight(weightChange);
 			}
-			this.showHideButtons();
+			//this.showHideButtons();
 			
 console.log("[bmc] EXIT onPlayerSortByButton!");
 		},
@@ -2849,11 +3122,35 @@ console.log("[bmc] EXIT onPlayerSortByButton!");
 /////////
 /////////
 /////////
+		compareValue : function( a, b ) {
+			if ( parseInt(a.value) < parseInt(b.value) ){
+				return -1;
+			}
+			if ( parseInt(a.value) > parseInt(b.value) ){
+				return 1;
+			}
+			return 0;
+		},
+/////////
+/////////
+/////////
 		compareLocationArg : function( b, a ) {
 			if ( parseInt(a.location_arg) < parseInt(b.location_arg) ){
 				return -1;
 			}
 			if ( parseInt(a.location_arg) > parseInt(b.location_arg) ){
+				return 1;
+			}
+			return 0;
+		},
+/////////
+/////////
+/////////
+		compareBoardLieIndex : function( a, b ) {
+			if ( parseInt(a.boardLieIndex) < parseInt(b.boardLieIndex) ){
+				return -1;
+			}
+			if ( parseInt(a.boardLieIndex) > parseInt(b.boardLieIndex) ){
 				return 1;
 			}
 			return 0;
@@ -3534,6 +3831,34 @@ console.log("[bmc] cardIds: " + cardIds);
 		onPlayerPrepJoker_Button : function() {
 			console.log("[bmc] BUTTON onPlayerPrepJoker_Button");
 			console.log(this.player_id);
+
+			// if there is a card there, move it back to hand
+			let jcards = this.myPrepJoker.getAllItems(); // It should just be 1 card
+
+			if ( jcards.length != 0 ) {
+				var from = 'myhand_item_' + jcards[0].id;
+
+				cardUniqueId = jcards[0].type;
+				cardId = jcards[0].id;
+				this.playerHand.addToStockWithId( cardUniqueId, cardId, 'myhand'); // Pull back
+				this.myPrepJoker.removeFromStockById( cardId );
+
+console.log( cardUniqueId ) ;
+console.log( cardId ) ;
+				// this.playerHand.addToStockWithId( cardUniqueId, cardId, 'myhand'); // Pull back
+				// this.myPrepJoker.removeFromStockById( cardId );
+			}
+
+
+// TODO: FIX THE ABOVE -^
+
+
+
+
+
+
+
+
 			if ( this.goneDown[ this.player_id ] == 1 ) { // If player already went down, do nothing
 				this.showMessage("You already went down");
 				return;
@@ -4228,6 +4553,8 @@ console.log("[bmc] EXIT notif_discardCard");
 /////////
 /////////
 /////////
+
+// TODO: DELETE ME NOW???
         notif_itsYourTurn : function( notif ) {
 			console.log("[bmc] sound: It's Your Turn");
 			playSound( 'tutorialrumone_ItsYourTurn' );
@@ -4358,10 +4685,19 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 			console.log("[bmc]notif_playerWantsToBuy");
 			console.log(notif);
 			
-			playSound( 'tutorialrumone_IllBuyIt' );
-			dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
+			if (( this.player_id == notif.args.player_id ) && 
+			    ( notif.args.activeTurnPlayer_id == notif.args.player_id)) {
+console.log("[bmc] sound: It's Your Turn");
+				playSound( 'tutorialrumone_ItsYourTurn' );
+			} else {
+
+				playSound( 'tutorialrumone_IllBuyIt' );
+				dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
 			
+			}
 			return;
+			
+			// TODO: DELETE THE REST OF THIS UNRUNNABLE CODE:
 			
 			// If by timer then run stop timers and hide the buttons
 			// If by seat order then do not

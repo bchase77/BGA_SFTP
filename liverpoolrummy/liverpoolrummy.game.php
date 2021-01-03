@@ -729,13 +729,16 @@ class LiverpoolRummy extends Table
         $sql = "SELECT player_id, buy_count FROM player ";
         return self::getCollectionFromDB($sql, true);
     }
+/////
+/////
+/////
     function decPlayerBuyCount( $player_id ) { // Track how many times they bought per hand
-		self::trace("bmc] ENTER decPlayerBuyCount");
+		self::dump("[bmc] ENTER decPlayerBuyCount", $player_id );
 
         $sql = "SELECT player_id, buy_count FROM player ";
 		$buy_count = self::getCollectionFromDB( $sql, true );
 
-		self::dump("bmc] buy_count[ player_id ] (decPlayerBuyCount): ", $buy_count );
+		self::dump("[bmc] buy_count[ player_id ] (decPlayerBuyCount): ", $buy_count );
 		
 		if ( $buy_count[ $player_id ] > 0 ) {
 			$bcUpdate = $buy_count[ $player_id ] - 1;
@@ -745,6 +748,9 @@ class LiverpoolRummy extends Table
 			throw new BgaUserException( self::_("You cannot buy any more this hand(decPlayerBuyCount).") );
 		}
     }
+/////
+/////
+/////
     function clearPlayersBuyCount() {
         $sql = "UPDATE player SET buy_count = 3 ";
         self::DbQuery( $sql );
@@ -1093,6 +1099,7 @@ class LiverpoolRummy extends Table
 				'${player_name} wants to buy ${value_displayed}${color_displayed}',
 				array(
 					'player_id' => $player_id,
+					'activeTurnPlayer_id' => $activeTurnPlayer_id,
 	//				'player_name' => $players[ $player_id ][ 'player_name' ],
 					'player_name' => $players[ $player_id ][ 'player_name' ],
 					'cardToBeBought' => $currentCard,
@@ -2849,51 +2856,53 @@ TODO: Maybe check if there were no more playable cards and show that message.
 				
 				self::dump( "[bmc] buyer_id Function Return:", $buyer_id );
 
-				self::decPlayerBuyCount( $buyer_id );
-				$buyCount = self::getPlayersBuyCount();
+				if ( $buyer_id != null ) {
+					self::decPlayerBuyCount( $buyer_id );
+					$buyCount = self::getPlayersBuyCount();
 
-				//Move the cards for the buyer (the turnPlayer will get their cards in drawCard)
+					//Move the cards for the buyer (the turnPlayer will get their cards in drawCard)
+					
+					// Notify of the deck card (i.e. the price to pay for the discarded card)
+					$currentCard = $this->cards->getCardOnTop( 'deck' );
+					self::dump("bmc] Card from deck: ", $currentCard);
+					$this->cards->moveCard( $currentCard[ 'id' ], 'hand', $buyer_id );
 				
-				// Notify of the deck card (i.e. the price to pay for the discarded card)
-				$currentCard = $this->cards->getCardOnTop( 'deck' );
-				self::dump("bmc] Card from deck: ", $currentCard);
-				$this->cards->moveCard( $currentCard[ 'id' ], 'hand', $buyer_id );
-			
-				$this->drawNotify( $currentCard, $buyer_id, 'deck', $buyer_id, $buyer_id );
+					$this->drawNotify( $currentCard, $buyer_id, 'deck', $buyer_id, $buyer_id );
 
-				// Notify of the discarded card (notify the buyer of the details, not the current turn player
-				$currentCard = $this->cards->getCardOnTop( 'discardPile' );
-				self::dump("bmc] Card Bought: ", $currentCard);
-				$this->cards->moveCard( $currentCard[ 'id' ], 'hand', $buyer_id );
-				
-				$this->drawNotify( $currentCard, $buyer_id, 'discardPile', $buyer_id, $buyer_id );
-				
-				if ( $currentCard[ 'type' ] == 5 ) {
-					$value_displayed = clienttranslate( ' a joker' );
-					$color_displayed = '';
-				} else {
-					$value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
-					$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's';
+					// Notify of the discarded card (notify the buyer of the details, not the current turn player
+					$currentCard = $this->cards->getCardOnTop( 'discardPile' );
+					self::dump("bmc] Card Bought: ", $currentCard);
+					$this->cards->moveCard( $currentCard[ 'id' ], 'hand', $buyer_id );
+					
+					$this->drawNotify( $currentCard, $buyer_id, 'discardPile', $buyer_id, $buyer_id );
+					
+					if ( $currentCard[ 'type' ] == 5 ) {
+						$value_displayed = clienttranslate( ' a joker' );
+						$color_displayed = '';
+					} else {
+						$value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
+						$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's';
+					}
+
+					$cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
+
+					$players = self::loadPlayersBasicInfos();
+					self::dump( "[bmc] players:", $players );
+					
+					self::notifyAllPlayers(
+						'playerBought',
+						clienttranslate('(${player_name} bought ${value_displayed}${color_displayed})'),
+						array (
+	//						'buyingPlayer' => $buyer_id,
+							'color_displayed' => $color_displayed,
+							'value_displayed' => $value_displayed,
+							'player_id' => $buyer_id,
+							'buyCount' => $buyCount,
+							'player_name' => $players[ $buyer_id ][ 'player_name' ],
+							'allHands' => $cardsByLocation
+						)
+					);
 				}
-
-				$cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
-
-				$players = self::loadPlayersBasicInfos();
-				self::dump( "[bmc] players:", $players );
-				
-				self::notifyAllPlayers(
-					'playerBought',
-					clienttranslate('(${player_name} bought ${value_displayed}${color_displayed})'),
-					array (
-//						'buyingPlayer' => $buyer_id,
-						'color_displayed' => $color_displayed,
-						'value_displayed' => $value_displayed,
-						'player_id' => $buyer_id,
-						'buyCount' => $buyCount,
-						'player_name' => $players[ $buyer_id ][ 'player_name' ],
-						'allHands' => $cardsByLocation
-					)
-				);
 			}
 			self::setGameStateValue( 'findBuyerFailsafe', 0 );
 
