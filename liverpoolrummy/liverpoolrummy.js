@@ -109,11 +109,14 @@ function (dojo, declare) {
 ////////
 //
 // TODO:
-// 12/26: ONly 1 person's BUY it is red on game launch. Clicking SORT RUNS may delight it.
+// 1/3: [BEN] Get the sort to work.
+// 1/3: [BEN] Why so many "Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first"?
+// 1/3: Undo all the border1 / buyerLit stuff
+// 1/2: Game needs to end before DEAL ME IN.
+// X 1/2: If ACE is high and there are extra jokers then put them on the left.
 // 12/26: After someone draws the DISCARD, the player board is still lit up as a BUYER and should not be.
 // 12/26: Should not be able to buy own discard (or if double-click then CONFIRM)
-// 12/26: When drawing a card, if the same card is in player hand they both go to the right. Only the
-//        new card should move.
+// 12/26: When drawing a card, if the same card is in player hand they both go to the right. Only the new card should move.
 // 12/26: Konni discarded at same time as I clicked BUY it. It was my turn. TGame thought i wanted to buy Konni's discard. I drew, but now it won't let me discard: "You cannot buy any more this hand(decPlayerBuyCount)."
 // In PHP:
 // [Sun Dec 27 07:14:39.479873 2020] [php7:notice] [pid 9172] [client 51.178.130.161:59540] PHP Notice: Undefined index: in /var/tournoi/release/games/liverpoolrummy/201214-0437/liverpoolrummy.game.php on line 717, referer: https://boardgamearena.com/2/liverpoolrummy?table=134280648
@@ -125,12 +128,10 @@ function (dojo, declare) {
 // 12/26: Show the floating jokers as ghosted on the board instead of solid.
 // 12/26: Hover-over a joker shows what cards can be substituted.
 // 12/26: Spectator should not see MELD A, MELD B, MELD and CARD FOR JOKER
-// 12/26: Spectators are offered a button: THIS PLAYER IS NOT PLAYING WHAT CAN I DO.
 // 12/26: When try to buy and it's your turn, should not hear "I"LL BUT IT" Jo is sending me a console log.
 // 12/26: Landscape to portrait shows every card in discard pile.
 // 12/26: Remove the DEAL ME IN when the game is over.
 // 12/26: "Tried but could not buy" does not show up but should.
-// 12/26: Mark could not 
 // 12/26: player clicked BUY IT button to buy but it's there turn causes DAD, but should hear my Mom.
 // 12/26: Allow go down with deficient joker and have it figure out that it's in the middle of the run.
 // 
@@ -148,7 +149,6 @@ function (dojo, declare) {
 // BGA version 201211-1532
 // U=2333743
 // Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36
-// x 12/24: ENTIRELY Remove nag screen when discarding with prepped cards.
 // 12/24: Add the ranking of each player to the player boards
 // 12/13: After a new hand is dealt the discard pile doesn't border red
 // 12/11: The buy counter isn't right
@@ -183,6 +183,10 @@ function (dojo, declare) {
 // 11/10: Maybe not: Get bonus if you go out? NO.
 // 11/10: Maybe not: Notify players are prepping cards
 //
+// X 12/26: Spectators are offered a button: THIS PLAYER IS NOT PLAYING WHAT CAN I DO.
+// X 12/24: ENTIRELY Remove nag screen when discarding with prepped cards.
+// X 1/2/21: Add text to say that runs can begin and end with Ace.
+// X 12/26: ONly 1 person's BUY it is red on game launch. Clicking SORT RUNS may delight it.
 // X 11/27: Mention the source when a card is drawn.
 // X 11/26: Make the deck and discard piles red, to show that you need to draw a card
 // X 11/26: Once you have clicked I'll buy it don't let them do it again
@@ -870,7 +874,7 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 			for ( let player_id in this.gamedatas.buyers ) {
 				console.log(player_id);
 				if ( this.gamedatas.buyers[ player_id ] == 2 ) {
-					dojo.addClass( 'overall_player_board_' + player_id, 'pbInverse' );
+					dojo.addClass( 'overall_player_board_' + player_id, 'playerBoardBuyer' );
 				}
 			}
 			
@@ -959,6 +963,10 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 					break;
 				case 'drawDiscard':
 					console.log("[bmc] FOUND drawDiscard");
+					// Clear the buy requests since they cannot go through
+					for ( player_id in this.gamedatas.players ) { 
+						dojo.removeClass( 'overall_player_board_' + player_id, 'playerBoardBuyer' );
+					}
 					break;
 				case 'playerTurnPlay':
 					console.log("[bmc] FOUND PlayerTurnPlay");
@@ -973,7 +981,7 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 				case 'resolveBuyers':
 					console.log("[bmc] FOUND resolveBuyers");
 					for ( player_id in this.gamedatas.players ) { 
-						dojo.removeClass( 'overall_player_board_' + player_id, 'pbInverse' );
+						dojo.removeClass( 'overall_player_board_' + player_id, 'playerBoardBuyer' );
 					}
 					break;
 				case 'playerWantsToBuy':
@@ -1285,6 +1293,8 @@ console.log( weightChange );
 //					this.downArea_C_[ player ].changeItemsWeight( weightChange );
 				}
 			}
+			this.updateCardsDisplay();
+
 console.log( "[bmc] EXIT sortBoard" );
 		},
 /////////
@@ -1555,11 +1565,11 @@ console.log(boardCards[ cidx ]);
 console.log(boardCards[ cidx ][ 'type' ] );
 					if (( boardCards[ cidx ][ 'type' ] == 52 ) || 
 					    ( boardCards[ cidx ][ 'type' ] == 53 )) {
-console.log("[bmc] 1");
+console.log("[bmc] Yes card is a Joker");
 						cards[ cidx ][ 'value' ] = 0; // Arbitrarily choosing value 0 for joker
 						cards[ cidx ][ 'type' ] = 0;
 					} else {
-console.log("[bmc] 2");
+console.log("[bmc] No card is not a Joker");
 						cards[ cidx ][ 'value' ] = (boardCards[ cidx ][ 'type' ] % 13 ) + 1;
 						cards[ cidx ][ 'type' ] = (boardCards[ cidx ][ 'type' ] % 13 ) + 1;
 					}
@@ -1591,6 +1601,7 @@ console.log(downArea);
 				//type = 5; // Jokers are type 5
 				var jokerCount = 0;
 				var jokers = new Array();
+				var thereIsAnAce = false;
 				
 				for ( let i in cards ) {
 					if ( cards[ i ][ 'type' ] == 0 ) {
@@ -1599,6 +1610,9 @@ console.log(downArea);
 								"type" : 0 };	 // Start jokers at value 0
 							jokerCount++;
 					}
+					if ( cards[ i ][ 'type' ] == 1 ) {
+						thereIsAnAce = true;
+					}
 				}
 console.log("[bmc] jokers:");
 console.log(jokers);
@@ -1606,7 +1620,7 @@ console.log(jokers);
 				var cardValuesHard = new Array();
 				
 				for ( let i in cards ) {
-					if ( cards[ i ][ 'type' ] != 52 ) {
+					if ( cards[ i ][ 'type' ] != 0 ) {
 						cardValuesHard[ cards[ i ][ 'type' ]] = cards[ i ][ 'type' ];
 					}
 				}
@@ -1628,6 +1642,7 @@ console.log("Looping over hard cards");
 console.log( i );
 console.log(cardValuesHard[ i ]);
 console.log(foundFirst);
+
 					if ( cardValuesHard[ i ] != null ) { 
 console.log("notNull");
 						foundFirst = true;
@@ -1644,6 +1659,10 @@ console.log("foundFirst");
 console.log(foundFirst);
 console.log(cardValuesHard.length);
 							// if this is the last of the hard cards then ignore
+							// Deal with the aces later
+							// This presumes the cards which are down are indeed a valid run
+							// if (( i < cardValuesHard.length ) ||
+							    // ( cardValuesHard.includes( 1 ))) {
 							if ( i < cardValuesHard.length ) {
 								if ( jokerIndex < jokerCount ) {
 									// index = cards.map( function(e) { return e.id; }).indexOf( i );
@@ -1653,17 +1672,20 @@ console.log("[bmc] Assigning Joker!");
 console.log(i);
 console.log(jokerIndex);
 console.log(jokerCount);
+console.log(usedPositions);
 									cards[ jokerIndex ][ 'boardLieIndex' ] = i;
 									usedPositions.push(i);
 									jokerIndex++;
 								} else {
-	this.showMessage( "YIKES! That's not a sortable run!", 'error' ); // 'info' or 'error'
-	console.log("[bmc] Yikes!! This never should have been a run.");
-	//exit(0);
+//	I used to have a assert-style check here but it sorts the cards right, and
+//  so let's presume the other function did it's job and allowed only true runs.
+//	this.showMessage( "YIKES! That's not a sortable run!", 'error' ); // 'info' or 'error'
+//	console.log("[bmc] Yikes!! This never should have been a run.");
 								}
 							} else {
-console.log("[bmc] FINISHED HARD CARDS");
+console.log("[bmc] FINISHED HARD CARDS not to high ace");
 							}
+console.log("[bmc] FINISHED HARD CARDS");
 						}
 					}
 				}
@@ -1675,31 +1697,75 @@ console.log( jokerIndex );
 console.log( leftOverJokers );
 console.log( jokers );
 console.log( cards );
+console.log( usedPositions );
 
-				// Put extra jokers on the right (position 15, which is beyond the high ace(14)
-				for ( let i = jokerIndex; i < jokerCount; i++ ) {
-					cards[ i ][ 'boardLieIndex' ] = 15;
+				// Move jokers to low if there is an ace and enough jokers to get to the next card
+				if ( thereIsAnAce ) {
+console.log("[bmc] 1");
+					if ( usedPositions.includes( jokerCount + 2 )) {
+console.log("[bmc] 2");
+						// Ace should be low. Assign leftover jokers as missing cards are found
+						for ( let i = 2; i < 13 ; i++) {
+							if ( !usedPositions.includes( i ) ) {
+								if ( jokerIndex < jokerCount ) {
+console.log("[bmc] 3");
+console.log( jokers[ jokerIndex ][ 'id' ] );
+									index = cards.map( function(e) {return e.id; }).indexOf(jokers[ jokerIndex ][ 'id' ]);
+									jokerIndex++;
+
+									cards[ index ][ 'boardLieIndex' ] = i;
+console.log("[bmc] Assigning an ACE joker:");
+console.log( index );
+console.log( jokerIndex );
+console.log( cards );
+								}
+							}
+						}
+					}
 				}
-				// for ( let i = jokerIndex; i < jokerCount; i++ ) {
-//					dojo.addclass( downArea + '_' + boardPlayer + '_item_' + cards[i]['id'], 'stockitem_extraJoker' );
-				// }
-	console.log("[bmc] usedPositions:");
-	console.log(usedPositions);
 
-//TODO: The ACE is not the first card, the joker is. Not sure why. So, it doesn't get a boardlieindex.
-
+				// Move an ace to be high if there is a king (position 13)
 				for (let i in cards ) {
 					if ( cards[ i ][ 'type' ] == 1 ) {
 						if ( usedPositions.includes( 13 )) {
-							cards[ i ][ 'boardLieIndex' ] = 14;
+							// If there is already a high ace then assign the 2nd one low
+							if ( usedPositions.includes( 14 )) {
+								cards[ i ][ 'boardLieIndex' ] = 1;
+								usedPositions.push(1);
+							} else {
+								cards[ i ][ 'boardLieIndex' ] = 14;
+								usedPositions.push(14);
+							}
 						} else {
 							cards[ i ][ 'boardLieIndex' ] = 1;
+							usedPositions.push(1);
 						}
 					}
 				}
 					 
-				// If 1st card is an ace
-				// if ( cards[ 0 ][ 'type' ] == 1 ) {
+				// Put extra jokers on the right unless there is a High Ace
+				if ( !usedPositions.includes( 14 )) {
+					for ( let i = jokerIndex; i < jokerCount; i++ ) {
+						cards[ i ][ 'boardLieIndex' ] = 15;
+					}
+				} else {
+					for ( let i = jokerIndex; i < jokerCount; i++ ) {
+						cards[ i ][ 'boardLieIndex' ] = 0;
+					}
+					
+				}
+				// for ( let i = jokerIndex; i < jokerCount; i++ ) {
+//					dojo.addclass( downArea + '_' + boardPlayer + '_item_' + cards[i]['id'], 'stockitem_extraJoker' );
+				// }
+console.log("[bmc] usedPositions:");
+console.log(usedPositions);
+
+console.log("[bmc] usedPositions:");
+console.log(usedPositions);
+				// If rightmost card is an ace and there are extra jokers then put them left
+				if ( usedPositions.includes( 14 )) {
+				
+				}
 					
 					// If there is a King then make the ace 14 so it sits to the right of the king
 					// if ( usedPositions.includes( 13 )) {
@@ -2684,19 +2750,19 @@ console.log("/" + this.game_name + "/" + this.game_name + "/" + action + ".html"
 			
 			var i = 0;
 			if ( area_A_Items.length == 0 ) {
-				dojo.removeClass('myPrepA', "border1");
+				dojo.removeClass('myPrepA', "buyerLit");
 				i++;
 			}
 			if ( area_B_Items.length == 0 ) {
-				dojo.removeClass('myPrepB', "border1");
+				dojo.removeClass('myPrepB', "buyerLit");
 				i++;
 			}
 			if ( area_C_Items.length == 0 ) {
-				dojo.removeClass('myPrepC', "border1");
+				dojo.removeClass('myPrepC', "buyerLit");
 				i++;
 			}
 			if ( area_Joker_Items.length == 0 ) {
-				dojo.removeClass('myPrepJoker', "border1");
+				dojo.removeClass('myPrepJoker', "buyerLit");
 				i++;
 			}
 console.log("[bmc]AreasPrepped(i):");
@@ -2752,7 +2818,7 @@ console.log(boardArea);
 console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById( card_id );
 				this.myPrepJoker.removeFromStockById( card_id );
-				dojo.removeClass('myPrepJoker', "border1");
+				dojo.removeClass('myPrepJoker', "buyerLit");
 console.log("[bmc] Removed.");
 				// this.sortArea_A( boardPlayer );
 			}
@@ -2768,7 +2834,7 @@ console.log(boardArea);
 console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById( card_id );
 				this.myPrepJoker.removeFromStockById( card_id );
-				dojo.removeClass('myPrepJoker', "border1");
+				dojo.removeClass('myPrepJoker', "buyerLit");
 console.log("[bmc] Removed.");
 				// this.sortArea_B( boardPlayer );
 			}
@@ -2782,12 +2848,12 @@ console.log("[bmc] Removed.");
 console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById(card_id);
 				this.myPrepJoker.removeFromStockById( card_id );
-				dojo.removeClass('myPrepJoker', "border1");
+				dojo.removeClass('myPrepJoker', "buyerLit");
 console.log("[bmc] Removed.");
 				//this.sortArea_C( boardPlayer );
 			}
 			this.sortBoard();
-			//this.updateCardsDisplay();
+			this.updateCardsDisplay();
 			
 			console.log("[bmc] (from PHP) EXIT cardWasPlayed");
 		},
@@ -2796,12 +2862,36 @@ console.log("[bmc] Removed.");
 /////////
 		updateCardsDisplay : function(){
 console.log("[bmc] ENTER UPDATECARDSDISPLAY");
-			// $( "#game_play_area" ).load( " #game_play_area > *" );
-			var gpa = document.getElementById( 'goDownArea_wrap' );
-console.log(gpa);
-			var content = gpa.innerHTML;
-			gpa.innerHTML = content;
-console.log(content);
+
+		element = document.getElementById("downArea")
+
+console.log(element);
+		//element.load(" downArea > *");
+		//element.reload();
+		//element.innerHTML = element.innerHTML;
+		//element.style.display = element.style.display;
+		
+		//setTimeout(function(){ 
+			//element.innerHTML = element.innerHTML;
+			//console.log("[bmc] Changed element");
+		//}, 10000);
+
+		
+//		$("downArea").load(" downArea > *");
+		//$("#downArea").load(" #downArea > *");
+
+		// setTimeout(function(){ 
+			// $("#downArea").load(" #downArea > *");
+		// }, 30000);
+
+//$("#divToReload").load(location.href+" #divToReload>*","");
+			// for ( player_id in this.gamedatas.players ) { 
+				// if ($("#playerDown_A_" + player_id) != null) {
+				//if ($("#playerDown_A_" + player_id).length) {
+					// console.log("[bmc] Loading the div");
+					// $("#playerDown_A_" + player_id).load(" #playerDown_A_" + player_id + " > *");
+				// }
+			// }
 console.log("[bmc] EXIT UPDATECARDSDISPLAY");
 		},		
 /////////
@@ -2857,13 +2947,13 @@ console.log("[bmc] EXIT UPDATECARDSDISPLAY");
 //				this.downArea_C_[ player_id ].removeAllTo( 'myhand' );
 				this.myPrepC.removeAllTo( 'myhand' );
 				
-				// dojo.removeClass('playerDown_A_' + this.player_id, "border1");
-				// dojo.removeClass('playerDown_B_' + this.player_id, "border1");
-				// dojo.removeClass('playerDown_C_' + this.player_id, "border1");
+				// dojo.removeClass('playerDown_A_' + this.player_id, "buyerLit");
+				// dojo.removeClass('playerDown_B_' + this.player_id, "buyerLit");
+				// dojo.removeClass('playerDown_C_' + this.player_id, "buyerLit");
 
-				dojo.removeClass('myPrepA', "border1");
-				dojo.removeClass('myPrepB', "border1");
-				dojo.removeClass('myPrepC', "border1");
+				dojo.removeClass('myPrepA', "buyerLit");
+				dojo.removeClass('myPrepB', "buyerLit");
+				dojo.removeClass('myPrepC', "buyerLit");
 
 				this.prepSetLoc = 0; // Nothing is prepped, so clear the counters
 				this.prepRunLoc = 3; 
@@ -3771,15 +3861,15 @@ console.log( this.player_id );
 				
 				// if ( this.setsRuns[ this.currentHandType ][ this.prepSetLoc ] == "Area_A" ) {
 					 // this.downArea_A_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					 // dojo.addClass('playerDown_A_' + this.player_id, "border1");
+					 // dojo.addClass('playerDown_A_' + this.player_id, "buyerLit");
 				// }
 				// if ( this.setsRuns[ this.currentHandType ][ this.prepSetLoc ] == "Area_B" ) {
 					 // this.downArea_B_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					 // dojo.addClass('playerDown_B_' + this.player_id, "border1");
+					 // dojo.addClass('playerDown_B_' + this.player_id, "buyerLit");
 				// }
 				// if ( this.setsRuns[ this.currentHandType ][ this.prepSetLoc ] == "Area_C" ) {
 					 // this.downArea_C_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					 // dojo.addClass('playerDown_C_' + this.player_id, "border1");
+					 // dojo.addClass('playerDown_C_' + this.player_id, "buyerLit");
 				// }
 				
 				// this.cardDisplayClass = "downPrep";
@@ -3809,15 +3899,15 @@ console.log( this.player_id );
 				
 				// if ( this.setsRuns[ this.currentHandType ][ this.prepRunLoc ] == "Area_A" ) {
 					 // this.downArea_A_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					 // dojo.addClass('playerDown_A_' + this.player_id, "border1");
+					 // dojo.addClass('playerDown_A_' + this.player_id, "buyerLit");
 				// }
 				// if ( this.setsRuns[ this.currentHandType ][ this.prepRunLoc ] == "Area_B" ) {
 					 // this.downArea_B_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					 // dojo.addClass('playerDown_B_' + this.player_id, "border1");
+					 // dojo.addClass('playerDown_B_' + this.player_id, "buyerLit");
 				// }
 				// if ( this.setsRuns[ this.currentHandType ][ this.prepRunLoc ] == "Area_C" ) {
 					 // this.downArea_C_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					 // dojo.addClass('playerDown_C_' + this.player_id, "border1");
+					 // dojo.addClass('playerDown_C_' + this.player_id, "buyerLit");
 				// }
 				
 				// this.cardDisplayClass = "downPrep";
@@ -3852,9 +3942,9 @@ console.log("[bmc] cardIds: " + cardIds);
 
 					var from = 'myhand_item_' + card.id;
 //					this.downArea_A_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-//					dojo.addClass( downArea_A_[ this.player_id ], "border1");
+//					dojo.addClass( downArea_A_[ this.player_id ], "buyerLit");
 					this.myPrepA.addToStockWithId( cardUniqueId, cardId, 'myhand' );
-					dojo.addClass( 'myPrepA', "border1" );
+					dojo.addClass( 'myPrepA', "buyerLit" );
 					this.playerHand.removeFromStockById ( card.id );
 				}
 				this.prepAreas++;
@@ -3924,7 +4014,7 @@ console.log(cards);
 
 					var from = 'myhand_item_' + cards[0].id;
 					this.myPrepJoker.addToStockWithId( cardUniqueId, cardId, 'myhand' );
-					dojo.addClass( 'myPrepJoker', "border1" );
+					dojo.addClass( 'myPrepJoker', "buyerLit" );
 					this.playerHand.removeFromStockById (cards[0].id );
 
 console.log( card ) ;
@@ -3974,9 +4064,9 @@ console.log("[bmc] cardIds: " + cardIds);
 
 					var from = 'myhand_item_' + card.id;
 //					this.downArea_B_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-//					dojo.addClass('playerDown_B_' + this.player_id, "border1");
+//					dojo.addClass('playerDown_B_' + this.player_id, "buyerLit");
 					this.myPrepB.addToStockWithId( cardUniqueId, cardId, 'myhand' );
-					dojo.addClass( 'myPrepB', "border1" );
+					dojo.addClass( 'myPrepB', "buyerLit" );
 					this.playerHand.removeFromStockById (card.id );
 				}
 				this.prepAreas++;
@@ -4016,9 +4106,9 @@ console.log("[bmc] cardIds: " + cardIds);
 
 					var from = 'myhand_item_' + card.id;
 //					this.downArea_C_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-//					dojo.addClass('playerDown_C_' + this.player_id, "border1");
+//					dojo.addClass('playerDown_C_' + this.player_id, "buyerLit");
 					this.myPrepC.addToStockWithId( cardUniqueId, cardId, 'myhand' );
-					dojo.addClass( 'myPrepC', "border1" );
+					dojo.addClass( 'myPrepC', "buyerLit" );
 					this.playerHand.removeFromStockById (card.id );
 				}
 				this.prepAreas++;
@@ -4349,7 +4439,7 @@ console.log( $('close_btn').innerHTML );
 			// this.stopActionTimerStatic();
 			//this.clearButtons();
 			
-			dojo.removeClass('myhand_wrap', "border1");				
+			dojo.removeClass('myhand_wrap', "buyerLit");				
 			
 			// If someone clicked their button 'On To The Next' just ignore it
 			// and replace the button. The state machine will continue after ALL have clicked.
@@ -4391,10 +4481,10 @@ console.log( $('close_btn').innerHTML );
 			this.myPrepC.removeAll();
 			this.prepAreas = 0;
 			this.myPrepJoker.removeAll();
-			dojo.removeClass('myPrepA', "border1");
-			dojo.removeClass('myPrepB', "border1");
-			dojo.removeClass('myPrepC', "border1");
-			dojo.removeClass('myPrepJoker', "border1");
+			dojo.removeClass('myPrepA', "buyerLit");
+			dojo.removeClass('myPrepB', "buyerLit");
+			dojo.removeClass('myPrepC', "buyerLit");
+			dojo.removeClass('myPrepJoker', "buyerLit");
 
 			this.prepSetLoc = 0; // Nothing is prepped, so clear the counters
 			this.prepRunLoc = 3;
@@ -4453,9 +4543,9 @@ console.log( $('close_btn').innerHTML );
 			console.log(this.player_id);
 			
 			if ( !isReadOnly ) { // if not spectator
-				dojo.removeClass('playerDown_A_' + this.player_id, "border1");
-				dojo.removeClass('playerDown_B_' + this.player_id, "border1");
-				dojo.removeClass('playerDown_C_' + this.player_id, "border1");
+				dojo.removeClass('playerDown_A_' + this.player_id, "buyerLit");
+				dojo.removeClass('playerDown_B_' + this.player_id, "buyerLit");
+				dojo.removeClass('playerDown_C_' + this.player_id, "buyerLit");
 			}
 
 			if ( notif.args.buyCount != undefined ) {
@@ -4703,8 +4793,8 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 			console.log("[bmc]notif_playerBought");
 			console.log(notif);
 			for ( player_id in this.gamedatas.players ) { 
-//				dojo.removeClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
-				dojo.removeClass( 'overall_player_board_' + player_id, 'pbInverse' );
+//				dojo.removeClass( 'overall_player_board_' + notif.args.player_id, 'playerBoardBuyer' );
+				dojo.removeClass( 'overall_player_board_' + player_id, 'playerBoardBuyer' );
 			}
 			this.buyCount[  notif.args.player_id ].setValue( notif.args.buyCount[ notif.args.player_id ] );
 			this.handCount[ notif.args.player_id ].setValue( notif.args.allHands[ notif.args.player_id ] );
@@ -4719,7 +4809,7 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 			if ( notif.args.buyingPlayers != null ) {
 				for ( var player_id of notif.args.buyingPlayers ) {
 					console.log('overall_player_board_' + player_id);
-					dojo.removeClass( 'overall_player_board_' + player_id, 'pbInverse' );
+					dojo.removeClass( 'overall_player_board_' + player_id, 'playerBoardBuyer' );
 				}
 			}
 		},
@@ -4737,7 +4827,7 @@ console.log("[bmc] sound: It's Your Turn");
 			} else {
 
 				playSound( 'tutorialrumone_IllBuyIt' );
-				dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
+				dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'playerBoardBuyer' );
 			
 			}
 			return;
@@ -4753,7 +4843,7 @@ console.log("[bmc] sound: It's Your Turn");
 				
 				console.log("[bmc] Adding class and showing bubble");
 				
-//				dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'pbInverse' );
+//				dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'playerBoardBuyer' );
 				
 				// this.showMessage( this.gamedatas.players[ notif.args.player_id ].name + ' wants to buy ' +
 					// notif.args.value_displayed + notif.args.color_displayed,
@@ -4819,9 +4909,9 @@ console.log("[bmc] sound: It's Your Turn");
 			var isReadOnly = this.isReadOnly();
 			if ( !isReadOnly ) {
 				// Remove the borders around the prep area
-				// dojo.removeClass('playerDown_A_' + notif.args.player_id, "border1");
-				// dojo.removeClass('playerDown_B_' + notif.args.player_id, "border1");
-				// dojo.removeClass('playerDown_C_' + notif.args.player_id, "border1");
+				// dojo.removeClass('playerDown_A_' + notif.args.player_id, "buyerLit");
+				// dojo.removeClass('playerDown_B_' + notif.args.player_id, "buyerLit");
+				// dojo.removeClass('playerDown_C_' + notif.args.player_id, "buyerLit");
 				
 				// And move the cards from my prep area to the board
 				for ( card_id in card_ids ) {
@@ -4853,9 +4943,9 @@ console.log("[bmc] sound: It's Your Turn");
 				console.log("[bmc] I went down!");
 
 				// Remove the highlighted border
-				dojo.removeClass('myPrepA', "border1");
-				dojo.removeClass('myPrepB', "border1");
-				dojo.removeClass('myPrepC', "border1");
+				dojo.removeClass('myPrepA', "buyerLit");
+				dojo.removeClass('myPrepB', "buyerLit");
+				dojo.removeClass('myPrepC', "buyerLit");
 				
 				this.goneDown[ this.player_id ] = 1;
 				
@@ -4910,7 +5000,7 @@ console.log("[bmc] sound: It's Your Turn");
 //						this.downArea_A_[ downPlayer ].addToStockWithId( cardUniqueId, card_id, 'overall_player_board_' + downPlayer );
 						this.downArea_A_[ downPlayer ].addToStockWithId( cardUniqueId, card_ids[ card_id ], 'overall_player_board_' + downPlayer );
 						
-//						dojo.removeClass('playerDown_A_' + this.player_id, "border1");
+//						dojo.removeClass('playerDown_A_' + this.player_id, "buyerLit");
 						// this.sortArea_A( downPlayer );
 
 					}
@@ -4918,14 +5008,14 @@ console.log("[bmc] sound: It's Your Turn");
 						console.log("[bmc] Adding to AREA B");
 //						this.downArea_B_[ downPlayer ].addToStockWithId( cardUniqueId, card_id, 'overall_player_board_' + downPlayer );
 						this.downArea_B_[ downPlayer ].addToStockWithId( cardUniqueId, card_ids[ card_id ], 'overall_player_board_' + downPlayer );
-//						dojo.removeClass('playerDown_B_' + this.player_id, "border1");
+//						dojo.removeClass('playerDown_B_' + this.player_id, "buyerLit");
 						// this.sortArea_B( downPlayer );
 					}
 					if ( downArea === 'playerDown_C_' ) {
 						console.log("[bmc] Adding to AREA C");
 //						this.downArea_C_[ downPlayer ].addToStockWithId( cardUniqueId, card_id, 'overall_player_board_' + downPlayer );
 						this.downArea_C_[ downPlayer ].addToStockWithId( cardUniqueId, card_ids[ card_id ], 'overall_player_board_' + downPlayer );
-//						dojo.removeClass('playerDown_C_' + this.player_id, "border1");						
+//						dojo.removeClass('playerDown_C_' + this.player_id, "buyerLit");						
 						//this.sortArea_C( downPlayer );
 					}
 /*

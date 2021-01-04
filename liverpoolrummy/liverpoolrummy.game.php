@@ -1499,10 +1499,10 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		foreach ( $groups as $group ) {
 //			self::dump("[bmc] group:", $group );
 			
-			if ( $this->checkSet( $group ) == true ) {
-				$setsHave++;
-			} else if ( $this->checkRun( $group ) == true ) {
+			if ( $this->checkRun( $group ) == true ) {
 				$runsHave++;
+			} else if ( $this->checkSet( $group ) == true ) {
+				$setsHave++;
 			} else {
 				if ( count( $group ) > 0 ) {
 					$notSetRun++;
@@ -1777,15 +1777,19 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		//   3 cards plus 1 joker. A234 and JQKA are both valid.
 		self::trace("[bmc] ENTER checkRun");
 		
-//		self::dump("[bmc] checkRun cards: ", $cards);
+		self::dump("[bmc] checkRun cards: ", $cards);
 		
 		$cardCount = count( $cards );
+		self::dump("[bmc] cardCount: ", $cardCount);
+
 		if ( $cardCount < 4) {
 			self::trace("[bmc] checkRun FALSE (not enough cards)");
 			return false;
 		}
 
 		$nonJokers = array();
+		$allCardValues = array();
+
 		// Check if all non jokers are different values
 		foreach ( $cards as $card ) {
 			if ( $card[ 'type' ] != 5 ) {
@@ -1796,11 +1800,24 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		$countValues = array_count_values( $nonJokers );
 		
-		self::dump("[bmc] countValues: ", $countValues );
+		//$occurences = array_count_values( $allCardValues );
 		
+		self::dump("[bmc] countValues: ", $countValues );
+		self::dump("[bmc] allCardValues: ", $allCardValues );
+		//self::dump("[bmc] occurences: ", $occurences);
+
 		foreach ( $countValues as $type => $qty ) {
+			self::dump("[bmc] type:", $type );
+			self::dump("[bmc] qty:", $qty );
+			
 			if ( $qty > 1 ) {
-				throw new BgaUserException( self::_("Run cards must be sequential and unique.") );
+				// If there are 14 cards and 2 aces then allow it
+				if (( $cardCount == 14 ) &&
+				    ( $type == 1 ) && 
+					( $countValues[ 1 ] == 2 )) {
+				} else {
+					throw new BgaUserException( self::_("Run cards must be sequential and unique.") );
+				}
 			}
 		}
 		
@@ -1972,6 +1989,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				}
 			}
 		}
+		
 		self::trace("[bmc] EXIT checkSet: TRUE");
 		return true; // Made it through, so they are the same
 	}
@@ -2378,28 +2396,15 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				'player_name' => $players[ $activeTurnPlayer_id ][ 'player_name' ]
 			)
 		); 
-		
+
 		// Check end of game condition here. Message and route the players accordingly.
-		
+
         // Next hand target
 		$gameLengthOption = self::getGameStateValue( 'gameLengthOption' );
 		self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
-		
+
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 
-		// if ( $gameLengthOption == 1 ) {
-			// $incLength = 7;
-		// } else if (( $gameLengthOption == 2 ) && ( $currentHandType == 1 )) {
-			// $incLength = 1;
-		// } else if (( $gameLengthOption == 2 ) && ( $currentHandType == 2 )) {
-			// $incLength = 5;
-		// } else if ( $gameLengthOption == 3 ) {
-			// $incLength = 2;
-		// } else {
-			// $incLength = 1;
-		// }
-		
-//		self::incGameStateValue( 'currentHandType', $incLength );
 		self::incGameStateValue( 'currentHandType', 1 );
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		
@@ -2407,12 +2412,12 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		self::dump( "[bmc] countHandTypes:", $countHandTypes );
 
-
 //		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
 		if ( $currentHandType > $countHandTypes ) { // The 7 hand numbers are 0 through 6
 			$scoreMessage = clienttranslate( "Game Over!" );
 			$this->calcDisplayScoreDialog( $scoreMessage );
 			$this->gamestate->setAllPlayersMultiactive();
+			//$this->game->playerHasReviewedHand();
 			// $this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
 		} else {
 			$scoreMessage = clienttranslate( "On to the next!") ;

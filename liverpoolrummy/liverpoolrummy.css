@@ -71,7 +71,7 @@
 	border: 4px solid green !important;
 }
 
-.pbInverse {
+.playerBoardBuyer {
 	background: salmon;
 }
 
@@ -195,7 +195,7 @@
   transform: translate(-50%, -50%);
 }
 
-.border1 {
+.buyerLit {
 /*  border-style: solid;
   border-color: red;
   border-width: 1px;
