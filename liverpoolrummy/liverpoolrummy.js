@@ -1265,6 +1265,7 @@ console.log( "[bmc] ENTER sortBoard" );
 console.log("[bmc] NEWRUN_board_a" );
 console.log( weightChange );
 					this.downArea_A_[ player ].items = weightChange;
+					this.downArea_A_[ player ].updateDisplay();
 					// this.downArea_A_[ player ].changeItemsWeight( weightChange );
 				}
 
@@ -1279,6 +1280,7 @@ console.log(this.downArea_B_[ player ]);
 console.log("[bmc] NEWRUN_board_b" );
 console.log( weightChange );
 					this.downArea_B_[ player ].items = weightChange;
+					this.downArea_B_[ player ].updateDisplay();
 //					this.downArea_B_[ player ].changeItemsWeight( weightChange );
 				}
 				
@@ -1290,6 +1292,7 @@ console.log( weightChange );
 console.log("[bmc] NEWRUN_board_c" );
 console.log( weightChange );
 					this.downArea_C_[ player ].items = weightChange;
+					this.downArea_C_[ player ].updateDisplay();
 //					this.downArea_C_[ player ].changeItemsWeight( weightChange );
 				}
 			}
@@ -2866,6 +2869,15 @@ console.log("[bmc] ENTER UPDATECARDSDISPLAY");
 		element = document.getElementById("downArea")
 
 console.log(element);
+console.log(Object.getOwnPropertyNames(document));
+
+		var obj = document;
+		
+		getMethods = (obj) => Object.getOwnPropertyNames(obj).filter(item => typeof obj[item] === 'function')
+		
+		
+console.log(getMethods);
+
 		//element.load(" downArea > *");
 		//element.reload();
 		//element.innerHTML = element.innerHTML;
@@ -2877,7 +2889,7 @@ console.log(element);
 		//}, 10000);
 
 		
-//		$("downArea").load(" downArea > *");
+		//$("downArea").load(" downArea > *");
 		//$("#downArea").load(" #downArea > *");
 
 		// setTimeout(function(){ 
