@@ -45,6 +45,8 @@
 					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode">Meld C</a>
 					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode">Card For Joker</a>
 					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode">Go Down</a>
+					<input type="checkbox" id="voice" name="scales" checked> <label for="voices">Voices</label>
+					
 					<div id="myhand" class="myhand"></div>
 				</span>
 		</div>

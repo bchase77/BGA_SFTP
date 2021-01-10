@@ -3039,65 +3039,71 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		self::trace("[bmc] ENTER buyRequest-NEW");
 		//self::checkAction("buyRequest"); // Cannot do checkAction or the server blocks with "It's not your turn"
 
-		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
-		self::dump("[bmc] player_id:", $player_id);
+		$state = $this->gamestate->state();
 		
-		// Check if it's the player's turn, so no need to buy (TODO: Or buy it for free???)
-		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
-		if ( $player_id == $activeTurnPlayer_id ) {
-			self::trace("[bmc] Sending notif for itsYourTurn");
-			self::notifyPlayer(
-				$player_id,
-				'itsYourTurn',
-				"It's your turn",
-				array()
-			);
-		}
-/*
-		// Splitting it into 2, not sure why I have to
-		if ( $player_id == $activeTurnPlayer_id ) {
-			self::trace("[bmc] Sending notif for itsYourTurn2");
-			throw new BgaUserException( self::_("You don't need to buy it, it's your turn.") );
-		}
-*/
-		// If there aren't enough cards, don't allow it
-		$countDeck = count( $this->cards->countCardsByLocationArgs( 'deck' ) );
-		$countDiscardPile = count ($this->cards->countCardsByLocationArgs( 'discardPile' ) );
+		if ( $state['name'] == 'playerTurnDraw' ) {
+			$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
+			self::dump("[bmc] player_id:", $player_id);
+			
+			// Check if it's the player's turn, so no need to buy (TODO: Or buy it for free???)
+			$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
+			if ( $player_id == $activeTurnPlayer_id ) {
+				self::trace("[bmc] Sending notif for itsYourTurn");
+				self::notifyPlayer(
+					$player_id,
+					'itsYourTurn',
+					"It's your turn",
+					array()
+				);
+			}
+	/*
+			// Splitting it into 2, not sure why I have to
+			if ( $player_id == $activeTurnPlayer_id ) {
+				self::trace("[bmc] Sending notif for itsYourTurn2");
+				throw new BgaUserException( self::_("You don't need to buy it, it's your turn.") );
+			}
+	*/
+			// If there aren't enough cards, don't allow it
+			$countDeck = count( $this->cards->countCardsByLocationArgs( 'deck' ) );
+			$countDiscardPile = count ($this->cards->countCardsByLocationArgs( 'discardPile' ) );
 
-		if (( $countDeck + $countDiscardPile ) < 2 ) {
-			throw new BgaUserException( self::_('There are not enough down cards for you to buy.') );
-		}
+			if (( $countDeck + $countDiscardPile ) < 2 ) {
+				throw new BgaUserException( self::_('There are not enough down cards for you to buy.') );
+			}
 
-		// Check who was first, if that game mode was chosen
-		// $buyMethod = self::getGameStateValue( 'buyMethod' );
-		// self::dump("[bmc] buyMethod:", $buyMethod);
- 
-		// if ( $buyMethod == '1' ) { // 1==Fastest player. 2==Seat order.
-			// foreach( $buyers as $buyer ) {
-				// if ( $buyer == 2 ) {
-					// throw new BgaUserException( self::_('Oops! Someone else beat you to it!') );
+			// Check who was first, if that game mode was chosen
+			// $buyMethod = self::getGameStateValue( 'buyMethod' );
+			// self::dump("[bmc] buyMethod:", $buyMethod);
+	 
+			// if ( $buyMethod == '1' ) { // 1==Fastest player. 2==Seat order.
+				// foreach( $buyers as $buyer ) {
+					// if ( $buyer == 2 ) {
+						// throw new BgaUserException( self::_('Oops! Someone else beat you to it!') );
+					// }
 				// }
-			// }
-		// } // else $buyMethod == Seat order, so just keep track and resolve later
+			// } // else $buyMethod == Seat order, so just keep track and resolve later
 
-		// Check that this player can still buy this hand
-		$playersBuyCount = self::getPlayersBuyCount();
-		if ( $playersBuyCount[ $player_id ] < 1 ) {
-			throw new BgaUserException( self::_("You cannot buy. You already bought 3 times this hand.") );
+			// Check that this player can still buy this hand
+			$playersBuyCount = self::getPlayersBuyCount();
+			if ( $playersBuyCount[ $player_id ] < 1 ) {
+				throw new BgaUserException( self::_("You cannot buy. You already bought 3 times this hand.") );
+			}
+
+			// If made it this far, note the player wants to buy
+			self::setPlayerBuying( $player_id, 2 );
+
+			$buyers = self::getPlayerBuying();
+
+			self::dump("[bmc] Buyers Status2(buyRequest2)", $buyers);
+
+			$this->notifyPlayerWantsToBuy( $player_id );
+			self::trace("[bmc] EXIT (almost) buyRequest-NEW");
+
+			// deactivate player; if none left, transition to process discard
+			//$this->gamestate->setPlayerNonMultiactive( $player_id, 'resolveBuyers' );
+		} else {
+			throw new BgaUserException( self::_("You cannot buy that discard. The buyable one is gone.") );
 		}
-
-		// If made it this far, note the player wants to buy
-		self::setPlayerBuying( $player_id, 2 );
-
-		$buyers = self::getPlayerBuying();
-
-		self::dump("[bmc] Buyers Status2(buyRequest2)", $buyers);
-
-		$this->notifyPlayerWantsToBuy( $player_id );
-		self::trace("[bmc] EXIT (almost) buyRequest-NEW");
-
-		// deactivate player; if none left, transition to process discard
-		//$this->gamestate->setPlayerNonMultiactive( $player_id, 'resolveBuyers' );
 		
 		self::trace("[bmc] EXIT buyRequest-NEW");
 	}
