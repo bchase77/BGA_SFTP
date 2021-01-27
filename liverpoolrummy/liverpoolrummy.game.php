@@ -39,7 +39,6 @@
   *
   */
 
-
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
 
@@ -119,7 +118,7 @@ class LiverpoolRummy extends Table
         // Don't do a lot here since server side hasn't been set up yet and so it's hard to debug.
 		// Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
-        // The number of colors defined here must correspond to the maximum number of players allowed for the gams
+        // The number of colors defined here must correspond to the max number of players allowed for game
         $gameinfos = self::getGameinfos();
         $default_colors = $gameinfos['player_colors'];
 		
@@ -134,9 +133,6 @@ class LiverpoolRummy extends Table
         {
             $color = array_shift( $default_colors );
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player[ 'player_name' ] )."','".addslashes( $player['player_avatar'] )."')";
-			
-			// No buy timers are running after first load.
-			// self::setBuyTimerStatus( $player_id, 0 ); // 0 = Not running. 1 = Running.
         }
         $sql .= implode( $values, ',' );
         self::DbQuery( $sql );
@@ -146,23 +142,9 @@ class LiverpoolRummy extends Table
         self::setGameStateInitialValue( 'currentHandType', 0 );
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		
-		//self::dump("[bmc] handTypes(line138):", $this->handTypes[$currentHandType]);
+		//self::dump("[bmc] handTypes(line145):", $this->handTypes[$currentHandType]);
 
 		self::setGameLength();
-
-		// $gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
-
-		// if ( $gameLengthOption == 1 ) {
-			// $this->setsRuns = $this->setsRunsFull;
-			// $this->handTypes = $this->handTypesFull;
-		// } else {
-			// $this->setsRuns = $this->handTypesShort;
-			// $this->handTypes = $this->handTypesShort;
-		// }
-		
-//        self::setGameStateInitialValue( 'area_A_target', $this->handTypes[$currentHandType]["Area_A"]);
-//        self::setGameStateInitialValue( 'area_B_target', $this->handTypes[$currentHandType]["Area_B"]);
-//        self::setGameStateInitialValue( 'area_C_target', $this->handTypes[$currentHandType]["Area_C"]);
 
         // Activate first player (which is in general a good idea :) )
         $player_id = $this->activeNextPlayer();
@@ -355,16 +337,7 @@ class LiverpoolRummy extends Table
 		$result['dbgPlayersNumber'] = $playersNumber ;
 		
 		self::setGameLength();
-		// $gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
 
-		// if ( $gameLengthOption == 1 ) {
-			// $this->setsRuns = $this->setsRunsFull;
-			// $this->handTypes = $this->handTypesFull;
-		// } else {
-			// $this->setsRuns = $this->setsRunsShort;
-			// $this->handTypes = $this->handTypesShort;
-		// }
-		
 		$result['handTypes']["Target"] = $this->handTypes; // Pull the description
 		
 		$buyers = self::getPlayerBuying();
@@ -490,15 +463,6 @@ class LiverpoolRummy extends Table
 		$buyMessage = '';
 		
 		self::setGameLength();
-		// $gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
-
-		// if ( $gameLengthOption == 1 ) {
-			// $this->setsRuns = $this->setsRunsFull;
-			// $this->handTypes = $this->handTypesFull;
-		// } else {
-			// $this->setsRuns = $this->setsRunsShort;
-			// $this->handTypes = $this->handTypesShort;
-		// }
 
 		//self::dump("[bmc] currentHandType argPlayerTurnDraw:", $this->handTypes[$currentHandType]["Target"] );
 		//self::dump("[bmc] thingsCanDo:", $thingsCanDo );
@@ -526,6 +490,7 @@ class LiverpoolRummy extends Table
 		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 		$players = self::loadPlayersBasicInfos();
 		$activePlayer = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+		self::trace("[bmc] EXIT argWentOut");
         return array(
 			'player_name' => $activePlayer,
 			'player_id' => $activeTurnPlayer_id
@@ -565,15 +530,6 @@ class LiverpoolRummy extends Table
 		//self::dump("[bmc] activePlayer(PTP):", $activePlayer );
 
 		self::setGameLength();
-		// $gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
-
-		// if ( $gameLengthOption == 1 ) {
-			// $this->setsRuns = $this->setsRunsFull;
-			// $this->handTypes = $this->handTypesFull;
-		// } else {
-			// $this->setsRuns = $this->setsRunsShort;
-			// $this->handTypes = $this->handTypesShort;
-		// }
 
 		$tpn = '<span style="color:#' . $players[ $activeTurnPlayer_id ]["player_color"] . ';">' . $players[ $activeTurnPlayer_id ]["player_name"] . '</span>';
 		
@@ -606,15 +562,6 @@ class LiverpoolRummy extends Table
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		
 		self::setGameLength();
-		// $gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
-
-		// if ( $gameLengthOption == 1 ) {
-			// $this->setsRuns = $this->setsRunsFull;
-			// $this->handTypes = $this->handTypesFull;
-		// } else {
-			// $this->setsRuns = $this->setsRunsShort;
-			// $this->handTypes = $this->handTypesShort;
-		// }
 
 		self::dump("[bmc] Progression:", $currentHandType );
 		self::dump("[bmc] Progression:", count( $this->handTypes ));
@@ -710,18 +657,41 @@ class LiverpoolRummy extends Table
 /////
 /////
 /////
-	// function setBuyTimerStatus( $player_id, $setTo ) { // 0 = Not running, 1 = Running
-        // $sql = "UPDATE player SET buyTimer = $setTo  WHERE player_id = $player_id ";
-        // self::DbQuery( $sql );
-	// }
-    // function getBuyTimerStatus() {
-        // $sql = "SELECT player_id, buyTimer FROM player ";
-        // return self::getCollectionFromDB($sql, true);
-    // }
-    // function clearBuyTimers() {
-        // $sql = "UPDATE player SET buyTimer = 0 ";
-        // self::DbQuery( $sql );
-    // }
+	function setPlayerMeldAType( $player_id, $setTo ) { // 0 == Empty; 1 == Set; 2 == Run
+        $sql = "UPDATE player SET meldAType = $setTo  WHERE player_id = $player_id ";
+        self::DbQuery( $sql );
+	}
+	function setPlayerMeldBType( $player_id, $setTo ) { // 0 == Empty; 1 == Set; 2 == Run
+        $sql = "UPDATE player SET meldBType = $setTo  WHERE player_id = $player_id ";
+        self::DbQuery( $sql );
+	}
+	function setPlayerMeldCType( $player_id, $setTo ) { // 0 == Empty; 1 == Set; 2 == Run
+        $sql = "UPDATE player SET meldCType = $setTo  WHERE player_id = $player_id ";
+        self::DbQuery( $sql );
+	}
+    function getPlayerMeldAType() {
+        $sql = "SELECT player_id, meldAType FROM player "; // 0 == Empty; 1 == Set; 2 == Run
+        return self::getCollectionFromDB($sql, true);
+    }
+    function getPlayerMeldBType() {
+        $sql = "SELECT player_id, meldBType FROM player "; // 0 == Empty; 1 == Set; 2 == Run
+        return self::getCollectionFromDB($sql, true);
+    }
+    function getPlayerMeldCType() {
+        $sql = "SELECT player_id, meldCType FROM player "; // 0 == Empty; 1 == Set; 2 == Run
+        return self::getCollectionFromDB($sql, true);
+    }
+    function clearAllMeldType() {
+		$players = self::loadPlayersBasicInfos();
+		foreach ( $players as $player_id => $player ) {
+			$sql = "UPDATE player SET meldAType = 0 "; // 0 == Empty; 1 == Set; 2 == Run
+			self::DbQuery( $sql );
+			$sql = "UPDATE player SET meldBType = 0 "; // 0 == Empty; 1 == Set; 2 == Run
+			self::DbQuery( $sql );
+			$sql = "UPDATE player SET meldCType = 0 "; // 0 == Empty; 1 == Set; 2 == Run
+			self::DbQuery( $sql );
+		}
+    }
 /////
 /////
 /////
@@ -850,7 +820,8 @@ class LiverpoolRummy extends Table
 
 			$currentCard = $this->cards->getCard( $card_id );
 			
-			$buyers = self::getPlayerBuying();
+//			$buyers = self::getPlayerBuying();
+			$buyers = self::getPlayersBuyCount();
 			self::dump("[bmc] Buyers Status(discardCard):", $buyers);
 
 			if ( $currentCard[ 'type' ] == 5 ) {
@@ -1160,7 +1131,9 @@ class LiverpoolRummy extends Table
 			$value_displayed = ' a joker';
 			$color_displayed = '!';
 		} else {
+			self::dump("[bmc] APPARENTLY sometimes get undefined index here", $currentCard);
 			$value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
+
 			$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's';
 		}
 		
@@ -1327,8 +1300,6 @@ class LiverpoolRummy extends Table
 
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		$areaTitle = "Area" . substr( $boardArea, -2 ); // Last 2 should be "_A" or "_B" or "_C"
-		// $locationMeanings = $this->setsRuns[ $currentHandType ];
-		// $key = array_search( $areaTitle, $locationMeanings ); // False if not there. Integer if there.
 		
 		self::dump("[bmc] BC: ", $boardCard);
 		self::dump("[bmc] BA: ", $boardArea);
@@ -1336,13 +1307,10 @@ class LiverpoolRummy extends Table
 		self::dump("[bmc] HI: ", $handItems);
 		self::dump("[bmc] CHT:", $currentHandType);
 		self::dump("[bmc] AT:", $areaTitle);
-		// self::dump("[bmc] LM:", $locationMeanings);
-//		self::dump("[bmc] Key:", $key);
 		
 		$joker = array ('id' => 'None'); // Start by assuming no joker being swapped
 		$targetArea = 'None'; // Start by assuming no target area for the going-down-joker
 
-//		if (( $key === false ) ||          // Nothing selected on board;
 		if (( $boardArea == null ) ||      // Nothing selected on board;
 			( empty( $handItems )) ||      // Nothing selected in hand;
 			( $boardCard['type'] < 5  )) { // Board card is not a joker; So no need to do joker swap.
@@ -1351,6 +1319,54 @@ class LiverpoolRummy extends Table
 			//... and then continue to try to go down...
 			
 		} else { // Player has selected board and hand cards. This means try to use joker to go down.
+		
+		
+		
+		
+		
+		
+		
+		// THIS IS NEW CODE 1/24/20218
+		
+		
+		
+			// If they did put something in the Joker Prep but didn't select a joker, see
+			// if there is a single joker on the board and select it
+		
+//			$players = self::loadPlayersBasicInfos();
+
+	//		foreach ( $players as $player_id => $player ) {
+
+			if (( $boardArea != null ) && ( empty( $handItems ))) {
+				$cardsInPDA = $this->cards->getCardsInLocation( 'playerDown_A' );
+				$cardsInPDB = $this->cards->getCardsInLocation( 'playerDown_B' );
+				$cardsInPDC = $this->cards->getCardsInLocation( 'playerDown_C' );
+			
+				self::dump("[bmc] PDA: ", $cardsInPDA );
+				self::dump("[bmc] PDB: ", $cardsInPDB );
+				self::dump("[bmc] PDC: ", $cardsInPDC );
+				
+				if ( count( $cardsInPDA ) + count( $cardsInPDB ) + count( $cardsInPDC ) == 1 ){
+					if ( count( $cardsInPDA ) == 1 ) {
+						$handItems = $cardsInPDA;
+					} else if ( count( $cardsInPDB ) == 1 ) {
+						$handItems = $cardsInPDB;
+					} else {
+						$handItems = $cardsInPDC;
+					}
+				}		
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		
 			$jokerSwapResult = $this->tryJokerSwap( $handItems['id'], $active_player_id, $boardArea, $boardPlayer );
 			self::dump('[bmc] jokerSwapResult', $jokerSwapResult);
 		
@@ -1365,19 +1381,6 @@ class LiverpoolRummy extends Table
 
 			$playerHand = $this->cards->getCardsInLocation( 'hand', $active_player_id );
 
-//HERE I WANT THE JOKER THAT WE JUST DREW, NOT ANY JOKER FROM THE HAND. bECAUSE IF THE ID IS LESS IT WILL BE CHOSEN.
-/*			
-			$lookForJokerIn = $this->cards->getCardsInLocation( 'hand', $active_player_id );
-			
-			// Avoid the joker we just got from swap when searching hand for joker
-			self::dump('[bmc] lookForJokerIn', $lookForJokerIn );
-			$areaMissingJoker = $lookForJokerIn;
-			unset( $areaMissingJoker[ $boardCard[ 'id' ]]);
-			self::dump('[bmc] areaMissingJoker', $areaMissingJoker );
-			
-			$joker = $this->checkForJoker( $areaMissingJoker );
-*/
-//			$joker = $this->checkForJoker( $playerHand );
 			$joker = $jokerSwapResult;
 			self::dump("[bmc] Played Joker:", $joker);
 
@@ -1490,12 +1493,59 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		$setsHave = 0;
 		$runsHave = 0;
+		$eitherHave = 0;
 		$notSetRun = 0;
 
 		$groups = array ($cardGroupA, $cardGroupB, $cardGroupC);
 		
 		//self::dump("[bmc] groups:", $groups);
 
+		foreach ( $groups as $group ) {
+//			self::dump("[bmc] group:", $group );
+			if ( $this->checkSetOrRun( $group ) == true ) {
+				$eitherHave++;
+			} else if ( $this->checkSet( $group ) == true ) {
+				$setsHave++;
+			} else if ( $this->checkRun( $group, false ) == true ) {
+				$runsHave++;
+			} else {
+				if ( count( $group ) > 0 ) {
+					$notSetRun++;
+				}
+			}
+		}
+		if  ( $notSetRun > 0 ) {
+			throw new BgaUserException( self::_('Cannot go down with those cards. Did you select a joker from the board?') );
+		}
+
+		self::dump("[bmc] setsHave:", $setsHave);
+		self::dump("[bmc] runsHave:", $runsHave);
+		self::dump("[bmc] eitherHave:", $eitherHave);
+
+		if (( $setsHave + $runsHave + $eitherHave) != ( $setsNeeded + $runsNeeded )) {
+			throw new BgaUserException( self::_('Cannot go down. Incorrect number of melds.') );
+		}
+
+		if ( $runsHave > $runsNeeded ) {
+			throw new BgaUserException( self::_('Cannot go down. Too many Runs and not enough Sets.') );
+		} else if ( $setsHave > $setsNeeded ) {
+			throw new BgaUserException( self::_('Cannot go down. Too many Sets and not enough Runs.') );
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 		foreach ( $groups as $group ) {
 //			self::dump("[bmc] group:", $group );
 			
@@ -1568,7 +1618,11 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			case 1111: // Can never happen
 				throw new BgaUserException( self::_('Too many Sets and too many Runs.') );
 				break;
-		}
+		}		
+*/
+
+
+
 		$active_player_id = self::getActivePlayerId();
 
 		// If all cards besides the board joker are in the hand, then continue
@@ -1668,6 +1722,17 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////////
 ////////
 ////////
+	function checkSetOrRun ( $cardGroup ) {
+		if (( $this->checkSet( $cardGroup )) &&
+		    ( $this->checkRun( $cardGroup, true ))) { // Check run silently (don't throw exception if not)
+			return true;
+		} else {
+			return false;
+		}
+	}
+////////
+////////
+////////
 	function tryJokerSwap ( $card_id, $player_id, $boardArea, $boardPlayer) {
 		self::trace("[bmc] ENTER tryJokerSwap");
 
@@ -1717,7 +1782,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 			$maybeNewRun[$card['id']] = $card; // Keep the index of the new potential card
 
-			if ( $this->checkRun( $maybeNewRun )) { // If it's still a run, take the joker
+			if ( $this->checkRun( $maybeNewRun, false )) { // If it's still a run, take the joker
 				self::trace("[bmc] Take the joker, haven't used it yet.");
 
 //				if ( $boardCard['type'] == 5 ) { // If a joker is there
@@ -1772,7 +1837,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////////
 ////////
 ////////
-	function checkRun( $cards ) {
+	function checkRun( $cards, $silent ) {
 		// A run is 4 or more cards of the same suit with sequential values or
 		//   3 cards plus 1 joker. A234 and JQKA are both valid.
 		self::trace("[bmc] ENTER checkRun");
@@ -1816,7 +1881,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				    ( $type == 1 ) && 
 					( $countValues[ 1 ] == 2 )) {
 				} else {
-					throw new BgaUserException( self::_("Run cards must be sequential and unique.") );
+					if ( !$silent ) {
+						throw new BgaUserException( self::_("Run cards must be sequential and unique.") );
+					}
 				}
 			}
 		}
@@ -1845,10 +1912,10 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		}
 		
 		// self::dump("[bmc] New cards (cards):", $cards);
-		// self::dump("[bmc] New cards (aceLowCards):", $aceLowCards);
-		// self::dump("[bmc] New cards (aceHighCards):", $aceHighCards);
+		self::dump("[bmc] New cards (aceLowCards):", $aceLowCards);
+		self::dump("[bmc] New cards (aceHighCards):", $aceHighCards);
 
-		$tryAceLow = $this->checkRunWithAce( $aceLowCards );
+		$tryAceLow  = $this->checkRunWithAce( $aceLowCards );
 		$tryAceHigh = $this->checkRunWithAce( $aceHighCards );
 		
 		// self::dump("[bmc] Check Run aceLowCards",  $tryAceLow );
@@ -1861,15 +1928,21 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			case 1:
 				break; // With ace high or low, one is a run and all the same suit
 			case 2:
-				throw new BgaUserException( self::_("Nice try but it doesn't reach!") );
+				if ( !$silent ) {
+					throw new BgaUserException( self::_("Nice try but it doesn't reach!") );
+				}
 				break;
 			case 10:
 			case 11:
 			case 20:
-				throw new BgaUserException( self::_('Run cards must all be the same suit.') );
+				if ( !$silent ) {
+					throw new BgaUserException( self::_('Run cards must all be the same suit.') );
+				}
 				break;
 			default :
-				throw new BgaUserException( self::_("Ace Check error.") );
+				if ( !$silent ) {
+					throw new BgaUserException( self::_("Ace Check error.") );
+				}
 				break;
 		}
 		// self::dump("[bmc] checkRun cards: ", $cards );
@@ -1989,7 +2062,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				}
 			}
 		}
-		
 		self::trace("[bmc] EXIT checkSet: TRUE");
 		return true; // Made it through, so they are the same
 	}
@@ -2054,6 +2126,36 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			return;
 		}
 		
+		$boardCards = $this->cards->getCardsInLocation( $boardArea , $boardPlayer );
+		self::dump("[bmc] boardCards before:", $boardCards );
+		
+		$handCards = $this->cards->getCards( $card_ids );
+		self::dump("[bmc] handCards:", $handCards );
+		
+		$boardPlusHandCards = array_merge( $boardCards, $handCards );
+		
+		// foreach ( $handCards as $card ) {
+			// $boardplushandcards[] = $card;
+		// }
+		
+		//array_push( $boardPlusHandCards, $handCards );
+		self::dump("[bmc] boardplushandcards After:", $boardPlusHandCards );
+		
+		// If all the cards are a run then keep trying to play them until it works
+		
+//		$multipleCardsAreRun = $this->checkRun( $boardPlusHandCards );
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		foreach ( $card_ids as $card_id ) {
 			self::dump( "[bmc] (MULTIPLE Playing Card", $card_id );
 			$this->playCardFinish( $card_id, $player_id, $boardArea, $boardPlayer, false );
@@ -2101,6 +2203,12 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::dump("[bmc] Cards on board BOARD PLAYER:", $boardPlayer);
 
 		$cardsInArea = $this->cards->getCardsInLocation( $boardArea, $boardPlayer);
+		
+		self::dump("[bmc] Count of cards in area:", count( $cardsInArea ));
+		
+		if ( count( $cardsInArea ) > 13 ) {
+			throw new BgaUserException( self::_('Cannot play there. That board area is full.') );
+		}
 		
 		self::dump("[bmc] Cards on board CARDS IN AREA:", $cardsInArea );
 		self::dump("[bmc] Card being played CARD TYPE:", $card_typeA );
@@ -2201,7 +2309,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				self::trace("[bmc] 1931 not same values for set.");
 				throw new BgaUserException( self::_('Cannot play that card on that set.') );
 			}
-		} else if ( $this->checkRun( $cardsInArea ) == true ) {
+		} else if ( $this->checkRun( $cardsInArea, false ) == true ) {
 			self::trace("[bmc] Trying to play onto a run.");
 			
 			// If playing a joker, then just play it
@@ -2220,7 +2328,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				$potentialNewRun[ $currentCard[ 'id' ]] = $currentCard;
 				self::dump("[bmc] checking the potential run is still a run.", $potentialNewRun );
 				
-				if ( $this->checkRun( $potentialNewRun ) == true ) {
+				if ( $this->checkRun( $potentialNewRun, false ) == true ) {
 					self::trace("[bmc] Playing the card onto the run.");
 					
 					$this->playOnRunAndNotify( $card_id, $boardArea, $boardPlayer, $playWeight, $player_id, $currentCard );
@@ -2241,7 +2349,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				try {
 					self::trace("[bmc] First try playing without the joker.");
 					
-					$this->checkRun( $potentialNewRun );
+					$this->checkRun( $potentialNewRun, false );
 					
 					// If we get to here then it's a run
 					self::trace("[bmc] YES can do swap.");
@@ -2261,14 +2369,14 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					self::dump("[bmc] Added joker back:", $potentialNewRun );
 					self::dump("[bmc] mightbejoker:", $mightBeJoker );
 
-					if ( $this->checkRun( $potentialNewRun ) == true ) {
+					if ( $this->checkRun( $potentialNewRun, false ) == true ) {
 						$this->playOnRunAndNotify( $card_id, $boardArea, $boardPlayer, $playWeight, $player_id, $currentCard );
 					}
 				}
 			}
 		} else {
 			self::trace("[bmc] Not a Set and Not a Run!");
-				throw new BgaUserException( self::_('Not a Set and Not a Run (shouldnt happen!).'));
+				throw new BgaUserException( self::_("Not a Set and Not a Run (shouldn't happen!)."));
 		}
 
 		$buyers = self::getPlayerBuying();
@@ -2381,7 +2489,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
         game state.
     */
     function stWentOut() {
-		self::debug("[bmc] ENTER stWentOut");
+		self::trace("[bmc] ENTER stWentOut");
 
 		// Notify players to review their hands and click to continue
 		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
@@ -2404,22 +2512,25 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
 
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
+		self::dump( "[bmc] currentHandType:", $currentHandType );
 
 		self::incGameStateValue( 'currentHandType', 1 );
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
+		self::dump( "[bmc] currentHandType:", $currentHandType );
 		
 		$countHandTypes = count( $this->handTypes );
 
 		self::dump( "[bmc] countHandTypes:", $countHandTypes );
 
-//		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
-		if ( $currentHandType > $countHandTypes ) { // The 7 hand numbers are 0 through 6
+		if ( $currentHandType >= $countHandTypes ) {
+			self::debug("[bmc] Game Over!");
 			$scoreMessage = clienttranslate( "Game Over!" );
 			$this->calcDisplayScoreDialog( $scoreMessage );
-			$this->gamestate->setAllPlayersMultiactive();
+			$this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
 			//$this->game->playerHasReviewedHand();
 			// $this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
 		} else {
+			self::debug("[bmc] On To The Next!");
 			$scoreMessage = clienttranslate( "On to the next!") ;
 			$this->calcDisplayScoreDialog( $scoreMessage );
 			$this->gamestate->setAllPlayersMultiactive();
@@ -2583,7 +2694,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 			)
 		); 
 		// Deactivate player; if none left, transition to next '' state
-		$this->gamestate->setPlayerNonMultiactive( $player_id, '' );
+		$this->gamestate->setPlayerNonMultiactive( $player_id, 'playerHasReviewedHand' );
 	}
 ////
 ////
@@ -3041,7 +3152,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 
 		$state = $this->gamestate->state();
 		
-		if ( $state['name'] == 'playerTurnDraw' ) {
+//		if ( $state['name'] == 'playerTurnDraw' ) {
 			$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
 			self::dump("[bmc] player_id:", $player_id);
 			
@@ -3101,10 +3212,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 
 			// deactivate player; if none left, transition to process discard
 			//$this->gamestate->setPlayerNonMultiactive( $player_id, 'resolveBuyers' );
-		} else {
-			throw new BgaUserException( self::_("You cannot buy that discard. The buyable one is gone.") );
-		}
-		
+	
 		self::trace("[bmc] EXIT buyRequest-NEW");
 	}
 ////
@@ -3353,23 +3461,23 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		
 		// Don't need to wait any more since once the player discards over a card that can be
 		//   bought, that card can no longer be bought.
-		$buyers = self::getPlayerBuying();
-		self::dump("[bmc] buyers:", $buyers );
+		// $buyers = self::getPlayerBuying();
+		// self::dump("[bmc] buyers:", $buyers );
 		
-		$waiting = false;
+		// $waiting = false;
 		
-		foreach ( $buyers as $buyer => $buying ) {
-			if ( $buying == 0 ) {
-				self::dump("[bmc] Wwaaiiting for buyer:", $buyer );
-				$waiting = true;
-			}
-		}
+		// foreach ( $buyers as $buyer => $buying ) {
+			// if ( $buying == 0 ) {
+				// self::dump("[bmc] Wwaaiiting for buyer:", $buyer );
+				// $waiting = true;
+			// }
+		// }
 		
-		if ( $waiting ) {
-			self::trace( "[bmc] Still waiting, loop around (eventually)" );
-		} else {
-			self::trace( "[bmc] No longer waiting" );
-		}
+		// if ( $waiting ) {
+			// self::trace( "[bmc] Still waiting, loop around (eventually)" );
+		// } else {
+			// self::trace( "[bmc] No longer waiting" );
+		// }
 		self::trace( "[bmc] about to go to fullyResolved" );
 		$this->gamestate->nextState( 'fullyResolved' );
 		self::trace( "[bmc] EXIT (truly - does this ever run?) stWaitForAll" );
@@ -3593,7 +3701,6 @@ TODO: Maybe check if there were no more playable cards and show that message.
 ////
     function stEndHand() {
 		self::trace("[bmc] ENTER stEndHand");
-// SCORING WAS HERE PREVIOUSLY
 		
 		// Notify players and wait for them to confirm to move to the next hand		
 		
@@ -3611,10 +3718,6 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		self::dump("[bmc] countHandTypes stEndHand:", $countHandTypes );
 		
 		if ( $currentHandType >= $countHandTypes ) {
-
-// This next line throws an error Undefined property: <gamename>::$handTypes
-//		if ( $currentHandType > count( $this->handTypes )) { // The 7 hand numbers are 0 through 6
-
 			$this->gamestate->nextState("endGame");
 		} else {
 
@@ -3638,11 +3741,15 @@ TODO: Maybe check if there were no more playable cards and show that message.
 			
 			$newScores = self::getCollectionFromDb("SELECT player_id, player_score FROM player", true );
 
-			self::notifyAllPlayers( "newScores", '', array(
-				'newScores' => $newScores,
-				'handTarget' => $handTarget,
-				'currentHandType' => $currentHandType
-				));
+			self::notifyAllPlayers(
+				"newScores",
+				'',
+				array(
+					'newScores' => $newScores,
+					'handTarget' => $handTarget,
+					'currentHandType' => $currentHandType
+				)
+			);
 
 			self::trace("[bmc] EXIT (almost) stEndHand");
 			$this->gamestate->nextState("newHand");

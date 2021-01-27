@@ -103,7 +103,7 @@ $this->handTypes = array( // Hand targets associate with the down areas:
 		// }
 
 		$template = self::getGameName() . "_" . self::getGameName();
-        
+
 		//$area_A_target = $this->game->getGameStateValue( 'area_A_target' );
 		//$area_B_target = $this->game->getGameStateValue( 'area_B_target' );
 		//$area_C_target = $this->game->getGameStateValue( 'area_C_target' );

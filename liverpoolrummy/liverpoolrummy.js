@@ -76,7 +76,6 @@ function (dojo, declare) {
 			this.enableDBStatic = 'Yes'; // (except the player whose turn it is
 			this.enableDBTimer = 'No';
 			this.playedSoundWentOut = false;
-			this.playedSoundWentDown = false;
 			this.actionTimerLabelDefault = "Don't Buy";
 			this.dealMeInClicked = false;
 			this.buyRequested = false;
@@ -109,44 +108,40 @@ function (dojo, declare) {
 ////////
 //
 // TODO:
-// 1/3: [BEN] Why so many "Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first"? Seems coming from the history log.
-// 1/2: Game needs to end before DEAL ME IN.
+// 1/20: If there are 14 cards in an area then unlight all greens and put a joker on the left if no ace.
+// 1/20: rightmost joker of A*3* lights up green and should not.
+// 1/16: Allow players to specify where each joker plays
+// 1/16: When I have enough melds prepped to go down and it becomes my turn, the GO DOWN button doesn't light up but should
+// 1/16: When someone clicks BUY IT and someone clicks the card there can be a race condition?
+// 1/16: BGA Service Error. Unexpected error: BGA service error (2.boardgamearena.com 17/01 04:29:26       
+// 1/16: [Sun Jan 10 07:03:41.742951 2021] [php7:notice] [pid 18038] [client 51.178.130.161:15152] PHP Notice: Undefined offset: 1 in /var/tournoi/release/games/liverpoolrummy/210110-0525/liverpoolrummy.game.php on line 452, referer: https://boardgamearena.com/table?table=138111919
+// [Sun Jan 10 07:11:30.029970 2021] [php7:notice] [pid 18035] [client 51.178.130.161:41188] PHP Notice: Undefined offset: 1 in /var/tournoi/release/games/liverpoolrummy/210110-0525/liverpoolrummy.game.php on line 452, referer: https://boardgamearena.com/table?table=138111919&acceptinvit
+// [Sun Jan 10 07:12:11.446814 2021] [php7:notice] [pid 19220] [client 51.178.130.161:6946] PHP Notice: Undefined offset: 1 in /var/tournoi/release/games/liverpoolrummy/210110-0525/liverpoolrummy.game.php on line 452, referer: https://boardgamearena.com/table?table=138111919&acceptinvit
+// [Sun Jan 17 04:14:39.169605 2021] [php7:notice] [pid 29756] [client 51.178.130.161:32786] PHP Notice: Undefined index: in /var/tournoi/release/games/liverpoolrummy/210110-0717/liverpoolrummy.game.php on line 1163, referer: https://boardgamearena.com/2/liverpoolrummy?table=139975005
+// [Sun Jan 17 04:14:39.169650 2021] [php7:notice] [pid 29756] [client 51.178.130.161:32786] PHP Notice: Undefined index: in /var/tournoi/release/games/liverpoolrummy/210110-0717/liverpoolrummy.game.php on line 1164, referer: https://boardgamearena.com/2/liverpoolrummy?table=139975005
+
+// 1/16: Highlight player board color 1 when someone goes down, and color 2 after they've gone done.
+// 1/16: 4 in a set and 4 in a run and GO DOWN didn't light up
+// 1/16: when going down with 4 in a set and a run as AKQ* it says "RUN CARDS MUST BE SEQUENTIAL"
+// 1/9: Remove MELD A, MELD B, MELD C, CARD FOR JOKER
+// 1/3: Why so many "Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first"? Seems coming from the history log.
 // 12/26: When drawing a card, if the same card is in player hand they both go to the right. Only the new card should move.
 // 12/26: Konni discarded at same time as I clicked BUY it. It was my turn. Game thought i wanted to buy Konni's discard. I drew, but now it won't let me discard: "You cannot buy any more this hand(decPlayerBuyCount)."
 // 12/26 (Cannot reproduce) In PHP:
 // [Sun Dec 27 07:14:39.479873 2020] [php7:notice] [pid 9172] [client 51.178.130.161:59540] PHP Notice: Undefined index: in /var/tournoi/release/games/liverpoolrummy/201214-0437/liverpoolrummy.game.php on line 717, referer: https://boardgamearena.com/2/liverpoolrummy?table=134280648
 //
 // 12/26: Show the options in the message log when the game starts.
-// 12/26 Marc's board did not light up when I went to buy, but it did after he drew a card. It should have
-//       lit up when I clicked the BUY, and not waited until he drew.
-// 12/26: Show the floating jokers as ghosted on the board instead of solid.
+// 12/26 Marc's board did not light up when I went to buy, but it did after he drew a card. It should have lit up when I clicked the BUY, and not waited until he drew.
 // 12/26: Hover-over a joker shows what cards can be substituted.
 // 12/26: Spectator should not see MELD A, MELD B, MELD and CARD FOR JOKER
 // 12/26: Landscape to portrait shows every card in discard pile.
-// 12/26: Remove the DEAL ME IN when the game is over.
 // 12/26: "Tried but could not buy" does not show up but should.
 // 12/26: Allow go down with deficient joker and have it figure out that it's in the middle of the run.
-// 
-// 12/4: Add notify if buyers were not allowed.
 //
-// X 11/28: Unexpected error: Error while processing Database request (2.boardgamearena.com 29/11 07:36:08)
-//
-// 12/13: Javascript error:
-// Script error.
-// Script:
-// Url: https://studio.boardgamearena.com/1/liverpoolrummy?table=218457&testuser=2333743#
-// BGA version 201211-1532
-// U=2333743
-// Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36
 // 12/24: Add the ranking of each player to the player boards
-// 12/13: After a new hand is dealt the discard pile doesn't border red
-// 12/11: The buy counter isn't right
 // 11/28: After playing last card, got NaN in number of cards
 // 11/26: Get everyone at least 2 turns, or half points
 // 11/26: For early hands, make 4 cards needed for a set
-// 11/26: if it's your turn and you click BUY then treat it like you drew the card
-// 11/26: After 1 hand, the PREP areas didn't have their titles on the board
-// 11/26: Chrome 87 vs. Chrome 86 the 87 people saw a run placed as 4235. Chrome 86 saw 2345.
 // 11/27: With expelled players, the active turn player's table did not turn green.
 // 
 // 11/26: Let all players have at least 1 turn
@@ -155,7 +150,6 @@ function (dojo, declare) {
 // 11/24: Have an elegant way to end the game early.
 // 11/21: SAFARI: GO DOWN button caused NOT ENOUGH SETS
 // 11/26: https://boardgamearena.com/2/liverpoolrummy?table=127049675# Mom couldn't end 
-
 // 11/10: Add KNOCK requirement feature, or you can't go down next turn
 // 11/10: IT'S NOT YOUR TURN is not needed
 // 11/10: Got Nice Try doesn't reach from 89 on 0*QKA, but they played OK individually.
@@ -173,6 +167,17 @@ function (dojo, declare) {
 // 11/10: Maybe not: Get bonus if you go out? NO.
 // 11/10: Maybe not: Notify players are prepping cards
 //
+// X 12/26: Remove the DEAL ME IN when the game is over.
+// X 11/26: if it's your turn and you click BUY then treat it like you drew the card
+// X 11/26: After 1 hand, the PREP areas didn't have their titles on the board
+// X 11/26: Chrome 87 vs. Chrome 86 the 87 people saw a run placed as 4235. Chrome 86 saw 2345.
+// X 1/2: Game needs to end before DEAL ME IN.
+// X 1/16: When clicked BUY It, someone drew and the red border went away and it should stay.
+// X 1/16: A3** didn't sort right on a run
+// X 12/13: After a new hand is dealt the discard pile doesn't border red
+// X 12/11: The buy counter isn't right
+// X 12/26: Show the floating jokers as ghosted on the board instead of solid.
+// X 11/28: Unexpected error: Error while processing Database request (2.boardgamearena.com 29/11 07:36:08)
 // X 12/26: When try to buy and it's your turn, should not hear "I"LL BUT IT" Jo is sending me a console log.
 // X 12/26: player clicked BUY IT button to buy but it's there turn causes DAD, but should hear my Mom.
 // X 12/26: Once discard was chosen as the draw card, don't let anyone try to buy. (Now it still allows the buy-try to be registered).
@@ -721,8 +726,13 @@ console.log( discardPile );
 			for (var player in this.gamedatas.players) {
 // console.log(player);
 				this.goneDown[ player ] = parseInt( this.gamedatas.goneDown[ player ]);
-// console.log("[bmc] this.gonedown[]:");
-// console.log(this.goneDown[player]);
+console.log("[bmc] this.gonedown[]:");
+console.log(this.goneDown[player]);
+				if ( this.goneDown[ player ] == 1 ) {
+console.log("[bmc] lighting ", player );
+console.log('overall_player_board_' + player, 'playerWentDown' );
+					dojo.addClass( 'overall_player_board_' + player, 'playerWentDown' );
+				}
 			}
 
 // console.log(this.player_id);
@@ -730,7 +740,6 @@ console.log( discardPile );
 			dojo.connect( $('myhand'), 'ondblclick', this, 'onPlayerHandDoubleClick' );
 
             dojo.connect( this.playerHand,   'onChangeSelection', this, 'onPlayerHandSelectionChanged' );
-//            dojo.connect( this.deck,         'onChangeSelection', this, 'onDeckSelectionChanged' );
             dojo.connect( this.deckOne,      'onChangeSelection', this, 'onDeckSelectionChanged' );
             dojo.connect( this.discardPile,  'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
 			dojo.connect( $('discardPile' ), 'onclick',           this, 'onDiscardPileSelectionChanged');
@@ -881,9 +890,26 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
             console.log( "height: " + gda + "px;" );
 			dojo.setStyle( 'goDownArea_wrap', "height: " + gda + "px;" );
 
-			// Move the board jokers, if any, to appropriate places
-			this.sortBoard();
+			// Move the board jokers, if any, to appropriate places, after the window has loaded
+//			window.onload = function() {
+console.log("[bmc] Doing the window.onload");
+			window.onload = this.sortBoard();
 			
+//console.log("[bmc] fake onplayersortbybutton");
+//				this.onPlayerSortByButton(); // click it once because the default is runs
+
+				// extraJokerArray = "";
+				
+				// setTimeout(
+					// this.removeJokerBorder( extraJokerArray ), 2000
+				// );
+
+
+				//this.onPlayerSortByButton(), 10000
+				// setTimeout(
+					// this.sortBoard(), 10000
+				// );
+
 			// Get status of the voices box
 			if ( $('voice').checked ) {
 				console.log("CHECKED");
@@ -947,14 +973,6 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 							dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
 						}
 					}
-
-
-
-
-
-
-
-
 					break;
 				case 'checkEmptyDeck':
 					console.log("[bmc] FOUND checkEmptyDeck");
@@ -1557,6 +1575,48 @@ console.log( "[bmc] EXIT sortBoard" );
 			// }
 // console.log( "[bmc] EXIT sortRun" );
 		// },
+
+
+/////////
+/////////
+/////////
+		addJokerBorder : function( jokers ){
+console.log("[bmc] Enter addJokerBorder");
+console.log( jokers );
+
+			for ( joker of jokers ) {
+
+console.log("[bmc] REALLY Add GREEN BORDER1");
+console.log(joker);
+console.log($(joker));
+
+				if ( $(joker) != null ) {
+					dojo.addClass( joker, 'stockitem_extraJoker' );
+				}
+			}
+
+		console.log("[bmc] Exit addJokerBorder");
+		},
+/////////
+/////////
+/////////
+		removeJokerBorder : function( jokers ){
+console.log("[bmc] Enter removeJokerBorder");
+console.log( jokers );
+
+			for ( joker of jokers ) {
+
+console.log("[bmc] REALLY Removing GREEN BORDER1");
+console.log(joker);
+console.log($(joker));
+
+				if ( $(joker) != null ) {
+					dojo.removeClass( joker, 'stockitem_extraJoker' );
+				}
+			}
+
+		console.log("[bmc] Exit removeJokerBorder");
+		},
 /////////
 /////////
 /////////
@@ -1597,23 +1657,50 @@ console.log("[bmc] cards:");
 console.log(cards);
 console.log(downArea);
 
+				var extraJokerArray = new Array();
+
 				for ( let i in cards ) {
 console.log("[bmc] for removing class");
 console.log( downArea + '_' + boardPlayer + '_item_' + cards[i]['id']);
 console.log( $(downArea + '_' + boardPlayer + '_item_' + cards[i]['id']));
 console.log(cards[i]);
 					if ( cards[i] != null) {
-						var bob = downArea + '_' + boardPlayer + '_item_' + cards[i]['id'];
-						setTimeout(function(){
-console.log(bob);
-console.log($(bob));
-							dojo.removeClass( bob, 'stockitem_extraJoker' );
-							// let tooltip_extraJoker = ' ';
-							// this.addTooltipHtmlToClass( bob, tooltip_extraJoker);
-						}, 1000);
+						var jokerToRemoveGreen = downArea + '_' + boardPlayer + '_item_' + cards[i]['id'];
+						
+						extraJokerArray.push( jokerToRemoveGreen );
+
+						// setTimeout(function(){
+// console.log(jokerToRemoveGreen);
+// console.log($(jokerToRemoveGreen));
+							// dojo.removeClass( jokerToRemoveGreen, 'stockitem_extraJoker' );
+						// }, 1000);
+						
+						// setTimeout(function(){
+//						var tooltip_extraJoker = ' ';
+//						this.addTooltipHtmlToClass( jokerToRemoveGreen, tooltip_extraJoker);
 					}
 				}
+console.log("[bmc] Removing GREEN BORDER1");
+console.log(extraJokerArray);
+console.log($(extraJokerArray));
 
+				setTimeout(
+					this.removeJokerBorder( extraJokerArray ), 2000
+				);
+				
+console.log("[bmc] UPDATING DISPLAY FOR THAT BOARDPLAYER1");
+console.log( boardPlayer );
+				this.updatingBoardPlayer = boardPlayer;
+				
+				// setTimeout(function(){
+// console.log("[bmc] UPDATING DISPLAY FOR THAT BOARDPLAYER2");
+// console.log( this.updatingBoardPlayer );
+					// this.downArea_A_[ '2333742' ].updateDisplay();
+					// this.downArea_B_[ this.updatingBoardPlayer ].updateDisplay();
+					// this.downArea_C_[ this.updatingBoardPlayer ].updateDisplay();					
+				// }, 1500);
+
+//SHOULDNT SORT IF ITS A JOKER
 				// Count number of jokers and track their IDs to set weights later
 				
 				var jokerCount = 0;
@@ -1633,7 +1720,7 @@ console.log($(bob));
 				}
 console.log("[bmc] jokers:");
 console.log(jokers);
-				
+console.log(thereIsAnAce);				
 				var cardValuesHard = new Array();
 				
 				for ( let i in cards ) {
@@ -1653,23 +1740,35 @@ console.log("Looping over hard cards");
 				
 				// Reindex cards with the IDs as the indices
 				
-				// Go through positions 2 through King and track 'real' cards if they exist
-				for ( let i = 2; i < 14 ; i++) {
+				// Go through positions 1 through King and track 'real' cards if they exist
+				for ( let i = 1; i < 14 ; i++) {
 console.log( i );
 console.log(cardValuesHard[ i ]);
 console.log(foundFirst);
 
-					if ( cardValuesHard[ i ] != null ) { 
-console.log("notNull");
-						foundFirst = true;
+// Doesn't sort A*0QK properly
+
+					if ( cardValuesHard[ i ] != null ) {
+console.log("card location is notNull");
+						if ((( cardValuesHard[ i ] == 1 )    &&
+						   (( cardValuesHard.includes( 8 ))  ||
+							( cardValuesHard.includes( 9 ))  ||
+							( cardValuesHard.includes( 10 )) ||
+							( cardValuesHard.includes( 11 )) ||
+							( cardValuesHard.includes( 12 )) ||
+							( cardValuesHard.includes( 13 ))))) {
+							} else {
+
+							foundFirst = true;
 						
-						index = cards.map( function(e) { return e.type; }).indexOf( i );
-console.log("index");						
-console.log(index);						
-						cards[ index ][ 'boardLieIndex' ] = i;
-						usedPositions.push(i);
+							index = cards.map( function(e) { return e.type; }).indexOf( i );
+console.log("index");
+console.log(index);
+							cards[ index ][ 'boardLieIndex' ] = i;
+							usedPositions.push(i);
+						}
 					} else {
-console.log("Null");
+console.log("card location is Null");
 						if ( foundFirst ) {
 console.log("foundFirst");
 console.log(foundFirst);
@@ -1698,7 +1797,7 @@ console.log(usedPositions);
 //	console.log("[bmc] Yikes!! This never should have been a run.");
 								}
 							} else {
-console.log("[bmc] FINISHED HARD CARDS not to high ace");
+console.log("[bmc] FINISHED HARD CARDS do not put high ace");
 							}
 console.log("[bmc] FINISHED HARD CARDS");
 						}
@@ -1762,26 +1861,65 @@ console.log( cards );
 				if ( !usedPositions.includes( 14 )) {
 					for ( let i = jokerIndex; i < jokerCount; i++ ) {
 						cards[ i ][ 'boardLieIndex' ] = 15;
+					// setTimeout( function(){
+	// console.log(cards[ i ]);
+	// console.log($(cards[ i ]));
+						// dojo.addClass( cards[ i ], 'stockitem_extraJoker' );
+						
+					// }, 1000 );
+
+
+console.log("[bmc] EXTRA ON RIGHT");
+
 					}
 				} else {
 					for ( let i = jokerIndex; i < jokerCount; i++ ) {
 						cards[ i ][ 'boardLieIndex' ] = 0;
+console.log("[bmc] EXTRA ON LEFT");
 					}
 					
 				}
+				
+				// for ( let i = 0; i < 15 ; i++ ){
+					// possibleJoker = (element) => element == i;
+					// if ( cards.findIndex( possibleJoker )
+				
+				// }
+				
+				
+				
+				
+				
+				
+				
+				
+				
+console.log("[bmc] ABOUNT TO ADD JOKER TOOLTIPS");
+				var extraJokerArray = new Array();
+				
 				for ( let i = jokerIndex; i < jokerCount; i++ ) {
 console.log(i);
-				var bob = downArea + '_' + boardPlayer + '_item_' + cards[i]['id'];
-				setTimeout(function(){
-console.log(bob);
-console.log($(bob));
-					dojo.addClass( bob, 'stockitem_extraJoker' );
-					
-				}, 1000);
-				// let tooltip_extraJoker = 'This joker can be substituted at either end of the run.';
-				// this.addTooltipHtmlToClass( bob, tooltip_extraJoker);
+					var jokerExtraAddGreen = downArea + '_' + boardPlayer + '_item_' + cards[i]['id'];
+console.log("[bmc] ADDING GREEN BORDER1");
+console.log(jokerExtraAddGreen);
+console.log($(jokerExtraAddGreen));
 
+					// Only make it green if there is not an ace
+					if ( !thereIsAnAce ) {
+						extraJokerArray.push( jokerExtraAddGreen );
+					}
 				}
+console.log("[bmc] extraJokerArray");				
+console.log(extraJokerArray);				
+
+
+
+
+				setTimeout(
+					this.addJokerBorder( extraJokerArray ), 10000
+				);
+				
+				
 console.log("[bmc] usedPositions:");
 console.log(usedPositions);
 
@@ -3448,7 +3586,7 @@ console.log(weightChange);
 console.log("[bmc] ENTER onPlayerGoDownButton!");
 console.log(this.player_id)
 			// var handItems = this.playerHand.getSelectedItems(); // Get the card for joker swap, if any
-			var handItems = this.myPrepJoker.getAllItems(); // Get the card for joker swap (should be just 1 if any)
+			//var handItems = this.myPrepJoker.getAllItems(); // Get the card for joker swap (should be just 1 if any)
 			
 		    this.removeActionButtons(); // Remove the button because they played
 
@@ -3464,7 +3602,7 @@ console.log(this.player_id)
 			console.log(cardGroupA);
 			console.log(cardGroupB);
 			console.log(cardGroupC);
-			console.log(handItems);
+			//console.log(handItems);
 			
             var cardGroupAIds = this.getItemIds(cardGroupA);
             var cardGroupBIds = this.getItemIds(cardGroupB);
@@ -4501,6 +4639,7 @@ console.log( $('close_btn').innerHTML );
 				this.downArea_A_[ player ].removeAll();
 				this.downArea_B_[ player ].removeAll();
 				this.downArea_C_[ player ].removeAll();
+				dojo.removeClass( 'overall_player_board_' + player, 'playerWentDown' );
 
 				this.goneDown[ player ] = 0;
 			}
@@ -4514,6 +4653,7 @@ console.log( $('close_btn').innerHTML );
 			dojo.removeClass('myPrepB', "buyerLit");
 			dojo.removeClass('myPrepC', "buyerLit");
 			dojo.removeClass('myPrepJoker', "buyerLit");
+
 
 			this.prepSetLoc = 0; // Nothing is prepped, so clear the counters
 			this.prepRunLoc = 3;
@@ -4919,6 +5059,10 @@ console.log("[bmc] sound: It's Your Turn");
 			console.log( this.gamedatas.playerOrderTrue );
 			console.log( this.player_id );
 
+			console.log("LIGHTING UP GONE DOWN PLAYER");
+			console.log( 'overall_player_board_' + notif.args.player_id, 'playerWentDown' );
+			dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'playerWentDown' );
+
 			//this.disableNextMoveSound();
 			if ( this.voices ) {
 				playSound( 'tutorialrumone_GoingDown' );
@@ -4942,11 +5086,11 @@ console.log("[bmc] sound: It's Your Turn");
 			card_ids = notif.args.card_ids;
 			card_type = notif.args.card_type;
 			card_type_arg = notif.args.card_type_arg;
-			console.log( card_ids );
+console.log( card_ids );
 
 			joker = notif.args.joker;
-			console.log("[bmc] joker:");
-			console.log(joker);
+console.log("[bmc] joker:");
+console.log(joker);
 			
 			// Check if we are a spectator. If so, then don't deal with CSS class borders.
 			var isReadOnly = this.isReadOnly();

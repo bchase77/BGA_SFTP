@@ -21,7 +21,9 @@
 ALTER TABLE `player` ADD `gone_down` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 ALTER TABLE `player` ADD `buying` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 ALTER TABLE `player` ADD `buy_count` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
-ALTER TABLE `player` ADD `buyTimer` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `player` ADD `meldAType` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `player` ADD `meldBType` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `player` ADD `meldCType` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
 

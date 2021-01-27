@@ -48,11 +48,6 @@ $this->values_label = array(
     13 => clienttranslate('King')
 );
 
-// $this->handTypes2S0R = array( // Hand targets associate with the down areas:
-  // 0 => array( "Target" => "2 Sets; No more no less (Set is 3 of same value)",
-	// "QtySets" => 2, "QtyRuns" => 0, "deal" => 10 )
-// );
-
 $this->handTypesFull = array( // Hand targets associate with the down areas:
   0 => array( "Target" => "2 Sets; No more no less (Set is 3 any suit of same value)",
 	"QtySets" => 2, "QtyRuns" => 0, "deal" => 10 ),

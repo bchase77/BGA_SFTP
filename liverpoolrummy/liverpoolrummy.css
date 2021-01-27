@@ -75,6 +75,10 @@
 	background: salmon;
 }
 
+.playerWentDown {
+	background: LightGreen;
+}
+
 .textGray {
     color: gray;
 }
