@@ -68,7 +68,7 @@
 }
 
 .stockitem_extraJoker {
-	border: 4px solid green !important;
+	border: 2px solid green !important;
 }
 
 .playerBoardBuyer {
@@ -77,6 +77,14 @@
 
 .playerWentDown {
 	background: LightGreen;
+}
+
+.blink {
+	animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker{
+	50% { opacity: 0; }
 }
 
 .textGray {

@@ -83,7 +83,16 @@ $game_options = array(
 			10 => array ( 'name' => totranslate( 'All (2x number of decks)' ) ),
 		),
 		'default' => 10
+	),
+	105 => array(
+		'name' => totranslate( 'Number of buys' ),
+		'values' => array(
+			0  => array ( 'name' => totranslate( '3 per hand' )	),
+			1  => array ( 'name' => totranslate( 'Unlimited' ) )
+		),
+		'default' => 0
 	)
+	
 	// 200 => array(
 		// 'name' => totranslate( 'Game Speed' ),
 		// 'values' => array(

@@ -91,6 +91,7 @@ class LiverpoolRummy extends Table
 			// "buyTimeInSeconds" => 101,
 			"gameLengthOption" => 102,
 			"numberOfJokers" => 104,
+			"numberOfBuys" => 105
 			//"buyMethod" => 103
         ) );
 	
@@ -696,27 +697,46 @@ class LiverpoolRummy extends Table
 /////
 /////
     function getPlayersBuyCount() {
-        $sql = "SELECT player_id, buy_count FROM player ";
-        return self::getCollectionFromDB($sql, true);
+		$numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
+
+		if ( $numberOfBuys == 1 ) { // 0 == 3; 1 == Infinite buys
+			$players = self::loadPlayersBasicInfos();
+			$infiniteBuys = array();
+			
+			foreach ( $players as $player ) {
+				self::dump("[bmc] infiniteBuys(player): ", $player[ "player_id" ] );
+				
+				$infiniteBuys[ $player[ "player_id" ] ] = 99 ;
+			}
+			self::dump("[bmc] InfiniteBuys: ", $infiniteBuys );
+			return $infiniteBuys;
+				
+		} else {
+			$sql = "SELECT player_id, buy_count FROM player ";
+			return self::getCollectionFromDB($sql, true);
+		}
     }
 /////
 /////
 /////
     function decPlayerBuyCount( $player_id ) { // Track how many times they bought per hand
 		self::dump("[bmc] ENTER decPlayerBuyCount", $player_id );
+		$numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
 
-        $sql = "SELECT player_id, buy_count FROM player ";
-		$buy_count = self::getCollectionFromDB( $sql, true );
+		if ( $numberOfBuys != 1 ) { // 0 == 3; 1 == Infinite buys
+			$sql = "SELECT player_id, buy_count FROM player ";
+			$buy_count = self::getCollectionFromDB( $sql, true );
 
-		self::dump("[bmc] buy_count[ player_id ] (decPlayerBuyCount): ", $buy_count );
-		
-		if ( $buy_count[ $player_id ] > 0 ) {
-			$bcUpdate = $buy_count[ $player_id ] - 1;
-			$sql = "UPDATE player SET buy_count = $bcUpdate WHERE player_id = $player_id ";
-			self::DbQuery( $sql );
-		} else {
-			throw new BgaUserException( self::_("You cannot buy any more this hand(decPlayerBuyCount).") );
-		}
+			self::dump("[bmc] buy_count[ player_id ] (decPlayerBuyCount): ", $buy_count );
+			
+			if ( $buy_count[ $player_id ] > 0 ) {
+				$bcUpdate = $buy_count[ $player_id ] - 1;
+				$sql = "UPDATE player SET buy_count = $bcUpdate WHERE player_id = $player_id ";
+				self::DbQuery( $sql );
+			} else {
+				throw new BgaUserException( self::_("You cannot buy any more this hand(decPlayerBuyCount).") );
+			}
+		} // If it == 1 then don't decrement
     }
 /////
 /////
@@ -821,8 +841,8 @@ class LiverpoolRummy extends Table
 			$currentCard = $this->cards->getCard( $card_id );
 			
 //			$buyers = self::getPlayerBuying();
-			$buyers = self::getPlayersBuyCount();
-			self::dump("[bmc] Buyers Status(discardCard):", $buyers);
+			$buyerCount = self::getPlayersBuyCount();
+			self::dump("[bmc] buyerCount Status(discardCard):", $buyerCount);
 
 			if ( $currentCard[ 'type' ] == 5 ) {
 				$value_displayed = ' a joker';
@@ -847,7 +867,7 @@ class LiverpoolRummy extends Table
 					'nextTurnPlayer' => $nextTurnPlayer,
 					'allHands' => $cardsByLocationHand,
 					'discardSize' => $discardSize,
-					'buyers' => $buyers
+					'buyers' => $buyerCount
 				)
 			);
 			
@@ -1819,8 +1839,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////////
 ////////
 	function checkIfReallyInHand ($cards, $player_id) {
-		$card_type = array ();
-		$card_type_arg = array ();
+		$card_type = array();
+		$card_type_arg = array();
 		foreach( $cards as $card ) {
 			self::dump("[bmc] CheckInHand: ", $card);
 			
@@ -2143,9 +2163,11 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		// If all the cards are a run then keep trying to play them until it works
 		
-//		$multipleCardsAreRun = $this->checkRun( $boardPlusHandCards );
+		// TODO: Fix this so it plays 56 onto 890*
 		
+//		$multipleCardsAreRun = $this->checkRun( $boardPlusHandCards, false );
 		
+		 
 		
 		
 		

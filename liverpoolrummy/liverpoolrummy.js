@@ -108,33 +108,28 @@ function (dojo, declare) {
 ////////
 //
 // TODO:
+//  2/6: Sort meld box as run and place joker properly
+// 12/26: When drawing a card, if the same card is in player hand they both go to the right. Only the new card should move.
+// 1/16: Allow players to specify where each joker plays
+// 12/26: Landscape to portrait shows every card in discard pile.
+// 1/15: If discarded card is playable, allow players to call RUMMY, play it, and discard a card
+//
+// 1/28: [group] We had multiple cases where people tried buying and the log reported they were unable, with no explanation as to why
+// 1/28: [group] Somehow show that the unbuyable downcard is not buyable
+// 1/28: [group] The list of games in progress shows a placeholder that says "Game icon 50 x 50"
 // 1/20: If there are 14 cards in an area then unlight all greens and put a joker on the left if no ace.
 // 1/20: rightmost joker of A*3* lights up green and should not.
-// 1/16: Allow players to specify where each joker plays
 // 1/16: When I have enough melds prepped to go down and it becomes my turn, the GO DOWN button doesn't light up but should
 // 1/16: When someone clicks BUY IT and someone clicks the card there can be a race condition?
-// 1/16: BGA Service Error. Unexpected error: BGA service error (2.boardgamearena.com 17/01 04:29:26       
-// 1/16: [Sun Jan 10 07:03:41.742951 2021] [php7:notice] [pid 18038] [client 51.178.130.161:15152] PHP Notice: Undefined offset: 1 in /var/tournoi/release/games/liverpoolrummy/210110-0525/liverpoolrummy.game.php on line 452, referer: https://boardgamearena.com/table?table=138111919
-// [Sun Jan 10 07:11:30.029970 2021] [php7:notice] [pid 18035] [client 51.178.130.161:41188] PHP Notice: Undefined offset: 1 in /var/tournoi/release/games/liverpoolrummy/210110-0525/liverpoolrummy.game.php on line 452, referer: https://boardgamearena.com/table?table=138111919&acceptinvit
-// [Sun Jan 10 07:12:11.446814 2021] [php7:notice] [pid 19220] [client 51.178.130.161:6946] PHP Notice: Undefined offset: 1 in /var/tournoi/release/games/liverpoolrummy/210110-0525/liverpoolrummy.game.php on line 452, referer: https://boardgamearena.com/table?table=138111919&acceptinvit
-// [Sun Jan 17 04:14:39.169605 2021] [php7:notice] [pid 29756] [client 51.178.130.161:32786] PHP Notice: Undefined index: in /var/tournoi/release/games/liverpoolrummy/210110-0717/liverpoolrummy.game.php on line 1163, referer: https://boardgamearena.com/2/liverpoolrummy?table=139975005
-// [Sun Jan 17 04:14:39.169650 2021] [php7:notice] [pid 29756] [client 51.178.130.161:32786] PHP Notice: Undefined index: in /var/tournoi/release/games/liverpoolrummy/210110-0717/liverpoolrummy.game.php on line 1164, referer: https://boardgamearena.com/2/liverpoolrummy?table=139975005
-
-// 1/16: Highlight player board color 1 when someone goes down, and color 2 after they've gone done.
 // 1/16: 4 in a set and 4 in a run and GO DOWN didn't light up
 // 1/16: when going down with 4 in a set and a run as AKQ* it says "RUN CARDS MUST BE SEQUENTIAL"
-// 1/9: Remove MELD A, MELD B, MELD C, CARD FOR JOKER
 // 1/3: Why so many "Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first"? Seems coming from the history log.
-// 12/26: When drawing a card, if the same card is in player hand they both go to the right. Only the new card should move.
 // 12/26: Konni discarded at same time as I clicked BUY it. It was my turn. Game thought i wanted to buy Konni's discard. I drew, but now it won't let me discard: "You cannot buy any more this hand(decPlayerBuyCount)."
-// 12/26 (Cannot reproduce) In PHP:
-// [Sun Dec 27 07:14:39.479873 2020] [php7:notice] [pid 9172] [client 51.178.130.161:59540] PHP Notice: Undefined index: in /var/tournoi/release/games/liverpoolrummy/201214-0437/liverpoolrummy.game.php on line 717, referer: https://boardgamearena.com/2/liverpoolrummy?table=134280648
 //
 // 12/26: Show the options in the message log when the game starts.
 // 12/26 Marc's board did not light up when I went to buy, but it did after he drew a card. It should have lit up when I clicked the BUY, and not waited until he drew.
 // 12/26: Hover-over a joker shows what cards can be substituted.
 // 12/26: Spectator should not see MELD A, MELD B, MELD and CARD FOR JOKER
-// 12/26: Landscape to portrait shows every card in discard pile.
 // 12/26: "Tried but could not buy" does not show up but should.
 // 12/26: Allow go down with deficient joker and have it figure out that it's in the middle of the run.
 //
@@ -167,6 +162,18 @@ function (dojo, declare) {
 // 11/10: Maybe not: Get bonus if you go out? NO.
 // 11/10: Maybe not: Notify players are prepping cards
 //
+// X 1/28: [group] Change rules text to match # of cards dealt
+// X 12/26 (Cannot reproduce) In PHP:
+// [Sun Dec 27 07:14:39.479873 2020] [php7:notice] [pid 9172] [client 51.178.130.161:59540] PHP Notice: Undefined index: in /var/tournoi/release/games/liverpoolrummy/201214-0437/liverpoolrummy.game.php on line 717, referer: https://boardgamearena.com/2/liverpoolrummy?table=134280648
+// X 1/16: BGA Service Error. Unexpected error: BGA service error (2.boardgamearena.com 17/01 04:29:26       
+// 1/16: [Sun Jan 10 07:03:41.742951 2021] [php7:notice] [pid 18038] [client 51.178.130.161:15152] PHP Notice: Undefined offset: 1 in /var/tournoi/release/games/liverpoolrummy/210110-0525/liverpoolrummy.game.php on line 452, referer: https://boardgamearena.com/table?table=138111919
+// [Sun Jan 10 07:11:30.029970 2021] [php7:notice] [pid 18035] [client 51.178.130.161:41188] PHP Notice: Undefined offset: 1 in /var/tournoi/release/games/liverpoolrummy/210110-0525/liverpoolrummy.game.php on line 452, referer: https://boardgamearena.com/table?table=138111919&acceptinvit
+// [Sun Jan 10 07:12:11.446814 2021] [php7:notice] [pid 19220] [client 51.178.130.161:6946] PHP Notice: Undefined offset: 1 in /var/tournoi/release/games/liverpoolrummy/210110-0525/liverpoolrummy.game.php on line 452, referer: https://boardgamearena.com/table?table=138111919&acceptinvit
+// [Sun Jan 17 04:14:39.169605 2021] [php7:notice] [pid 29756] [client 51.178.130.161:32786] PHP Notice: Undefined index: in /var/tournoi/release/games/liverpoolrummy/210110-0717/liverpoolrummy.game.php on line 1163, referer: https://boardgamearena.com/2/liverpoolrummy?table=139975005
+// [Sun Jan 17 04:14:39.169650 2021] [php7:notice] [pid 29756] [client 51.178.130.161:32786] PHP Notice: Undefined index: in /var/tournoi/release/games/liverpoolrummy/210110-0717/liverpoolrummy.game.php on line 1164, referer: https://boardgamearena.com/2/liverpoolrummy?table=139975005
+// X 1/28: [group] Green boxes around jokers on table makes it impossible to tell if you've selected the joker. This also makes going down with a joker from the table much harder to tell if you are missing the joker selection or not.
+// X 1/28: [group] Allow unlimited buys
+// X 1/16: Highlight player board color 1 when someone goes down, and color 2 after they've gone done.
 // X 12/26: Remove the DEAL ME IN when the game is over.
 // X 11/26: if it's your turn and you click BUY then treat it like you drew the card
 // X 11/26: After 1 hand, the PREP areas didn't have their titles on the board
@@ -1590,9 +1597,34 @@ console.log("[bmc] REALLY Add GREEN BORDER1");
 console.log(joker);
 console.log($(joker));
 
+			return;
+
+
+
+
+
+
+
 				if ( $(joker) != null ) {
 					dojo.addClass( joker, 'stockitem_extraJoker' );
+					if ( $(joker).classList.contains( "stockitem_selected" )) {
+						if ( $(joker).classList.contains( "blink" )) {
+							dojo.removeClass( joker, "blink" );
+						} else {
+							dojo.addClass( joker, "blink" );
+						}
+					}
 				}
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
 			}
 
 		console.log("[bmc] Exit addJokerBorder");
@@ -1669,12 +1701,6 @@ console.log(cards[i]);
 						
 						extraJokerArray.push( jokerToRemoveGreen );
 
-						// setTimeout(function(){
-// console.log(jokerToRemoveGreen);
-// console.log($(jokerToRemoveGreen));
-							// dojo.removeClass( jokerToRemoveGreen, 'stockitem_extraJoker' );
-						// }, 1000);
-						
 						// setTimeout(function(){
 //						var tooltip_extraJoker = ' ';
 //						this.addTooltipHtmlToClass( jokerToRemoveGreen, tooltip_extraJoker);
@@ -1861,13 +1887,6 @@ console.log( cards );
 				if ( !usedPositions.includes( 14 )) {
 					for ( let i = jokerIndex; i < jokerCount; i++ ) {
 						cards[ i ][ 'boardLieIndex' ] = 15;
-					// setTimeout( function(){
-	// console.log(cards[ i ]);
-	// console.log($(cards[ i ]));
-						// dojo.addClass( cards[ i ], 'stockitem_extraJoker' );
-						
-					// }, 1000 );
-
 
 console.log("[bmc] EXTRA ON RIGHT");
 
@@ -1880,21 +1899,8 @@ console.log("[bmc] EXTRA ON LEFT");
 					
 				}
 				
-				// for ( let i = 0; i < 15 ; i++ ){
-					// possibleJoker = (element) => element == i;
-					// if ( cards.findIndex( possibleJoker )
 				
-				// }
-				
-				
-				
-				
-				
-				
-				
-				
-				
-console.log("[bmc] ABOUNT TO ADD JOKER TOOLTIPS");
+console.log("[bmc] ABOUT TO ADD JOKER TOOLTIPS");
 				var extraJokerArray = new Array();
 				
 				for ( let i = jokerIndex; i < jokerCount; i++ ) {
@@ -1916,7 +1922,7 @@ console.log(extraJokerArray);
 
 
 				setTimeout(
-					this.addJokerBorder( extraJokerArray ), 10000
+					this.addJokerBorder( extraJokerArray ), 5000
 				);
 				
 				
@@ -2738,7 +2744,44 @@ console.log(handItems);
 console.log(area_A_Items);
 console.log(area_B_Items);
 console.log(area_C_Items);
-			
+
+
+			for ( item of area_A_Items ) {
+				var DOMItem = "playerDown_A_" + this.player_id + "_item_" + item[ "id" ];
+console.log("[bmc] DOMItem");
+console.log(DOMItem);
+
+				if ( $(DOMItem).classList.contains( "borderDrawer" )) {
+					if ( $(DOMItem).contains( "blink" )) {
+						dojo.removeClass( DOMItem, "blink" );
+					} else {
+						dojo.addClass( DOMItem, "blink" );
+					}
+				}
+			}
+			for ( item of area_B_Items ) {
+				var DOMItem = "playerDown_B_" + this.player_id + "_item_" + item[ "id" ];
+console.log("[bmc] DOMItem");
+console.log(DOMItem);
+console.log($(DOMItem));
+				if ( $(DOMItem).classList.contains( "borderDrawer" )) {
+					if ( $(DOMItem).contains( "blink" )) {
+						dojo.removeClass( DOMItem, "blink" );
+					} else {
+						dojo.addClass( DOMItem, "blink" );
+					}
+				}
+			}
+			for ( item of area_C_Items ) {
+				var DOMItem = "playerDown_C_" + this.player_id + "_item_" + item[ "id" ];
+				if ( $(DOMItem).classList.contains( "borderDrawer" )) {
+					if ( $(DOMItem).contains( "blink" )) {
+						dojo.removeClass( DOMItem, "blink" );
+					} else {
+						dojo.addClass( DOMItem, "blink" );
+					}
+				}
+			}
 			// TODO: These if conditions overlap, could be simplified
 			
 			if (( this.goneDown[ this.player_id ] == 0 ) &&  //0 = Not gone down; 1 = Gone down.
@@ -4008,83 +4051,6 @@ console.log( this.player_id );
 				this.onPlayerBuyButton();
 			}
 		},
-/////////
-/////////
-/////////
-		// putSetDown: function ( cards ) {
-			// console.log('[bmc] putSetDown');
-			// console.log(cards);
-			
-			// for ( card of cards ) {
-				// console.log("[bmc] card");
-				// console.log(card);
-
-				// cardUniqueId = card.type;
-				// cardId = card.id;
-				
-				// console.log(cardUniqueId);
-				// console.log(cardId);
-				// console.log(this.player_id);
-				
-				// var from = 'myhand_item_' + card.id;
-				
-				// if ( this.setsRuns[ this.currentHandType ][ this.prepSetLoc ] == "Area_A" ) {
-					 // this.downArea_A_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					 // dojo.addClass('playerDown_A_' + this.player_id, "buyerLit");
-				// }
-				// if ( this.setsRuns[ this.currentHandType ][ this.prepSetLoc ] == "Area_B" ) {
-					 // this.downArea_B_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					 // dojo.addClass('playerDown_B_' + this.player_id, "buyerLit");
-				// }
-				// if ( this.setsRuns[ this.currentHandType ][ this.prepSetLoc ] == "Area_C" ) {
-					 // this.downArea_C_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					 // dojo.addClass('playerDown_C_' + this.player_id, "buyerLit");
-				// }
-				
-				// this.cardDisplayClass = "downPrep";
-				
-				// console.log(from);
-
-				// this.playerHand.removeFromStockById( card.id );
-			// }
-		// },
-////////
-////////
-////////
-		// putRunDown: function (cards) {
-			// console.log('[bmc] putRunDown');
-			// console.log(cards);
-			
-			// for (card of cards) {
-				// console.log("[bmc] card");
-				// console.log(card);
-
-				// cardUniqueId = card.type;
-				// cardId = card.id;
-				
-				// console.log(cardUniqueId);
-				// console.log(cardId);
-				// console.log(this.player_id);
-				
-				// if ( this.setsRuns[ this.currentHandType ][ this.prepRunLoc ] == "Area_A" ) {
-					 // this.downArea_A_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					 // dojo.addClass('playerDown_A_' + this.player_id, "buyerLit");
-				// }
-				// if ( this.setsRuns[ this.currentHandType ][ this.prepRunLoc ] == "Area_B" ) {
-					 // this.downArea_B_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					 // dojo.addClass('playerDown_B_' + this.player_id, "buyerLit");
-				// }
-				// if ( this.setsRuns[ this.currentHandType ][ this.prepRunLoc ] == "Area_C" ) {
-					 // this.downArea_C_[ this.player_id ].addToStockWithId(cardUniqueId, cardId, 'myhand');
-					 // dojo.addClass('playerDown_C_' + this.player_id, "buyerLit");
-				// }
-				
-				// this.cardDisplayClass = "downPrep";
-				
-				// this.playerHand.removeFromStockById(card.id);
-
-			// }
-		// },
 /////////
 /////////
 /////////

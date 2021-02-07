@@ -65,15 +65,15 @@
 			<div id="discardPile"></div>
 		</div>
 		<div id="myPrepA" class="prepbox">
-			<h3>Meld A</h3>
+			<h3>Prep A</h3>
 			<div id="PrepA"></div>
 		</div>
 		<div id="myPrepB" class="prepbox">
-			<h3>Meld B</h3>
+			<h3>Prep B</h3>
 			<div id="PrepB"></div>
 		</div>
 		<div id="myPrepC" class="prepbox">
-			<h3>Meld C</h3>
+			<h3>Prep C</h3>
 			<div id="PrepC"></div>
 		</div>
 		<div id="myPrepJoker" class="prepjoker">
