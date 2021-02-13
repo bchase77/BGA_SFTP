@@ -63,7 +63,8 @@ $game_options = array(
 			8  => array ( 'name' => totranslate( '2 hand game (2Sets, 2Runs)' ) ),
 			9  => array ( 'name' => totranslate( '3 hand game (2Sets, 1Set2Runs, 3Runs)' ) ),
 			10 => array ( 'name' => totranslate( 'Short game (2Sets, 2Runs, 2Sets1Run, 3Runs)' ) ),
-			11 => array ( 'name' => totranslate( 'Full game (2Sets, 1Set1Run, 2Runs, 3Sets, 2Sets1Run, 2Run1Set, 3Runs)' )	)
+			11 => array ( 'name' => totranslate( 'Full game (2Sets, 1Set1Run, 2Runs, 3Sets, 2Sets1Run, 2Run1Set, 3Runs)' )	),
+			12 => array ( 'name' => totranslate( 'May I variant (2S, 1S1R, 2R, 3S, 2S1R, 2R1S, 3R & deal contract + 1)' ) )
 		),
 		'default' => 9
 	),
@@ -73,13 +74,13 @@ $game_options = array(
 			0  => array ( 'name' => totranslate( '0 no jokers' )	),
 			1  => array ( 'name' => totranslate( '1 joker' ) ),
 			2  => array ( 'name' => totranslate( '2 jokers' ) ),
-			3  => array ( 'name' => totranslate( '3 or fewer jokers' ) ),
-			4  => array ( 'name' => totranslate( '4 or fewer jokers' ) ),
-			5  => array ( 'name' => totranslate( '5 or fewer jokers' ) ),
-			6  => array ( 'name' => totranslate( '6 or fewer jokers' ) ),
-			7  => array ( 'name' => totranslate( '7 or fewer jokers' ) ),
-			8  => array ( 'name' => totranslate( '8 or fewer jokers' ) ),
-			9  => array ( 'name' => totranslate( '9 or fewer jokers' ) ),
+			3  => array ( 'name' => totranslate( '3 jokers' ) ),
+			4  => array ( 'name' => totranslate( '4 jokers' ) ),
+			5  => array ( 'name' => totranslate( '5 jokers' ) ),
+			6  => array ( 'name' => totranslate( '6 jokers' ) ),
+			7  => array ( 'name' => totranslate( '7 jokers' ) ),
+			8  => array ( 'name' => totranslate( '8 jokers' ) ),
+			9  => array ( 'name' => totranslate( '9 jokers' ) ),
 			10 => array ( 'name' => totranslate( 'All (2x number of decks)' ) ),
 		),
 		'default' => 10

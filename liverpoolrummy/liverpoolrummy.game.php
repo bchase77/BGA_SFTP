@@ -268,7 +268,7 @@ class LiverpoolRummy extends Table
 		
 		// If number of jokers chosen is odd then add 1 more joker
 		if ( $optionNumJokers % 2 != 0 ) {
-			array_push( $cards, array ('type' => $color, 'type_arg' => $value, 'nbr' => 1 ));
+			array_push( $cards, array ('type' => $color, 'type_arg' => 1, 'nbr' => 1 ));
 		}
 
         $this->cards->createCards( $cards, 'deck' );
@@ -608,6 +608,8 @@ class LiverpoolRummy extends Table
 			$this->handTypes = $this->handTypesThree;
 		} else if ( $gameLengthOption == 10 ) {
 			$this->handTypes = $this->handTypesShort;
+		} else if ( $gameLengthOption == 12 ) {
+			$this->handTypes = $this->handTypesMayI;
 		} else {
 			$this->handTypes = $this->handTypesFull;
 		}
@@ -1267,7 +1269,7 @@ class LiverpoolRummy extends Table
 		$cntCardGroupB = count( $cardIDGroupB );
 		$cntCardGroupC = count( $cardIDGroupC );
 		
-		$jokerCount = 0;
+//		$jokerCount = 0;
 
 		self::dump("[bmc] cardIDGroupA:", $cardIDGroupA);
 		self::dump("[bmc] cardIDGroupB:", $cardIDGroupB);
@@ -1346,7 +1348,7 @@ class LiverpoolRummy extends Table
 		
 		
 		
-		// THIS IS NEW CODE 1/24/20218
+		// THIS IS NEW CODE 1/24/2021
 		
 		
 		
@@ -1673,6 +1675,14 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$cardIDGroupB = $this->makeCardIdsFromCards( $cardGroupB );
 		$cardIDGroupC = $this->makeCardIdsFromCards( $cardGroupC );
 		
+		// It's all good, they can go down
+		
+		// Make player assign any 'extra' jokers
+
+		$this->assignExtraJokers( $cardGroupA );
+		$this->assignExtraJokers( $cardGroupB );
+		$this->assignExtraJokers( $cardGroupC );
+		
 		// Put the cards into the down area
 		$this->cards->moveCards( $cardIDGroupA, 'playerDown_A', $active_player_id );
 		$this->cards->moveCards( $cardIDGroupB, 'playerDown_B', $active_player_id );
@@ -1738,6 +1748,28 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::setPlayerGoneDown( $active_player_id, 1 /* 0 (not gone down) or 1 (gone down) */ );
 		self::trace("[bmc] EXIT playerGoDownFinish");
 
+	}
+////////
+////////
+////////
+	function assignExtraJokers ( $cardGroup ){
+		self::trace("[bmc] ENTER assignExtraJokers");
+		// If it's a run and it has jokers then ask the player which values to make the jokers
+		if ( $this->checkRun( $cardGroup, true )) {
+			self::trace("[bmc] It's a run");
+
+			if ( $this->checkforJoker( $cardGroup, true )) {
+				self::trace("[bmc] It has joker(s)");
+				
+				// Identify if there are extra jokers
+				// Make the player assign any extra jokers
+				
+			} else {
+				self::trace("[bmc] It does not have a joker");
+			}
+		} else {
+			self::trace("[bmc] It's a set");
+		}
 	}
 ////////
 ////////

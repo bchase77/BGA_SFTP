@@ -108,22 +108,29 @@ function (dojo, declare) {
 ////////
 //
 // TODO:
+//  1/27: Somehow show the non-buyable discarded card as non-buyable
+//  1/27: Add option: Only reveal attempt to buy if successful.
+//  2/13: Have an option where jokers on the table could not be replaced
+//  2/13: Having an option where bids to buy aren't revealed until they are successful would be appreciated
+//  2/13: 11 card deal for all hands & can go out without a discard
+// X 1/27: Add option: Deal 1 more card than size of contract "May I" variant.
+// X 1/27: Add option: Add 2, 3, or 4 extra jokers to the deck
 //  2/6: Sort meld box as run and place joker properly
 // 12/26: When drawing a card, if the same card is in player hand they both go to the right. Only the new card should move.
-// 1/16: Allow players to specify where each joker plays
+//  1/16: Allow players to specify where each joker plays
 // 12/26: Landscape to portrait shows every card in discard pile.
-// 1/15: If discarded card is playable, allow players to call RUMMY, play it, and discard a card
+//  1/15: If discarded card is playable, allow players to call RUMMY, play it, and discard a card
 //
-// 1/28: [group] We had multiple cases where people tried buying and the log reported they were unable, with no explanation as to why
-// 1/28: [group] Somehow show that the unbuyable downcard is not buyable
-// 1/28: [group] The list of games in progress shows a placeholder that says "Game icon 50 x 50"
-// 1/20: If there are 14 cards in an area then unlight all greens and put a joker on the left if no ace.
-// 1/20: rightmost joker of A*3* lights up green and should not.
-// 1/16: When I have enough melds prepped to go down and it becomes my turn, the GO DOWN button doesn't light up but should
-// 1/16: When someone clicks BUY IT and someone clicks the card there can be a race condition?
-// 1/16: 4 in a set and 4 in a run and GO DOWN didn't light up
-// 1/16: when going down with 4 in a set and a run as AKQ* it says "RUN CARDS MUST BE SEQUENTIAL"
-// 1/3: Why so many "Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first"? Seems coming from the history log.
+//  1/28: [group] We had multiple cases where people tried buying and the log reported they were unable, with no explanation as to why
+//  1/28: [group] Somehow show that the unbuyable downcard is not buyable
+//  1/28: [group] The list of games in progress shows a placeholder that says "Game icon 50 x 50"
+//  1/20: If there are 14 cards in an area then unlight all greens and put a joker on the left if no ace.
+//  1/20: rightmost joker of A*3* lights up green and should not.
+//  1/16: When I have enough melds prepped to go down and it becomes my turn, the GO DOWN button doesn't light up but should
+//  1/16: When someone clicks BUY IT and someone clicks the card there can be a race condition?
+//  1/16: 4 in a set and 4 in a run and GO DOWN didn't light up
+//  1/16: when going down with 4 in a set and a run as AKQ* it says "RUN CARDS MUST BE SEQUENTIAL"
+//  1/3: Why so many "Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first"? Seems coming from the history log.
 // 12/26: Konni discarded at same time as I clicked BUY it. It was my turn. Game thought i wanted to buy Konni's discard. I drew, but now it won't let me discard: "You cannot buy any more this hand(decPlayerBuyCount)."
 //
 // 12/26: Show the options in the message log when the game starts.
@@ -1831,6 +1838,10 @@ console.log("[bmc] FINISHED HARD CARDS");
 				}
 				
 				leftOverJokers = jokerCount - jokerIndex;
+				
+				
+				
+				
 console.log("[bmc] Assess remaining jokers");
 console.log( jokerCount);
 console.log( jokerIndex );
@@ -4893,6 +4904,13 @@ console.log(notif);
 			);
 console.log("[bmc] EXIT notif_drawcardSpect");
 		},
+/////////
+/////////
+/////////
+		// notif_pickJokers : function(notif) {
+			// console.log("[bmc]notif_pickJokers");
+			// console.log(notif);
+		// },
 /////////
 /////////
 /////////
