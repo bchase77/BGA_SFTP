@@ -108,13 +108,21 @@ function (dojo, declare) {
 ////////
 //
 // TODO:
+//  2/13: A7890JQ* did not sort properly. Should have been 7890JQ*A.
+//  2/13: When people want to buy, and the DECK is drawn, the BUYERS are discolored and should not be.
+//  2/13: When someone wants to buy, light-up the DISCARD card so people can see it has a buyer.
+//  2/13: Everyone should get at least 1 turn
+//  2/13: Scale the points by the number of turns the person had.
+//  2/13: Deal 11 each hand.
+//  2/13: Order the player table by score.
+//  X 2/13: Change button text MELD A...
 //  1/27: Somehow show the non-buyable discarded card as non-buyable
 //  1/27: Add option: Only reveal attempt to buy if successful.
 //  2/13: Have an option where jokers on the table could not be replaced
 //  2/13: Having an option where bids to buy aren't revealed until they are successful would be appreciated
 //  2/13: 11 card deal for all hands & can go out without a discard
-// X 1/27: Add option: Deal 1 more card than size of contract "May I" variant.
-// X 1/27: Add option: Add 2, 3, or 4 extra jokers to the deck
+//  2/13: Make the board FLASH when a person has 1 card
+//  2/13: Change the player board color to RED when player has 1 card
 //  2/6: Sort meld box as run and place joker properly
 // 12/26: When drawing a card, if the same card is in player hand they both go to the right. Only the new card should move.
 //  1/16: Allow players to specify where each joker plays
@@ -148,7 +156,6 @@ function (dojo, declare) {
 // 
 // 11/26: Let all players have at least 1 turn
 // 11/26: Add a graphic show progression
-// 11/26: Have the board joker selection be automatic if there is only 1 joker
 // 11/24: Have an elegant way to end the game early.
 // 11/21: SAFARI: GO DOWN button caused NOT ENOUGH SETS
 // 11/26: https://boardgamearena.com/2/liverpoolrummy?table=127049675# Mom couldn't end 
@@ -169,7 +176,16 @@ function (dojo, declare) {
 // 11/10: Maybe not: Get bonus if you go out? NO.
 // 11/10: Maybe not: Notify players are prepping cards
 //
-// X 1/28: [group] Change rules text to match # of cards dealt
+// X 11/26: Have the board joker selection be automatic if there is only 1 joker
+// X  2/13: After 1 hand is played, PREP A, PREP B and PREP C disappear from the board.
+
+
+
+
+
+// X  1/27: Add option: Deal 1 more card than size of contract "May I" variant.
+// X  1/27: Add option: Add 2, 3, or 4 extra jokers to the deck
+// X  1/28: [group] Change rules text to match # of cards dealt
 // X 12/26 (Cannot reproduce) In PHP:
 // [Sun Dec 27 07:14:39.479873 2020] [php7:notice] [pid 9172] [client 51.178.130.161:59540] PHP Notice: Undefined index: in /var/tournoi/release/games/liverpoolrummy/201214-0437/liverpoolrummy.game.php on line 717, referer: https://boardgamearena.com/2/liverpoolrummy?table=134280648
 // X 1/16: BGA Service Error. Unexpected error: BGA service error (2.boardgamearena.com 17/01 04:29:26       
@@ -456,6 +472,47 @@ console.log(this.gamedatas.deckIDs);
 			//this.deckOne.addToStockWithId(1, 2 );
 //EXP End 11/8
 
+			// Create a single card to represent the card back
+			this.discardPileOne = new ebg.stock(); // New stock for the top of the discard pile
+            //this.discardPileOne.create( this, $('discardPileOne'), this.cardwidth, this.cardheight );
+			this.discardPileOne.image_items_per_row = 13;
+
+			// Item 54, color 5, value 3 is red back of the card
+			this.discardPileOne.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
+            for (var color = 1; color <= 4; color++) {
+                for (var value = 1; value <= 13; value++) {
+                    // Build card type id. Only create 52 here, 2 jokers below
+				
+						let card_type_id = this.getCardUniqueId(color, value);
+						this.discardPileOne.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
+                }
+            }
+            this.discardPileOne.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+            this.discardPileOne.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
+
+            var card = this.gamedatas.discardTopCard;
+			var color = card.type;
+            var value = card.type_arg;
+
+console.log( "this.gamedatas.discardTopCard" );
+console.log( this.gamedatas.discardTopCard );
+console.log( card );
+console.log( color );
+console.log( value );
+console.log( this.getCardUniqueId(color, value) );
+
+			this.discardPileOne.addToStockWithId( this.getCardUniqueId(color, value), this.gamedatas.discardTopCard.id );
+
+console.log( "this.gamedatas.discardPileOne" );
+console.log( this.gamedatas.discardPileOne );
+
+
+
+// TODO: Somehow the discardPileOne gets set with a value of object / object, and not a value.
+
+
+
+
 			// Create stock for the discard pile (could be any face-up card)
             this.discardPile = new ebg.stock(); // new stock object for hand
             this.discardPile.create( this, $('discardPile'), this.cardwidth, this.cardheight );            
@@ -493,10 +550,13 @@ console.log(this.gamedatas.deckIDs);
 			this.discardSize.setValue( this.gamedatas.discardSize );
 
 			thisDiscardPile = new Array();
+
+//console.log( "this.gamedatas.discardPile" );
+//console.log( this.gamedatas.discardPile );
+
 			
 			for (let i in this.gamedatas.discardPile ) {
 				
-//				let [ color, value ] = this.getColorValue( this.gamedatas.discardPile[ i ]['type'] );
 				el = {
 					'id' : this.gamedatas.discardPile[ i ][ 'id' ],
 					'unique_id' : this.getCardUniqueId( color, value ),
@@ -523,6 +583,14 @@ console.log(card);
                this.discardPile.addToStockWithId( this.getCardUniqueId( color, value ), card.id,  );
 console.log( discardPile );
 			}
+			
+			// NEW 4/24/2021 Discard pile is only 1 card
+			
+			if ( this.discardPile.length > 1 ) {
+				this.discardPile = this.discardPile[this.discardPile.length - 1 ];
+			}			
+
+//			this.discardPile = this.discardPileOne;
 
 			this.buyCount = {};
 			this.handCount = {};
@@ -681,7 +749,7 @@ console.log( discardPile );
 				this.myPrepC.create( this, $('myPrepC'), this.cardwidth, this.cardheight );
 				this.myPrepJoker.create( this, $('myPrepJoker'), this.cardwidth, this.cardheight );
 				
-				var tooltip_myPrep = 'To go down, put 1 meld per prep area per the Target Hand. To take a joker, PREP full melds and 1 partial meld. Prep the card to replace the joker. Select board joker. Click GO DOWN.';
+				var tooltip_myPrep = 'To go down, put 1 meld per prep area per the Target Hand. To take a joker, PREP full melds and 1 partial meld (2 cards for a set or 3 cards for a run). Put the card to replace the joker in the area CARD FOR JOKER. Select board joker. Click GO DOWN.';
 
 				this.addTooltipHtmlToClass('myPrepA', tooltip_myPrep);
 				this.myPrepA.image_items_per_row = 13;
@@ -973,7 +1041,10 @@ console.log("[bmc] Doing the window.onload");
 							dojo.addClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 						}
 
-						var dp_items = this.discardPile.getAllItems();
+// TODO: MAKE discardpile only 1 card. Doing this in PHP, to try it there
+
+//						var dp_items = this.discardPile.getAllItems();
+						var dp_items = this.discardPileOne.getAllItems();
 	console.log("[bmc] ALL discardPile:");
 	console.log(dp_items);
 						for ( let i in dp_items ) {
@@ -1207,8 +1278,8 @@ console.log("[bmc] ENTER onPlayerBuyButton");
 			this.clearButtons();
 			// this.stopActionTimer2();
 
-// console.log(this.player_id);
-// console.log(this.turnPlayer);
+console.log("onPlayerBuyButton");
+console.log(this.discardPile);
 
 			// Do not acknowledge the buy if it's not our turn
 			// if ( this.player_id == this.turnPlayer ) {
@@ -1683,7 +1754,7 @@ console.log("[bmc] Yes card is a Joker");
 						cards[ cidx ][ 'value' ] = 0; // Arbitrarily choosing value 0 for joker
 						cards[ cidx ][ 'type' ] = 0;
 					} else {
-console.log("[bmc] No card is not a Joker");
+console.log("[bmc] Card is not a Joker");
 						cards[ cidx ][ 'value' ] = (boardCards[ cidx ][ 'type' ] % 13 ) + 1;
 						cards[ cidx ][ 'type' ] = (boardCards[ cidx ][ 'type' ] % 13 ) + 1;
 					}
@@ -1695,34 +1766,9 @@ console.log("[bmc] No card is not a Joker");
 console.log("[bmc] cards:");
 console.log(cards);
 console.log(downArea);
-
-				var extraJokerArray = new Array();
-
-				for ( let i in cards ) {
-console.log("[bmc] for removing class");
-console.log( downArea + '_' + boardPlayer + '_item_' + cards[i]['id']);
-console.log( $(downArea + '_' + boardPlayer + '_item_' + cards[i]['id']));
-console.log(cards[i]);
-					if ( cards[i] != null) {
-						var jokerToRemoveGreen = downArea + '_' + boardPlayer + '_item_' + cards[i]['id'];
-						
-						extraJokerArray.push( jokerToRemoveGreen );
-
-						// setTimeout(function(){
-//						var tooltip_extraJoker = ' ';
-//						this.addTooltipHtmlToClass( jokerToRemoveGreen, tooltip_extraJoker);
-					}
-				}
-console.log("[bmc] Removing GREEN BORDER1");
-console.log(extraJokerArray);
-console.log($(extraJokerArray));
-
-				setTimeout(
-					this.removeJokerBorder( extraJokerArray ), 2000
-				);
 				
-console.log("[bmc] UPDATING DISPLAY FOR THAT BOARDPLAYER1");
-console.log( boardPlayer );
+//console.log("[bmc] UPDATING DISPLAY FOR THAT BOARDPLAYER1");
+//console.log( boardPlayer );
 				this.updatingBoardPlayer = boardPlayer;
 				
 				// setTimeout(function(){
@@ -1753,11 +1799,12 @@ console.log( boardPlayer );
 				}
 console.log("[bmc] jokers:");
 console.log(jokers);
+console.log(jokerCount);
 console.log(thereIsAnAce);				
 				var cardValuesHard = new Array();
 				
 				for ( let i in cards ) {
-					if ( cards[ i ][ 'type' ] != 0 ) {
+					if ( cards[ i ][ 'type' ] != 0 ) { // Jokers here are type 0
 						cardValuesHard[ cards[ i ][ 'type' ]] = cards[ i ][ 'type' ];
 					}
 				}
@@ -1790,6 +1837,11 @@ console.log("card location is notNull");
 							( cardValuesHard.includes( 11 )) ||
 							( cardValuesHard.includes( 12 )) ||
 							( cardValuesHard.includes( 13 ))))) {
+								
+								// There is an ace and some high cards, so the ace must be high (14)
+console.log("[bmc] Moving the ace to high");
+								cards[ index ][ 'boardLieIndex' ] = 14;
+								
 							} else {
 
 							foundFirst = true;
@@ -1809,8 +1861,6 @@ console.log(cardValuesHard.length);
 							// if this is the last of the hard cards then ignore
 							// Deal with the aces later
 							// This presumes the cards which are down are indeed a valid run
-							// if (( i < cardValuesHard.length ) ||
-							    // ( cardValuesHard.includes( 1 ))) {
 							if ( i < cardValuesHard.length ) {
 								if ( jokerIndex < jokerCount ) {
 //console.log("index");
@@ -1824,13 +1874,13 @@ console.log(usedPositions);
 									usedPositions.push(i);
 									jokerIndex++;
 								} else {
-//	I used to have a assert-style check here but it sorts the cards right, and
+//	I used to have this assert-style check here but it sorts the cards right, and
 //  so let's presume the other function did it's job and allowed only true runs.
 //	this.showMessage( "YIKES! That's not a sortable run!", 'error' ); // 'info' or 'error'
 //	console.log("[bmc] Yikes!! This never should have been a run.");
 								}
 							} else {
-console.log("[bmc] FINISHED HARD CARDS do not put high ace");
+console.log("[bmc] FINISHED HARD CARDS do not put high ace, yet");
 							}
 console.log("[bmc] FINISHED HARD CARDS");
 						}
@@ -1838,9 +1888,6 @@ console.log("[bmc] FINISHED HARD CARDS");
 				}
 				
 				leftOverJokers = jokerCount - jokerIndex;
-				
-				
-				
 				
 console.log("[bmc] Assess remaining jokers");
 console.log( jokerCount);
@@ -1872,8 +1919,20 @@ console.log( cards );
 								}
 							}
 						}
+					} else {
+console.log("[bmc] 4");
+						// Set the ace (in 1st position) to index 14;
+						cards[ 0 ][ 'boardLieIndex' ] = 14;
+						usedPositions.push( 14 );
+						var aceIndex = usedPositions.indexOf(1);
+						if ( aceIndex > -1 ) {
+							usedPositions.splice( aceIndex, 1 );
+						}
 					}
 				}
+				
+console.log("[bmc] Final usedPositions" );
+console.log( usedPositions );
 
 				// Move an ace to be high if there is a king (position 13)
 				for (let i in cards ) {
@@ -2115,9 +2174,14 @@ console.log( deck_items );
 				this.discardPile.addToStockWithId( cardUniqueId, card_id, 'overall_player_board_' + player_id );
 			}
 			
+			// NEW FEATURE 4/24/2021. Make discard pile only 1 card
+			if ( this.discardPile.length > 1 ) {
+				this.discardPile = this.discardPile[this.discardPile.length - 1 ];
+			}			
 
 			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
-				var dp_items = this.discardPile.getAllItems();
+//				var dp_items = this.discardPile.getAllItems();
+				var dp_items = this.discardPileOne.getAllItems();
 console.log("[bmc] ALL discardPile:");
 console.log( dp_items );
 				for ( let i in dp_items ) {
@@ -3198,7 +3262,9 @@ console.log("[bmc] Removed.");
 
 			// Remove the borders from the deck and discard pile after the player draws
 			var deck_items = this.deckOne.getAllItems();
-			var dp_items = this.discardPile.getAllItems();
+			
+//			var dp_items = this.discardPile.getAllItems();
+			var dp_items = this.discardPileOne.getAllItems();
 console.log("[bmc] ALL deckOne:");
 console.log(deck_items);
 console.log(dp_items);
@@ -3234,7 +3300,6 @@ console.log(dp_items);
 					console.log( "/" + this.game_name + "/" + this.game_name + "/" + action + ".html");
 					
 					var card_id = items[0].id;
-//					var card_id = 0; // TODOfake number probably should remove this
 console.log(card_id);
 					this.ajaxcall( "/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
 						id : card_id,
@@ -3252,7 +3317,8 @@ console.log(card_id);
 				
 				// Remove the borders from the deck and discard pile after the player draws
 				var deck_items = this.deckOne.getAllItems();
-				var dp_items = this.discardPile.getAllItems();
+//				var dp_items = this.discardPile.getAllItems();
+				var dp_items = this.discardPileOne.getAllItems();
 	console.log("[bmc] ALL deckOne:");
 	console.log(deck_items);
 	console.log(dp_items);
@@ -3838,7 +3904,8 @@ console.log(drawDeckSize);
 
 			// Remove the borders from the deck and discard pile after the player draws
 			var deck_items = this.deckOne.getAllItems();
-			var dp_items = this.discardPile.getAllItems();
+//			var dp_items = this.discardPile.getAllItems();
+			var dp_items = this.discardPileOne.getAllItems();
 console.log("[bmc] ALL deckOne:");
 console.log(deck_items);
 console.log(dp_items);
@@ -4038,7 +4105,8 @@ console.log( this.player_id );
 
 				// Remove the borders from the deck and discard pile after the player draws
 				var deck_items = this.deckOne.getAllItems();
-				var dp_items = this.discardPile.getAllItems();
+//				var dp_items = this.discardPile.getAllItems();
+				var dp_items = this.discardPileOne.getAllItems();
 
 				for ( let i in deck_items ) {
 					dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
@@ -4622,7 +4690,7 @@ console.log( $('close_btn').innerHTML );
 			}
 			
 			this.myPrepA.removeAll();
-			this.myPrepB.removeAll();
+			//this.myPrepB.removeAll();
 			this.myPrepC.removeAll();
 			this.prepAreas = 0;
 			this.myPrepJoker.removeAll();
@@ -4655,6 +4723,12 @@ console.log( $('close_btn').innerHTML );
 				}
 				// Set the weights in the discard pile
 				this.discardPile.changeItemsWeight(discardPileWeights);
+				
+			// NEW FEATURE 4/24/2021. Make discard pile only 1 card
+			if ( this.discardPile.length > 1 ) {
+				this.discardPile = this.discardPile[this.discardPile.length - 1 ];
+			}			
+
 	console.log("[bmc] this.discardPile");			
 	console.log(this.discardPile);
 
@@ -4779,6 +4853,11 @@ console.log("empty arg");
 				$("playerDown_C_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
 			}
 
+			$('myPrepA').innerHTML = "Prep A";
+			$('myPrepB').innerHTML = "Prep B";
+			$('myPrepC').innerHTML = "Prep C";
+			$('myPrepJoker').innerHTML = "Card For Joker";
+			
 			// Update the webpage with the new target
 			$(redTarget).innerHTML = notif.args.handTarget;
 

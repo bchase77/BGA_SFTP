@@ -355,8 +355,21 @@ class LiverpoolRummy extends Table
 		$buyCount = self::getPlayersBuyCount();
 //		self::dump("[bmc] gamedatas buyCount:", $buyCount);
 
+
+// TODO Will try setting discard size to 1
+
 		$discardSize = count( $this->cards->countCardsByLocationArgs( 'discardPile' ));
+		
+		if ( $discardSize > 1) {
+			$discardSize = 1;
+		}
+// END TODO
 		self::setGameStateValue( 'discardSize', $discardSize );
+		
+		$discardTopCard = $this->cards->getCardOnTop( 'discardPile' );
+		$result['discardTopCard'] = $this->cards->getCardOnTop( 'discardPile' );
+		$result['discardTopCardId'] = $this->cards->getCardOnTop( 'discardPile' )[ 'id' ];
+
 		
 		$result['discardSize'] = $discardSize;
 
@@ -1059,49 +1072,57 @@ class LiverpoolRummy extends Table
 			// }
 		// }
 
-		$currentCard = $this->cards->getCardOnTop( 'discardPile' );
-		self::dump( "[bmc] cardToBeBought:",  $currentCard );
-		
-		if ( $currentCard != null ) {
-			// if ( $currentCard[ 'type_arg' ] == 5 ) {
-				// $value_displayed = ' a joker';
-				// $color_displayed = '!';
-			// } else {
-				// $value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
-				// $color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
-			// }
-			
-			// $buyMessage = $players[ $player_id ][ 'player_name' ] . 
-				// '<span style="color:#' . $players[ $player_id ][ "player_color" ] . ';">' . $players[ $player_id ][ "player_name" ] . '</span>';
-				// ' wants to buy ' . 
-				// $value_displayed . 
-				// $color_displayed;
-			
-	//		self::dump( "[bmc] buyMessage:",  $buyMessage );
+		// NEW 4/24/2021: To get rid of the deadlock glitch, make sure the drawsource is not discardPile
 
-			if ( $currentCard[ 'type' ] == 5 ) {
-				$value_displayed = ' a joker';
-				$color_displayed = '!';
+		$drawSourceValue = self::getGameStateValue( 'drawSourceValue' );
+		self::dump("[bmc] drawSourceValue(notifyPlayerWantsToBuy):", $drawSourceValue );
+
+		if ( $drawSourceValue != 1 ) { // if !=1 then it's ok to try to buy
+
+			$currentCard = $this->cards->getCardOnTop( 'discardPile' );
+			self::dump( "[bmc] cardToBeBought:",  $currentCard );
+			
+			if ( $currentCard != null ) {
+				// if ( $currentCard[ 'type_arg' ] == 5 ) {
+					// $value_displayed = ' a joker';
+					// $color_displayed = '!';
+				// } else {
+					// $value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
+					// $color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
+				// }
+				
+				// $buyMessage = $players[ $player_id ][ 'player_name' ] . 
+					// '<span style="color:#' . $players[ $player_id ][ "player_color" ] . ';">' . $players[ $player_id ][ "player_name" ] . '</span>';
+					// ' wants to buy ' . 
+					// $value_displayed . 
+					// $color_displayed;
+				
+		//		self::dump( "[bmc] buyMessage:",  $buyMessage );
+
+				if ( $currentCard[ 'type' ] == 5 ) {
+					$value_displayed = ' a joker';
+					$color_displayed = '!';
+				} else {
+					$value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
+					$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
+				}
+
+				self::notifyAllPlayers(
+					'playerWantsToBuy',
+					'${player_name} wants to buy ${value_displayed}${color_displayed}',
+					array(
+						'player_id' => $player_id,
+						'activeTurnPlayer_id' => $activeTurnPlayer_id,
+		//				'player_name' => $players[ $player_id ][ 'player_name' ],
+						'player_name' => $players[ $player_id ][ 'player_name' ],
+						'cardToBeBought' => $currentCard,
+						'value_displayed' => $value_displayed,
+						'color_displayed' => $color_displayed
+					)
+				);
 			} else {
-				$value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
-				$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
+				self::trace("[bmc] Yikes! No card was found to buy!");
 			}
-
-			self::notifyAllPlayers(
-				'playerWantsToBuy',
-				'${player_name} wants to buy ${value_displayed}${color_displayed}',
-				array(
-					'player_id' => $player_id,
-					'activeTurnPlayer_id' => $activeTurnPlayer_id,
-	//				'player_name' => $players[ $player_id ][ 'player_name' ],
-					'player_name' => $players[ $player_id ][ 'player_name' ],
-					'cardToBeBought' => $currentCard,
-					'value_displayed' => $value_displayed,
-					'color_displayed' => $color_displayed
-				)
-			);
-		} else {
-			self::trace("[bmc] Yikes! No card was found to buy!");
 		}
 		self::trace("[bmc] EXIT notifyPlayerBuy-WANT");
 	}
@@ -1280,17 +1301,6 @@ class LiverpoolRummy extends Table
 		$cardGroupB = $this->cards->getCards( $cardIDGroupB );
 		$cardGroupC = $this->cards->getCards( $cardIDGroupC );
 		
-		// foreach ([ $cardGroupA, $cardGroupB, $cardGroupC ] as $cardGroup ) {
-			// $jokerCount += ( $this->checkForJoker( $cardGroup ) == false ) ? 0 : 1 ;
-		// }
-		
-		// self::dump("[bmc] Joker Count while going down:", $jokerCount);
-
-		// if ( $jokerCount > 1 ) {
-			// throw new BgaUserException( self::_('You cannot go down with more than 1 joker.') );
-			// return;
-		// }
-		
 		// Make sure there is > 1 card left in hand
 		$countCardsInPlayerHand = intval($this->cards->countCardsByLocationArgs( 'hand' )[$active_player_id]);
 		self::dump("CCIPH:", $countCardsInPlayerHand);
@@ -1328,24 +1338,65 @@ class LiverpoolRummy extends Table
 		self::dump("[bmc] BP: ", $boardPlayer);
 		self::dump("[bmc] HI: ", $handItems);
 		self::dump("[bmc] CHT:", $currentHandType);
-		self::dump("[bmc] AT:", $areaTitle);
+		self::dump("[bmc] AT: ", $areaTitle);
 		
 		$joker = array ('id' => 'None'); // Start by assuming no joker being swapped
 		$targetArea = 'None'; // Start by assuming no target area for the going-down-joker
 
-		if (( $boardArea == null ) ||      // Nothing selected on board;
-			( empty( $handItems )) ||      // Nothing selected in hand;
-			( $boardCard['type'] < 5  )) { // Board card is not a joker; So no need to do joker swap.
-			
+		if ( empty( $handItems )){
 			self::trace( "[bmc] No Joker Swap Needed." );
 			//... and then continue to try to go down...
+
+		} else { // Player has prepped a joker swap card. This means try to use joker to go down.
+
+		// if (( $boardArea == null ) ||      // Nothing selected on board;
+			// ( empty( $handItems )) ||      // Nothing selected in hand;
+			// ( $boardCard['type'] < 5  )) { // Board card is not a joker; So no need to do joker swap.
 			
-		} else { // Player has selected board and hand cards. This means try to use joker to go down.
-		
-		
-		
-		
-		
+//			if ( $handItemIds != null) {
+	
+			// Even though they didn't select a board card, see if they prepped for a joker swap.
+			// If they did, and if there is 1 joker on the board, then select it for the player.
+				
+				$cardsInPDA = $this->cards->getCardsInLocation( 'playerDown_A' );
+				$cardsInPDB = $this->cards->getCardsInLocation( 'playerDown_B' );
+				$cardsInPDC = $this->cards->getCardsInLocation( 'playerDown_C' );
+			
+				self::dump("[bmc] PDA: ", $cardsInPDA );
+				self::dump("[bmc] PDB: ", $cardsInPDB );
+				self::dump("[bmc] PDC: ", $cardsInPDC );
+				
+				$jokersInA = $this->checkForJoker( $cardsInPDA );
+				$jokersInB = $this->checkForJoker( $cardsInPDB );
+				$jokersInC = $this->checkForJoker( $cardsInPDC );
+				
+				self::dump("[bmc] JinA: ", $jokersInA );
+				self::dump("[bmc] JinB: ", $jokersInB );
+				self::dump("[bmc] JinC: ", $jokersInC );
+
+				// If there is at least 1 joker, try swapping for it
+				if ( $jokersInA || $jokersInB || $jokersInC ){
+					// There is 1 joker on the board, choose it
+					if ( $jokersInA != null ) {
+						$boardCard = $jokersInA;
+						$boardArea = $jokersInA[ "location" ];
+						$boardPlayer = $jokersInA[ "location_arg" ];
+					} else if ( $jokersInB != null ) {
+						$boardCard = $jokersInB;
+						$boardArea = $jokersInB[ "location" ];
+						$boardPlayer = $jokersInB[ "location_arg" ];
+					} else {
+						$boardCard = $jokersInC;
+						$boardArea = $jokersInC[ "location" ];
+						$boardPlayer = $jokersInC[ "location_arg" ];
+					}
+					self::dump("[bmc] game-selected board Joker: ", $boardCard );
+				}
+
+//			self::trace( "[bmc] No Joker Swap Needed." );
+			//... and then continue to try to go down...
+			
+//		} else { // Player has selected board and hand cards. This means try to use joker to go down.
 		
 		
 		// THIS IS NEW CODE 1/24/2021
@@ -1359,35 +1410,32 @@ class LiverpoolRummy extends Table
 
 	//		foreach ( $players as $player_id => $player ) {
 
-			if (( $boardArea != null ) && ( empty( $handItems ))) {
-				$cardsInPDA = $this->cards->getCardsInLocation( 'playerDown_A' );
-				$cardsInPDB = $this->cards->getCardsInLocation( 'playerDown_B' );
-				$cardsInPDC = $this->cards->getCardsInLocation( 'playerDown_C' );
+			// if (( $boardArea != null ) && ( empty( $handItems ))) {
+				// $cardsInPDA = $this->cards->getCardsInLocation( 'playerDown_A' );
+				// $cardsInPDB = $this->cards->getCardsInLocation( 'playerDown_B' );
+				// $cardsInPDC = $this->cards->getCardsInLocation( 'playerDown_C' );
 			
-				self::dump("[bmc] PDA: ", $cardsInPDA );
-				self::dump("[bmc] PDB: ", $cardsInPDB );
-				self::dump("[bmc] PDC: ", $cardsInPDC );
+				// self::dump("[bmc] PDA: ", $cardsInPDA );
+				// self::dump("[bmc] PDB: ", $cardsInPDB );
+				// self::dump("[bmc] PDC: ", $cardsInPDC );
 				
-				if ( count( $cardsInPDA ) + count( $cardsInPDB ) + count( $cardsInPDC ) == 1 ){
-					if ( count( $cardsInPDA ) == 1 ) {
-						$handItems = $cardsInPDA;
-					} else if ( count( $cardsInPDB ) == 1 ) {
-						$handItems = $cardsInPDB;
-					} else {
-						$handItems = $cardsInPDC;
-					}
-				}		
-			}
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+				// if ( count( $cardsInPDA ) + count( $cardsInPDB ) + count( $cardsInPDC ) == 1 ){
+					// if ( count( $cardsInPDA ) == 1 ) {
+						// $handItems = $cardsInPDA;
+					// } else if ( count( $cardsInPDB ) == 1 ) {
+						// $handItems = $cardsInPDB;
+					// } else {
+						// $handItems = $cardsInPDC;
+					// }
+				// }		
+			// }
+			// END NEW CODE 1/24/2021
+		
+		
+		
+//		TODO: Need to resolve the BOARDCARD vs. BOARDAREA and BOARD PLAYER.
+		
+		
 		
 			$jokerSwapResult = $this->tryJokerSwap( $handItems['id'], $active_player_id, $boardArea, $boardPlayer );
 			self::dump('[bmc] jokerSwapResult', $jokerSwapResult);
@@ -1398,7 +1446,7 @@ class LiverpoolRummy extends Table
 			self::dump("[bmc] targetArea: ", $targetArea );
 
 			if ( $targetArea == false ) {
-				throw new BgaUserException( self::_('Ummm... You do not need the joker to go down.') );
+				throw new BgaUserException( self::_('Make a partial set (only 2 cards) or run (only 3 cards) for the swapped joker.') );
 			}
 
 			$playerHand = $this->cards->getCardsInLocation( 'hand', $active_player_id );
@@ -1554,97 +1602,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			throw new BgaUserException( self::_('Cannot go down. Too many Sets and not enough Runs.') );
 		}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-		foreach ( $groups as $group ) {
-//			self::dump("[bmc] group:", $group );
-			
-			if ( $this->checkRun( $group ) == true ) {
-				$runsHave++;
-			} else if ( $this->checkSet( $group ) == true ) {
-				$setsHave++;
-			} else {
-				if ( count( $group ) > 0 ) {
-					$notSetRun++;
-				}
-			}
-		}
-		
-		if  ( $notSetRun > 0 ) {
-			throw new BgaUserException( self::_('Cannot go down with those cards. Did you select a joker from the board?') );
-		}
-		
-		self::dump("[bmc] setsHave:", $setsHave);
-		self::dump("[bmc] runsHave:", $runsHave);
-
-		$notEnoughSetRun = 0;
-		
-		if ( $setsHave < $setsNeeded ) {
-			 $notEnoughSetRun += 1;
-		}
-		if ( $runsHave < $runsNeeded ) {
-			 $notEnoughSetRun += 10;
-		}
-		if ( $setsHave > $setsNeeded ) {
-			 $notEnoughSetRun += 100;
-		}
-		if ( $runsHave > $runsNeeded ) {
-			 $notEnoughSetRun += 1000;
-		}
-
-		self::dump("[bmc] notEnoughSetRun:", $notEnoughSetRun);
-		
-		switch ( $notEnoughSetRun ) {
-			case 0:  // Valid goDown
-				break;
-			case 1:  // Not enough sets
-				throw new BgaUserException( self::_('Not enough Sets.') );
-				break;
-			case 10: // Not enough runs
-				throw new BgaUserException( self::_('Not enough Runs.') );
-				break;
-			case 11: // Not enough sets and not enough runs
-				throw new BgaUserException( self::_('Not enough Sets and not enough Runs.') );
-				break;
-			case 100: // Too many sets
-			case 101: // Can never happen
-				throw new BgaUserException( self::_('Too many Sets.') );
-				break;
-			case 110: // Too many sets, not enough runs
-			case 111: // Can never happen
-				throw new BgaUserException( self::_('Too many Sets and not enough Runs.') );
-				break;
-			case 1000: // Too many runs
-			case 1010: // Can never happen
-				throw new BgaUserException( self::_('Too many Runs.') );
-				break;
-			case 1001: // Too many runs, not enough sets
-			case 1011: // Can never happen
-				throw new BgaUserException( self::_('Not enough Sets and too many Runs.') );
-				break;
-			case 1100: // Too many sets and too many runs
-			case 1101: // Can never happen
-			case 1110: // Can never happen
-			case 1111: // Can never happen
-				throw new BgaUserException( self::_('Too many Sets and too many Runs.') );
-				break;
-		}		
-*/
-
-
-
 		$active_player_id = self::getActivePlayerId();
 
 		// If all cards besides the board joker are in the hand, then continue
@@ -1754,6 +1711,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////////
 	function assignExtraJokers ( $cardGroup ){
 		self::trace("[bmc] ENTER assignExtraJokers");
+		self::dump( "[bmc] cardGroup", $cardGroup );
 		// If it's a run and it has jokers then ask the player which values to make the jokers
 		if ( $this->checkRun( $cardGroup, true )) {
 			self::trace("[bmc] It's a run");
@@ -1762,7 +1720,87 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				self::trace("[bmc] It has joker(s)");
 				
 				// Identify if there are extra jokers
+				
+				$jokerCount = 0;
+				$thereIsAnAce = false;
+				$cardValuesHard = array();
+				$jokers = array();
+				
+				$lowestCard = 13;
+				$highestCard = 1;
+				
+				foreach( $cardGroup as $card ){
+					self::dump("[bmc] card: ", $card);
+					
+					// If a joker then keep track of how many jokers
+					// If not a joker then track it as a 'hard' card value
+					// Presume ace is low until proven it must be designated as high
+					if( $card[ 'type' ] == 5 ) {
+						$jokerCount++;
+						array_push( $jokers, $card );
+						
+					} else if( $card[ 'type' ] == 1 ) {
+						$thereIsAnAce = true;
+						$cardValuesHard[ $card[ "type_arg" ]] = $card[ "type_arg" ];
+					} else {
+						$cardValuesHard[ $card[ "type_arg" ]] = $card[ "type_arg" ];
+						if( $card[ "type_arg" ] < $lowestCard ) {
+							$lowestCard = $card[ "type_arg" ];
+						}
+						if( $card[ "type_arg" ] > $highestCard ) {
+							$highestCard = $card[ "type_arg" ];
+						}
+					}
+				}
+				self::dump( "[bmc] jokerCount", $jokerCount );
+				self::dump( "[bmc] thereIsAnAce", $thereIsAnAce );
+				self::dump( "[bmc] lowestCard", $lowestCard );
+				self::dump( "[bmc] highestCard", $highestCard );
+				self::dump( "[bmc] cardValuesHard", $cardValuesHard );
+				
+				// Now we know the 'hard' values. Count the gaps. If there are more
+				//   jokers than gaps then there are 'extra' jokers.
+				
+				$firstCard = true;
+				$jokerIndex = 0;
+				
+				for( $position = $lowestCard; $position < 14; $position++ ){
+					self::dump( "[bmc] position", $position );
+					
+					// ignore comparing the first card to any previous
+					if( $firstCard ) {
+						$firstCard = false;
+					} else {
+						if( $card[ $position ] ){
+							// There's a hard card no need for a joker
+							self::dump( "[bmc] hardcard", $card[ $position ] );
+						} else {
+							// Assign a joker
+							self::dump( "[bmc] assigning a joker", $card[ $position ] );
+							//$jokers[ $jokerIndex ][ 'type_arg' ] = $position;
+						}
+					}
+				}
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
 				// Make the player assign any extra jokers
+				
+				
+				
+				
 				
 			} else {
 				self::trace("[bmc] It does not have a joker");
@@ -1934,7 +1972,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					( $countValues[ 1 ] == 2 )) {
 				} else {
 					if ( !$silent ) {
-						throw new BgaUserException( self::_("Run cards must be sequential and unique.") );
+						throw new BgaUserException( self::_("Not a run. Run cards must be sequential and unique.") );
 					}
 				}
 			}
@@ -1959,7 +1997,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					'location' => $card['location'],
 					'location_arg' => $card['location_arg']
 				];
-				// unset($aceHighCards[$aceKey]); // Remove the low ace // No need to remove, we've just changed its value above.
 			}
 		}
 		
@@ -1981,19 +2018,19 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				break; // With ace high or low, one is a run and all the same suit
 			case 2:
 				if ( !$silent ) {
-					throw new BgaUserException( self::_("Nice try but it doesn't reach!") );
+					throw new BgaUserException( self::_("Not a run. It doesn't reach!") );
 				}
 				break;
 			case 10:
 			case 11:
 			case 20:
 				if ( !$silent ) {
-					throw new BgaUserException( self::_('Run cards must all be the same suit.') );
+					throw new BgaUserException( self::_('Not a run. Run cards must all be the same suit.') );
 				}
 				break;
 			default :
 				if ( !$silent ) {
-					throw new BgaUserException( self::_("Ace Check error.") );
+					throw new BgaUserException( self::_("Ace Check error (should never happen.") );
 				}
 				break;
 		}
@@ -2056,7 +2093,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		} else {
 			self::trace("[bmc] checkRun FALSE (Doesn't reach)");
-			//throw new BgaUserException( self::_("Nice try but it doesn't reach!") );
+
 			return 1;
 		}
 	}
@@ -2834,7 +2871,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		$this->gamestate->changeActivePlayer( $playerOrder[ $dealer ] );
 		
 		self::setGameStateValue( 'activeTurnPlayer_id', $playerOrder[ $dealer ] );
-		
+
 		self::notifyAllPlayers( // Including spectators
 			'newHand',
 			clienttranslate('New Hand! ${dealer} has dealt the cards. New target is ${handTarget}.'),
@@ -2878,8 +2915,10 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		
 	    $this->gamestate->nextState("");	
     }
-
-//    function stCheckEmptyDeck() {
+////
+////
+////
+// function stCheckEmptyDeck() {
     function checkEmptyDeck() { // Just make this a function to shuffle the deck if needed
 //		self::trace("[bmc] ENTER stCheckEmptyDeck");
 		self::trace("[bmc] ENTER checkEmptyDeck");
@@ -2970,6 +3009,9 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		$drawSourceValue = self::getGameStateValue( 'drawSourceValue' );
 
 		self::dump("[bmc] drawSourceValue:", $drawSourceValue );
+		
+		// Clear the variable for the next player, because this discard has been handled
+		self::setGameStateValue( 'drawSourceValue', 2 );
 		
 		$buyCount = self::getPlayersBuyCount();
 		self::dump("[bmc] buyCount:", $buyCount );
@@ -3163,6 +3205,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		
 		$APL = $this->gamestate->getActivePlayerList();
 		self::dump( "[bmc] APL(stShowBUYButtons):", $APL);
+		//exit(0);
 
 		self::trace( "[bmc] EXIT stShowBUYButtons:" );
 	}

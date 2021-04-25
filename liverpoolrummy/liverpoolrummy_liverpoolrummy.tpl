@@ -40,9 +40,9 @@
 					<span style="margin-left:15px"></span>
 					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray spectatorMode"> Buy it! </a>
 					<span style="margin-left:15px"></span>
-					<a href="#" id="buttonPrepAreaA" class="bgabutton prepButton bgabutton_gray spectatorMode">Meld A</a>
-					<a href="#" id="buttonPrepAreaB" class="bgabutton prepButton bgabutton_gray spectatorMode">Meld B</a>
-					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode">Meld C</a>
+					<a href="#" id="buttonPrepAreaA" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep A</a>
+					<a href="#" id="buttonPrepAreaB" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep B</a>
+					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep C</a>
 					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode">Card For Joker</a>
 					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode">Go Down</a>
 					<input type="checkbox" id="voice" name="scales" checked> <label for="voices">Voices</label>
