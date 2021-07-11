@@ -71,6 +71,7 @@ function (dojo, declare) {
 			this.drawCounter = 400; // Start with a number bigger than the # of cards
 			// this.buyTimeInSecondsDefault = 10;
 			// this.buyTimeInSeconds = this.buyTimeInSecondsDefault;
+console.log("[bmc] Clear this.prepAreas2");
 			this.prepAreas = 0; // No card are prepped on the board upon refresh
 			// New variables for new timers on static buttons
 			this.enableDBStatic = 'Yes'; // (except the player whose turn it is
@@ -108,6 +109,16 @@ function (dojo, declare) {
 ////////
 //
 // TODO:
+// 7/8/2021: Reported by mavhc Chrome v91 "When moving to the second round my new hand of cards wasn't visible until I reloaded the page" https://boardgamearena.com/table?table=185758192
+// 7/8/2021: Reported by mavhc Chrome v91 "When replaying a game it seems that the cards are missing from hands and the board quite often"
+// 7/8/2021: Reported by mavhc Chrome v91 "Move 39, I'd selected card for joker, 2 cards for meld A and 3 10s for meld B, the joker, and a 9 to swap with the joker, before drawing a card. So I couldn't click Go Down. Then I worked out the problem, drew a card, but still couldn't click Go Down, until I'd click a card in the meld/prep A to send back to my hand, and then resent it back to meld A."
+
+//  4/24: SCORING: I think this functional form is a perfectly great alternative - there are likely many many ways to go about implementing this scoring feature. 
+
+//Is there one numPlayerTurns value for all players, or does each player have a potentially unique one? 
+
+//I think it is important each player has a unique multiplier instead of heavily discounting everyone’s score when someone goes out early - I highly value the relative discounting between players within a round.
+
 //  2/13: A7890JQ* did not sort properly. Should have been 7890JQ*A.
 //  2/13: When people want to buy, and the DECK is drawn, the BUYERS are discolored and should not be.
 //  2/13: When someone wants to buy, light-up the DISCARD card so people can see it has a buyer.
@@ -472,9 +483,13 @@ console.log(this.gamedatas.deckIDs);
 			//this.deckOne.addToStockWithId(1, 2 );
 //EXP End 11/8
 
+console.log( "this.deckOne" );
+console.log( this.deckOne );
+
+
 			// Create a single card to represent the card back
 			this.discardPileOne = new ebg.stock(); // New stock for the top of the discard pile
-            //this.discardPileOne.create( this, $('discardPileOne'), this.cardwidth, this.cardheight );
+            this.discardPileOne.create( this, $('discardPileOne'), this.cardwidth, this.cardheight );
 			this.discardPileOne.image_items_per_row = 13;
 
 			// Item 54, color 5, value 3 is red back of the card
@@ -496,6 +511,7 @@ console.log(this.gamedatas.deckIDs);
 
 console.log( "this.gamedatas.discardTopCard" );
 console.log( this.gamedatas.discardTopCard );
+console.log( this.gamedatas.discardTopCard.id );
 console.log( card );
 console.log( color );
 console.log( value );
@@ -503,19 +519,21 @@ console.log( this.getCardUniqueId(color, value) );
 
 			this.discardPileOne.addToStockWithId( this.getCardUniqueId(color, value), this.gamedatas.discardTopCard.id );
 
-console.log( "this.gamedatas.discardPileOne" );
-console.log( this.gamedatas.discardPileOne );
-
-
-
-// TODO: Somehow the discardPileOne gets set with a value of object / object, and not a value.
+console.log( "this.discardPileOne" );
+console.log( this.discardPileOne );
 
 
 
 
+
+
+
+
+/* 7/5/2021
 			// Create stock for the discard pile (could be any face-up card)
             this.discardPile = new ebg.stock(); // new stock object for hand
             this.discardPile.create( this, $('discardPile'), this.cardwidth, this.cardheight );            
+//            this.discardPile.create( this, $('discardPileOne'), this.cardwidth, this.cardheight );            
 			this.discardPile.order_items = false;
 
             this.discardPile.image_items_per_row = 13; // 13 images per row in the sprite file
@@ -532,7 +550,9 @@ console.log( this.gamedatas.discardPileOne );
             this.discardPile.setOverlap( 0.1 , 0 );
 
 			this.discardPile.item_margin = 0; 
+*/	//7/5/2021	
 		
+
 			// Create the variables which show how many cards in each pile (deck, hand, discard)
 			this.drawDeckSize = new ebg.counter();
 			this.drawDeckSize.create( 'drawDeckSize' );
@@ -544,11 +564,16 @@ console.log( this.gamedatas.discardPileOne );
 			
 			this.handCount = this.gamedatas.allHands[ this.player_id ];
 			
+			
+
+
+
 			// NEW DISCARD PILE HANDLING
 			this.discardSize = new ebg.counter();
 			this.discardSize.create( 'discardSize' );
 			this.discardSize.setValue( this.gamedatas.discardSize );
 
+/* 7/5/2021
 			thisDiscardPile = new Array();
 
 //console.log( "this.gamedatas.discardPile" );
@@ -590,7 +615,20 @@ console.log( discardPile );
 				this.discardPile = this.discardPile[this.discardPile.length - 1 ];
 			}			
 
-//			this.discardPile = this.discardPileOne;
+// Comment this next line in to use the single discard pile card
+			this.discardPile = this.discardPileOne;
+
+console.log( "discardPile" );
+console.log( this.discardPile );
+
+*/ // 7/5/2021
+
+
+
+
+
+
+// Maybe all this discardpile stuff above can be removed
 
 			this.buyCount = {};
 			this.handCount = {};
@@ -823,8 +861,10 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 
             dojo.connect( this.playerHand,   'onChangeSelection', this, 'onPlayerHandSelectionChanged' );
             dojo.connect( this.deckOne,      'onChangeSelection', this, 'onDeckSelectionChanged' );
-            dojo.connect( this.discardPile,  'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
-			dojo.connect( $('discardPile' ), 'onclick',           this, 'onDiscardPileSelectionChanged');
+            //dojo.connect( this.discardPile,  'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
+            dojo.connect( this.discardPileOne,  'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
+//			dojo.connect( $('discardPile' ), 'onclick',           this, 'onDiscardPileSelectionChanged');
+			dojo.connect( $('discardPileOne' ), 'onclick',           this, 'onDiscardPileSelectionChanged');
 			dojo.connect( $('myhand' ),      'onclick',           this, 'onMyHandAreaClick');
 
 			//dojo.connect( $('deck'), 'onclick', this, 'onDeckSelectionChanged');
@@ -1048,14 +1088,16 @@ console.log("[bmc] Doing the window.onload");
 	console.log("[bmc] ALL discardPile:");
 	console.log(dp_items);
 						for ( let i in dp_items ) {
-							dojo.addClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+//							dojo.addClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+							dojo.addClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 						}
 					} else {
 						for ( let i in deck_items ) {
 							dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 						}
 						for ( let i in dp_items ) {
-							dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+//							dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+							dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 						}
 					}
 					break;
@@ -1071,6 +1113,7 @@ console.log("[bmc] Doing the window.onload");
 					break;
 				case 'playerTurnPlay':
 					console.log("[bmc] FOUND PlayerTurnPlay");
+					this.showHideButtons();
 					break;
 				case 'nextPlayer':
 					console.log("[bmc] FOUND nextPlayer");
@@ -1279,7 +1322,8 @@ console.log("[bmc] ENTER onPlayerBuyButton");
 			// this.stopActionTimer2();
 
 console.log("onPlayerBuyButton");
-console.log(this.discardPile);
+//console.log(this.discardPile);
+console.log(this.discardPileOne);
 
 			// Do not acknowledge the buy if it's not our turn
 			// if ( this.player_id == this.turnPlayer ) {
@@ -1287,7 +1331,8 @@ console.log(this.discardPile);
 				// playSound( 'tutorialrumone_ItsYourTurn' );
 			// } else {
 				// Make sure there is a card to buy
-				if ( this.discardPile.length != 0 ) {
+//				if ( this.discardPile.length != 0 ) {
+				if ( this.discardPileOne.length != 0 ) {
 
 					var action = 'buyRequest';
 					
@@ -1826,10 +1871,13 @@ console.log( i );
 console.log(cardValuesHard[ i ]);
 console.log(foundFirst);
 
-// Doesn't sort A*0QK properly
+// Does sort A*0QK! properly // Does sort JQ*A properly! :-)
+// Doesn't sort *67*90*QKA properly :-(
 
 					if ( cardValuesHard[ i ] != null ) {
 console.log("card location is notNull");
+console.log( i );
+console.log( cards );
 						if ((( cardValuesHard[ i ] == 1 )    &&
 						   (( cardValuesHard.includes( 8 ))  ||
 							( cardValuesHard.includes( 9 ))  ||
@@ -1840,8 +1888,13 @@ console.log("card location is notNull");
 								
 								// There is an ace and some high cards, so the ace must be high (14)
 console.log("[bmc] Moving the ace to high");
-								cards[ index ][ 'boardLieIndex' ] = 14;
-								
+								cards[ i ][ 'boardLieIndex' ] = 14;
+								usedPositions.push(14);
+								usedPositions.pop(1);
+console.log( "cards" );
+console.log( i );
+console.log( cards );
+//exit(0);								
 							} else {
 
 							foundFirst = true;
@@ -1858,10 +1911,17 @@ console.log("card location is Null");
 console.log("foundFirst");
 console.log(foundFirst);
 console.log(cardValuesHard.length);
+console.log("July2021cards");
+console.log(cards);
+console.log( i );
+
+//if (cards[2]['boardLieIndex'] == 11 ) {
+//	exit(0);
+//}
 							// if this is the last of the hard cards then ignore
 							// Deal with the aces later
 							// This presumes the cards which are down are indeed a valid run
-							if ( i < cardValuesHard.length ) {
+							if ( i < cardValuesHard.length + 1 ) {
 								if ( jokerIndex < jokerCount ) {
 //console.log("index");
 //console.log(index);
@@ -1869,9 +1929,9 @@ console.log("[bmc] Assigning Joker!");
 console.log(i);
 console.log(jokerIndex);
 console.log(jokerCount);
-console.log(usedPositions);
 									cards[ jokerIndex ][ 'boardLieIndex' ] = i;
 									usedPositions.push(i);
+console.log(usedPositions);
 									jokerIndex++;
 								} else {
 //	I used to have this assert-style check here but it sorts the cards right, and
@@ -1886,7 +1946,28 @@ console.log("[bmc] FINISHED HARD CARDS");
 						}
 					}
 				}
-				
+
+console.log("[bmc] DEBUG]");
+console.log(cards);
+console.log(cards[0]);
+console.log(cards[1]);
+console.log(cards[2]);
+console.log(cards[3]);
+console.log(cards[4]);
+console.log(cards[5]);
+console.log(cards[6]);
+console.log(cards[7]);
+console.log(cards[8]);
+console.log(cards[9]);
+console.log(cards[10]);
+console.log(cards[11]);
+console.log(cards[12]);
+console.log(cards[13]);
+// To debug, enter a specific card and id here, then you can see the variable before it gets chenged
+if (cards[0]['id'] == 60 ) {
+	//exit(0);
+}
+
 				leftOverJokers = jokerCount - jokerIndex;
 				
 console.log("[bmc] Assess remaining jokers");
@@ -1934,12 +2015,20 @@ console.log("[bmc] 4");
 console.log("[bmc] Final usedPositions" );
 console.log( usedPositions );
 
+
+
+// THERE IS AN ISSUE WITH THE PLACEMENT OF EXTRA JOKERS. THEY SHOULD GO ON LEFT BUT DON'T
+// 7/10/2021
+
+
+
 				// Move an ace to be high if there is a king (position 13)
 				for (let i in cards ) {
 					if ( cards[ i ][ 'type' ] == 1 ) {
 						if ( usedPositions.includes( 13 )) {
 							// If there is already a high ace then assign the 2nd one low
-							if ( usedPositions.includes( 14 )) {
+							if ( usedPositions.includes( 14 ) &&
+							   ( cards.length > 13)) {
 								cards[ i ][ 'boardLieIndex' ] = 1;
 								usedPositions.push(1);
 							} else {
@@ -2105,7 +2194,8 @@ console.log( card_id );
 console.log( allHands );
 console.log( discardSize );
 console.log( "discardPile and playerhand:" );
-console.log( this.discardPile );
+//console.log( this.discardPile );
+console.log( this.discardPileOne );
 console.log( this.playerHand );
 console.log( buyers );
 
@@ -2163,21 +2253,33 @@ console.log( deck_items );
 			//if ( this.discardPile.items.length > 0 ) {
 			//	this.discardPile.removeFromStockById( this.discardPile.items[ 0 ].id );
 			//}
+
+console.log( "this.discardPileOne" );
+console.log( this.discardPileOne );
+			
+			
+			// Remove any cards already in the discard pile
+			this.discardPileOne.removeAll();
 			
 			// Add it to the pile and set the weight
 			let cardUniqueId = this.getCardUniqueId( color, value );
 			
 			if ( player_id == this.player_id ) {
-				this.discardPile.addToStockWithId( cardUniqueId, card_id, 'myhand' );
+//				this.discardPile.addToStockWithId( cardUniqueId, card_id, 'myhand' );
+				this.discardPileOne.addToStockWithId( cardUniqueId, card_id, 'myhand' );
 
 			} else {
-				this.discardPile.addToStockWithId( cardUniqueId, card_id, 'overall_player_board_' + player_id );
+//				this.discardPile.addToStockWithId( cardUniqueId, card_id, 'overall_player_board_' + player_id );
+				this.discardPileOne.addToStockWithId( cardUniqueId, card_id, 'overall_player_board_' + player_id );
 			}
 			
+console.log( this.discardPileOne );
+
+
 			// NEW FEATURE 4/24/2021. Make discard pile only 1 card
-			if ( this.discardPile.length > 1 ) {
-				this.discardPile = this.discardPile[this.discardPile.length - 1 ];
-			}			
+//			if ( this.discardPile.length > 1 ) {
+//				this.discardPile = this.discardPile[this.discardPile.length - 1 ];
+//			}			
 
 			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
 //				var dp_items = this.discardPile.getAllItems();
@@ -2185,7 +2287,8 @@ console.log( deck_items );
 console.log("[bmc] ALL discardPile:");
 console.log( dp_items );
 				for ( let i in dp_items ) {
-					dojo.addClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+//					dojo.addClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+					dojo.addClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 				}
 			}
 			
@@ -2201,7 +2304,15 @@ console.log("[bmc] Card played by me");
                 // corresponding item
                 if ($('myhand_item_' + card_id)) {
 console.log("[bmc] Was in hand");
-                    this.placeOnObject('myhand_item_' + card_id, 'discardPile');
+
+
+
+
+
+// 7/5/2021 Not sure if this should be discardPileOne or discardPile
+
+//                    this.placeOnObject('myhand_item_' + card_id, 'discardPile');
+                    this.placeOnObject('myhand_item_' + card_id, 'discardPileOne');
                     this.playerHand.removeFromStockById(card_id);
                 }
             } else if (( this.player_id != nextTurnPlayer ) && 
@@ -3047,7 +3158,9 @@ console.log("/" + this.game_name + "/" + this.game_name + "/" + action + ".html"
 			}
 console.log("[bmc]AreasPrepped(i):");
 console.log(i);
-			if ( i > 0 ) {
+			// If no areas are prepped then clear the variable
+			if ( i == 0 ) {
+console.log("[bmc] Clear this.prepAreas3");
 				this.prepAreas = 0;
 			}
 			
@@ -3246,6 +3359,7 @@ console.log("[bmc] Removed.");
 
 				this.prepSetLoc = 0; // Nothing is prepped, so clear the counters
 				this.prepRunLoc = 3; 
+console.log("[bmc] Clear this.prepAreas4");
 				this.prepAreas = 0;
 
 			} // else do nothing, they've already gone down.
@@ -3273,7 +3387,12 @@ console.log(dp_items);
 				dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 			}
 			for ( let i in dp_items ) {
-				dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+
+
+// 7/5/2021 Not sure if this should be discardPileOne or discardPile
+
+//				dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+				dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 			}
 			
 			console.log( items );
@@ -3312,7 +3431,8 @@ console.log(card_id);
 				} else {
 					console.log("[bmc] Cannot Draw. Action false");
 				}
-				this.discardPile.unselectAll();
+//				this.discardPile.unselectAll();
+				this.discardPileOne.unselectAll();
 				this.deckOne.unselectAll();
 				
 				// Remove the borders from the deck and discard pile after the player draws
@@ -3328,7 +3448,14 @@ console.log(card_id);
 					dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 				}
 				for ( let i in dp_items ) {
-					dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+					
+					
+					
+					
+					
+// 7/5/2021 Not sure if this should be discardPileOne or discardPile
+//					dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+					dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 				}
 								
 			} else {
@@ -3398,7 +3525,8 @@ console.log( "[bmc] ENTER reallyDiscard" );
 console.log( this.player_id );
 console.log("selectedDiscards:");
 console.log(selectedDiscards);
-			this.discardPile.unselectAll();
+			//this.discardPile.unselectAll();
+			this.discardPileOne.unselectAll();
 			this.playerHand.unselectAll();
 
 			this.clearButtons();
@@ -3914,7 +4042,14 @@ console.log(dp_items);
 				dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 			}
 			for ( let i in dp_items ) {
-				dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+				
+				
+				
+				
+				
+// 7/5/2021 Not sure if this should be discardPileOne or discardPile
+//				dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+				dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 			}
 
 console.log(this.handCount);
@@ -3975,7 +4110,8 @@ console.log( '[bmc] Deck' );
 				}
 				if ( drawSource == 'discardPile' ) {
 console.log( '[bmc] DP' );
-					this.discardPile.removeFromStockById( card_id, addTo );
+//					this.discardPile.removeFromStockById( card_id, addTo );
+					this.discardPileOne.removeFromStockById( card_id, addTo );
 				}
 				if ( drawSource == 'playerDown_A' ) {
 console.log( '[bmc] A' );
@@ -4063,7 +4199,8 @@ console.log( '[bmc] addTo: ' + addTo );
 				// }
 				if ( drawSource == 'discardPile' ) {
 console.log( '[bmc] DP' );
-					this.discardPile.removeFromStockById( card_id, addTo );
+//					this.discardPile.removeFromStockById( card_id, addTo );
+					this.discardPileOne.removeFromStockById( card_id, addTo );
 				}
 				if ( drawSource == 'playerDown_A' ) {
 console.log( '[bmc] A' );
@@ -4112,7 +4249,8 @@ console.log( this.player_id );
 					dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 				}
 				for ( let i in dp_items ) {
-					dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+//					dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
+					dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 				}
 				// dojo.removeClass('deckOne_item_' + deck_items[0]['id'], 'stockitem_selected');
 				// dojo.removeClass('discardPile_item_' + dp_items[0]['id'], 'stockitem_selected');
@@ -4677,7 +4815,8 @@ console.log( $('close_btn').innerHTML );
 			
             // We received a new full hand of cards. Clear the table.
             this.playerHand.removeAll();
-			this.discardPile.removeAll();
+			//this.discardPile.removeAll();
+			this.discardPileOne.removeAll();
 			//this.deck.removeAll();
 			
 			for (var player in this.gamedatas.players) {
@@ -4692,7 +4831,7 @@ console.log( $('close_btn').innerHTML );
 			this.myPrepA.removeAll();
 			//this.myPrepB.removeAll();
 			this.myPrepC.removeAll();
-			this.prepAreas = 0;
+			
 			this.myPrepJoker.removeAll();
 			dojo.removeClass('myPrepA', "buyerLit");
 			dojo.removeClass('myPrepB', "buyerLit");
@@ -4702,6 +4841,7 @@ console.log( $('close_btn').innerHTML );
 
 			this.prepSetLoc = 0; // Nothing is prepped, so clear the counters
 			this.prepRunLoc = 3;
+console.log("[bmc] Clear this.prepAreas1");
 			this.prepAreas = 0;
 		},
 /////////
@@ -4717,20 +4857,22 @@ console.log( $('close_btn').innerHTML );
 					let card = notif.args.discardPile[i];
 					let color = card.type;
 					let value = card.type_arg;
-					this.discardPile.addToStockWithId( this.getCardUniqueId( color, value ), card.id );
+					//Now Have discardPileOne. So 7/10/2021 Took the teeth out of this routine.
+					//this.discardPile.addToStockWithId( this.getCardUniqueId( color, value ), card.id );
 					let location_arg = parseInt( notif.args.discardPile[ i ][ 'location_arg' ]);
 					discardPileWeights[ this.getCardUniqueId( color, value )] = location_arg;
 				}
 				// Set the weights in the discard pile
-				this.discardPile.changeItemsWeight(discardPileWeights);
+				// Now have discardpileOne
+//				this.discardPile.changeItemsWeight(discardPileWeights);
 				
 			// NEW FEATURE 4/24/2021. Make discard pile only 1 card
-			if ( this.discardPile.length > 1 ) {
-				this.discardPile = this.discardPile[this.discardPile.length - 1 ];
-			}			
+//			if ( this.discardPile.length > 1 ) {
+//				this.discardPile = this.discardPile[this.discardPile.length - 1 ];
+//			}			
 
 	console.log("[bmc] this.discardPile");			
-	console.log(this.discardPile);
+	console.log(this.discardPileOne);
 
 				// Set to show the count of cards in the discard pile
 				this.discardSize.setValue( notif.args.discardSize );
@@ -4876,7 +5018,8 @@ console.log("empty arg");
 			// for ( let i = 0 ; i < notif.args.deck.length; i++ ) {
 				// this.deck.addToStockWithId( 1, notif.args.deck[i] );
 			// }
-			this.discardPile.removeAll();
+			//this.discardPile.removeAll();
+			this.discardPileOne.removeAll();
 // console.log("[bmc] Shuffled New Deck:");			
 // console.log(this.deck);
 		},
@@ -5126,6 +5269,8 @@ console.log("[bmc] sound: It's Your Turn");
 			console.log( 'overall_player_board_' + notif.args.player_id, 'playerWentDown' );
 			dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'playerWentDown' );
 
+			console.log( this.voices );
+			
 			//this.disableNextMoveSound();
 			if ( this.voices ) {
 				playSound( 'tutorialrumone_GoingDown' );

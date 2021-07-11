@@ -62,7 +62,7 @@
 		</div>
 		<div id = "discardbox" class="discardbox">
 			<h3>Discard Pile (<span id="discardSize"></span>)</h3>
-			<div id="discardPile"></div>
+			<div id="discardPileOne"></div>
 		</div>
 		<div id="myPrepA" class="prepbox">
 			<h3>Prep A</h3>

@@ -360,9 +360,9 @@ class LiverpoolRummy extends Table
 
 		$discardSize = count( $this->cards->countCardsByLocationArgs( 'discardPile' ));
 		
-		if ( $discardSize > 1) {
-			$discardSize = 1;
-		}
+//		if ( $discardSize > 1) {
+//			$discardSize = 1;
+//		}
 // END TODO
 		self::setGameStateValue( 'discardSize', $discardSize );
 		
@@ -1713,6 +1713,11 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::trace("[bmc] ENTER assignExtraJokers");
 		self::dump( "[bmc] cardGroup", $cardGroup );
 		// If it's a run and it has jokers then ask the player which values to make the jokers
+		
+		// For now just exit -otherwise it causes an error on the two error lines noted below
+		
+		return true;
+		
 		if ( $this->checkRun( $cardGroup, true )) {
 			self::trace("[bmc] It's a run");
 
@@ -1773,10 +1778,10 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					} else {
 						if( $card[ $position ] ){
 							// There's a hard card no need for a joker
-							self::dump( "[bmc] hardcard", $card[ $position ] );
+							self::dump( "[bmc] hardcard", $card[ $position ] ); // THIS LINE CAUSES ERROR (NULL)
 						} else {
 							// Assign a joker
-							self::dump( "[bmc] assigning a joker", $card[ $position ] );
+							self::dump( "[bmc] assigning a joker", $card[ $position ] ); // THIS LINE CAUSES ERROR (NULL)
 							//$jokers[ $jokerIndex ][ 'type_arg' ] = $position;
 						}
 					}
