@@ -1370,13 +1370,17 @@ class LiverpoolRummy extends Table
 				$jokersInB = $this->checkForJoker( $cardsInPDB );
 				$jokersInC = $this->checkForJoker( $cardsInPDC );
 				
-				self::dump("[bmc] JinA: ", $jokersInA );
-				self::dump("[bmc] JinB: ", $jokersInB );
-				self::dump("[bmc] JinC: ", $jokersInC );
+				$countJokersInA = $this->countJokers( $cardsInPDA );
+				$countJokersInB = $this->countJokers( $cardsInPDB );
+				$countJokersInC = $this->countJokers( $cardsInPDC );
+				
+				self::dump("[bmc] JinA: ", $countJokersInA );
+				self::dump("[bmc] JinB: ", $countJokersInB );
+				self::dump("[bmc] JinC: ", $countJokersInC );
 
-				// If there is at least 1 joker, try swapping for it
-				if ( $jokersInA || $jokersInB || $jokersInC ){
-					// There is 1 joker on the board, choose it
+				// If there is only 1 joker, try swapping for it
+//				if ( $jokersInA || $jokersInB || $jokersInC ){
+				if (( $countJokersInA + $countJokersInB + $countJokersInC ) == 1) {
 					if ( $jokersInA != null ) {
 						$boardCard = $jokersInA;
 						$boardArea = $jokersInA[ "location" ];
@@ -1445,35 +1449,39 @@ class LiverpoolRummy extends Table
 			$targetArea = $this->findDeficientArea( $cardGroupA, $cardGroupB, $cardGroupC );
 			self::dump("[bmc] targetArea: ", $targetArea );
 
-			if ( $targetArea == false ) {
-				throw new BgaUserException( self::_('Make a partial set (only 2 cards) or run (only 3 cards) for the swapped joker.') );
-			}
+			if (( $targetArea == false ) ||
+				( $jokerSwapResult == false )) {
+				throw new BgaUserException( self::_('Make a partial set (only 2 cards) or run (only 3 cards) for the swapped joker and select a joker to swap.') );
+			} else {
+				$playerHand = $this->cards->getCardsInLocation( 'hand', $active_player_id );
 
-			$playerHand = $this->cards->getCardsInLocation( 'hand', $active_player_id );
+				$joker = $jokerSwapResult;
+				self::dump("[bmc] Played Joker:", $joker);
 
-			$joker = $jokerSwapResult;
-			self::dump("[bmc] Played Joker:", $joker);
-
-			// Now we know where to put the joker so add it there and finish going down
-			// TODO: Not sure why this isn't needed for a run (or is it???) or it's done in playcardfinish
-			$this->cards->moveCard( $joker['id'], 'hand', $active_player_id);
-			
-			switch ( $targetArea ) {
-				case "playerDown_A":
-					$cardGroupA[ $joker[ 'id' ]] = $joker;
-					$cardGroupA[ $joker[ 'id' ]][ 'location' ] = 'hand';
-					$cardGroupA[ $joker[ 'id' ]][ 'location_arg' ] = $active_player_id;
-					break;
-				case "playerDown_B":
-					$cardGroupB[ $joker[ 'id' ]] = $joker;
-					$cardGroupB[ $joker[ 'id' ]][ 'location' ] = 'hand';
-					$cardGroupB[ $joker[ 'id' ]][ 'location_arg' ] = $active_player_id;
-					break;
-				case "playerDown_C":
-					$cardGroupC[ $joker[ 'id' ]] = $joker;
-					$cardGroupC[ $joker[ 'id' ]][ 'location' ] = 'hand';
-					$cardGroupC[ $joker[ 'id' ]][ 'location_arg' ] = $active_player_id;
-					break;
+				// Now we know where to put the joker so add it there and finish going down
+				// TODO: Not sure why this isn't needed for a run (or is it???) or it's done in playcardfinish
+				$this->cards->moveCard( $joker['id'], 'hand', $active_player_id);
+				
+				
+				// 7/10/2021 There is a problem adding the joker here.
+				
+				switch ( $targetArea ) {
+					case "playerDown_A":
+						$cardGroupA[ $joker[ 'id' ]] = $joker;
+						$cardGroupA[ $joker[ 'id' ]][ 'location' ] = 'hand';
+						$cardGroupA[ $joker[ 'id' ]][ 'location_arg' ] = $active_player_id;
+						break;
+					case "playerDown_B":
+						$cardGroupB[ $joker[ 'id' ]] = $joker;
+						$cardGroupB[ $joker[ 'id' ]][ 'location' ] = 'hand';
+						$cardGroupB[ $joker[ 'id' ]][ 'location_arg' ] = $active_player_id;
+						break;
+					case "playerDown_C":
+						$cardGroupC[ $joker[ 'id' ]] = $joker;
+						$cardGroupC[ $joker[ 'id' ]][ 'location' ] = 'hand';
+						$cardGroupC[ $joker[ 'id' ]][ 'location_arg' ] = $active_player_id;
+						break;
+				}
 			}
 		}
 	
@@ -2105,6 +2113,19 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 ////
+	function countJokers( $cards ) {
+		self::dump("[bmc] ENTER countJokers: ", $cards);
+		$jokerCount = 0; // Count the jokers
+		foreach ( $cards as $card ) {
+			if ( $card['type'] == "5") {
+				$jokerCount += 1;
+			}
+		}
+		return $jokerCount;
+	}
+////
+////
+////
 	function checkForJoker( $cards ) {
 		self::dump("[bmc] ENTER check for joker in cards: ", $cards);
 
@@ -2126,7 +2147,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::trace("[bmc] ENTER checkSet");
 		// A set is 3 or more cards of the same number or
 		//   2 cards of the same value plus 1 joker.
-		//self::dump("[bmc] checkSet Cards: ", $cards);
+		self::dump("[bmc] checkSet Cards: ", $cards);
 		
 		if ( count( $cards ) < 3) {
 			self::trace("[bmc] EXIT checkSet: FALSE. Not enough cards.");
@@ -2345,13 +2366,13 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					$this->cards->moveCard( $card_id, $boardArea, $boardPlayer, $playWeight);
 
 				} else if ($mightBeJoker != false) { 
-					self::trace("[bmc] 1922: mightbejoker != false.");
+					self::trace("[bmc] 2348: mightbejoker != false.");
 
 					if ( $this->getCardNotJoker( $boardArea, $boardPlayer )['type_arg'] == $card_type_argA[ 0 ] ) {
-						self::trace("[bmc] 1887 getCardNotJoker is true");
+						self::trace("[bmc] 2351 getCardNotJoker is true");
 						$this->takeTheJoker( $mightBeJoker, $player_id, $card_id, $boardArea, $boardPlayer );
 					} else {
-						self::trace("[bmc] 1928: Not same values for set.");
+						self::trace("[bmc] 2354: Not same values for set.");
 						throw new BgaUserException( self::_('Cannot play that card on that set.') );
 					}
 				} else {

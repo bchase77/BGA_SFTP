@@ -109,25 +109,18 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 //
 // TODO:
-// 7/8/2021: Reported by mavhc Chrome v91 "When moving to the second round my new hand of cards wasn't visible until I reloaded the page" https://boardgamearena.com/table?table=185758192
-// 7/8/2021: Reported by mavhc Chrome v91 "When replaying a game it seems that the cards are missing from hands and the board quite often"
-// 7/8/2021: Reported by mavhc Chrome v91 "Move 39, I'd selected card for joker, 2 cards for meld A and 3 10s for meld B, the joker, and a 9 to swap with the joker, before drawing a card. So I couldn't click Go Down. Then I worked out the problem, drew a card, but still couldn't click Go Down, until I'd click a card in the meld/prep A to send back to my hand, and then resent it back to meld A."
-
 //  4/24: SCORING: I think this functional form is a perfectly great alternative - there are likely many many ways to go about implementing this scoring feature. 
 
 //Is there one numPlayerTurns value for all players, or does each player have a potentially unique one? 
 
 //I think it is important each player has a unique multiplier instead of heavily discounting everyone’s score when someone goes out early - I highly value the relative discounting between players within a round.
 
-//  2/13: A7890JQ* did not sort properly. Should have been 7890JQ*A.
 //  2/13: When people want to buy, and the DECK is drawn, the BUYERS are discolored and should not be.
 //  2/13: When someone wants to buy, light-up the DISCARD card so people can see it has a buyer.
 //  2/13: Everyone should get at least 1 turn
 //  2/13: Scale the points by the number of turns the person had.
 //  2/13: Deal 11 each hand.
 //  2/13: Order the player table by score.
-//  X 2/13: Change button text MELD A...
-//  1/27: Somehow show the non-buyable discarded card as non-buyable
 //  1/27: Add option: Only reveal attempt to buy if successful.
 //  2/13: Have an option where jokers on the table could not be replaced
 //  2/13: Having an option where bids to buy aren't revealed until they are successful would be appreciated
@@ -137,7 +130,6 @@ console.log("[bmc] Clear this.prepAreas2");
 //  2/6: Sort meld box as run and place joker properly
 // 12/26: When drawing a card, if the same card is in player hand they both go to the right. Only the new card should move.
 //  1/16: Allow players to specify where each joker plays
-// 12/26: Landscape to portrait shows every card in discard pile.
 //  1/15: If discarded card is playable, allow players to call RUMMY, play it, and discard a card
 //
 //  1/28: [group] We had multiple cases where people tried buying and the log reported they were unable, with no explanation as to why
@@ -187,13 +179,17 @@ console.log("[bmc] Clear this.prepAreas2");
 // 11/10: Maybe not: Get bonus if you go out? NO.
 // 11/10: Maybe not: Notify players are prepping cards
 //
+// X 7/8/2021: Reported by mavhc Chrome v91 "When moving to the second round my new hand of cards wasn't visible until I reloaded the page" https://boardgamearena.com/table?table=185758192
+// X 7/8/2021: Reported by mavhc Chrome v91 "When replaying a game it seems that the cards are missing from hands and the board quite often"
+// X  1/27: Somehow show the non-buyable discarded card as non-buyable
+// X 12/26: Landscape to portrait shows every card in discard pile.
+// X  2/13: A7890JQ* did not sort properly. Should have been 7890JQ*A.
+//  X 2/13: Change button text MELD A...
+// X 7/17/2021: Board sorting used to be not right on 7890*QK*A (* should be low) but it's fixed.
+// X 7/10/2021: There is a problem with 2 jokers on the board, 2 sets, 1 joker in PlayerAraea and 1 in A of different player. Trying to swap the joker in playerAreaB. The joker gets added wrong.
+// X 7/8/2021: Reported by mavhc Chrome v91 "Move 39, I'd selected card for joker, 2 cards for meld A and 3 10s for meld B, the joker, and a 9 to swap with the joker, before drawing a card. So I couldn't click Go Down. Then I worked out the problem, drew a card, but still couldn't click Go Down, until I'd click a card in the meld/prep A to send back to my hand, and then resent it back to meld A."
 // X 11/26: Have the board joker selection be automatic if there is only 1 joker
 // X  2/13: After 1 hand is played, PREP A, PREP B and PREP C disappear from the board.
-
-
-
-
-
 // X  1/27: Add option: Deal 1 more card than size of contract "May I" variant.
 // X  1/27: Add option: Add 2, 3, or 4 extra jokers to the deck
 // X  1/28: [group] Change rules text to match # of cards dealt
@@ -1464,252 +1460,6 @@ console.log( "[bmc] EXIT sortBoard" );
 /////////
 /////////
 /////////
-		// sortArea_A : function( boardPlayer ) {
-// console.log("[bmc] sortArea_A");
-// console.log( boardPlayer );
-			// cards = this.downArea_A_[ boardPlayer ].getAllItems();
-			// if ( cards != null ) {
-				// weightChange = this.sortRun( cards, 'playerDown_A', boardPlayer );
-// console.log("[bmc] NEWRUN_SAA" );
-// console.log( weightChange );
-				// this.downArea_A_[ boardPlayer ].items = weightChange;
-				// //this.downArea_A_[ boardPlayer ].changeItemsWeight();
-			// }
-		// },
-/////////
-/////////
-/////////
-		// sortArea_B : function( boardPlayer ) {
-// console.log("[bmc] sortArea_B");
-// console.log( boardPlayer );
-			// cards = this.downArea_B_[ boardPlayer ].getAllItems();
-// console.log(cards);
-			// if ( cards != null ) {
-				// weightChange = this.sortRun( cards, 'playerDown_B', boardPlayer );
-// console.log("[bmc] NEWRUN_SAB" );
-// console.log( weightChange );
-				// this.downArea_B_[ boardPlayer ].items = weightChange;
-
-//exit(0);
-				// var fakeWeightChange = { 
-					// 0 : weightChange[0]['type']
-				// };
-// console.log(fakeWeightChange);
-				// this.downArea_B_[ boardPlayer ].changeItemsWeight(fakeWeightChange);
-				// cards2 = this.downArea_B_[ boardPlayer ].getAllItems();
-// console.log("cards2");
-// console.log(cards2);
-			// }
-		// },
-/////////
-/////////
-/////////
-		// sortArea_C : function( boardPlayer ) {
-// console.log("[bmc] sortArea_C");
-// console.log( boardPlayer );
-			// cards = this.downArea_C_[ boardPlayer ].getAllItems();
-			// if ( cards != null ) {
-				// weightChange = this.sortRun( cards, 'playerDown_C', boardPlayer );
-// console.log("[bmc] NEWRUN_SAC" );
-// console.log( weightChange );
-				// this.downArea_C_[ boardPlayer ].items = weightChange;
-				// //this.downArea_C_[ boardPlayer ].changeItemsWeight();
-			// }
-		// },
-/////////
-/////////
-/////////
-		// sortRunOrig : function( cards, downArea ) {
-// console.log( "[bmc] ENTER sortRun" );
-// console.log( cards );
-// console.log( downArea );
-
-			// let weightChange = {};
-					
-			// if ( cards.length != 0 ) {
-				// var el = {};
-				// var cardGroup = new Array();
-				// var cardGroupNonJokers = new Array();
-				
-				// for ( let i in cards ) {
-// console.log(i);
-					
-					// var [ color, value ] = this.getColorValue( cards[ i ]['type'] );
-
-					// el = {
-						// 'id' : cards[i]['id'],
-						// 'unique_id' : this.getCardUniqueId(color, value),
-						// 'type' : color,
-						// 'type_arg' : value,
-						// 'location' : downArea,
-						// 'location_arg' : value // value = weight
-					// }
-					// cardGroup[ cards[ i ][ 'id' ]] = el;
-					
-					// Also store the non-jokers
-					// if ( color != 5 ) {
-						// Also store the ace, if present (assume there is only 1)
-						// cardGroupNonJokers[ cards[ i ][ 'id' ]] = el;
-						// if ( value == 1 ) {
-							// var ace = el ;
-						// }
-// console.log( ace );
-					// }
-				// }
-// console.log( "cardGroup:" );
-// console.log( cardGroup );
-// console.log( cardGroupNonJokers );
-
-				// Count number of jokers and track their IDs to set weights later
-				
-				//type = 5; // Jokers are type 5
-				// var jokerCount = 0;
-				// var jokers = new Array();
-				
-				// for ( let i in cardGroup ) {
-// console.log(i);
-					// if ( cardGroup[ i ][ 'type' ] == 5 ) {
-						// jokers[ jokerCount ] = {
-							// "uid" : cardGroup[ i ][ 'unique_id' ],
-							// "type_arg" : 0 };	 // Start jokers at value 0
-						// jokerCount++;
-					// }
-				// }
-// console.log("[bmc] jokers:");
-// console.log( jokerCount );
-// console.log( jokers );
-
-				// cardGroupNonJokers.sort( this.compareTypeArg ); // Sort by value, but it changes the indices
-				
-// console.log( "cardGroupNonJokers aftersort 1" );
-// console.log( cardGroupNonJokers );
-				// If there's an ace, move it to be high
-				// TODO: Don't know if this is really going to work. This is kinda hokey.
-				// The value of the ace to 14 so it goes next to the king.
-				//
-				// TODO: It doesn't work great because the delta value becomes 42, because
-				//       the ace has been given type_arg = 54. So it cannot bridge the gap.
-				
-				// for ( card in cardGroupNonJokers ) {
-// console.log("[bmc]card");
-// console.log(card);
-// console.log(cardGroupNonJokers[ card ]);
-					// if ( cardGroupNonJokers[ card ][ 'type_arg' ] == 1 ) {
-// console.log("FOUND ACE");
-						// var ace = cardGroupNonJokers[ card ];
-						// var aceid = card;
-					// }
-				// }
-// console.log( "ace" );
-// console.log( ace );
-// console.log( aceid );
-				// if ( ace ) { // If an ace and it's high then make it high
-					// if ( cardGroupNonJokers[ Object.keys(cardGroupNonJokers).length - 1 ][ 'type_arg' ] + jokerCount > 12 ) {
-// console.log("[bmc] Making Ace High");
-						// cardGroupNonJokers[ aceid ][ 'type_arg' ] = 14; // The highest type is 13. Go to right of it.
-						// cardGroup[ cardGroupNonJokers[ aceid ][ 'id' ]][ 'type_arg' ] = 14; // The highest type is 13. Go to right of it.
-					// }
-				// }
-				
-				// cardGroupNonJokers.sort( this.compareTypeArg ); // Sort by value, but it changes the indices
-				
-// console.log( "cardGroupNonJokers aftersort 2" );
-// console.log( cardGroupNonJokers );
-
-				// var jokerIndex = 0;
-				// var jokersUsed = 0;
-				
-				// if ( jokerCount > 0 ) {
-					// lowestCard = cardGroupNonJokers.find(Boolean) ; // Store first non-joker value
-// console.log( "[bmc]lowestCard:" );
-// console.log( lowestCard );
-// TBD: TODO: This might need this line here: jokerIndex = 0; 
-
-					// if ( lowestCard != null ) {
-						// weightChange[ lowestCard.unique_id ] = 0; // Lowest card gets lowest weight
-
-						// cgLength = Object.keys(cardGroupNonJokers).length;
-		// console.log(cgLength);
-
-						// for ( let i = 1 ; i < cgLength ; i++ ) {
-							// jokerIndex = 0;
-		// console.log(i);
-		// console.log(cardGroupNonJokers[i]);
-							// let delta = cardGroupNonJokers[ i ][ 'type_arg' ] - lowestCard[ 'type_arg' ];
-							
-		// console.log("[bmc] Trouble with Jokers sometimes");
-		// console.log(delta);
-		// console.log(downArea);
-		// console.log(jokers);
-		// console.log(jokerIndex);
-		// console.log(jokers[jokerIndex]);
-		// console.log("PROBLEM:");
-		// console.log(jokers[ jokerIndex ][ 'uid' ]);
-							// for ( let j = 1; j < delta; j++ ) {
-		// console.log(j);
-								
-								// weightChange[ jokers[ jokerIndex ][ 'uid' ]] = i + jokerIndex;
-								
-								// weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex + 1;
-								// jokers[ jokerIndex ][ 'type_arg' ] = lowestCard[ 'type_arg' ] + 1;
-								// lowestCard = jokers[ jokerIndex ];
-		// console.log("[bmc] Used joker: ", jokers[ jokerIndex ]);
-		// console.log( jokerIndex );
-								// jokerIndex++;
-								// jokersUsed++;
-		//					} else {
-							// }
-							// weightChange[ cardGroupNonJokers[ i ].unique_id ] = i + jokerIndex;
-							// lowestCard = cardGroupNonJokers[ i ];
-		//					}
-		// console.log("weightChange");
-		// console.log(weightChange);			
-		// console.log(lowestCard);
-		// console.log(jokers);
-						// }
-		// console.log("FINAL weightChange before ACE analysis");
-		// console.log(weightChange);
-					// }
-				// }
-
-	// console.log("[bmc] JokerCount & jokersUsed after placement:");
-	// console.log(jokerCount);
-	// console.log(jokersUsed);
-	//so if jokercount > jokerindex then there's an extra joker, so put it on the left if the ace is high
-
-				// if ( ace != null ) {
-	// console.log("[bmc] There's an ace!");
-					// Check if ace needs to be highest.  Assuming it's already a run, ace is high when:
-					//   There is a King, or
-					//   There is a Queen and 1 joker, or
-					//   There is a Jack and 2 jokers, etc...
-	// console.log(Object.keys(cardGroupNonJokers).length);
-					// if ( cardGroupNonJokers[ Object.keys(cardGroupNonJokers).length - 1 ][ 'type_arg' ] + jokerCount > 12 ) {
-	// console.log("Making Ace High");
-						// weightChange[ ace.unique_id ] = 54; // Joker #2 is 53, so make it higher
-						
-						// Now check if jokers need to be moved to low (i.e. if there are extras)
-						// if ( jokerCount > jokersUsed ) {
-							// for ( let i = jokersUsed; i < jokerCount; i++ ){
-	// console.log(i);
-	// console.log(jokers[i]);
-	// console.log(jokers[i]['uid']);
-								// weightChange[ jokers[ i ][ 'uid' ]] = -1; // Just put all on the left
-							// }
-						// }
-					// }
-				// }
-// console.log("FINAL FINAL weightChange after ACE analysis");
-// console.log(weightChange);
-			// return weightChange;
-			// }
-// console.log( "[bmc] EXIT sortRun" );
-		// },
-
-
-/////////
-/////////
-/////////
 		addJokerBorder : function( jokers ){
 console.log("[bmc] Enter addJokerBorder");
 console.log( jokers );
@@ -1816,14 +1566,6 @@ console.log(downArea);
 //console.log( boardPlayer );
 				this.updatingBoardPlayer = boardPlayer;
 				
-				// setTimeout(function(){
-// console.log("[bmc] UPDATING DISPLAY FOR THAT BOARDPLAYER2");
-// console.log( this.updatingBoardPlayer );
-					// this.downArea_A_[ '2333742' ].updateDisplay();
-					// this.downArea_B_[ this.updatingBoardPlayer ].updateDisplay();
-					// this.downArea_C_[ this.updatingBoardPlayer ].updateDisplay();					
-				// }, 1500);
-
 //SHOULDNT SORT IF ITS A JOKER
 				// Count number of jokers and track their IDs to set weights later
 				
@@ -1870,9 +1612,6 @@ console.log("Looping over hard cards");
 console.log( i );
 console.log(cardValuesHard[ i ]);
 console.log(foundFirst);
-
-// Does sort A*0QK! properly // Does sort JQ*A properly! :-)
-// Doesn't sort *67*90*QKA properly :-(
 
 					if ( cardValuesHard[ i ] != null ) {
 console.log("card location is notNull");
@@ -1945,6 +1684,7 @@ console.log("[bmc] FINISHED HARD CARDS do not put high ace, yet");
 console.log("[bmc] FINISHED HARD CARDS");
 						}
 					}
+console.log("[bmc] Spot near end of loop");
 				}
 
 console.log("[bmc] DEBUG]");
@@ -1964,9 +1704,11 @@ console.log(cards[11]);
 console.log(cards[12]);
 console.log(cards[13]);
 // To debug, enter a specific card and id here, then you can see the variable before it gets chenged
-if (cards[0]['id'] == 60 ) {
+if (cards[0]['id'] == 23 ) {
 	//exit(0);
 }
+
+// It sorts 3 jokers and 1 ace with HIGH cards correctly to here (7/11/2021)
 
 				leftOverJokers = jokerCount - jokerIndex;
 				
@@ -2003,7 +1745,14 @@ console.log( cards );
 					} else {
 console.log("[bmc] 4");
 						// Set the ace (in 1st position) to index 14;
-						cards[ 0 ][ 'boardLieIndex' ] = 14;
+						
+						// Find the index of the ace (type == 1):
+						index = cards.map( function(e) {return e.type; }).indexOf(1);
+console.log("[bmc] index finding ace:");
+console.log( index );
+//exit(0);
+						
+						cards[ index ][ 'boardLieIndex' ] = 14;
 						usedPositions.push( 14 );
 						var aceIndex = usedPositions.indexOf(1);
 						if ( aceIndex > -1 ) {
@@ -2016,19 +1765,28 @@ console.log("[bmc] Final usedPositions" );
 console.log( usedPositions );
 
 
+// 7/11 ace high 3 jokers correct to here.
 
-// THERE IS AN ISSUE WITH THE PLACEMENT OF EXTRA JOKERS. THEY SHOULD GO ON LEFT BUT DON'T
+// THERE USED TO BE AN ISSUE WITH THE PLACEMENT OF EXTRA JOKERS. THEY SHOULD GO ON LEFT BUT DON'T
 // 7/10/2021
-
-
+//
+// 6790QKA ***
+// Fixed it 7/17/2021
 
 				// Move an ace to be high if there is a king (position 13)
 				for (let i in cards ) {
 					if ( cards[ i ][ 'type' ] == 1 ) {
+console.log("[bmc] MA1");
+console.log(i);
+
 						if ( usedPositions.includes( 13 )) {
+console.log("[bmc] MA2");
+console.log(i);
 							// If there is already a high ace then assign the 2nd one low
 							if ( usedPositions.includes( 14 ) &&
 							   ( cards.length > 13)) {
+console.log("[bmc] MA3");
+console.log(i);
 								cards[ i ][ 'boardLieIndex' ] = 1;
 								usedPositions.push(1);
 							} else {
@@ -2041,7 +1799,14 @@ console.log( usedPositions );
 						}
 					}
 				}
-					 
+console.log("[bmc] cards and usedPositions");
+console.log( cards );
+console.log( usedPositions );
+//exit(0);
+if (cards[0]['id'] == 31 ) {
+	//exit(0);
+}
+	 
 				// Put extra jokers on the right unless there is a High Ace
 				if ( !usedPositions.includes( 14 )) {
 					for ( let i = jokerIndex; i < jokerCount; i++ ) {
@@ -2077,9 +1842,6 @@ console.log($(jokerExtraAddGreen));
 console.log("[bmc] extraJokerArray");				
 console.log(extraJokerArray);				
 
-
-
-
 				setTimeout(
 					this.addJokerBorder( extraJokerArray ), 5000
 				);
@@ -2090,20 +1852,7 @@ console.log(usedPositions);
 
 console.log("[bmc] usedPositions:");
 console.log(usedPositions);
-				// If rightmost card is an ace and there are extra jokers then put them left
-				// if ( usedPositions.includes( 14 )) {
-				// }
-					// If there is a King then make the ace 14 so it sits to the right of the king
-					// if ( usedPositions.includes( 13 )) {
-						// cards[ 0 ][ 'boardLieIndex' ] = 14;
-						
-						// If the 2nd card is also an ace then make it sit to the left of all
-						// if ( cards[ 1 ][ 'type' ] == 1) {
-							// cards[ 1 ][ 'boardLieIndex' ] = 0;
-						// }
-					// }
-				// }
-				
+			
 console.log("[bmc] cards:");
 console.log( cards );
 
