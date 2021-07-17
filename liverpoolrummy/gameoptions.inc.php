@@ -92,6 +92,14 @@ $game_options = array(
 			1  => array ( 'name' => totranslate( 'Unlimited' ) )
 		),
 		'default' => 0
+	),
+	106 => array(
+		'name' => totranslate( 'Always Deal 11 cards' ),
+		'values' => array(
+			0  => array ( 'name' => totranslate( 'No' )	),
+			1  => array ( 'name' => totranslate( 'Yes' ) )
+		),
+		'default' => 0
 	)
 	
 	// 200 => array(

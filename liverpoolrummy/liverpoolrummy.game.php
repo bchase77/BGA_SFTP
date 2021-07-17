@@ -91,7 +91,8 @@ class LiverpoolRummy extends Table
 			// "buyTimeInSeconds" => 101,
 			"gameLengthOption" => 102,
 			"numberOfJokers" => 104,
-			"numberOfBuys" => 105
+			"numberOfBuys" => 105,
+			"alwaysDeal11" => 106
 			//"buyMethod" => 103
         ) );
 	
@@ -2841,7 +2842,13 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		self::dump( "[bmc] currentHandType:", $currentHandType );
 		self::dump( "[bmc] this->handTypes[]:", $this->handTypes );
 
-		$qtyToDeal = $this->handTypes[ $currentHandType ][ "deal" ];
+		$alwaysDeal11 = self::getGameStateValue( 'alwaysDeal11' );
+
+		if ( $alwaysDeal11 == 1 ) {
+			$qtyToDeal = 11;
+		} else {
+			$qtyToDeal = $this->handTypes[ $currentHandType ][ "deal" ];
+		}
 		
 		self::dump( "[bmc] qtyToDeal:", $qtyToDeal );
 
