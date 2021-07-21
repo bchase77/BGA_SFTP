@@ -109,6 +109,10 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 //
 // TODO:
+// 7/18/2021: Cannot find image file (it shows the default instead): https://studio.boardgamearena.com:8083/data/themereleases/210708-1008/games/liverpoolrummy/current/img/game_icon.png
+// 7/18/2021: Unhandled Promise Rejection: NotAllowedError: The request is not allowed by the user agent or the platform in the current context, possibly because the user denied permission. (doPlayFile) It won't play sounds on SAFARI.
+
+// 7/18/21: Run with 6-Q does not allow 45 to be added "Not a run doesn't reach"
 //  4/24: SCORING: I think this functional form is a perfectly great alternative - there are likely many many ways to go about implementing this scoring feature. 
 
 //Is there one numPlayerTurns value for all players, or does each player have a potentially unique one? 
@@ -862,6 +866,7 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 //			dojo.connect( $('discardPile' ), 'onclick',           this, 'onDiscardPileSelectionChanged');
 			dojo.connect( $('discardPileOne' ), 'onclick',           this, 'onDiscardPileSelectionChanged');
 			dojo.connect( $('myhand' ),      'onclick',           this, 'onMyHandAreaClick');
+			//dojo.connect( $('wantedArea' ),      'onclick',           this, 'onWantedAreaClick');
 
 			//dojo.connect( $('deck'), 'onclick', this, 'onDeckSelectionChanged');
 
@@ -1036,7 +1041,70 @@ console.log("[bmc] Doing the window.onload");
 				console.log("UNCHECKED");
 				this.voices = false;
 			}
+
+
+			console.log( "Setting up Wanted Grid" );
+
+
+
+
+
+
+				// var player_board_div = $('player_board_' + player_id );
+				// console.log("[bmc] player_board_div:");
+				// console.log( player_board_div );
+				
+				// var playergomoku = this.gamedatas.players[ player_id ];
 			
+				// dojo.place( this.format_block( 'jstpl_player_board', playergomoku ), player_board_div );
+
+
+
+
+			// Set up game Contants for selected wanted cards
+			//this.gameConstants = gamedatas.constants;
+			this.gameConstants = [];
+			this.gameConstants.X_ORIGIN = 0;
+			this.gameConstants.Y_ORIGIN = 0;
+			this.gameConstants.INTERSECTION_WIDTH = 30;
+			this.gameConstants.INTERSECTION_HEIGHT = 30;
+			this.gameConstants.INTERSECTION_X_SPACER = 2.8; // Float
+			this.gameConstants.INTERSECTION_Y_SPACER = 2.8; // Float
+
+			this.addEventToClass( "gmk_intersection", "onclick", "onWantedAreaClick");
+
+            console.log( "gameConstants" );
+            console.log( this.gameConstants );
+
+             // Setup intersections
+            for( var id = 0; id < 14; id++ )
+            {
+                var intersection = [];
+				intersection.coord_x = id;
+				intersection.coord_y = 0;
+
+                dojo.place( this.format_block('jstpl_intersection', {
+                    x:intersection.coord_x,
+                    y:intersection.coord_y,
+                    stone_type:(intersection.stone_color == null ? "no_stone" : 'stone_' + intersection.stone_color)
+                } ), $ ( 'WAIntersectionMethod' ) );
+
+console.log(intersection.coord_x);
+console.log(intersection.coord_y);
+
+                var x_pix = this.getXPixelCoordinates(intersection.coord_x);
+                var y_pix = this.getYPixelCoordinates(intersection.coord_y);
+                
+//                this.slideToObjectPos( $('intersection_'+intersection.coord_x+'_'+intersection.coord_y), $('gmk_background'), x_pix, y_pix, 10 ).play();
+
+                if (intersection.stone_color != null) {
+                    // This intersection is taken, it shouldn't appear as clickable anymore
+                    dojo.removeClass( 'intersection_' + intersection.coord_x + '_' + intersection.coord_y, 'clickable' );
+                }
+            } 
+
+		
+		
             console.log( "[bmc] EXIT game setup" );
         },
 /////////
@@ -1402,6 +1470,18 @@ console.log(this.firstLoad);
 			
 			return [ color, value ];
 		},
+/////////
+/////////
+/////////
+        getXPixelCoordinates: function( intersection_x ) {
+       	return this.gameConstants['X_ORIGIN'] + intersection_x * (this.gameConstants['INTERSECTION_WIDTH'] + this.gameConstants['INTERSECTION_X_SPACER']); 
+        },
+/////////
+/////////
+/////////
+        getYPixelCoordinates: function( intersection_y ) {
+       	return this.gameConstants['Y_ORIGIN'] + intersection_y * (this.gameConstants['INTERSECTION_HEIGHT'] + this.gameConstants['INTERSECTION_Y_SPACER']); 
+        },
 /////////
 /////////
 /////////
@@ -2601,6 +2681,27 @@ console.log("[bmc] FOUND C");
 console.log("[bmc] ENTER onMyHandAreaClick");
 			this.playerHand.unselectAll();
 console.log("[bmc] EXIT onMyHandAreaClick");
+		},
+/////////
+/////////
+/////////
+
+
+//THIS FUNCTION NEEDS TO GET CALLED WHEN i CLICK BUT IT DOESN'T YET.
+
+
+
+		onWantedAreaClick : function( evt ) {
+console.log("[bmc] ENTER onWantedAreaClick");
+console.log(evt)
+			dojo.stopEvent( evt );
+			var node = evt.currentTarget.id;
+			var coord_x = node.split('_')[1];
+            var coord_y = node.split('_')[2];
+            
+            console.log( '$$$$ Selected intersection : (' + coord_x + ', ' + coord_y + ')' );
+        
+console.log("[bmc] EXIT onWantedAreaClick");
 		},
 /////////
 /////////
