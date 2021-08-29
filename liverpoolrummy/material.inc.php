@@ -61,7 +61,7 @@ $this->handTypesMayI = array( // Hand targets associate with the down areas:
 	"QtySets" => 2, "QtyRuns" => 1, "deal" => 11 ),
   5 => array( "Target" => "1 Set and 2 Runs; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)",
 	"QtySets" => 1, "QtyRuns" => 2, "deal" => 12 ),
-  6 => array( "Target" => "3 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)",
+  6 => array( "Target" => "3 Runs; In a 2-player game you must buy your own discard! (Run is 4 in sequence of same suit. Ace is high or low.)",
 	"QtySets" => 0, "QtyRuns" => 3, "deal" => 13 )
 );
 

@@ -325,7 +325,7 @@ class LiverpoolRummy extends Table
 		
 		$result['deckIDs'] = array_keys($this->cards->getCardsInLocation( 'deck' ));
 		$deckTopCard = $this->cards->getCardOnTop( 'deck' );
-		$result['deckTopCard'] = $this->cards->getCardOnTop( 'deck' )[ 'id' ];
+		$result['deckTopCard'] = $this->cards->getCardOnTop( 'deck' )[ 'id' ]; // TODO Aug03: Throws undefined offset
 		
 		$result['allHands'] = $cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
 		
@@ -369,8 +369,8 @@ class LiverpoolRummy extends Table
 		
 		$discardTopCard = $this->cards->getCardOnTop( 'discardPile' );
 		$result['discardTopCard'] = $this->cards->getCardOnTop( 'discardPile' );
-		$result['discardTopCardId'] = $this->cards->getCardOnTop( 'discardPile' )[ 'id' ];
-
+		//$result['discardTopCardId'] = $this->cards->getCardOnTop( 'discardPile' )[ 'id' ];
+// Aug03 commented out the above line
 		
 		$result['discardSize'] = $discardSize;
 
@@ -437,7 +437,7 @@ class LiverpoolRummy extends Table
 		// $result[ 'options' ][ 'buyMethod' ] = self::getGameStateValue( 'buyMethod' );
 
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
-		$result[ 'handTarget' ] = $this->handTypes[ $currentHandType ]["Target"];
+		$result[ 'handTarget' ] = $this->handTypes[ $currentHandType ]["Target"]; // TODO Aug03: Throws undefined offset
 		
 //		self::trace("[bmc] EXIT getAllDatas");
         return $result;
@@ -487,6 +487,7 @@ class LiverpoolRummy extends Table
 		
 		self::dump("[bmc] tpn: ", $tpn );
 	
+		self::trace("[bmc] abouttoEXIT argPlayerTurnDraw");
         return array(
 			'handTarget' => $this->handTypes[ $currentHandType ][ "Target" ], // Pull the description
 			'thingsCanDo' => $thingsCanDo,
@@ -868,6 +869,9 @@ class LiverpoolRummy extends Table
 				$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
 			}
 
+			$this->checkEmptyDeck(); // Make sure the deck has cards
+			$drawDeckSize = count( $this->cards->countCardsByLocationArgs( 'deck' ));
+
 			// And notify
 			self::notifyAllPlayers(
 				'discardCard',
@@ -883,6 +887,7 @@ class LiverpoolRummy extends Table
 					'nextTurnPlayer' => $nextTurnPlayer,
 					'allHands' => $cardsByLocationHand,
 					'discardSize' => $discardSize,
+					'drawDeckSize' => $drawDeckSize,
 					'buyers' => $buyerCount
 				)
 			);
@@ -904,6 +909,7 @@ class LiverpoolRummy extends Table
 		} else {
 			throw new BgaUserException( self::_("You cannot discard, it's not your turn.") );
 		}
+		
 		self::trace("[bmc] EXIT discardCard (from JS)");
     }
 ////////
@@ -955,21 +961,6 @@ class LiverpoolRummy extends Table
 		} else { // else use the top card of the deck
 		
 			$this->checkEmptyDeck(); // Make sure the deck has cards
-
-
-
-// I screwed up the drawing of cards. This is how it works now (and it is wrong):
-// 1) Player discards
-// 2) Another player tries to buy it
-// 3) Next player draws
-// 4) Drawn card goes to the BUYING player. The bought card does not move. The DRAWING player gets nothing.
-
-// It should be that the buying player gets 2 cards and the drawing player gets 1 card.
-
-
-
-
-
 
 			// If the most senior player wants to buy then resolve it immediately without waiting for next discard
 			$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
@@ -1234,6 +1225,7 @@ class LiverpoolRummy extends Table
 		// Notify spectators of the draw too
 		self::notifyAllPlayers(
 			'drawCardSpect',
+			// 08/16/2021 TODO: WHY IS NEXT LINE COMMENTED OUT?!??
 			//'${player_name} draws a card from the ${drawSourceText}.',
 			'',
 			array(
@@ -1267,11 +1259,8 @@ class LiverpoolRummy extends Table
 		} else {
 			// Else got card from a true draw (deck or discard), so let the player play.
 			
-			// TODO: BMC allow buying to continue after draw deck was chosen, but not discard.
-			
 			self::trace("[bmc] MAYBE ERROR AREA IN DRAWNOTIFY");
 //			$this->gamestate->nextState( 'resolveBuyers' );
-//			$this->gamestate->nextState( 'checkEmptyDeck' );
 			$this->gamestate->nextState( 'drawCard' );
 		}
 		self::trace("[bmc] EXIT drawNotify");
@@ -1877,7 +1866,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			
 			$maybeNewRun = $cardsInArea;
 			
-			// Potentially remove the joker
+			// Potentially remove the joker TODO Aug03: PROTECT THIS UNSET from bool
 			unset( $maybeNewRun[ $mightBeJoker['id']] );
 			
 	        $card = $this->cards->getCard($card_id);
@@ -2044,7 +2033,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				break;
 			default :
 				if ( !$silent ) {
-					throw new BgaUserException( self::_("Ace Check error (should never happen.") );
+					throw new BgaUserException( self::_("Ace Check error (should never happen).") );
 				}
 				break;
 		}
@@ -2959,14 +2948,16 @@ TODO: Maybe check if there were no more playable cards and show that message.
 		$activePlayerId = $this->getActivePlayerId();
 		self::dump("[bmc] activePlayerId:", $activePlayerId );
 		
-		$countCardsInDeck = $this->cards->countCardInLocation( 'deck' );
+		$countCardsInDeck = count( $this->cards->countCardsByLocationArgs( 'deck' ));
+
+//		$countCardsInDeck = $this->cards->countCardInLocation( 'deck' );
 		self::dump("[bmc] Card in deck:", $countCardsInDeck );
 		
 		if ( $countCardsInDeck == 0 ) {
 			$discards = $this->cards->getCardsInLocation('discardPile');
 			
 			self::dump("[bmc] Shuffling. Discards: ", $discards);
-			self::dump("[bmc] card on top:", $this->cards->getCardOnTop ( 'deck' )[ 'id' ]);
+			//self::dump("[bmc] card on top:", $this->cards->getCardOnTop ( 'deck' )[ 'id' ]); // TODO Aug03: Throws undefined offset, so commenting it out
 			
 			$card_ids = array_keys($discards);
 
@@ -2990,26 +2981,8 @@ TODO: Maybe check if there were no more playable cards and show that message.
 			);
 		}
 		
-		// $buyers = self::getPlayerBuying();
-
-		//self::dump("[bmc] Buyers Status(playerIsBuying1):", $buyers);
+		$drawDeckSize = count( $this->cards->countCardsByLocationArgs( 'deck' ));
 		
-		// $someoneIsBuying = false;
-		
-		// foreach( $buyers as $buyer ) {
-			// if ( $buyer == 2 ) {
-				// $someoneIsBuying = true;
-			// }
-		// }
-
-		// self::trace("[bmc] EXIT (almost) stCheckEmptyDeck");
-
-		// if ( $someoneIsBuying ) {
-			// $this->gamestate->nextState('letPlayerDrawAfterBuy');
-		// } else {
-			// $this->gamestate->nextState('drawAndLetPlayerPlay');
-		// }
-
 		self::trace("[bmc] EXIT (true) stCheckEmptyDeck");
 	}
 ////
@@ -3036,6 +3009,8 @@ TODO: Maybe check if there were no more playable cards and show that message.
 	function resolveBuyers() {
 		self::trace( "[bmc] ENTER resolveBuyers:" );
 		
+		$this->checkEmptyDeck(); // Make sure the deck has cards
+
 		// If source is deck or discard then resolve appropriately.
 		// If not either of those then stay in this state since we're swapping a joker
 
@@ -3326,7 +3301,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 
 			// Check that this player can still buy this hand
 			$playersBuyCount = self::getPlayersBuyCount();
-			if ( $playersBuyCount[ $player_id ] < 1 ) {
+			if ( $playersBuyCount[ $player_id ] < 1 ) { // // TODO Aug03: Throws undefined offset
 				throw new BgaUserException( self::_("You cannot buy. You already bought 3 times this hand.") );
 			}
 
@@ -3864,7 +3839,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 
 			self::dump("[bmc] handTypes stEndHand:", $this->handTypes );
 			$currentHandType = self::getGameStateValue( 'currentHandType' );
-			$handTarget = $this->handTypes[ $currentHandType ][ "Target" ]; // Pull the description
+			$handTarget = $this->handTypes[ $currentHandType ][ "Target" ]; // Pull the description TODO Aug03: this line throws error "array offset of value type null"
 			self::dump("[bmc] handTarget stEndHand:", $handTarget );
 			
 			// Notify players to go to the next target hand

@@ -92,12 +92,13 @@
 		<!-- END goDownArea -->
 	</div>
 	<div></div>
+<!-- 
 	<div id="wantedArea_div">
-	BOB
 	<img id="wantedArea" src="{GAMETHEMEURL}img/4ColorCardsx5.png"></img>
 	</div>
 	<div id="WAIntersectionMethod">
 	</div>
+-->
 </div>
 
 <audio id="audiosrc_tutorialrumone_itsyourdraw" src="{GAMETHEMEURL}img/tutorialrumone_itsyourdraw.mp3" preload="none" autobuffer></audio>
@@ -115,9 +116,9 @@
 var jstpl_player_board = '\<div class="cp_board">\
     <span id="buycount_p${id}"></span> <img class="rum_buyicon"></img> <span id="handcount_p${id}"></span> <img class="rum_cardicon"></img></div>';
 
-
+/*
 var jstpl_intersection='<div class="gmk_intersection ${stone_type}" id="intersection_${x}_${y}"></div>';
-
+*/
 /*
 // Example:
 var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_ID}"></div>';

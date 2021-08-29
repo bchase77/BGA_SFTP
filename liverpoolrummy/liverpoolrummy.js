@@ -108,7 +108,23 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 ////////
 //
-// TODO:
+// TODO: 101569962
+
+// 29/08 07:58:41 [notice] [T303594] [75.51.145.45] [2333749/DodyOaks7] OK-0 749 d8 c2 e557 m0 I742 A6 V0 T0 /1/liverpoolrummy/liverpoolrummy/wakeup.html?myturnack=true&table=303594&testuser=2333749&dojo.preventCache=1630216720768
+
+
+
+
+
+
+// 8/21/2021: 4 people played with 2 decks and the discard pile didn't reshuffle
+// 8/16/2021: Spectator doesn't log the drawing of the card and doesn't hear the swoosh sound when drawing
+// 8/16/2021: After 1st hand is done, Spectator doesn't see names on board
+// 8/4/2021: Spectators don't see message log when someone draws a card.
+// 7/21/2021: 2 player game, someone could not go down with 3 runs, had to quit.
+// 7/24/2021: 6 people played with 2 decks and discard pile was not shuffled back into deck.
+// 7/24/2021: Need to cover when both deck and discard pile run out of cards. Need to change to bypass the requirement to draw if
+//              cards are left in draw deck + discard pile.
 // 7/18/2021: Cannot find image file (it shows the default instead): https://studio.boardgamearena.com:8083/data/themereleases/210708-1008/games/liverpoolrummy/current/img/game_icon.png
 // 7/18/2021: Unhandled Promise Rejection: NotAllowedError: The request is not allowed by the user agent or the platform in the current context, possibly because the user denied permission. (doPlayFile) It won't play sounds on SAFARI.
 
@@ -486,7 +502,6 @@ console.log(this.gamedatas.deckIDs);
 console.log( "this.deckOne" );
 console.log( this.deckOne );
 
-
 			// Create a single card to represent the card back
 			this.discardPileOne = new ebg.stock(); // New stock for the top of the discard pile
             this.discardPileOne.create( this, $('discardPileOne'), this.cardwidth, this.cardheight );
@@ -502,11 +517,20 @@ console.log( this.deckOne );
 						this.discardPileOne.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
                 }
             }
+console.log( "Made 52 cards. Now add jokers." );
+			
             this.discardPileOne.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
+console.log( "line 1" );
             this.discardPileOne.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
-
+console.log( "line 2" );
             var card = this.gamedatas.discardTopCard;
+console.log( "this.gamedatas.discardTopCard" );
+console.log( this.gamedatas.discardTopCard );
+console.log( card ); 
+
+console.log( "line 3" );
 			var color = card.type;
+console.log( "line 4" );
             var value = card.type_arg;
 
 console.log( "this.gamedatas.discardTopCard" );
@@ -1083,12 +1107,21 @@ console.log("[bmc] Doing the window.onload");
 				intersection.coord_x = id;
 				intersection.coord_y = 0;
 
+
+
+
+
+
+
+
+
+/*
                 dojo.place( this.format_block('jstpl_intersection', {
                     x:intersection.coord_x,
                     y:intersection.coord_y,
                     stone_type:(intersection.stone_color == null ? "no_stone" : 'stone_' + intersection.stone_color)
                 } ), $ ( 'WAIntersectionMethod' ) );
-
+*/
 console.log(intersection.coord_x);
 console.log(intersection.coord_y);
 
@@ -2010,7 +2043,7 @@ console.log( "[bmc] EXIT sortRun2" );
 /////////
 /////////
 /////////
-        discardCard : function( player_id, color, value, card_id, nextTurnPlayer, allHands, discardSize, buyers ) {
+        discardCard : function( player_id, color, value, card_id, nextTurnPlayer, allHands, discardSize, drawDeckSize, buyers ) {
 			// (from PHP) Purpose is to show the played cards on the table, not really to play the card.
 			// Playing of the card is done on the server side (PHP).
 console.log( "[bmc] ENTER discardCard" );
@@ -2022,6 +2055,7 @@ console.log( value );
 console.log( card_id );
 console.log( allHands );
 console.log( discardSize );
+console.log( drawDeckSize );
 console.log( "discardPile and playerhand:" );
 //console.log( this.discardPile );
 console.log( this.discardPileOne );
@@ -2069,8 +2103,9 @@ console.log( deck_items );
 				this.handCount[ p_id ].setValue( allHands[ p_id ] );
 			}
 
-			// Set the discard pile size for players to see
+			// Set the draw deck and discard pile size for players to see
 			this.discardSize.setValue( discardSize );
+			this.drawDeckSize.setValue( drawDeckSize );
 			
 			if ( allHands[ this.player_id ] != undefined ) {
 				this.myHandSize.setValue( allHands[ this.player_id ] );
@@ -2180,287 +2215,6 @@ console.log("[bmc] EXIT discardCard");
 console.log("[bmc] ENTER startActionTimerStatic");
 console.log("[bmc] EXIT(nothing) startActionTimerStatic");
 			return;
-
-
-
-
-/*
-			if( this.actionTimerIdStatic ) { // Don't create a new timer if one already exists.
-console.log( "[bmc] Timer already exists, not need to create.");
-				return;
-			}
-			var isReadOnly = this.isReadOnly();
-			if ( isReadOnly ) { // Spectators are read only
-console.log( "[bmc] Spectator, no timer.");
-				return;
-			}
-			var notBuyButtonID = 'buttonNotBuy';
-//			this.actionTimerLabelDefault = $(notBuyButtonID).innerHTML;
-			this.actionTimerLabel = this.actionTimerLabelDefault;
-			this.actionTimerSeconds = 11 ; // BUY COUNTDOWN TODO: Connect this to options (PHP)
-console.log( "[bmc] Starting TimerStatic! " + this.actionTimerSeconds );
-
-			this.actionTimerFunctionStatic = () => {
-console.log("[bmc] ENTER actionTimerFunctionStatic.");
-console.log( notBuyButtonID );
-console.log( $(notBuyButtonID) );
-				var button = $(notBuyButtonID);
-console.log( button );			
-console.log( this.actionTimerIdStatic );	
-				if ( this.actionTimerSeconds-- > 1 ) {
-debug('Timer ' + notBuyButtonID + ' has ' + this.actionTimerSeconds + ' seconds left');
-					button.innerHTML = this.actionTimerLabel + ' (' + this.actionTimerSeconds + ')';
-				} else {
-debug('Timer ' + notBuyButtonID + ' execute');
-					button.innerHTML = this.actionTimerLabelDefault;
-					button.click();
-console.log("[bmc] Just clicked the button automatically. Now remove timer.");
-					this.stopActionTimerStatic();
-				}
-			}; // End timer function definition
-			
-			this.actionTimerFunctionStatic();
-			this.actionTimerIdStatic = window.setInterval( this.actionTimerFunctionStatic, 1000 );
-debug('Timer #' + this.actionTimerIdStatic + ' ' + notBuyButtonID + ' start');
-
-console.log("[bmc] EXIT startActionTimerStatic");
-		},
-*/
-/////////
-/////////
-/////////
-/*
-		startActionTimer2: function ( buttonId ) {
-console.log("this.firstLoad");
-console.log(this.firstLoad);
-			if ( this.firstLoad == 'Yes' ) { // Don't show the timers on the first loading of the game 
-console.log("first load was YES");
-				this.firstLoad = 'No';
-				return;
-			}
-
-			// MUST CALL THIS ONLY AFTER THE BUTTONS ARE CREATED. IF BUTTONS ARE REMOVED
-			//   (for example when onUpdateActionButtons is run, which is a lot) THEY 
-			//   MUST BE RECREATED.
-console.log( "[bmc] ENTER startActionTimer2" );
-			if( !$(buttonId) ) {
-console.log( "[bmc] buttonID is Null!" );
-				return;
-			}
-			if( this.actionTimerId2 ) { // Don't create a new timer if one already exists.
-console.log( "[bmc] Timer already exists, not need to create.");
-				return;
-			}
-			var isReadOnly = this.isReadOnly();
-//		  if (isDebug || isReadOnly || !this.bRealtime) {
-			if ( isReadOnly ) { // Spectators are read only?
-debug('Ignoring startActionTimer(' + buttonId + ')', 'debug=' + isDebug, 'readOnly=' + isReadOnly, 'realtime=' + this.bRealtime);
-				return;
-			}
-			this.actionTimerLabel = $(buttonId).innerHTML;
-			this.actionTimerSeconds = 11 ; // BUY COUNTDOWN
-console.log( "[bmc] Starting Timer! " + this.actionTimerSeconds );
-
-
-			this.actionTimerFunction2 = () => {
-console.log("[bmc] ENTER actionTimerFunction2.");
-console.log( buttonId );
-console.log( $(buttonId) );
-				var button = $(buttonId);
-console.log( "[bmc] actionTimerFunction2 BUTTONID: ");
-console.log( button );			
-console.log( this.actionTimerId2 );	
-				if ( button == null ) {
-console.log( "[bmc] BUTTON IS GONE!" );
-console.log( this.actionTimerId2 );
-					this.stopActionTimer2();
-console.log( "[bmc] YIKES! Not sure if this is fatal, but the button should exist.");
-//					exit(0); // FATAL ERROR, the button should exist!
-				} else if ( this.actionTimerSeconds-- > 1 ) {
-debug('Timer ' + buttonId + ' has ' + this.actionTimerSeconds + ' seconds left');
-					button.innerHTML = this.actionTimerLabel + ' (' + this.actionTimerSeconds + ')';
-				} else {
-debug('Timer ' + buttonId + ' execute');
-					button.innerHTML = this.actionTimerLabelDefault;
-					button.click();
-					// dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-					// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-
-console.log("[bmc] Just clicked the button automatically. Now remove timer, buttons and set that they should not exist and don't exist.");
-					this.stopActionTimer2();
-				}
-console.log("[bmc] EXIT actionTimerFunction2.");
-			};
-
-
-console.log("[bmc] Between definition and call.");
-			this.actionTimerFunction2();
-			this.buyCounterTimerExists = 'Yes';			
-			this.actionTimerId2 = window.setInterval( this.actionTimerFunction2, 1000 );
-debug('Timer #' + this.actionTimerId2 + ' ' + buttonId + ' start');
-console.log( "[bmc] EXIT startActionTimer2" );
-		},
-/////////
-/////////
-/////////
-		stopActionTimer2 : function () {
-console.log( "[bmc] ENTER StopAction Timer2" );
-console.log( this.actionTimerId2 );
-			this.buyCounterTimerExists = 'No';
-			this.buyCounterTimerShouldExist = 'No';
-			this.clearButtons();
-
-			if ( this.actionTimerId2 != null ) {
-				debug('Timer #' + this.actionTimerId2 + ' stop');
-				window.clearInterval( this.actionTimerId2 );
-				delete this.actionTimerId2;
-			}
-console.log( "[bmc] EXIT StopAction Timer2" );
-		},
-
-
-/////////
-/////////
-/////////
-		stopActionTimerStatic : function () {
-console.log( "[bmc] ENTER StopActionTimerStatic" );
-console.log( this.actionTimerIdStatic );
-			this.enableDBStatic = 'No';
-			this.enableDBTimer = 'No';
-			this.enDisStaticBuyButtons();
-			
-			var notBuyButtonID = 'buttonNotBuy';
-			var button = $(notBuyButtonID);
-			this.actionTimerLabel = this.actionTimerLabelDefault;
-			
-console.log(this.actionTimerLabel);
-			
-			button.innerHTML = this.actionTimerLabel;
-	
-			if ( this.actionTimerIdStatic != null ) {
-debug('Timer #' + this.actionTimerIdStatic + ' stop');
-				window.clearInterval( this.actionTimerIdStatic );
-				delete this.actionTimerIdStatic;
-			}
-console.log( "[bmc] EXIT stopActionTimerStatic" );
-		},
-
-
-
-
-
-
-*/
-
-
-
-
-
-/*
-
-
-
-
-
-		 // 
-		 //  Add a timer to an action and trigger action when timer is done (from Kingdom Builder)
-		 // 
-		startActionTimer: function ( buttonId ) {
-console.log( "[bmc] ENTER startActionTimer" );
-console.log( buttonId );
-			
-			if( !$(buttonId) ) {
-console.log( "[bmc] buttonID is Null!" );
-				return;
-			}
-
-			if( this.actionTimerId ) { // Don't create a new timer if one already exists.
-console.log( "[bmc] Timer already exists, not need to create.");
-				return;
-			}
-
-			var isReadOnly = this.isReadOnly();
-//		  if (isDebug || isReadOnly || !this.bRealtime) {
-			if ( isReadOnly ) {
-debug('Ignoring startActionTimer(' + buttonId + ')', 'debug=' + isDebug, 'readOnly=' + isReadOnly, 'realtime=' + this.bRealtime);
-				return;
-			}
-
-			this.actionTimerLabel = $(buttonId).innerHTML;
-			if ( this.buyTimeInSeconds != 0 ) {
-				this.actionTimerSeconds = this.buyTimeInSeconds ; // BUY COUNTDOWN
-			} else {
-				return; // DO NOT START THE TIMER, players didn't want not-buy timers.
-			}
-		  
-console.log( "[bmc] Starting Timer! " + this.actionTimerSeconds );
-
-			this.actionTimerFunction = () => {
-console.log("[bmc] ENTER actionTimerFunction. Here is S(buttonId):");
-console.log(buttonId);
-console.log($(buttonId));
-				var button = $(buttonId);
-console.log( "[bmc] actionTimerFunction BUTTONID: ");
-console.log( button );			
-console.log( this.actionTimerId );	
-
-				if ( button == null ) {
-console.log( "[bmc] NO LONGER DOING: this.stopActionTimer" );
-console.log( this.actionTimerId );	
-
-					//this.stopActionTimer();
-					
-				} else if ( this.actionTimerSeconds-- > 1 ) {
-debug('Timer ' + buttonId + ' has ' + this.actionTimerSeconds + ' seconds left');
-					button.innerHTML = this.actionTimerLabel + ' (' + this.actionTimerSeconds + ')';
-				} else {
-debug('Timer ' + buttonId + ' execute');
-//					window.clearInterval( this.actionTimerId );
-//					delete this.actionTimerId; // NOT SURE IF THIS WILL FIX IT CONTINUING
-					button.innerHTML = this.actionTimerLabel;
-					this.stopActionTimer();
-					button.click();
-				}
-console.log("[bmc] EXIT actionTimerFunction. Here is S(buttonId):");
-			};
-			
-			
-			
-			
-console.log("[bmc] Between definition and call.");
-			this.actionTimerFunction();
-			this.buyCounterTimerExists = 'Yes';			
-			
-			this.actionTimerId = window.setInterval( this.actionTimerFunction, 1000 );
-debug('Timer #' + this.actionTimerId + ' ' + buttonId + ' start');
-console.log( "[bmc] EXIT startActionTimer" );
-		},
-/////////
-/////////
-/////////
-		stopActionTimer: function () {
-console.log( "[bmc] StopAction Timer! " );
-console.log( this.actionTimerId );
-			this.buyCounterTimerExists = 'No';
-			this.buyCounterTimerShouldExist = 'No';
-			this.clearButtons();
-	
-			if ( this.actionTimerId != null ) {
-				debug('Timer #' + this.actionTimerId + ' stop');
-				window.clearInterval( this.actionTimerId );
-				delete this.actionTimerId;
-			}
-*/
-/*			if ( this.actionTimerId == null ) {
-console.log( "this.actionTimerId is null or undefined" );
-console.log( this.actionTimerId );	
-
-			} else {
-debug('Timer #' + this.actionTimerId + ' stop');
-				window.clearInterval( this.actionTimerId );
-				delete this.actionTimerId;
-			}
-*/
 		},
 /////////
 /////////
@@ -2471,21 +2225,6 @@ debug('Timer #' + this.actionTimerId + ' stop');
 /////////
 /////////
 /////////
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-
         ///////////////////////////////////////////////////
         //// Player's action
         
@@ -3638,48 +3377,6 @@ console.log(weightChange);
 /////////
 /////////
 /////////
-		// onPlayerPlaySetButton : function() {
-			// console.log("[bmc] BUTTON onPlayerPlaySetButton!");
-			// console.log(this.player_id);
-			
-			// if ( this.goneDown[ this.player_id ] == 1 ) { // If player already went down, do nothing
-				// return;
-			// } else {
-				// this.clearButtons();
-
-				// var cards = this.playerHand.getSelectedItems(); // It can be >1 card
-				// console.log(cards);
-				
-				// var cardIds = this.getItemIds( cards );
-
-// console.log("[bmc] cardIds: " + cardIds);
-
-				// //Move them into place on the board
-				
-// console.log(this.currentHandType);
-
-				// console.log("[bmc] setsRuns: " + this.setsRuns[this.currentHandType][this.prepSetLoc]);
-				// console.log(this.prepSetLoc);
-				
-				// if (this.setsRuns[this.currentHandType][this.prepSetLoc] == "None" ) {
-// console.log("[bmc] No more sets needed.");
-
-					// //None are needed so don't do anything
-				// } else {
-					// //A set is needed, so put it down (as preparation)
-					// this.putSetDown( cards );
-					// this.prepSetLoc++;
-					// console.log(this.prepSetLoc);
-					// console.log("[bmc] INCREMENTED prepSetLoc");
-				// }
-
-				// this.playerHand.unselectAll();
-				// this.showHideButtons();
-			// }
-		// },
-/////////
-/////////
-/////////
 		onPlayerGoDownButton : function() {
 console.log("[bmc] ENTER onPlayerGoDownButton!");
 console.log(this.player_id)
@@ -3737,52 +3434,6 @@ console.log( boardCardId );
 /////////
 /////////
 /////////
-		// onPlayerPlayRunButton : function() {
-			// console.log("[bmc] BUTTON onPlayerPlayRunButton!");
-			// console.log(this.player_id)
-			
-			// if ( this.goneDown[ this.player_id ] == 1 ) { // If player already went down, do nothing
-				// this.showMessage("You already went down");
-				// return;
-			// } else {
-				// this.clearButtons();
-
-				// var cards = this.playerHand.getSelectedItems(); // It can be >1 card
-				// console.log(cards);
-			
-				// var cardIds = this.getItemIds( cards );
-
-// console.log("[bmc] cardIds: " + cardIds);
-
-				// Move them into place on the board
-				
-				// this.currentHandType = this.gamedatas.currentHandType;
-// console.log(this.currentHandType);
-
-				// console.log("[bmc] setsRuns: " + this.setsRuns[this.currentHandType][this.prepRunLoc]);
-				// console.log(this.prepRunLoc);
-				
-				// if ( this.setsRuns[ this.currentHandType ][ this.prepRunLoc ] == "None" ) {
-// console.log("[bmc] No more runs needed.");
-
-					// None are needed so don't do anything
-				// } else {
-					// A run is needed, so put it down (as preparation)
-					// this.putRunDown( cards );
-					// this.prepRunLoc++;
-					// console.log(this.prepRunLoc);
-					// console.log("[bmc] INCREMENTED prepRunLoc");
-				// }
-
-				// this.playerHand.unselectAll();
-				// this.showHideButtons();
-			// }
-		// },
-//			this.playerHand.unselectAll();
-//          this.action_playSeveralCards(cardIds);
-/////////
-/////////
-/////////
         getItemIds: function ( items ) {
             var ids = [];
             for (var i in items) {
@@ -3815,14 +3466,6 @@ console.log( boardCardId );
             });
 			
 		},
-/////////
-/////////
-/////////
-//        action_playSeveralCards: function (cardIds) {
-//           this.sendAction('playSeveralCards', {
-//                card_ids: this.toNumberList(cardIds)
-//            });
-//        },
 /////////
 /////////
 /////////
@@ -4182,13 +3825,7 @@ console.log("[bmc] cardIds: " + cardIds);
 
 console.log( cardUniqueId ) ;
 console.log( cardId ) ;
-				// this.playerHand.addToStockWithId( cardUniqueId, cardId, 'myhand'); // Pull back
-				// this.myPrepJoker.removeFromStockById( cardId );
 			}
-
-
-// TODO: FIX THE ABOVE -^
-
 
 
 
@@ -4679,7 +4316,7 @@ console.log( $('close_btn').innerHTML );
 			}
 			
 			this.myPrepA.removeAll();
-			//this.myPrepB.removeAll();
+			this.myPrepB.removeAll();
 			this.myPrepC.removeAll();
 			
 			this.myPrepJoker.removeAll();
@@ -4698,6 +4335,8 @@ console.log("[bmc] Clear this.prepAreas1");
 /////////
 /////////
 		setupDiscardPile : function(notif) {
+console.log("[bmc] Enter setupDiscardPile");
+console.log(notif);
 			// Set up the discard pile
 			var discardPileWeights = new Array();
 
@@ -4707,6 +4346,9 @@ console.log("[bmc] Clear this.prepAreas1");
 					let card = notif.args.discardPile[i];
 					let color = card.type;
 					let value = card.type_arg;
+					
+					this.discardPileOne.addToStockWithId( this.getCardUniqueId(color, value), i );
+					
 					//Now Have discardPileOne. So 7/10/2021 Took the teeth out of this routine.
 					//this.discardPile.addToStockWithId( this.getCardUniqueId( color, value ), card.id );
 					let location_arg = parseInt( notif.args.discardPile[ i ][ 'location_arg' ]);
@@ -4797,8 +4439,11 @@ console.log("empty arg");
 			this.setupDeck(notif);
 			this.clearPlayerBoards(notif);
 
-			var isReadOnly = this.isReadOnly();
-			if ( !isReadOnly ) { // Spectators are read only
+console.log("Set up players new hand");
+
+			//var isReadOnly = this.isReadOnly();
+			//if ( !isReadOnly ) { // Spectators are read only
+			if ( notif.args.hand != undefined )  {
 				// Set up the new hand for the player
 				for ( let i in notif.args.hand) {
 					let card = notif.args.hand[i];
@@ -4902,6 +4547,7 @@ console.log( notif );
 				notif.args.nextTurnPlayer,
 				notif.args.allHands,
 				notif.args.discardSize,
+				notif.args.drawDeckSize,
 				notif.args.buyers
 			);
 console.log("[bmc] EXIT notif_discardCard");
@@ -5152,6 +4798,9 @@ console.log(joker);
 			
 			// Check if we are a spectator. If so, then don't deal with CSS class borders.
 			var isReadOnly = this.isReadOnly();
+console.log("[bmc] Spectator T/F:");
+console.log( isReadOnly );
+			
 			if ( !isReadOnly ) {
 				// Remove the borders around the prep area
 				// dojo.removeClass('playerDown_A_' + notif.args.player_id, "buyerLit");
@@ -5186,6 +4835,56 @@ console.log(joker);
 			
 			if ( this.gamedatas.gamestate.active_player == this.player_id ) {
 				console.log("[bmc] I went down!");
+
+
+
+
+
+
+
+
+
+
+
+				if ( card_ids != undefined ) {
+
+					// And move the cards from my prep area to the board
+					for ( card_id in card_ids ) {
+						color = card_type[ card_id ];
+						value = card_type_arg[ card_id ];
+
+						console.log(color);
+						console.log(value);
+						
+						cardUniqueId = this.getCardUniqueId( color, value );
+						console.log(cardUniqueId);
+						
+						if ( downArea === 'playerDown_A_' ) {
+							this.downArea_A_[ downPlayer ].addToStockWithId( cardUniqueId, card_ids[ card_id ], 'myPrepA' );
+							this.myPrepA.removeFromStockById( card_ids[ card_id ] );
+						}
+						if ( downArea === 'playerDown_B_' ) {
+							this.downArea_B_[ downPlayer ].addToStockWithId( cardUniqueId, card_ids[ card_id ], 'myPrepB' );
+							this.myPrepB.removeFromStockById( card_ids[ card_id ] );
+						}
+						if ( downArea === 'playerDown_C_' ) {
+							this.downArea_C_[ downPlayer ].addToStockWithId( cardUniqueId, card_ids[ card_id ], 'myPrepC' );
+							this.myPrepC.removeFromStockById( card_ids[ card_id ] );
+						}
+					}
+				}
+
+
+
+
+
+
+
+
+
+
+
+
 
 				// Remove the highlighted border
 				dojo.removeClass('myPrepA', "buyerLit");
