@@ -48,6 +48,26 @@ $this->values_label = array(
     13 => clienttranslate('King')
 );
 
+$target_translated = self::_("Target"); 
+$hand0MI_translated = self::_("2 Sets; No more no less (Set is 3 any suit of same value)"); 
+$hand1MI_translated = self::_("1 Set and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)");
+$hand3MI_translated = self::_("2 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)"); 
+$hand2MI_translated = self::_("3 Sets; No more no less (Set is 3 any suit of same value)"); 
+$hand4MI_translated = self::_("2 Sets and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"); 
+$hand5MI_translated = self::_("1 Set and 2 Runs; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"); 
+$hand6MI_translated = self::_("3 Runs; In a 2-player game you must buy your own discard! (Run is 4 in sequence of same suit. Ace is high or low.)"); 
+
+$this->handTypesMayI = array( // Hand targets associate with the down areas:
+  0 => array( $target_translated => $hand0MI_translated, "QtySets" => 2, "QtyRuns" => 0, "deal" => 7 ),
+  1 => array( $target_translated => $hand1MI_translated, "QtySets" => 1, "QtyRuns" => 1, "deal" => 8 ),
+  2 => array( $target_translated => $hand2MI_translated, "QtySets" => 0, "QtyRuns" => 2, "deal" => 9 ),
+  3 => array( $target_translated => $hand3MI_translated, "QtySets" => 3, "QtyRuns" => 0, "deal" => 10 ),
+  4 => array( $target_translated => $hand4MI_translated, "QtySets" => 2, "QtyRuns" => 1, "deal" => 11 ),
+  5 => array( $target_translated => $hand5MI_translated, "QtySets" => 1, "QtyRuns" => 2, "deal" => 12 ),
+  6 => array( $target_translated => $hand6MI_translated, "QtySets" => 0, "QtyRuns" => 3, "deal" => 13 )
+);
+
+/*
 $this->handTypesMayI = array( // Hand targets associate with the down areas:
   0 => array( "Target" => "2 Sets; No more no less (Set is 3 any suit of same value)",
 	"QtySets" => 2, "QtyRuns" => 0, "deal" => 7 ),
@@ -64,6 +84,7 @@ $this->handTypesMayI = array( // Hand targets associate with the down areas:
   6 => array( "Target" => "3 Runs; In a 2-player game you must buy your own discard! (Run is 4 in sequence of same suit. Ace is high or low.)",
 	"QtySets" => 0, "QtyRuns" => 3, "deal" => 13 )
 );
+*/
 
 $this->handTypesFull = array( // Hand targets associate with the down areas:
   0 => array( "Target" => "2 Sets; No more no less (Set is 3 any suit of same value)",

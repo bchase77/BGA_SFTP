@@ -34,17 +34,17 @@
 <div id="myhand_wrap" class="myHandWrap whiteblock">
 	<div id="topBoxes">
 		<div id="TLeftBox" class="leftboxHandArea">
-				<span id="myHandArea" class="spectatorMode" style="font-weight: bold">     My Hand (<span id="myHandSize"></span>):
-					<a href="#" id="buttonPlayerSortBySet" class="bgabutton bgabutton_blue spectatorMode">Sort Sets</a>
-					<a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue spectatorMode">Sort Runs</a>
+				<span id="myHandArea" class="spectatorMode" style="font-weight: bold">     <span id="MYHANDTRANSLATED"></span> (<span id="myHandSize"></span>):
+					<a href="#" id="buttonPlayerSortBySet" class="bgabutton bgabutton_blue spectatorMode"><span id="SORTSETSTRANSLATED"></span></a>
+					<a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue spectatorMode"><span id="SORTRUNSTRANSLATED"></span></a>
 					<span style="margin-left:15px"></span>
-					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray spectatorMode"> Buy it! </a>
+					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray spectatorMode"> <span id="BUYTRANSLATED"></span>! </a>
 					<span style="margin-left:15px"></span>
 					<a href="#" id="buttonPrepAreaA" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep A</a>
 					<a href="#" id="buttonPrepAreaB" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep B</a>
 					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep C</a>
-					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode">Card For Joker</a>
-					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode">Go Down</a>
+					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="CARDFORJOKERTRANSLATED"></span></a>
+					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="GODOWNTRANSLATED"></span></a>
 					<input type="checkbox" id="voice" name="scales" checked> <label for="voices">Voices</label>
 					
 					<div id="myhand" class="myhand"></div>
@@ -57,11 +57,11 @@
 <div id="goDownArea_wrap" class="goDownWrap whiteblock">
 	<div id="boxes">
 		<div id = "deckbox" class="deckbox">
-			<h3>Draw Deck (<span id="drawDeckSize"></span>)</h3>
+			<h3><span id="DRAWDECKTRANSLATED"></span> (<span id="drawDeckSize"></span>)</h3>
 			<div id="deckOne"></div>
 		</div>
 		<div id = "discardbox" class="discardbox">
-			<h3>Discard Pile (<span id="discardSize"></span>)</h3>
+			<h3><span id="DISCARDPILETRANSLATED"></span> (<span id="discardSize"></span>)</h3>
 			<div id="discardPileOne"></div>
 		</div>
 		<div id="myPrepA" class="prepbox">
@@ -77,7 +77,7 @@
 			<div id="PrepC"></div>
 		</div>
 		<div id="myPrepJoker" class="prepjoker">
-			<h3>Card For Joker</h3>
+			<h3><span id="CARDFORJOKERTRANSLATED2"></span></h3>
 			<div id="prepjoker"></div>
 		</div>
 	</div>

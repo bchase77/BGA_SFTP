@@ -44,6 +44,10 @@
 //        $this->tpl['CURRENT_HAND_TYPE'] = $number_to_display;
 		//$sevdebug = $this->game->gamestate_labels["currentHandType"];
 
+// Constants for translation
+//		$this->tpl['MYHANDTRANSLATED'] = self::_( 'My Hand' );
+//        $this->tpl['CURRENT_HAND_TYPE'] = " " . $handTarget;
+
 
 // TODO: Why doesn't this get seen when it's in material.inc.php? It must not be in 2 places.
 /*
@@ -57,6 +61,26 @@ $this->handTypes = array( // Qty of Sets, Qty of Runs
   6 => array( "3 Runs", 0, 3)
 );
 */
+
+		$target_translated = self::_("Target"); 
+		$hand0_translated = self::_("2 Sets"); 
+		$hand1_translated = self::_("1 Set and 1 Run"); 
+		$hand2_translated = self::_("2 Runs"); 
+		$hand3_translated = self::_("3 Sets"); 
+		$hand4_translated = self::_("2 Sets and 1 Run"); 
+		$hand5_translated = self::_("1 Set and 2 Runs"); 
+		$hand6_translated = self::_("3 Runs"); 
+
+		$this->handTypes = array( // Hand targets associate with the down areas:
+		  0 => array( $target_translated => $hand0_translated, "QtySets" => 2, "QtyRuns" => 0, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Empty" ),
+		  1 => array( $target_translated => $hand1_translated, "QtySets" => 1, "QtyRuns" => 1, "Area_A" => "Set", "Area_B" => "Run", "Area_C" => "Empty" ),
+		  2 => array( $target_translated => $hand2_translated, "QtySets" => 0, "QtyRuns" => 2, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Empty" ),
+		  3 => array( $target_translated => $hand3_translated, "QtySets" => 3, "QtyRuns" => 0, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Set" ),
+		  4 => array( $target_translated => $hand4_translated, "QtySets" => 2, "QtyRuns" => 1, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Run" ),
+		  5 => array( $target_translated => $hand5_translated, "QtySets" => 1, "QtyRuns" => 2, "Area_A" => "Set", "Area_B" => "Run", "Area_C" => "Run" ),
+		  6 => array( $target_translated => $hand6_translated, "QtySets" => 0, "QtyRuns" => 3, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Run" )
+		);
+/*
 $this->handTypes = array( // Hand targets associate with the down areas:
   0 => array( "Target" => "2 Sets",           "QtySets" => 2, "QtyRuns" => 0, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Empty" ),
   1 => array( "Target" => "1 Set and 1 Run",  "QtySets" => 1, "QtyRuns" => 1, "Area_A" => "Set", "Area_B" => "Run", "Area_C" => "Empty" ),
@@ -66,7 +90,7 @@ $this->handTypes = array( // Hand targets associate with the down areas:
   5 => array( "Target" => "1 Set and 2 Runs", "QtySets" => 1, "QtyRuns" => 2, "Area_A" => "Set", "Area_B" => "Run", "Area_C" => "Run" ),
   6 => array( "Target" => "3 Runs",           "QtySets" => 0, "QtyRuns" => 3, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Run" )
 );
-
+*/
 		$gameMethods = get_class_methods($this->game);
 
 		$debug = $gameMethods;
@@ -82,14 +106,17 @@ $this->handTypes = array( // Hand targets associate with the down areas:
 		
 		//self::dump("[bmc] handTypes(view83):", $this->handTypes);
 		
-		$handTarget = $this->handTypes[$htNumber]["Target"];  // TODO Aug03: Throws undefined offset
+//		$handTarget = $this->handTypes[$htNumber]["Target"];  // TODO Aug03: Throws undefined offset
+		$handTarget = $this->handTypes[$htNumber][$target_translated];  // TODO Aug03: Throws undefined offset
 		
 //		self::dump("[bmc] this->handTypes[]:", $this->handTypes[$htNumber]);
-		self::dump("[bmc] this->handTypes[]:", $this->handTypes[$htNumber]["Target"]); // TODO Aug03: Throws undefined offset
+//		self::dump("[bmc] this->handTypes[]:", $this->handTypes[$htNumber]["Target"]); // TODO Aug03: Throws undefined offset
+		self::dump("[bmc] this->handTypes[]:", $this->handTypes[$htNumber][$target_translated]); // TODO Aug03: Throws undefined offset
 		
         $this->tpl['CURRENT_HAND_TYPE'] = " " . $handTarget;
 
-        $this->tpl['HANDTARGET'] = $this->handTypes[ $htNumber ][ 'Target' ];// TODO Aug03: Throws undefined offset
+//        $this->tpl['HANDTARGET'] = $this->handTypes[ $htNumber ][ 'Target' ];// TODO Aug03: Throws undefined offset
+        $this->tpl['HANDTARGET'] = $this->handTypes[ $htNumber ][ $target_translated ];// TODO Aug03: Throws undefined offset
 
 		// $discardSize = $this->game->getGameStateValue( 'discardSize' );
 		// self::dump( "[bmc] (View) PLURAL:", $discardSize );

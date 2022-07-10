@@ -109,14 +109,17 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 //
 // TODO: 101569962
-
+// 07/08/2022: Someone claimed the translation needs to be parsed differently.
+// 1/29/2022: Mark Fong got a Syntax error by drawing a card. Server syntax error:
+//Sorry, an unexpected error has occurred... Sorry, another player made the same action at the same time: please retry. (reference: GS6 30/01 07:40:19)
+// 1/29/2022: When a player takes a joker, show a message they can put the joker anywhere.
+// 1/29/2022: Request to make buyers anonymous if they didn't win. "Someone wants to buy..."
+// 1/29/2022: Make the message to select joker FIRST so it's easier to see.
+// 1/29/2022: Make BUY IT not unlight when someone draws and player can still buy.
+// 1/29/2022: Disable buys in a 2 player game. Deal out the right number of cards.
+// 9/4/2021: Spectator TARGET doesn't update upon new hand.
+// 9/15/2021: Spectator Draw card doesn't show. See drawCardSpect line ~1227.
 // 29/08 07:58:41 [notice] [T303594] [75.51.145.45] [2333749/DodyOaks7] OK-0 749 d8 c2 e557 m0 I742 A6 V0 T0 /1/liverpoolrummy/liverpoolrummy/wakeup.html?myturnack=true&table=303594&testuser=2333749&dojo.preventCache=1630216720768
-
-
-
-
-
-
 // 8/21/2021: 4 people played with 2 decks and the discard pile didn't reshuffle
 // 8/16/2021: Spectator doesn't log the drawing of the card and doesn't hear the swoosh sound when drawing
 // 8/16/2021: After 1st hand is done, Spectator doesn't see names on board
@@ -523,15 +526,17 @@ console.log( "Made 52 cards. Now add jokers." );
 console.log( "line 1" );
             this.discardPileOne.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
 console.log( "line 2" );
+
             var card = this.gamedatas.discardTopCard;
 console.log( "this.gamedatas.discardTopCard" );
 console.log( this.gamedatas.discardTopCard );
 console.log( card ); 
 
+			if ( card != null ) {
 console.log( "line 3" );
-			var color = card.type;
+				var color = card.type;
 console.log( "line 4" );
-            var value = card.type_arg;
+				var value = card.type_arg;
 
 console.log( "this.gamedatas.discardTopCard" );
 console.log( this.gamedatas.discardTopCard );
@@ -541,17 +546,14 @@ console.log( color );
 console.log( value );
 console.log( this.getCardUniqueId(color, value) );
 
-			this.discardPileOne.addToStockWithId( this.getCardUniqueId(color, value), this.gamedatas.discardTopCard.id );
+				this.discardPileOne.addToStockWithId( this.getCardUniqueId(color, value), this.gamedatas.discardTopCard.id );
 
 console.log( "this.discardPileOne" );
 console.log( this.discardPileOne );
+			} else {
+console.log( "discardTopCard was null" );
 
-
-
-
-
-
-
+			}
 
 /* 7/5/2021
 			// Create stock for the discard pile (could be any face-up card)
@@ -589,9 +591,6 @@ console.log( this.discardPileOne );
 			this.handCount = this.gamedatas.allHands[ this.player_id ];
 			
 			
-
-
-
 			// NEW DISCARD PILE HANDLING
 			this.discardSize = new ebg.counter();
 			this.discardSize.create( 'discardSize' );
@@ -811,9 +810,9 @@ console.log( this.discardPile );
 				this.myPrepC.create( this, $('myPrepC'), this.cardwidth, this.cardheight );
 				this.myPrepJoker.create( this, $('myPrepJoker'), this.cardwidth, this.cardheight );
 				
-				var tooltip_myPrep = 'To go down, put 1 meld per prep area per the Target Hand. To take a joker, PREP full melds and 1 partial meld (2 cards for a set or 3 cards for a run). Put the card to replace the joker in the area CARD FOR JOKER. Select board joker. Click GO DOWN.';
+				//var tooltip_myPrep = _('To go down, put 1 meld per prep area per the Target Hand. To take a joker, PREP full melds and 1 partial meld (2 cards for a set or 3 cards for a run). Put the card to replace the joker in the area CARD FOR JOKER. Select board joker. Click GO DOWN.');
 
-				this.addTooltipHtmlToClass('myPrepA', tooltip_myPrep);
+				//this.addTooltipHtmlToClass('myPrepA', tooltip_myPrep);
 				this.myPrepA.image_items_per_row = 13;
 				for (var color = 1; color <= 4; color++) {
 					for (var value = 1; value <= 13; value++) {
@@ -825,7 +824,7 @@ console.log( this.discardPile );
 				this.myPrepA.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
 				this.myPrepA.setOverlap( 10, 0 );
 
-				this.addTooltipHtmlToClass('myPrepB', tooltip_myPrep);
+				//this.addTooltipHtmlToClass('myPrepB', tooltip_myPrep);
 				this.myPrepB.image_items_per_row = 13;
 				for (var color = 1; color <= 4; color++) {
 					for (var value = 1; value <= 13; value++) {
@@ -837,7 +836,7 @@ console.log( this.discardPile );
 				this.myPrepB.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
 				this.myPrepB.setOverlap( 10, 0 );
 
-				this.addTooltipHtmlToClass('myPrepC', tooltip_myPrep);
+				//this.addTooltipHtmlToClass('myPrepC', tooltip_myPrep);
 				this.myPrepC.image_items_per_row = 13;
 				for (var color = 1; color <= 4; color++) {
 					for (var value = 1; value <= 13; value++) {
@@ -850,7 +849,7 @@ console.log( this.discardPile );
 				this.myPrepC.setOverlap( 10, 0 );
 			}
 			
-			this.addTooltipHtmlToClass('myPrepJoker', tooltip_myPrep);
+			//this.addTooltipHtmlToClass('myPrepJoker', tooltip_myPrep);
 			this.myPrepJoker.image_items_per_row = 13;
             for (var color = 1; color <= 4; color++) {
                 for (var value = 1; value <= 13; value++) {
@@ -938,7 +937,7 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 
 //			dojo.connect( $('buttonNotBuy'), 'onclick', this, 'onPlayerNotBuyButton' );
 
-			let tooltip_myPrepA = 'To go down, select cards for one meld & click a meld button or meld area (1 meld per area). See the cards move. To take a joker while going down, prepare all melds and 1 partial meld. Select the board joker. Put an appropriate card to replace the joker in CARD FOR JOKER. Click GO DOWN.';
+			let tooltip_myPrepA = _('To go down, select cards for one meld & click a meld button or meld area (1 meld per area). See the cards move. To take a joker while going down, prepare all melds and 1 partial meld. Select the board joker. Put an appropriate card to replace the joker in CARD FOR JOKER. Click GO DOWN.');
 
 			this.addTooltipHtmlToClass('prepButton', tooltip_myPrepA);
 
@@ -1065,6 +1064,17 @@ console.log("[bmc] Doing the window.onload");
 				console.log("UNCHECKED");
 				this.voices = false;
 			}
+			
+			// Define table text variables which can be translated by each client. Each ID must be unique.
+			$(MYHANDTRANSLATED).innerHTML = _('My Hand'); 
+			$(CARDFORJOKERTRANSLATED).innerHTML = _('Card For Joker');
+			$(CARDFORJOKERTRANSLATED2).innerHTML = _('Card For Joker');
+			$(BUYTRANSLATED).innerHTML = _('Buy');
+			$(SORTSETSTRANSLATED).innerHTML = _('Sort Sets');
+			$(SORTRUNSTRANSLATED).innerHTML = _('Sort Runs');
+			$(GODOWNTRANSLATED).innerHTML = _('Go Down');
+			$(DRAWDECKTRANSLATED).innerHTML = _('Draw Deck');
+			$(DISCARDPILETRANSLATED).innerHTML = _('Discard Pile');
 
 
 			console.log( "Setting up Wanted Grid" );
@@ -4426,6 +4436,8 @@ console.log("Hand is undefined");
 				this.setupDeck(notif);
 				this.clearPlayerBoards(notif);
 				
+				
+// TODO: This function returns too soon, from either IF condition.
 				return;
 				
 			} else 	if ( notif.args.hand != undefined ) {
@@ -4490,10 +4502,12 @@ console.log("Set up players new hand");
 				$("playerDown_C_"+ player).innerHTML = this.gamedatas.players[ player ][ 'name' ];
 			}
 
-			$('myPrepA').innerHTML = "Prep A";
-			$('myPrepB').innerHTML = "Prep B";
-			$('myPrepC').innerHTML = "Prep C";
-			$('myPrepJoker').innerHTML = "Card For Joker";
+//			var mystring_translated = _("my string");  
+			
+			$('myPrepA').innerHTML = _("Prep A");
+			$('myPrepB').innerHTML = _("Prep B");
+			$('myPrepC').innerHTML = _("Prep C");
+			$('myPrepJoker').innerHTML = _("Card For  Joker");
 			
 			// Update the webpage with the new target
 			$(redTarget).innerHTML = notif.args.handTarget;

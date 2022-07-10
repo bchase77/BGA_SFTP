@@ -1099,9 +1099,16 @@ class LiverpoolRummy extends Table
 					$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
 				}
 
+//TODO: Translate the 'WANTS TO BUY' text below.
+//				$notifyText_translated = self::_('${player_name} wants to buy ${value_displayed}${color_displayed}'),
+//$mystring_translated = self::_("my string");
+
+
 				self::notifyAllPlayers(
 					'playerWantsToBuy',
-					'${player_name} wants to buy ${value_displayed}${color_displayed}',
+//					'${player_name} wants to buy ${value_displayed}${color_displayed}',
+//					$notifyText_translated,
+					clienttranslate('${player_name} wants to buy ${value_displayed}${color_displayed}'),
 					array(
 						'player_id' => $player_id,
 						'activeTurnPlayer_id' => $activeTurnPlayer_id,
@@ -3097,10 +3104,10 @@ TODO: Maybe check if there were no more playable cards and show that message.
 					$this->drawNotify( $currentCard, $buyer_id, 'discardPile', $buyer_id, $buyer_id );
 					
 					if ( $currentCard[ 'type' ] == 5 ) {
-						$value_displayed = clienttranslate( ' a joker' );
+						$value_displayed = clienttranslate( ' a joker ' );
 						$color_displayed = '';
 					} else {
-						$value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
+						$value_displayed = ' the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
 						$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's';
 					}
 
@@ -3111,7 +3118,7 @@ TODO: Maybe check if there were no more playable cards and show that message.
 					
 					self::notifyAllPlayers(
 						'playerBought',
-						clienttranslate('(${player_name} bought ${value_displayed}${color_displayed})'),
+						clienttranslate('(${player_name} bought ${value_displayed} ${color_displayed})'),
 						array (
 	//						'buyingPlayer' => $buyer_id,
 							'color_displayed' => $color_displayed,
