@@ -82,14 +82,10 @@ $machinestates = array(
         "name" => "playerTurnDraw",
 		"description" => clienttranslate('${buyMessage}${turnPlayerName} must draw from deck or discard pile. Others might buy.'),
 		"descriptionmyturn" => clienttranslate('${turnPlayerName} must draw from the deck or the discard pile. Others might buy.'),
-//        "type" => "multipleactiveplayer",
         "type" => "activeplayer",
         "action" => "stShowBUYButtons", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnDraw", // Set the handtarget and who can play
-//        "possibleactions" => array( "drawCard", "drawDiscard", "buyRequest", "notBuyRequest", "zombiePass" ),
         "possibleactions" => array( "drawCard", "buyRequest", "zombiePass" ),
-        // "transitions" => array( "resolveBuyers" => 50, "zombiePass" => 37 )
-//        "transitions" => array( "checkEmptyDeck" => 32, "zombiePass" => 37 )
         "transitions" => array( "drawCard" => 35, "zombiePass" => 37 )
     ), 
     32 => array(
@@ -113,9 +109,7 @@ $machinestates = array(
         "type" => "activeplayer", //multipleactiveplayer
 		"action" => "stPlayerTurnPlay", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnPlay",
-//        "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple', "zombiePass", "notBuyRequest", "buyRequest"),
         "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple', "zombiePass", "buyRequest"),
-//        "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35, "zombiePass" => 37 )
         "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35, "zombiePass" => 37 )
     ), 
 	36 => array(

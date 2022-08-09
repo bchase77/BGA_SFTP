@@ -109,7 +109,20 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 //
 // TODO: 101569962
-// 07/08/2022: Someone claimed the translation needs to be parsed differently.
+// 08/08/2022: Player reported they type and the chat you can usually type and the chat box will just do its thing. However, after clicking the SORT button, you have to click back to the chat window. normallly you just type and the chat comes up, but if you click to sort sets or runs anf then start typing it doesnt work.
+// 08/06/2022: Icon is GOMOKU icon. Should be liverpool!
+// X 08/06/2022: Add the hand number to the TARGET line.
+// 08/06/2022: update the player boards first before doing the final score.
+// 08/06/2022: Sorting wrong: **A10* should be 10***A
+// 07/30/2022: Don't unlight the BUY button when a player draws from the deck. Only when they discard
+// 07/30/2022: In JS, when you have 2 identical cards they cannot be sorted unless one is put into a PREP area.
+// 07/30/2022: On new hand, 1 player had RED Boarder around deck but it wasn't their turn. The active player had red boxes around both (as it should be).
+// 07/30/2022: Don't do the CHECK RUN message 'not a run' if the target is sets.
+// 07/30/2022: On first buy, not all players saw buyer as RED player board.
+// 07/30/2022: If someone tries to discard but is not allowed, it will clear the buyers. Probably should not clear the buyers until the discard is deemed legitimate.
+// 07/16/2022: Replays keep cards in hand when they go down.
+// 07/16/0222: undo a buy? (request from Marsh A, meeplehead55, matmcv)
+// 07/14/2022: Upon replay, the cards still show in the hand (except the jokers). Card count is right.
 // 1/29/2022: Mark Fong got a Syntax error by drawing a card. Server syntax error:
 //Sorry, an unexpected error has occurred... Sorry, another player made the same action at the same time: please retry. (reference: GS6 30/01 07:40:19)
 // 1/29/2022: When a player takes a joker, show a message they can put the joker anywhere.
@@ -142,7 +155,6 @@ console.log("[bmc] Clear this.prepAreas2");
 //  2/13: When someone wants to buy, light-up the DISCARD card so people can see it has a buyer.
 //  2/13: Everyone should get at least 1 turn
 //  2/13: Scale the points by the number of turns the person had.
-//  2/13: Deal 11 each hand.
 //  2/13: Order the player table by score.
 //  1/27: Add option: Only reveal attempt to buy if successful.
 //  2/13: Have an option where jokers on the table could not be replaced
@@ -182,7 +194,6 @@ console.log("[bmc] Clear this.prepAreas2");
 // 
 // 11/26: Let all players have at least 1 turn
 // 11/26: Add a graphic show progression
-// 11/24: Have an elegant way to end the game early.
 // 11/21: SAFARI: GO DOWN button caused NOT ENOUGH SETS
 // 11/26: https://boardgamearena.com/2/liverpoolrummy?table=127049675# Mom couldn't end 
 // 11/10: Add KNOCK requirement feature, or you can't go down next turn
@@ -202,6 +213,11 @@ console.log("[bmc] Clear this.prepAreas2");
 // 11/10: Maybe not: Get bonus if you go out? NO.
 // 11/10: Maybe not: Notify players are prepping cards
 //
+// X 07/08/2022: Someone claimed the translation needs to be parsed differently.
+// X 2/13: Deal 11 each hand. Added the game option.
+// X 08/06/2022: Repaired the CHECKRUN function. Draw box around the discard pile so players know where to click.
+// X 11/24: Have an elegant way to end the game early.
+// X 6/2022: Game ended while playable cards were in the deck.
 // X 7/8/2021: Reported by mavhc Chrome v91 "When moving to the second round my new hand of cards wasn't visible until I reloaded the page" https://boardgamearena.com/table?table=185758192
 // X 7/8/2021: Reported by mavhc Chrome v91 "When replaying a game it seems that the cards are missing from hands and the board quite often"
 // X  1/27: Somehow show the non-buyable discarded card as non-buyable
@@ -555,30 +571,6 @@ console.log( "discardTopCard was null" );
 
 			}
 
-/* 7/5/2021
-			// Create stock for the discard pile (could be any face-up card)
-            this.discardPile = new ebg.stock(); // new stock object for hand
-            this.discardPile.create( this, $('discardPile'), this.cardwidth, this.cardheight );            
-//            this.discardPile.create( this, $('discardPileOne'), this.cardwidth, this.cardheight );            
-			this.discardPile.order_items = false;
-
-            this.discardPile.image_items_per_row = 13; // 13 images per row in the sprite file
-            for (var color = 1; color <= 4; color++) {
-                for (var value = 1; value <= 13; value++) {
-                    // Build card type id. Only create 52 here, 2 jokers below
-				
-						let card_type_id = this.getCardUniqueId(color, value);
-						this.discardPile.addItemType(card_type_id, card_type_id, g_gamethemeurl + 'img/4ColorCardsx5.png', card_type_id);
-                }
-            }
-            this.discardPile.addItemType( 52, 52, g_gamethemeurl + 'img/4ColorCardsx5.png', 52) // Color 5 Value 1
-            this.discardPile.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
-            this.discardPile.setOverlap( 0.1 , 0 );
-
-			this.discardPile.item_margin = 0; 
-*/	//7/5/2021	
-		
-
 			// Create the variables which show how many cards in each pile (deck, hand, discard)
 			this.drawDeckSize = new ebg.counter();
 			this.drawDeckSize.create( 'drawDeckSize' );
@@ -590,68 +582,10 @@ console.log( "discardTopCard was null" );
 			
 			this.handCount = this.gamedatas.allHands[ this.player_id ];
 			
-			
 			// NEW DISCARD PILE HANDLING
 			this.discardSize = new ebg.counter();
 			this.discardSize.create( 'discardSize' );
 			this.discardSize.setValue( this.gamedatas.discardSize );
-
-/* 7/5/2021
-			thisDiscardPile = new Array();
-
-//console.log( "this.gamedatas.discardPile" );
-//console.log( this.gamedatas.discardPile );
-
-			
-			for (let i in this.gamedatas.discardPile ) {
-				
-				el = {
-					'id' : this.gamedatas.discardPile[ i ][ 'id' ],
-					'unique_id' : this.getCardUniqueId( color, value ),
-					'type' : this.gamedatas.discardPile[ i ][ 'type' ],
-					'type_arg' : this.gamedatas.discardPile[ i ][ 'type_arg' ],
-					'location' : 'discardPile',
-					'location_arg' : this.gamedatas.discardPile[ i ][ 'location_arg' ]
-				}
-				thisDiscardPile[ this.gamedatas.discardPile[ i ][ 'id' ]] = el;
-			}
-				
-			thisDiscardPile.sort( this.compareLocationArg ); // Sort by location_arg, which is weight
-console.log( "thisDiscardPile" );
-console.log( thisDiscardPile );
-
-// Keep the pile, just show 1 card
-
-			if ( thisDiscardPile.length != 0 ) {
-               var card = thisDiscardPile[ 0 ];
-               var color = card.type;
-               var value = card.type_arg;
-console.log( "CCV: " + card.id + " / " + color + " / " + value );
-console.log(card);
-               this.discardPile.addToStockWithId( this.getCardUniqueId( color, value ), card.id,  );
-console.log( discardPile );
-			}
-			
-			// NEW 4/24/2021 Discard pile is only 1 card
-			
-			if ( this.discardPile.length > 1 ) {
-				this.discardPile = this.discardPile[this.discardPile.length - 1 ];
-			}			
-
-// Comment this next line in to use the single discard pile card
-			this.discardPile = this.discardPileOne;
-
-console.log( "discardPile" );
-console.log( this.discardPile );
-
-*/ // 7/5/2021
-
-
-
-
-
-
-// Maybe all this discardpile stuff above can be removed
 
 			this.buyCount = {};
 			this.handCount = {};
@@ -945,6 +879,8 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
             this.setupNotifications();
 			
 			this.currentHandType = this.gamedatas.currentHandType;
+			this.totalHandCount = this.gamedatas.totalHandCount;
+			currentHandNumber = parseInt (this.currentHandType) + 1;
 			
 			//this.showHideButtons(); // Show the buttons
 
@@ -961,6 +897,8 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 			if (this.player_id == this.turnPlayer ) {
 				dojo.addClass('myhand_wrap', "borderDrawer");				
 			}
+			// Draw a border around the discard pile so players know where to click
+			dojo.addClass('discardPileOne', 'discardPileArea');
 			
 			// If this the first load and it's not our turn, then show the BUY buttons. Or,
 			// if buy status is unknown and it's not our turn and not
@@ -1012,7 +950,10 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 				this.enableDBTimer = 'No'; // But let the timer run out if it's there
 				this.enDisStaticBuyButtons();
 			}
+//			this.currentHandType = this.gamedatas.currentHandType;
+//			this.totalHandCount = this.gamedatas.totalHandCount;
 
+			$(handNumber).innerHTML = _("Target Hand " + currentHandNumber + " of " + this.totalHandCount + ": ");
 			$(redTarget).innerHTML = this.gamedatas.handTarget;
 			console.log( $(redTarget) );
 			
@@ -1116,15 +1057,6 @@ console.log("[bmc] Doing the window.onload");
                 var intersection = [];
 				intersection.coord_x = id;
 				intersection.coord_y = 0;
-
-
-
-
-
-
-
-
-
 /*
                 dojo.place( this.format_block('jstpl_intersection', {
                     x:intersection.coord_x,
@@ -2075,7 +2007,6 @@ console.log( buyers );
 			// Clear the buy status because a new card has been discarded
 			this.buyRequested = false;
 
-
 			// If it is us, play a special sound and show an alert
 			
 			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
@@ -2101,6 +2032,8 @@ console.log("[bmc] Trying to wait 5 seconds but it doesn't work");
 					var deck_items = this.deckOne.getAllItems();
 console.log("[bmc] ALL deckOne:");
 console.log( deck_items );
+console.log("[bmc] The deck to be turned red:");
+console.log( 'deckOne_item_' + deck_items[0]['id']);
 					dojo.addClass('deckOne_item_' + deck_items[0]['id'], 'stockitem_selected');
 //ALSO THE BUY WASN'T ALLOWED TO HAPPEN.
 
@@ -2178,9 +2111,6 @@ console.log("[bmc] Card played by me");
                 // corresponding item
                 if ($('myhand_item_' + card_id)) {
 console.log("[bmc] Was in hand");
-
-
-
 
 
 // 7/5/2021 Not sure if this should be discardPileOne or discardPile
@@ -4069,46 +3999,6 @@ console.log( this.gamedatas.activeTurnPlayer_id );
 				dojo.replaceClass( 'buttonGoDownStatic', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 			}
 			//
-			// Show PREP SET/RUN buttons if those are a target and player not down
-			//
-/*			if (!(showButtons['goneDown']) &&
-				  showButtons['handSelected'] ) {
-				
-				// Determine if a Set and/or a Run is needed; Show buttons accordingly
-				setNeeded = 0;
-				runNeeded = 0;
-				
-//				this.currentHandType = this.gamedatas.currentHandType;
-
-				for (let i = 0; i < 3 ; i++) {
-					if (this.setsRuns[this.currentHandType][i] != 'None') {
-						setNeeded = true;
-					}
-					if (this.setsRuns[this.currentHandType][i+3] != 'None') {
-						runNeeded = true;
-					}
-				}
-				if ( this.currentHandType[
-				
-				console.log("[bmc] Set and Run needed?");
-				console.log(setNeeded);
-				console.log(runNeeded);
-				
-				if (( setNeeded ) &&
-					( items.length >= 2 ) &&  // 1 joker allowed during godown
-					( items.length <= 3 )) {  // A set is 3 cards
-//					this.addActionButton('buttonPlayerPlaySet', _("Prep Set!"), 'onPlayerPlaySetButton');
-					// this.showingButtons === 'Yes';
-				}
-				if (( runNeeded ) &&
-					( items.length >= 3 ) && // 1 joker allowed during godown
-					( items.length <= 4 )) {  // A run is 4 cards
-					this.addActionButton('buttonPlayerPlayRun', _("Prep Run!"), 'onPlayerPlayRunButton');
-					// this.showingButtons === 'Yes';
-				}
-			}
-*/
-			//
 			// Show DISCARD if card selected, it's not state playerTurnDraw, and it's my turn
 			//
 			if ( showButtons['handSelected'] && 
@@ -4335,7 +4225,6 @@ console.log( $('close_btn').innerHTML );
 			dojo.removeClass('myPrepC', "buyerLit");
 			dojo.removeClass('myPrepJoker', "buyerLit");
 
-
 			this.prepSetLoc = 0; // Nothing is prepped, so clear the counters
 			this.prepRunLoc = 3;
 console.log("[bmc] Clear this.prepAreas1");
@@ -4436,9 +4325,13 @@ console.log("Hand is undefined");
 				this.setupDeck(notif);
 				this.clearPlayerBoards(notif);
 				
-				
 // TODO: This function returns too soon, from either IF condition.
-				return;
+				var isReadOnly = this.isReadOnly();
+				if ( !isReadOnly ) { // Spectators are read only
+					return; // If not spectator then wait for a hand.
+				} else {
+console.log("[bmc] Spectator, so not returning; Redraw the board.");
+				}
 				
 			} else 	if ( notif.args.hand != undefined ) {
 				if (notif.args.hand.length == 0 ) { // if it's just notify for the history log, do nothing
@@ -5010,3 +4903,116 @@ Animate a slide of the DOM object referred to by domNodeToSlide from its current
         */
    });             
 });
+
+// Spectator Notify Needs:
+// notifyPlayerIsNotBuying()
+// notifyPlayerWantsToBuy()
+// drawnotify -> drawCard()
+//   Not sure why is 1749 is commented out
+// Scores 3287
+// stNewHand 3447
+// buyRequest 3802
+// Player wants to buy
+
+// Fixed a bug where 4 of the same value was incorrectly considered a run.
+// Fixed a bug where the game ended prematurely with playable cards still in the deck or discard pile.
+// Fixed a bug where the spectator table didn't update the target hand nor draw player names as the hands progressed.
+
+// Browserslist: caniuse-lite is outdated. Please run:
+/*
+npx browserslist@latest --update-db
+Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
+Retrieving gameinfos, gameoptions, stats loaded from the manage game page
+Create liverpoolrummy-220731-0602 archive
+tar: Removing leading `../' from member names
+../games/liverpoolrummy/220731-0602/
+../games/liverpoolrummy/220731-0602/states.inc.php
+../games/liverpoolrummy/220731-0602/modules/
+../games/liverpoolrummy/220731-0602/version.php
+../games/liverpoolrummy/220731-0602/stats.inc.php
+../games/liverpoolrummy/220731-0602/liverpoolrummy.game.php
+../games/liverpoolrummy/220731-0602/gameinfos.inc.php
+../games/liverpoolrummy/220731-0602/liverpoolrummy.action.php
+../games/liverpoolrummy/220731-0602/liverpoolrummy.js
+../games/liverpoolrummy/220731-0602/dbmodel.sql
+../games/liverpoolrummy/220731-0602/img/
+../games/liverpoolrummy/220731-0602/img/tutorialrumone_wentOutYeah.ogg
+../games/liverpoolrummy/220731-0602/img/game_icon.png
+../games/liverpoolrummy/220731-0602/img/dollarSign14.jpg
+../games/liverpoolrummy/220731-0602/img/dollarSign2.png
+../games/liverpoolrummy/220731-0602/img/YellowTable.png.webp
+../games/liverpoolrummy/220731-0602/img/dollarSign28.jpg.webp
+../games/liverpoolrummy/220731-0602/img/game_display2.jpg.webp
+../games/liverpoolrummy/220731-0602/img/dollarSign.jpg.webp
+../games/liverpoolrummy/220731-0602/img/game_icon.webp
+../games/liverpoolrummy/220731-0602/img/dollarSign20x24.jpg
+../games/liverpoolrummy/220731-0602/img/game_box.jpg.webp
+../games/liverpoolrummy/220731-0602/img/tutorialrumone_itsyourdraw.mp3
+../games/liverpoolrummy/220731-0602/img/DodyOaksAvatar184x184.png.webp
+../games/liverpoolrummy/220731-0602/img/tutorialrumone_IllBuyIt.ogg
+../games/liverpoolrummy/220731-0602/img/game_icon.png.worksgomoku
+../games/liverpoolrummy/220731-0602/img/game_display1.jpg
+../games/liverpoolrummy/220731-0602/img/game_boxWOText.png.webp
+../games/liverpoolrummy/220731-0602/img/tutorialrumone_ItsYourTurn.ogg
+../games/liverpoolrummy/220731-0602/img/game_boxWithText.png
+../games/liverpoolrummy/220731-0602/img/game_box.png.filepart
+../games/liverpoolrummy/220731-0602/img/4ColorCards.png
+../games/liverpoolrummy/220731-0602/img/game_display2.jpg
+../games/liverpoolrummy/220731-0602/img/dollarSign20x24.jpg.webp
+../games/liverpoolrummy/220731-0602/img/cardback.png
+../games/liverpoolrummy/220731-0602/img/game_display3.jpg.webp
+../games/liverpoolrummy/220731-0602/img/DodyOaksAvatar184x184.jpg.webp
+../games/liverpoolrummy/220731-0602/img/game_icon
+../games/liverpoolrummy/220731-0602/img/game_icon.jpg
+../games/liverpoolrummy/220731-0602/img/dollarSign28.jpg
+../games/liverpoolrummy/220731-0602/img/game_display3.jpg
+../games/liverpoolrummy/220731-0602/img/dollarSign20x24.png
+../games/liverpoolrummy/220731-0602/img/game_box75.png
+../games/liverpoolrummy/220731-0602/img/dollarSign2.png.webp
+../games/liverpoolrummy/220731-0602/img/publisher2.png.webp
+../games/liverpoolrummy/220731-0602/img/game_box.png.webp
+../games/liverpoolrummy/220731-0602/img/cardback.png.webp
+../games/liverpoolrummy/220731-0602/img/game_icon.png.doesntwork
+../games/liverpoolrummy/220731-0602/img/tutorialrumone_wentOutYeah.mp3
+../games/liverpoolrummy/220731-0602/img/dollarSign.jpg
+../games/liverpoolrummy/220731-0602/img/tutorialrumone_IllBuyIt.mp3
+../games/liverpoolrummy/220731-0602/img/game_box.jpg
+../games/liverpoolrummy/220731-0602/img/game_boxWithText.png.webp
+../games/liverpoolrummy/220731-0602/img/game_icon.jpg.webp
+../games/liverpoolrummy/220731-0602/img/game_box180.png
+../games/liverpoolrummy/220731-0602/img/README
+../games/liverpoolrummy/220731-0602/img/publisher.png.webp
+../games/liverpoolrummy/220731-0602/img/tutorialrumone_GoingDown.mp3
+../games/liverpoolrummy/220731-0602/img/tutorialrumone_GoingDown.ogg
+../games/liverpoolrummy/220731-0602/img/4ColorCardsx5.png
+../games/liverpoolrummy/220731-0602/img/dollarSign20x24.png.webp
+../games/liverpoolrummy/220731-0602/img/game_icon.png.webp
+../games/liverpoolrummy/220731-0602/img/game_boxWOText.png
+../games/liverpoolrummy/220731-0602/img/cards.jpg
+../games/liverpoolrummy/220731-0602/img/game_banner.jpg
+../games/liverpoolrummy/220731-0602/img/game_box.png
+../games/liverpoolrummy/220731-0602/img/game_display0.jpg.webp
+../games/liverpoolrummy/220731-0602/img/4ColorCardsx5.png.webp
+../games/liverpoolrummy/220731-0602/img/publisher2.png
+../games/liverpoolrummy/220731-0602/img/game_box180.png.webp
+../games/liverpoolrummy/220731-0602/img/DodyOaksAvatar184x184.png
+../games/liverpoolrummy/220731-0602/img/publisher.png
+../games/liverpoolrummy/220731-0602/img/tutorialrumone_ItsYourTurn.mp3
+../games/liverpoolrummy/220731-0602/img/4ColorCards.png.webp
+../games/liverpoolrummy/220731-0602/img/DodyOaksAvatar184x184.jpg
+../games/liverpoolrummy/220731-0602/img/game_box75.png.webp
+../games/liverpoolrummy/220731-0602/img/tutorialrumone_itsyourdraw.ogg
+../games/liverpoolrummy/220731-0602/img/game_display0.jpg
+../games/liverpoolrummy/220731-0602/img/game_display1.jpg.webp
+../games/liverpoolrummy/220731-0602/img/YellowTableOrig.png.webp
+../games/liverpoolrummy/220731-0602/img/cards.jpg.webp
+../games/liverpoolrummy/220731-0602/img/YellowTable.png
+../games/liverpoolrummy/220731-0602/img/game_banner.jpg.webp
+../games/liverpoolrummy/220731-0602/img/YellowTableOrig.png
+../games/liverpoolrummy/220731-0602/img/dollarSign14.jpg.webp
+../games/liverpoolrummy/220731-0602/material.inc.php
+../games/liverpoolrummy/220731-0602/gameoptions.inc.php
+../games/liverpoolrummy/220731-0602/liverpoolrummy_liverpoolrummy.tpl
+../games/liverpoolrummy/220731-0602/liverpoolrummy.view.php
+../games/liverpoolrummy/220731-0602/liverpoolrummy.css
+*/

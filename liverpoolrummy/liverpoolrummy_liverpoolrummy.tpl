@@ -27,7 +27,8 @@
 -->
 
 <h3>
-	<span>Target: 
+	<span> 
+		<span id="handNumber" style="color:Black"></span>
 		<span id="redTarget" style="color:Blue"></span>
 	</span>
 </h3>
