@@ -109,6 +109,11 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 //
 // TODO: 101569962
+// 08/08/2022: Add a NOT BUY or CONFIRM BUY button.
+// 08/09/2022: Chat window doesn't launch auto after SORT buttons are pressed.
+// X 08/09/2022: Must go down with exactly TARGET melds (i.e. not 4 in a set)
+// 08/08/2022: Need to refresh to see correct hand target, should update automatically.
+// 08/08/2022: Spectator, the WANTS TO BUY lights up very quickly, then disappears.
 // 08/08/2022: Player reported they type and the chat you can usually type and the chat box will just do its thing. However, after clicking the SORT button, you have to click back to the chat window. normallly you just type and the chat comes up, but if you click to sort sets or runs anf then start typing it doesnt work.
 // 08/06/2022: Icon is GOMOKU icon. Should be liverpool!
 // X 08/06/2022: Add the hand number to the TARGET line.
@@ -1357,13 +1362,53 @@ console.log("[bmc] ENTER onVoiceCheckbox");
 /////////
 		onPlayerBuyButton : function() {
 console.log("[bmc] ENTER onPlayerBuyButton");
-			this.clearButtons();
+//			this.clearButtons();
 			// this.stopActionTimer2();
 
 console.log("onPlayerBuyButton");
 //console.log(this.discardPile);
 console.log(this.discardPileOne);
 
+// New 08/09/2022: Confirm the buy
+
+				// this.confirmationDialog( _('Are you sure you want to discard? You have cards prepped.'),
+							 // dojo.hitch( this, function() {
+								// this.playerHand.unselectAll();
+								// this.reallyDiscard( selectedDiscards );
+
+			var dpCard = this.discardPileOne.getAllItems();
+console.log(dpCard);
+			var bob = this.discardPileOne.getItemById(dpCard[0].id)
+console.log(bob);
+			//var items = this.deckOne.getSelectedItems();
+
+//			this.confirmationDialog( _('Are you sure you want to buy the' + dpCard + '?'),
+//				dojo.hitch( this, function() {
+					this.reallyBuy();
+//				})
+//			);
+
+
+
+//TODO: figure out how to get King of Hearts from card ID==38.
+//TODO: Don't let it put up 2 dialog boxes.
+//Let dialog boxes be chosen as a game option.
+
+
+
+
+
+
+//			this.confirmationDialog( _('Are you sure you want to buy the' + this.discardPile + '?'), () => {
+//				this.reallyBuy();
+//			});
+        return; // nothing should be called or done after calling this, all action must be done in the handler  
+		},
+/////////
+/////////
+/////////
+		reallyBuy : function() {
+			this.clearButtons();
 			// Do not acknowledge the buy if it's not our turn
 			// if ( this.player_id == this.turnPlayer ) {
 // console.log("[bmc] sound: It's Your Turn");
@@ -4401,8 +4446,17 @@ console.log("Set up players new hand");
 			$('myPrepB').innerHTML = _("Prep B");
 			$('myPrepC').innerHTML = _("Prep C");
 			$('myPrepJoker').innerHTML = _("Card For  Joker");
-			
+
 			// Update the webpage with the new target
+
+			this.currentHandType = notif.args.updCurrentHandType;
+			this.totalHandCount = notif.args.updTotalHandCount;
+			this.currentHandNumber = parseInt (this.currentHandType) + 1;
+
+			$(handNumber).innerHTML = _("Target Hand " + this.currentHandNumber + " of " + this.totalHandCount + ": ");
+
+			console.log( $(handNumber) );
+
 			$(redTarget).innerHTML = notif.args.handTarget;
 
 			console.log( $(redTarget) );
@@ -4917,102 +4971,3 @@ Animate a slide of the DOM object referred to by domNodeToSlide from its current
 // Fixed a bug where 4 of the same value was incorrectly considered a run.
 // Fixed a bug where the game ended prematurely with playable cards still in the deck or discard pile.
 // Fixed a bug where the spectator table didn't update the target hand nor draw player names as the hands progressed.
-
-// Browserslist: caniuse-lite is outdated. Please run:
-/*
-npx browserslist@latest --update-db
-Why you should do it regularly: https://github.com/browserslist/browserslist#browsers-data-updating
-Retrieving gameinfos, gameoptions, stats loaded from the manage game page
-Create liverpoolrummy-220731-0602 archive
-tar: Removing leading `../' from member names
-../games/liverpoolrummy/220731-0602/
-../games/liverpoolrummy/220731-0602/states.inc.php
-../games/liverpoolrummy/220731-0602/modules/
-../games/liverpoolrummy/220731-0602/version.php
-../games/liverpoolrummy/220731-0602/stats.inc.php
-../games/liverpoolrummy/220731-0602/liverpoolrummy.game.php
-../games/liverpoolrummy/220731-0602/gameinfos.inc.php
-../games/liverpoolrummy/220731-0602/liverpoolrummy.action.php
-../games/liverpoolrummy/220731-0602/liverpoolrummy.js
-../games/liverpoolrummy/220731-0602/dbmodel.sql
-../games/liverpoolrummy/220731-0602/img/
-../games/liverpoolrummy/220731-0602/img/tutorialrumone_wentOutYeah.ogg
-../games/liverpoolrummy/220731-0602/img/game_icon.png
-../games/liverpoolrummy/220731-0602/img/dollarSign14.jpg
-../games/liverpoolrummy/220731-0602/img/dollarSign2.png
-../games/liverpoolrummy/220731-0602/img/YellowTable.png.webp
-../games/liverpoolrummy/220731-0602/img/dollarSign28.jpg.webp
-../games/liverpoolrummy/220731-0602/img/game_display2.jpg.webp
-../games/liverpoolrummy/220731-0602/img/dollarSign.jpg.webp
-../games/liverpoolrummy/220731-0602/img/game_icon.webp
-../games/liverpoolrummy/220731-0602/img/dollarSign20x24.jpg
-../games/liverpoolrummy/220731-0602/img/game_box.jpg.webp
-../games/liverpoolrummy/220731-0602/img/tutorialrumone_itsyourdraw.mp3
-../games/liverpoolrummy/220731-0602/img/DodyOaksAvatar184x184.png.webp
-../games/liverpoolrummy/220731-0602/img/tutorialrumone_IllBuyIt.ogg
-../games/liverpoolrummy/220731-0602/img/game_icon.png.worksgomoku
-../games/liverpoolrummy/220731-0602/img/game_display1.jpg
-../games/liverpoolrummy/220731-0602/img/game_boxWOText.png.webp
-../games/liverpoolrummy/220731-0602/img/tutorialrumone_ItsYourTurn.ogg
-../games/liverpoolrummy/220731-0602/img/game_boxWithText.png
-../games/liverpoolrummy/220731-0602/img/game_box.png.filepart
-../games/liverpoolrummy/220731-0602/img/4ColorCards.png
-../games/liverpoolrummy/220731-0602/img/game_display2.jpg
-../games/liverpoolrummy/220731-0602/img/dollarSign20x24.jpg.webp
-../games/liverpoolrummy/220731-0602/img/cardback.png
-../games/liverpoolrummy/220731-0602/img/game_display3.jpg.webp
-../games/liverpoolrummy/220731-0602/img/DodyOaksAvatar184x184.jpg.webp
-../games/liverpoolrummy/220731-0602/img/game_icon
-../games/liverpoolrummy/220731-0602/img/game_icon.jpg
-../games/liverpoolrummy/220731-0602/img/dollarSign28.jpg
-../games/liverpoolrummy/220731-0602/img/game_display3.jpg
-../games/liverpoolrummy/220731-0602/img/dollarSign20x24.png
-../games/liverpoolrummy/220731-0602/img/game_box75.png
-../games/liverpoolrummy/220731-0602/img/dollarSign2.png.webp
-../games/liverpoolrummy/220731-0602/img/publisher2.png.webp
-../games/liverpoolrummy/220731-0602/img/game_box.png.webp
-../games/liverpoolrummy/220731-0602/img/cardback.png.webp
-../games/liverpoolrummy/220731-0602/img/game_icon.png.doesntwork
-../games/liverpoolrummy/220731-0602/img/tutorialrumone_wentOutYeah.mp3
-../games/liverpoolrummy/220731-0602/img/dollarSign.jpg
-../games/liverpoolrummy/220731-0602/img/tutorialrumone_IllBuyIt.mp3
-../games/liverpoolrummy/220731-0602/img/game_box.jpg
-../games/liverpoolrummy/220731-0602/img/game_boxWithText.png.webp
-../games/liverpoolrummy/220731-0602/img/game_icon.jpg.webp
-../games/liverpoolrummy/220731-0602/img/game_box180.png
-../games/liverpoolrummy/220731-0602/img/README
-../games/liverpoolrummy/220731-0602/img/publisher.png.webp
-../games/liverpoolrummy/220731-0602/img/tutorialrumone_GoingDown.mp3
-../games/liverpoolrummy/220731-0602/img/tutorialrumone_GoingDown.ogg
-../games/liverpoolrummy/220731-0602/img/4ColorCardsx5.png
-../games/liverpoolrummy/220731-0602/img/dollarSign20x24.png.webp
-../games/liverpoolrummy/220731-0602/img/game_icon.png.webp
-../games/liverpoolrummy/220731-0602/img/game_boxWOText.png
-../games/liverpoolrummy/220731-0602/img/cards.jpg
-../games/liverpoolrummy/220731-0602/img/game_banner.jpg
-../games/liverpoolrummy/220731-0602/img/game_box.png
-../games/liverpoolrummy/220731-0602/img/game_display0.jpg.webp
-../games/liverpoolrummy/220731-0602/img/4ColorCardsx5.png.webp
-../games/liverpoolrummy/220731-0602/img/publisher2.png
-../games/liverpoolrummy/220731-0602/img/game_box180.png.webp
-../games/liverpoolrummy/220731-0602/img/DodyOaksAvatar184x184.png
-../games/liverpoolrummy/220731-0602/img/publisher.png
-../games/liverpoolrummy/220731-0602/img/tutorialrumone_ItsYourTurn.mp3
-../games/liverpoolrummy/220731-0602/img/4ColorCards.png.webp
-../games/liverpoolrummy/220731-0602/img/DodyOaksAvatar184x184.jpg
-../games/liverpoolrummy/220731-0602/img/game_box75.png.webp
-../games/liverpoolrummy/220731-0602/img/tutorialrumone_itsyourdraw.ogg
-../games/liverpoolrummy/220731-0602/img/game_display0.jpg
-../games/liverpoolrummy/220731-0602/img/game_display1.jpg.webp
-../games/liverpoolrummy/220731-0602/img/YellowTableOrig.png.webp
-../games/liverpoolrummy/220731-0602/img/cards.jpg.webp
-../games/liverpoolrummy/220731-0602/img/YellowTable.png
-../games/liverpoolrummy/220731-0602/img/game_banner.jpg.webp
-../games/liverpoolrummy/220731-0602/img/YellowTableOrig.png
-../games/liverpoolrummy/220731-0602/img/dollarSign14.jpg.webp
-../games/liverpoolrummy/220731-0602/material.inc.php
-../games/liverpoolrummy/220731-0602/gameoptions.inc.php
-../games/liverpoolrummy/220731-0602/liverpoolrummy_liverpoolrummy.tpl
-../games/liverpoolrummy/220731-0602/liverpoolrummy.view.php
-../games/liverpoolrummy/220731-0602/liverpoolrummy.css
-*/

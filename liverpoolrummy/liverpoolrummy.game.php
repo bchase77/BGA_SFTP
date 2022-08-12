@@ -371,25 +371,28 @@ class LiverpoolRummy extends Table
 		self::trace("[bmc] ENTER getAllDatas");
 
 		$dpCard = $this->cards->getCardsInLocation( 'discardPile' );
-		self::dump("[bmc] dpCard:", reset( $dpCard )[ 'id' ]);
+		
+		if ( isset( reset( $dpCard )[ 'id' ])) {
 
-		$currentCard = $this->cards->getCard( reset( $dpCard )[ 'id' ] );
+			self::dump("[bmc] dpCard:", reset( $dpCard )[ 'id' ]);
 
-		self::dump("[bmc] currentCardInDP:", $currentCard);
-			
-		if ( $currentCard[ 'type' ] == 5 ) {
-			$value_displayed = ' a joker';
-			$color_displayed = '!';
-		} else {
-			$value_displayed = 'The ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
-			$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's';
+			$currentCard = $this->cards->getCard( reset( $dpCard )[ 'id' ] );
+
+			self::dump("[bmc] currentCardInDP:", $currentCard);
+				
+			if ( $currentCard[ 'type' ] == 5 ) {
+				$value_displayed = ' a joker';
+				$color_displayed = '!';
+			} else {
+				$value_displayed = 'The ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
+				$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's';
+			}
+
+			self::dump("[bmc] vd:", $value_displayed);
+			self::dump("[bmc] cd:", $color_displayed);
+			$dealer = 'bob';
+			$handTarget = 'food';
 		}
-
-		self::dump("[bmc] vd:", $value_displayed);
-		self::dump("[bmc] cd:", $color_displayed);
-		$dealer = 'bob';
-		$handTarget = 'food';
-
 //		self::dump("[bmc] ct:", 'New Hand! ${dealer} has dealt the cards. New target is ${handTarget}. ${value_displayed}${color_displayed} is in the discard pile.');
 
 
@@ -602,39 +605,77 @@ class LiverpoolRummy extends Table
 				'type_arg' => '11' // Value
 				)
 			);
+
 		$testPlayerHandArray[0] = array(
 			0 => array(
-				'type' => '1', // Suit
-				'type_arg' => '9' // Value
+				'type' => '4', // Suit
+				'type_arg' => '2' // Value
 				),
 			1 => array(
-				'type' => '2', // Suit
-				'type_arg' => '9' // Value
+				'type' => '4', // Suit
+				'type_arg' => '3' // Value
 				),
 			2 => array(
-				'type' => '2', // Suit
-				'type_arg' => '9' // Value
+				'type' => '4', // Suit
+				'type_arg' => '4' // Value
 				),
 			3 => array(
-				'type' => '3', // Suit
-				'type_arg' => '9' // Value
+				'type' => '4', // Suit
+				'type_arg' => '5' // Value
 				),
 			4 => array(
 				'type' => '4', // Suit
-				'type_arg' => '8' // Value
+				'type_arg' => '13' // Value
 				),
 			5 => array(
 				'type' => '4', // Suit
-				'type_arg' => '8' // Value
+				'type_arg' => '13' // Value
 				),
 			6 => array(
-				'type' => '3', // Suit
-				'type_arg' => '8' // Value
+				'type' => '1', // Suit
+				'type_arg' => '13' // Value
 				),
 			7 => array(
-				'type' => '1', // Suit
-				'type_arg' => '1' // Value
+				'type' => '2', // Suit
+				'type_arg' => '13' // Value
 				),
+			8 => array(
+				'type' => '2', // Suit
+				'type_arg' => '13' // Value
+				),
+			9 => array(
+				'type' => '3', // Suit
+				'type_arg' => '5' // Value
+				),
+			10 => array(
+				'type' => '3', // Suit
+				'type_arg' => '5' // Value
+				),
+			11 => array(
+				'type' => '2', // Suit
+				'type_arg' => '6' // Value
+				),
+			12 => array(
+				'type' => '3', // Suit
+				'type_arg' => '6' // Value
+				),
+			13 => array(
+				'type' => '3', // Suit
+				'type_arg' => '6' // Value
+				),
+			14 => array(
+				'type' => '1', // Suit
+				'type_arg' => '7' // Value
+				),
+			15 => array(
+				'type' => '2', // Suit
+				'type_arg' => '8' // Value
+				),
+			16 => array(
+				'type' => '1', // Suit
+				'type_arg' => '13' // Value
+				)
+/*,
 			8 => array(
 				'type' => '1', // Suit
 				'type_arg' => '3' // Value
@@ -663,6 +704,7 @@ class LiverpoolRummy extends Table
 				'type' => '3', // Suit
 				'type_arg' => '7' // Value
 				)
+*/
 			);
 /*
 			0 => array(
@@ -2243,7 +2285,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				$eitherHave++;
 			} else if ( $this->checkSet( $group ) == true ) {
 				$setsHave++;
-			} else if ( $this->checkRun( $group, false ) == true ) {
+			} else if ( $this->checkRun( $group, true ) == true ) {
 				$runsHave++;
 			} else {
 				if ( count( $group ) > 0 ) {
@@ -2486,11 +2528,24 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////////
 	function checkSetOrRun ( $cardGroup ) {
 		self::trace("[bmc] ENTER checkSetOrRun");
+/*
 		if (( $this->checkSet( $cardGroup )) &&
 		    ( $this->checkRun( $cardGroup, true ))) { // Check run silently (don't throw exception if not)
 			self::trace("[bmc] checkSetOrRun: both evaluated true!");
-			
 			return true;
+*/			
+// start new code
+		if ( $this->checkSet( $cardGroup )) {
+			if ( $this->checkRun( $cardGroup, true )) {
+				return true;
+			} else {
+				return false;
+			}
+// end new code
+
+
+
+
 		} else {
 			return false;
 		}
@@ -2611,6 +2666,10 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		//   The non-jokers have non-unique values
 		//   The non-jokers have >1 suit
 		
+		// Set return value to true so if it makes it out, it returns true. But if 
+		//   is silently finds it's not a run, return false.
+		$crReturnValue = true;
+		
 //		self::trace("[bmc] ENTER checkRun");
 		self::dump("[bmc] ENTER checkRun: ", $silent);
 		
@@ -2645,10 +2704,11 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::dump("[bmc] valueCount: ", $valueCount );
 		if ( $cardCount != $valueCount ) {
 			self::dump("[bmc] ThrowingException for NOT A RUN!: ", $cardCount );
-			
-//			if ( !$silent ) {
-				throw new BgaUserException( self::_("Not a run. Run cards must be unique.") );
-//			}
+			$crReturnValue = false;
+
+			if ( !$silent ) {
+				throw new BgaUserException( self::_("Not aa run. Run cards must be unique.") );
+			}
 		} else {
 			self::trace("[bmc] Number of cards is correct for a run.");
 		}
@@ -2733,7 +2793,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// self::dump("[bmc] checkRun cards: ", $cards );
 		
 		self::trace("[bmc] EXIT checkRun is TRUE because we made it this far.");
-		return true; // Made it through, so the cards are a run
+		return $crReturnValue; // Made it through, so the cards are a run
 	}
 ////
 ////
@@ -3686,6 +3746,13 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's';
 		}
 
+		// Update the hand count number when there is a new hand
+		
+//TODO: Test hand count updates.
+
+		$updCurrentHandType = self::getGameStateValue( 'currentHandType' );
+		$updTotalHandCount = count( $this->handTypes );
+
 		self::notifyAllPlayers( // Including spectators
 			'newHand',
 			clienttranslate('New Hand! ${dealer} has dealt the cards. New target is ${handTarget}. ${value_displayed}${color_displayed} is in the discard pile.'),
@@ -3698,6 +3765,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				'buyCount' => $buyCount,
 				'dealer' => $dealer_name,
 				'drawDeckSize' => $drawDeckSize,
+				'updCurrentHandType' => $updCurrentHandType,
+				'updTotalHandCount' => $updTotalHandCount,
 				'value_displayed' => $value_displayed,
 				'color_displayed' => $color_displayed
 			)
@@ -3719,6 +3788,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					'buyCount' => $buyCount,
 					'dealer' => $dealer_name,
 					'dealer_id' => $dealer,
+					'updCurrentHandType' => $updCurrentHandType,
+					'updTotalHandCount' => $updTotalHandCount,
 					'discardSize' => $discardSize,
 					'drawDeckSize' => $drawDeckSize
 				)
