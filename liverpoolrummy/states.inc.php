@@ -81,11 +81,11 @@ $machinestates = array(
     30 => array(
         "name" => "playerTurnDraw",
 		"description" => clienttranslate('${buyMessage}${turnPlayerName} must draw from deck or discard pile. Others might buy.'),
-		"descriptionmyturn" => clienttranslate('${turnPlayerName} must draw from the deck or the discard pile. Others might buy.'),
+		"descriptionmyturn" => clienttranslate('${turnPlayerName} must draw from deck or discard pile. Others might buy.'),
         "type" => "activeplayer",
         "action" => "stShowBUYButtons", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnDraw", // Set the handtarget and who can play
-        "possibleactions" => array( "drawCard", "buyRequest", "zombiePass" ),
+        "possibleactions" => array( "drawCard", "buyRequest", "notBuyRequest", "zombiePass" ),
         "transitions" => array( "drawCard" => 35, "zombiePass" => 37 )
     ), 
     32 => array(
@@ -95,13 +95,15 @@ $machinestates = array(
         "action" => "stCheckEmptyDeck", // ACTION: Do this upon entering the state
         "transitions" => array( "drawAndLetPlayerPlay" => 35, "letPlayerDrawAfterBuy" => 57 )
     ), 
+/*
     33 => array(
         "name" => "drawDiscard",
         "description" => "[ST33]",
         "type" => "game",
         "action" => "stDrawDiscard", // ACTION: Do this upon entering the state
         "transitions" => array( "" => 35 ) 
-    ), 
+    ),
+*/
     35 => array(
         "name" => "playerTurnPlay",
 		"description" => clienttranslate('${turnPlayerName} must ${thingsCanDo}'),
@@ -109,19 +111,19 @@ $machinestates = array(
         "type" => "activeplayer", //multipleactiveplayer
 		"action" => "stPlayerTurnPlay", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnPlay",
-        "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple', "zombiePass", "buyRequest"),
+        "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple', "zombiePass", "buyRequest", "notBuyRequest"),
         "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35, "zombiePass" => 37 )
     ), 
 	36 => array(
 		"name" => "waitForAll",
-		"description" => "(st36)",
+		"description" => "[ST36]",
         "type" => "game",
         "action" => "stWaitForAll", // ACTION: Do this upon entering the state
 		"transitions" => array( "fullyResolved" => 37 )
     ), 
     37 => array(
         "name" => "nextPlayer",
-        "description" => "(st37)",
+        "description" => "[ST37]",
         "type" => "game",
         "action" => "stNextPlayer", // ACTION: Do this upon entering the state
         "transitions" => array( "nextPlayer" => 30, "endHand" => 40 )
@@ -162,14 +164,16 @@ $machinestates = array(
         "transitions" => array( "" => 35 )
     ),   
     // Someone is trying to play a card
+/*
     60 => array(
         "name" => "playCard",
-        "description" => "Someone is trying to play a card.",
+        "description" => clienttranslate("Someone is trying to play a card."),
         "descriptionmyturn" => clienttranslate('${you} are trying to play a card.'),
         "type" => "activeplayer",
         "action" => "stPlayCard", // ACTION: Do this upon entering the state
         "transitions" => array( "" => 33 )
     ),     
+*/
 /*
     Examples:
     2 => array(

@@ -548,7 +548,7 @@ class LiverpoolRummy extends Table
 
 		// Show State
 		$state = $this->gamestate->state();
-//		self::dump("[bmc] GETALLDATAS state:", $state);
+		self::dump("[bmc] GETALLDATAS state:", $state);
 		
 		$cardsInHd = $this->cards->getCardsInLocation( 'hand' );
 		$cardsInDk = $this->cards->getCardsInLocation( 'deck' );
@@ -609,60 +609,62 @@ class LiverpoolRummy extends Table
 		$testPlayerHandArray[0] = array(
 			0 => array(
 				'type' => '4', // Suit
-				'type_arg' => '2' // Value
+				'type_arg' => '1' // Value
 				),
 			1 => array(
 				'type' => '4', // Suit
-				'type_arg' => '3' // Value
+				'type_arg' => '8' // Value
 				),
 			2 => array(
 				'type' => '4', // Suit
-				'type_arg' => '4' // Value
+				'type_arg' => '11' // Value
 				),
 			3 => array(
 				'type' => '4', // Suit
-				'type_arg' => '5' // Value
+				'type_arg' => '12' // Value
 				),
 			4 => array(
-				'type' => '4', // Suit
-				'type_arg' => '13' // Value
+				'type' => '5', // Suit
+				'type_arg' => '2' // Value
 				),
 			5 => array(
-				'type' => '4', // Suit
-				'type_arg' => '13' // Value
+				'type' => '3', // Suit
+				'type_arg' => '6' // Value
 				),
 			6 => array(
-				'type' => '1', // Suit
-				'type_arg' => '13' // Value
+				'type' => '3', // Suit
+				'type_arg' => '7' // Value
 				),
 			7 => array(
-				'type' => '2', // Suit
-				'type_arg' => '13' // Value
+				'type' => '3', // Suit
+				'type_arg' => '8' // Value
 				),
 			8 => array(
-				'type' => '2', // Suit
-				'type_arg' => '13' // Value
+				'type' => '3', // Suit
+				'type_arg' => '10' // Value
 				),
 			9 => array(
-				'type' => '3', // Suit
-				'type_arg' => '5' // Value
+				'type' => '5', // Suit
+				'type_arg' => '1' // Value
 				),
 			10 => array(
-				'type' => '3', // Suit
-				'type_arg' => '5' // Value
+				'type' => '1', // Suit
+				'type_arg' => '2' // Value
 				),
 			11 => array(
-				'type' => '2', // Suit
-				'type_arg' => '6' // Value
+				'type' => '1', // Suit
+				'type_arg' => '2' // Value
 				),
 			12 => array(
-				'type' => '3', // Suit
-				'type_arg' => '6' // Value
+				'type' => '1', // Suit
+				'type_arg' => '7' // Value
 				),
 			13 => array(
 				'type' => '3', // Suit
 				'type_arg' => '6' // Value
-				),
+				)
+/*
+,
 			14 => array(
 				'type' => '1', // Suit
 				'type_arg' => '7' // Value
@@ -675,6 +677,7 @@ class LiverpoolRummy extends Table
 				'type' => '1', // Suit
 				'type_arg' => '13' // Value
 				)
+*/
 /*,
 			8 => array(
 				'type' => '1', // Suit
@@ -1375,6 +1378,10 @@ class LiverpoolRummy extends Table
         $sql = "UPDATE player SET buying = $buying WHERE player_id = $player_id ";
         self::DbQuery( $sql );
     }
+    function clearPlayerBuying( $player_id ) { // (0==unknown, 1==Not buying 2==Buying)
+        $sql = "UPDATE player SET buying = 1 WHERE player_id = $player_id ";
+        self::DbQuery( $sql );
+    }
     function clearPlayersBuying() {
         $sql = "UPDATE player SET buying = 0 ";
         self::DbQuery( $sql );
@@ -1724,9 +1731,9 @@ class LiverpoolRummy extends Table
 ////////
 ////////
 ////////
-	function notifyPlayerIsNotBuying( $player_id ) {
-		self::trace("[bmc] ENTER notifyPlayerBuy-NOT");
-		self::dump("[bmc] notifyPlayerIsNotBuying - player_id:",  $player_id);
+	function notifyPlayerWantsToNotBuy( $player_id ) {
+		self::trace("[bmc] ENTER notifyPlayerWantsToNotBuy");
+		self::dump("[bmc] notifyPlayerWantsToNotBuy - player_id:",  $player_id);
 		
 		// self::setBuyTimerStatus( $player_id, 0 ); // 0 = Not running. 1 = Running.
 
@@ -1735,16 +1742,28 @@ class LiverpoolRummy extends Table
 		$buyers = self::getPlayerBuying();
 
 		self::notifyAllPlayers(
-			'playerNotBuying',
-//			'${player_name} does not want the discard.',
-			'',
+			'playerWantsToNotBuy',
+			clienttranslate('${player_name} no longer wants to buy.'),
 			array(
 				'player_id' => $player_id,
 				'player_name' => $players[ $player_id ][ 'player_name' ],
 				'buyers' => $buyers
 			)
 		);
-		self::trace("[bmc] EXIT notifyPlayerBuy-NOT");
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		self::trace("[bmc] EXIT notifyPlayerWantsToNotBuy");
 	}
 ////////
 ////////
@@ -1779,13 +1798,6 @@ class LiverpoolRummy extends Table
 			self::dump( "[bmc] cardToBeBought:",  $currentCard );
 			
 			if ( $currentCard != null ) {
-				// if ( $currentCard[ 'type_arg' ] == 5 ) {
-					// $value_displayed = ' a joker';
-					// $color_displayed = '!';
-				// } else {
-					// $value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
-					// $color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
-				// }
 				
 				// $buyMessage = $players[ $player_id ][ 'player_name' ] . 
 					// '<span style="color:#' . $players[ $player_id ][ "player_color" ] . ';">' . $players[ $player_id ][ "player_name" ] . '</span>';
@@ -1803,20 +1815,12 @@ class LiverpoolRummy extends Table
 					$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
 				}
 
-//TODO: Translate the 'WANTS TO BUY' text below.
-//				$notifyText_translated = self::_('${player_name} wants to buy ${value_displayed}${color_displayed}'),
-//$mystring_translated = self::_("my string");
-
-
 				self::notifyAllPlayers(
 					'playerWantsToBuy',
-//					'${player_name} wants to buy ${value_displayed}${color_displayed}',
-//					$notifyText_translated,
 					clienttranslate('${player_name} wants to buy ${value_displayed}${color_displayed}'),
 					array(
 						'player_id' => $player_id,
 						'activeTurnPlayer_id' => $activeTurnPlayer_id,
-		//				'player_name' => $players[ $player_id ][ 'player_name' ],
 						'player_name' => $players[ $player_id ][ 'player_name' ],
 						'cardToBeBought' => $currentCard,
 						'value_displayed' => $value_displayed,
@@ -2294,7 +2298,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			}
 		}
 		if  ( $notSetRun > 0 ) {
-			throw new BgaUserException( self::_('Cannot go down with those cards. Did you select a joker from the board?') );
+			throw new BgaUserException( self::_('Cannot go down with those cards. Check for sequential values. Did you select a joker from the board?') );
 		}
 
 		self::dump("[bmc] setsHave:", $setsHave);
@@ -2727,6 +2731,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				    ( $type == 1 ) && 
 					( $countValues[ 1 ] == 2 )) {
 				} else {
+					$crReturnValue = false;
 					if ( !$silent ) {
 						throw new BgaUserException( self::_("Not a run. Run cards must be sequential and unique.") );
 					}
@@ -2763,16 +2768,19 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$tryAceLow  = $this->checkRunWithAce( $aceLowCards );
 		$tryAceHigh = $this->checkRunWithAce( $aceHighCards );
 		
-		// self::dump("[bmc] Check Run aceLowCards",  $tryAceLow );
-		// self::dump("[bmc] Check Run aceHighCards", $tryAceHigh );
+		self::dump("[bmc] Check Run aceLowCards",  $tryAceLow );
+		self::dump("[bmc] Check Run aceHighCards", $tryAceHigh );
 		
 		$aceCheckResult = $tryAceLow + $tryAceHigh ;
+
+		self::dump("[bmc] Check Run aceHighCards", $aceCheckResult );
 		
 		switch ( $aceCheckResult ) {
 			case 0:
 			case 1:
 				break; // With ace high or low, one is a run and all the same suit
 			case 2:
+				$crReturnValue = false;
 				if ( !$silent ) {
 					throw new BgaUserException( self::_("Not a run. It doesn't reach!") );
 				}
@@ -2780,11 +2788,13 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			case 10:
 			case 11:
 			case 20:
+				$crReturnValue = false;
 				if ( !$silent ) {
 					throw new BgaUserException( self::_('Not a run. Run cards must all be the same suit.') );
 				}
 				break;
 			default :
+				$crReturnValue = false;
 				if ( !$silent ) {
 					throw new BgaUserException( self::_("Ace Check error (should never happen).") );
 				}
@@ -2792,7 +2802,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		}
 		// self::dump("[bmc] checkRun cards: ", $cards );
 		
-		self::trace("[bmc] EXIT checkRun is TRUE because we made it this far.");
+		self::trace("[bmc] EXIT checkRun. Might be true or false.");
 		return $crReturnValue; // Made it through, so the cards are a run
 	}
 ////
@@ -2865,7 +2875,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			}
 		}
 		return $jokerCount;
-	}////
+	}
+////
 ////
 ////
 	function countNonJokerValues( $cards ) {
@@ -4087,15 +4098,22 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 /////
 /////
 /////
-	// function notBuyRequest( $player_id ) { 
-		// self::dump("[bmc] ENTER NotBuyRequest:", $player_id );
-		// self::checkAction('notBuyRequest');
+	function notBuyRequest( $player_id ) { 
+		self::dump("[bmc] ENTER NotBuyRequest:", $player_id );
+		//self::checkAction('notBuyRequest');
 		
-		// $activePlayerId = self::getActivePlayerId();
+		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
+		self::dump("[bmc] player_id:", $player_id);
+
+		// Check if that player has requested to buy and clear it
+
+		$buyers = self::getPlayerBuying();
 		
-		// self::dump("[bmc] activePlayerId:", $activePlayerId );
-		
-		// self::setBuyTimerStatus( $player_id, 0 ); // 0 = Not running. 1 = Running.
+		if ( $buyers[ $player_id ] == true ) {
+			self::dump("[bmc] clearing buy from player:", $player_id);
+			self::setPlayerBuying( $player_id, 1 ); // (0==unknown, 1==Not buying 2==Buying)
+			$this->notifyPlayerWantsToNotBuy( $player_id );
+		}
 
 		// Tell the database there is a buyer (0==unknown, 1==Not buying 2==Buying)
 		//self::setPlayerBuying( $player_id, 1 );
@@ -4113,8 +4131,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 	//	// deactivate player; if none left, transition to process discard
 		// $this->gamestate->setPlayerNonMultiactive( $player_id, 'resolveBuyers' );
 
-		// self::trace("[bmc] EXIT (truly) NotBuyRequest:" );
-	// }
+		self::trace("[bmc] EXIT (truly) NotBuyRequest:" );
+	}
 ////
 ////
 ////
@@ -4122,7 +4140,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::trace("[bmc] ENTER buyRequest-NEW");
 		//self::checkAction("buyRequest"); // Cannot do checkAction or the server blocks with "It's not your turn"
 
-		$state = $this->gamestate->state();
+//		$state = $this->gamestate->state();
 		
 //		if ( $state['name'] == 'playerTurnDraw' ) {
 			$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
@@ -4139,13 +4157,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					array()
 				);
 			}
-	/*
-			// Splitting it into 2, not sure why I have to
-			if ( $player_id == $activeTurnPlayer_id ) {
-				self::trace("[bmc] Sending notif for itsYourTurn2");
-				throw new BgaUserException( self::_("You don't need to buy it, it's your turn.") );
-			}
-	*/
+
 			// If there aren't enough cards, don't allow it
 			$countDeck = count( $this->cards->countCardsByLocationArgs( 'deck' ) );
 			$countDiscardPile = count ($this->cards->countCardsByLocationArgs( 'discardPile' ) );
@@ -4168,7 +4180,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 			// Check that this player can still buy this hand
 			$playersBuyCount = self::getPlayersBuyCount();
-			if ( $playersBuyCount[ $player_id ] < 1 ) { // // TODO Aug03: Throws undefined offset
+			
+			if ( $playersBuyCount[ $player_id ] < 1 ) {
 				throw new BgaUserException( self::_("You cannot buy. You already bought 3 times this hand.") );
 			}
 

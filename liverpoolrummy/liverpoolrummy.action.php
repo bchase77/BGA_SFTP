@@ -101,14 +101,14 @@
             $this->game->buyRequest( $player_id ); 
             self::ajaxResponse();
         }
-        // public function notBuyRequest()
-        // {
-            // self::setAjaxMode();
-			// self::trace("[bmc] ajaxcall for notBuyRequest");
-			// $player_id = self::getArg("player_id", AT_posint, true);
-            // $this->game->notBuyRequest( $player_id ); 
-            // self::ajaxResponse();
-        // }
+        public function notBuyRequest()
+        {
+            self::setAjaxMode();
+			self::trace("[bmc] ajaxcall for notBuyRequest");
+			$player_id = self::getArg("player_id", AT_posint, true);
+            $this->game->notBuyRequest( $player_id ); 
+            self::ajaxResponse();
+        }
         public function drawCard()
         {
             self::setAjaxMode();

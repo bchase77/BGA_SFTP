@@ -40,6 +40,7 @@
 					<a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue spectatorMode"><span id="SORTRUNSTRANSLATED"></span></a>
 					<span style="margin-left:15px"></span>
 					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray spectatorMode"> <span id="BUYTRANSLATED"></span>! </a>
+					<a href="#" id="buttonNotBuy" class="bgabutton bgabutton_gray spectatorMode"> <span id="NOTBUYTRANSLATED"></span>! </a>
 					<span style="margin-left:15px"></span>
 					<a href="#" id="buttonPrepAreaA" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep A</a>
 					<a href="#" id="buttonPrepAreaB" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep B</a>

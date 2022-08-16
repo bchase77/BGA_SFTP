@@ -109,24 +109,19 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 //
 // TODO: 101569962
-// 08/08/2022: Add a NOT BUY or CONFIRM BUY button.
+// X 08/15/2022: 2 Runs someone went down with 678T* and 8JQA* but the latter is not a valid run.
+// 08/13/2022: Spectators don't see the DRAWCARD in the log and should.
+// 08/13/2022: Don't allow zombie to buy (or draw).
+// 08/13/2022: BUY and NOT BUY buttons don't light right.
+// 08/13/2022: I clicked BUY right when someone else drew... I think... "when i buy but same times a persone Draw the cards it s block for me"
 // 08/09/2022: Chat window doesn't launch auto after SORT buttons are pressed.
-// X 08/09/2022: Must go down with exactly TARGET melds (i.e. not 4 in a set)
-// 08/08/2022: Need to refresh to see correct hand target, should update automatically.
 // 08/08/2022: Spectator, the WANTS TO BUY lights up very quickly, then disappears.
 // 08/08/2022: Player reported they type and the chat you can usually type and the chat box will just do its thing. However, after clicking the SORT button, you have to click back to the chat window. normallly you just type and the chat comes up, but if you click to sort sets or runs anf then start typing it doesnt work.
-// 08/06/2022: Icon is GOMOKU icon. Should be liverpool!
-// X 08/06/2022: Add the hand number to the TARGET line.
 // 08/06/2022: update the player boards first before doing the final score.
 // 08/06/2022: Sorting wrong: **A10* should be 10***A
 // 07/30/2022: Don't unlight the BUY button when a player draws from the deck. Only when they discard
 // 07/30/2022: In JS, when you have 2 identical cards they cannot be sorted unless one is put into a PREP area.
-// 07/30/2022: On new hand, 1 player had RED Boarder around deck but it wasn't their turn. The active player had red boxes around both (as it should be).
-// 07/30/2022: Don't do the CHECK RUN message 'not a run' if the target is sets.
-// 07/30/2022: On first buy, not all players saw buyer as RED player board.
-// 07/30/2022: If someone tries to discard but is not allowed, it will clear the buyers. Probably should not clear the buyers until the discard is deemed legitimate.
 // 07/16/2022: Replays keep cards in hand when they go down.
-// 07/16/0222: undo a buy? (request from Marsh A, meeplehead55, matmcv)
 // 07/14/2022: Upon replay, the cards still show in the hand (except the jokers). Card count is right.
 // 1/29/2022: Mark Fong got a Syntax error by drawing a card. Server syntax error:
 //Sorry, an unexpected error has occurred... Sorry, another player made the same action at the same time: please retry. (reference: GS6 30/01 07:40:19)
@@ -135,89 +130,94 @@ console.log("[bmc] Clear this.prepAreas2");
 // 1/29/2022: Make the message to select joker FIRST so it's easier to see.
 // 1/29/2022: Make BUY IT not unlight when someone draws and player can still buy.
 // 1/29/2022: Disable buys in a 2 player game. Deal out the right number of cards.
-// 9/4/2021: Spectator TARGET doesn't update upon new hand.
 // 9/15/2021: Spectator Draw card doesn't show. See drawCardSpect line ~1227.
-// 29/08 07:58:41 [notice] [T303594] [75.51.145.45] [2333749/DodyOaks7] OK-0 749 d8 c2 e557 m0 I742 A6 V0 T0 /1/liverpoolrummy/liverpoolrummy/wakeup.html?myturnack=true&table=303594&testuser=2333749&dojo.preventCache=1630216720768
 // 8/21/2021: 4 people played with 2 decks and the discard pile didn't reshuffle
 // 8/16/2021: Spectator doesn't log the drawing of the card and doesn't hear the swoosh sound when drawing
-// 8/16/2021: After 1st hand is done, Spectator doesn't see names on board
+
 // 8/4/2021: Spectators don't see message log when someone draws a card.
 // 7/21/2021: 2 player game, someone could not go down with 3 runs, had to quit.
 // 7/24/2021: 6 people played with 2 decks and discard pile was not shuffled back into deck.
-// 7/24/2021: Need to cover when both deck and discard pile run out of cards. Need to change to bypass the requirement to draw if
-//              cards are left in draw deck + discard pile.
-// 7/18/2021: Cannot find image file (it shows the default instead): https://studio.boardgamearena.com:8083/data/themereleases/210708-1008/games/liverpoolrummy/current/img/game_icon.png
+// 7/24/2021: Need to cover when both deck and discard pile run out of cards. Need to change to bypass the requirement to draw if cards are left in draw deck + discard pile.
 // 7/18/2021: Unhandled Promise Rejection: NotAllowedError: The request is not allowed by the user agent or the platform in the current context, possibly because the user denied permission. (doPlayFile) It won't play sounds on SAFARI.
-
 // 7/18/21: Run with 6-Q does not allow 45 to be added "Not a run doesn't reach"
 //  4/24: SCORING: I think this functional form is a perfectly great alternative - there are likely many many ways to go about implementing this scoring feature. 
-
 //Is there one numPlayerTurns value for all players, or does each player have a potentially unique one? 
-
 //I think it is important each player has a unique multiplier instead of heavily discounting everyone’s score when someone goes out early - I highly value the relative discounting between players within a round.
 
-//  2/13: When people want to buy, and the DECK is drawn, the BUYERS are discolored and should not be.
 //  2/13: When someone wants to buy, light-up the DISCARD card so people can see it has a buyer.
 //  2/13: Everyone should get at least 1 turn
 //  2/13: Scale the points by the number of turns the person had.
 //  2/13: Order the player table by score.
-//  1/27: Add option: Only reveal attempt to buy if successful.
 //  2/13: Have an option where jokers on the table could not be replaced
 //  2/13: Having an option where bids to buy aren't revealed until they are successful would be appreciated
-//  2/13: 11 card deal for all hands & can go out without a discard
 //  2/13: Make the board FLASH when a person has 1 card
 //  2/13: Change the player board color to RED when player has 1 card
 //  2/6: Sort meld box as run and place joker properly
 // 12/26: When drawing a card, if the same card is in player hand they both go to the right. Only the new card should move.
 //  1/16: Allow players to specify where each joker plays
 //  1/15: If discarded card is playable, allow players to call RUMMY, play it, and discard a card
-//
-//  1/28: [group] We had multiple cases where people tried buying and the log reported they were unable, with no explanation as to why
-//  1/28: [group] Somehow show that the unbuyable downcard is not buyable
-//  1/28: [group] The list of games in progress shows a placeholder that says "Game icon 50 x 50"
-//  1/20: If there are 14 cards in an area then unlight all greens and put a joker on the left if no ace.
-//  1/20: rightmost joker of A*3* lights up green and should not.
 //  1/16: When I have enough melds prepped to go down and it becomes my turn, the GO DOWN button doesn't light up but should
 //  1/16: When someone clicks BUY IT and someone clicks the card there can be a race condition?
-//  1/16: 4 in a set and 4 in a run and GO DOWN didn't light up
-//  1/16: when going down with 4 in a set and a run as AKQ* it says "RUN CARDS MUST BE SEQUENTIAL"
-//  1/3: Why so many "Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first"? Seems coming from the history log.
-// 12/26: Konni discarded at same time as I clicked BUY it. It was my turn. Game thought i wanted to buy Konni's discard. I drew, but now it won't let me discard: "You cannot buy any more this hand(decPlayerBuyCount)."
+//  1/3/2021: Why so many "Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first"? Seems coming from the history log.
+// 12/26/2020: Konni discarded at same time as I clicked BUY it. It was my turn. Game thought i wanted to buy Konni's discard. I drew, but now it won't let me discard: "You cannot buy any more this hand(decPlayerBuyCount)."
 //
 // 12/26: Show the options in the message log when the game starts.
 // 12/26 Marc's board did not light up when I went to buy, but it did after he drew a card. It should have lit up when I clicked the BUY, and not waited until he drew.
 // 12/26: Hover-over a joker shows what cards can be substituted.
-// 12/26: Spectator should not see MELD A, MELD B, MELD and CARD FOR JOKER
-// 12/26: "Tried but could not buy" does not show up but should.
-// 12/26: Allow go down with deficient joker and have it figure out that it's in the middle of the run.
-//
-// 12/24: Add the ranking of each player to the player boards
-// 11/28: After playing last card, got NaN in number of cards
 // 11/26: Get everyone at least 2 turns, or half points
 // 11/26: For early hands, make 4 cards needed for a set
 // 11/27: With expelled players, the active turn player's table did not turn green.
 // 
 // 11/26: Let all players have at least 1 turn
-// 11/26: Add a graphic show progression
-// 11/21: SAFARI: GO DOWN button caused NOT ENOUGH SETS
-// 11/26: https://boardgamearena.com/2/liverpoolrummy?table=127049675# Mom couldn't end 
 // 11/10: Add KNOCK requirement feature, or you can't go down next turn
 // 11/10: IT'S NOT YOUR TURN is not needed
-// 11/10: Got Nice Try doesn't reach from 89 on 0*QKA, but they played OK individually.
 // 11/1:  [forum] If 2 of same card (e.g. 2x 6 of hearts) is in hand cannot move just one of them
 //
 // 12/26: MAYBE Should not be able to buy own discard (or if double-click then CONFIRM)
-// 11/14: MAYBE If click BUY after draw, it lights up but doesn't let you draw
 // 11/7:  MAYBE Limit the set size???
 // 11/10: MAYBE In 2 sets with many players, allow every other player one more play
 // 11/14: MAYBE: Player should not be able to buy their own discard
 // 11/2:  Maybe Not: Ask group: Call Liverpool on another player?
 // 11/8:  Maybe Not: (it's loading the deck cards) In JS code between 244 and 340 takes ~12 seconds (slow!)
-// 11/5:  Maybe not: Cannot go down with 2356s and replacing a joker (can do it with 235s).
 // 11/7:  Maybe not: Add a table with the players in an oval.
 // 11/10: Maybe not: Get bonus if you go out? NO.
-// 11/10: Maybe not: Notify players are prepping cards
+// 11/10/2020: Maybe not: Notify players are prepping cards
 //
+// Resolved Bugs:
+// --------------
+// X 08/08/2022: Need to refresh to see correct hand target, should update automatically.
+// X 08/06/2022: Icon is GOMOKU icon. Should be liverpool!
+// X 07/30/2022: On new hand, 1 player had RED Boarder around deck but it wasn't their turn. The active player had red boxes around both (as it should be).
+// X 07/30/2022: Don't do the CHECK RUN message 'not a run' if the target is sets.
+// X 07/30/2022: On first buy, not all players saw buyer as RED player board.
+// X 07/30/2022: If someone tries to discard but is not allowed, it will clear the buyers. Probably should not clear the buyers until the discard is deemed legitimate.
+// X 07/16/0222: undo a buy? (request from Marsh A, meeplehead55, matmcv)
+// X 9/4/2021: Spectator TARGET doesn't update upon new hand.
+// X 8/16/2021: After 1st hand is done, Spectator doesn't see names on board
+// X 2/13: When people want to buy, and the DECK is drawn, the BUYERS are discolored and should not be.
+// X 7/18/2021: Cannot find image file (it shows the default gomoku instead) 
+// X 2/13: 11 card deal for all hands (option) & can go out without a discard (no)
+// X 1/28: [group] We had multiple cases where people tried buying and the log reported they were unable, with no explanation as to why
+// X 1/28: [group] Somehow show that the unbuyable downcard is not buyable
+// X 1/28: [group] The list of games in progress shows a placeholder that says "Game icon 50 x 50"
+// X 1/20: If there are 14 cards in an area then unlight all greens and put a joker on the left if no ace.
+// X 1/20: rightmost joker of A*3* lights up green and should not.
+// X 1/16: 4 in a set and 4 in a run and GO DOWN didn't light up
+// X 1/16: when going down with 4 in a set and a run as AKQ* it says "RUN CARDS MUST BE SEQUENTIAL"
+// X 12/26: Spectator should not see MELD A, MELD B, MELD and CARD FOR JOKER
+// X 12/26: "Tried but could not buy" does not show up but should.
+// X 12/26: Allow go down with deficient joker and have it figure out that it's in the middle of the run.
+// X 12/24: Add the ranking of each player to the player boards
+// X 11/28: After playing last card, got NaN in number of cards
+// X 11/26: Add a graphic show progression
+// X 11/21: SAFARI: GO DOWN button caused NOT ENOUGH SETS
+// X 11/26: https://boardgamearena.com/2/liverpoolrummy?table=127049675# Mom couldn't end 
+// X 11/10: Got Nice Try doesn't reach from 89 on 0*QKA, but they played OK individually.
+// X 11/14: MAYBE If click BUY after draw, it lights up but doesn't let you draw
+// X 11/5:  Maybe not: Cannot go down with 2356s and replacing a joker (can do it with 235s).
+// X 08/08/2022: Add a NOT BUY button. There is still an issue with the lighting up of the BUY buttons but the function works.
+// X 08/09/2022: Must go down with exactly TARGET melds (i.e. not 4 in a set)
+// X 08/06/2022: Add the hand number to the TARGET line.
 // X 07/08/2022: Someone claimed the translation needs to be parsed differently.
 // X 2/13: Deal 11 each hand. Added the game option.
 // X 08/06/2022: Repaired the CHECKRUN function. Draw box around the discard pile so players know where to click.
@@ -874,7 +874,7 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 			dojo.connect( $('buttonBuy'), 'onclick', this, 'onPlayerBuyButton' );
 			dojo.connect( $('voice'), 'onclick', this, "onVoiceCheckbox");
 
-//			dojo.connect( $('buttonNotBuy'), 'onclick', this, 'onPlayerNotBuyButton' );
+			dojo.connect( $('buttonNotBuy'), 'onclick', this, 'onPlayerNotBuyButton' );
 
 			let tooltip_myPrepA = _('To go down, select cards for one meld & click a meld button or meld area (1 meld per area). See the cards move. To take a joker while going down, prepare all melds and 1 partial meld. Select the board joker. Put an appropriate card to replace the joker in CARD FOR JOKER. Click GO DOWN.');
 
@@ -918,6 +918,36 @@ console.log("[bmc] Buy setup");
 console.log(this.firstLoad);
 console.log(this.player_id);
 console.log(this.gamedatas.buyCount[ this.player_id ]);
+console.log(this.turnPlayer);
+
+// Show neither buy nor notBuy buttons if:
+//   It's my turn
+//
+// Show buy button if:
+//   First load
+//   Not my turn
+//   undefined or not buying (0 or 1)
+//
+// Show not buy button if:
+//   First load
+//   Not my turn
+//   Status is buying (2)
+//
+
+			if ( this.player_id != this.gamedatas.activeTurnPlayer_id ) {
+			    if (( this.gamedatas.buyers[ this.player_id ] == 0 ) || // buy undefined
+					( this.gamedatas.buyers[ this.player_id ] == 1 )) { // buy notbuying
+					this.showBuyButton2();
+					console.log("showBuyButton");
+				} else {
+					this.showNotBuyButton();
+					console.log("showNotBuyButton");
+				}
+			}
+
+
+
+/*
 // TODO: Remove this?
 			if ((( this.firstLoad == 'Yes' ) && 
 			     ( this.player_id != this.gamedatas.activeTurnPlayer_id ) &&
@@ -951,10 +981,18 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 				this.enableDBTimer = 'No'; // But let the timer run out if it's there
 				this.enDisStaticBuyButtons();
 			} else {
-				this.enableDBStatic = 'No';
+//				this.enableDBStatic = 'No';
 				this.enableDBTimer = 'No'; // But let the timer run out if it's there
 				this.enDisStaticBuyButtons();
 			}
+
+*/
+
+
+
+
+
+
 //			this.currentHandType = this.gamedatas.currentHandType;
 //			this.totalHandCount = this.gamedatas.totalHandCount;
 
@@ -1011,17 +1049,17 @@ console.log("[bmc] Doing the window.onload");
 				this.voices = false;
 			}
 			
-			// Define table text variables which can be translated by each client. Each ID must be unique.
+			// Define table text variables which can be translated by each client. Each ID must be unique. The syntax for translation is underscore parentheses _('').
 			$(MYHANDTRANSLATED).innerHTML = _('My Hand'); 
 			$(CARDFORJOKERTRANSLATED).innerHTML = _('Card For Joker');
 			$(CARDFORJOKERTRANSLATED2).innerHTML = _('Card For Joker');
 			$(BUYTRANSLATED).innerHTML = _('Buy');
+			$(NOTBUYTRANSLATED).innerHTML = _('Not Buy');
 			$(SORTSETSTRANSLATED).innerHTML = _('Sort Sets');
 			$(SORTRUNSTRANSLATED).innerHTML = _('Sort Runs');
 			$(GODOWNTRANSLATED).innerHTML = _('Go Down');
 			$(DRAWDECKTRANSLATED).innerHTML = _('Draw Deck');
 			$(DISCARDPILETRANSLATED).innerHTML = _('Discard Pile');
-
 
 			console.log( "Setting up Wanted Grid" );
 
@@ -1362,66 +1400,31 @@ console.log("[bmc] ENTER onVoiceCheckbox");
 /////////
 		onPlayerBuyButton : function() {
 console.log("[bmc] ENTER onPlayerBuyButton");
-//			this.clearButtons();
-			// this.stopActionTimer2();
 
 console.log("onPlayerBuyButton");
-//console.log(this.discardPile);
 console.log(this.discardPileOne);
-
-// New 08/09/2022: Confirm the buy
-
-				// this.confirmationDialog( _('Are you sure you want to discard? You have cards prepped.'),
-							 // dojo.hitch( this, function() {
-								// this.playerHand.unselectAll();
-								// this.reallyDiscard( selectedDiscards );
 
 			var dpCard = this.discardPileOne.getAllItems();
 console.log(dpCard);
-			var bob = this.discardPileOne.getItemById(dpCard[0].id)
-console.log(bob);
-			//var items = this.deckOne.getSelectedItems();
-
-//			this.confirmationDialog( _('Are you sure you want to buy the' + dpCard + '?'),
-//				dojo.hitch( this, function() {
-					this.reallyBuy();
-//				})
-//			);
-
-
-
-//TODO: figure out how to get King of Hearts from card ID==38.
-//TODO: Don't let it put up 2 dialog boxes.
-//Let dialog boxes be chosen as a game option.
-
-
-
-
-
-
-//			this.confirmationDialog( _('Are you sure you want to buy the' + this.discardPile + '?'), () => {
-//				this.reallyBuy();
-//			});
+			this.reallyBuy();
         return; // nothing should be called or done after calling this, all action must be done in the handler  
 		},
 /////////
 /////////
 /////////
 		reallyBuy : function() {
-			this.clearButtons();
+			//this.clearButtons();
 			// Do not acknowledge the buy if it's not our turn
 			// if ( this.player_id == this.turnPlayer ) {
 // console.log("[bmc] sound: It's Your Turn");
 				// playSound( 'tutorialrumone_ItsYourTurn' );
 			// } else {
 				// Make sure there is a card to buy
-//				if ( this.discardPile.length != 0 ) {
+
 				if ( this.discardPileOne.length != 0 ) {
 
 					var action = 'buyRequest';
 					
-					dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
-					dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
 console.log(this.firstLoad);
 
 					if (( this.checkPossibleActions( action, true )  ||
@@ -1439,8 +1442,16 @@ console.log(this.firstLoad);
 							}, this, function(result) {
 							}, function(is_error) {
 						});
+/*
+						// Buy allowed, change the buttons
+						dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+						dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
+						dojo.replaceClass( 'buttonNotBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+						dojo.replaceClass( 'buttonNotBuy', "textWhite", "textGray" ); // item, add, remove
+*/
+
 					} else {
-						console.log("[bmc] Buy not allowed now");
+						console.log("[bmc] Buy already requested or not allowed now");
 					}
 				}
 			// }
@@ -1448,26 +1459,34 @@ console.log(this.firstLoad);
 /////////
 /////////
 /////////
-		// onPlayerNotBuyButton : function() {
-// console.log("[bmc] ENTER onPlayerNotBuyButton");
+		onPlayerNotBuyButton : function() {
+console.log("[bmc] ENTER onPlayerNotBuyButton");
 			// this.clearButtons();
 			////this.stopActionTimer2();
 			// console.log(this.gamedatas);
 			
-			// var action = 'notBuyRequest';
+			var action = 'notBuyRequest';
+			
+console.log( "[bmc] checkaction: " + this.checkPossibleActions( action, true));
+console.log( "[bmc] buyrequested: " + this.buyRequested);
 
-			// if (this.checkAction( action, true)) {
-				// console.log("[bmc] ajax " + action );
-				// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-						// player_id : this.player_id,
-						// lock : true
-					// }, this, function(result) {
-					// }, function(is_error) {
-				// });
-			// } else {
-				// console.log( "[bmc] checkAction false");
-			// }
-		// },
+			if ( this.checkPossibleActions( action, true) && ( this.buyRequested == true)) {
+				console.log("[bmc] ajax " + action );
+				
+				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						player_id : this.player_id,
+						lock : true
+					}, this, function(result) {
+					}, function(is_error) {
+				});
+				
+				// Clear out the buy request
+				this.buyRequested = false;
+				
+			} else {
+				console.log( "[bmc] checkAction false");
+			}
+		},
 /////////
 /////////
 /////////
@@ -2239,25 +2258,30 @@ console.log("[bmc] ENTER showBuyButton2");
 console.log( this.buyCounterTimerShouldExist );
 console.log( this.buyCounterTimerExists );
 
-			if (( this.buyCounterTimerShouldExist == 'Yes' ) || 
-				( this.buyCounterTimerExists == 'Yes' )) {
+//			if (( this.buyCounterTimerShouldExist == 'Yes' ) || 
+//				( this.buyCounterTimerExists == 'Yes' )) {
 
-				var buyButtonID = 'buttonPlayerBuy' + this.player_id;
-				var notBuyButtonID = 'buttonPlayerNotBuy' + this.player_id;
-				var notBuyButStaticID = 'buttonNotBuy';
-//EXP 10/26				this.addActionButton( buyButtonID, _("Buy!"), 'onPlayerBuyButton' );
-//				this.addActionButton( notBuyButtonID , _("Not Buy!"), 'onPlayerNotBuyButton' );
-				
-//				dojo.replaceClass( 'buttonBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
 console.log("[bmc] BUY BUTTON RED!");
 				dojo.replaceClass( 'buttonBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
 				dojo.replaceClass( 'buttonBuy', "textWhite", "textGray" ); // item, add, remove
-				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
+				dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+				dojo.replaceClass( 'buttonNotBuy', "textGray", "textWhite" ); // item, add, remove
 
-console.log("[bmc] Action buttons were just created.");
+//console.log("[bmc] Action buttons were just created.");
 
-			}
+//			}
 console.log("[bmc] EXIT showBuyButton2");
+		},
+/////////
+/////////
+/////////
+		showNotBuyButton : function() {
+console.log("[bmc] ENTER showNotBuyButton RED!");
+				dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+				dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
+				dojo.replaceClass( 'buttonNotBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+				dojo.replaceClass( 'buttonNotBuy', "textWhite", "textGray" ); // item, add, remove
+console.log("[bmc] EXIT showNotBuyButton");
 		},
 /////////
 /////////
@@ -2270,6 +2294,9 @@ console.log("[bmc] YES enDisStaticBuyButtons");
 				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
 				dojo.replaceClass( 'buttonBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
 				dojo.replaceClass( 'buttonBuy', "textWhite", "textGray" ); // item, add, remove
+				dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+				dojo.replaceClass( 'buttonNotBuy', "textGray", "textWhite" ); // item, add, remove
+
 				// Only start the timer if active during hand, not during game start nor hand start.
 				if ( this.enableDBTimer == 'Yes' ) {
 console.log("[bmc] YES enableDBTimer");
@@ -2281,6 +2308,8 @@ console.log("[bmc] NO enDisStaticBuyButtons");
 				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 				dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
 				dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
+				dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+				dojo.replaceClass( 'buttonNotBuy', "textGray", "textWhite" ); // item, add, remove
 			}
 		},
 		
@@ -3052,6 +3081,8 @@ console.log( "[bmc] ENTER clearButtons" );
 			// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 
 			dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+			dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+
 			// this.showingButtons === 'No';
 		},
 /////////
@@ -4140,21 +4171,21 @@ console.log( '[bmc] ENTER notifications subscriptions setup' );
             
             dojo.subscribe( 'newHand'  ,         this, "notif_newHand");
 			this.notifqueue.setSynchronous( 'newHand', 1000 );
-            dojo.subscribe( 'discardCard' ,      this, "notif_discardCard");
-            dojo.subscribe( 'drawCard' ,         this, "notif_drawCard");
-            dojo.subscribe( 'drawCardSpect' ,    this, "notif_drawCardSpect");
-            dojo.subscribe( 'newScores',         this, "notif_newScores" );
-			dojo.subscribe( 'playerGoDown' ,     this, "notif_playerGoDown");
-            dojo.subscribe( 'cardPlayed' ,       this, "notif_cardPlayed");
-            dojo.subscribe( 'deckShuffled' ,     this, "notif_deckShuffled");
-            dojo.subscribe( 'playerNotBuying' ,  this, "notif_playerNotBuying");
-            dojo.subscribe( 'playerWantsToBuy' , this, "notif_playerWantsToBuy");
-            dojo.subscribe( 'playerBought' ,	 this, "notif_playerBought");
-            dojo.subscribe( 'playerDidNotBuy' ,  this, "notif_playerDidNotBuy");
-			dojo.subscribe( 'wentOut' , 		 this, "notif_playerWentOut");
-            dojo.subscribe( 'clearBuyers' ,      this, "notif_clearBuyers");
-			dojo.subscribe( 'close_btn' , 		 this, "onPlayerReviewedHandButton");
-			dojo.subscribe( 'itsYourTurn' ,      this, "notif_itsYourTurn");
+            dojo.subscribe( 'discardCard' ,        this, "notif_discardCard");
+            dojo.subscribe( 'drawCard' ,           this, "notif_drawCard");
+            dojo.subscribe( 'drawCardSpect' ,      this, "notif_drawCardSpect");
+            dojo.subscribe( 'newScores',           this, "notif_newScores" );
+			dojo.subscribe( 'playerGoDown' ,       this, "notif_playerGoDown");
+            dojo.subscribe( 'cardPlayed' ,         this, "notif_cardPlayed");
+            dojo.subscribe( 'deckShuffled' ,       this, "notif_deckShuffled");
+            dojo.subscribe( 'playerWantsToNotBuy', this, "notif_playerNotBuying");
+            dojo.subscribe( 'playerWantsToBuy' ,   this, "notif_playerWantsToBuy");
+            dojo.subscribe( 'playerBought' ,	   this, "notif_playerBought");
+            dojo.subscribe( 'playerDidNotBuy' ,    this, "notif_playerDidNotBuy");
+			dojo.subscribe( 'wentOut' , 		   this, "notif_playerWentOut");
+            dojo.subscribe( 'clearBuyers' ,        this, "notif_clearBuyers");
+			dojo.subscribe( 'close_btn' , 		   this, "onPlayerReviewedHandButton");
+			dojo.subscribe( 'itsYourTurn' ,        this, "notif_itsYourTurn");
 
             // TODO: here, associate your game notifications with local methods
             
@@ -4610,23 +4641,40 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 		notif_playerNotBuying : function(notif) {
 			console.log("[bmc]notif_playerIsNotBuying");
 			console.log(notif);
-//			if ( this.gamedatas.playerOrderTrue[ 0 ] == this.player_id ) {
-//			if ( this.gamedatas.activeTurnPlayer_id == this.player_id ) {
-			if ( this.gamedatas.gamestate.active_player == notif.player_id ) {
-				// this.stopActionTimer2();
+			console.log(this.gamedatas.gamestate.active_player);
+			console.log(this.player_id);
+
+			// If  not my turn then light up the buttons or player board; else do nothing (but quietly allow the buy to happen).
+			if (this.gamedatas.gamestate.active_player != this.player_id ) {
+				// If I requested then clear the request
+				if ( this.player_id == notif.args.player_id ) {
+	//			if ( this.gamedatas.gamestate.active_player == notif.args.player_id ) {
+					this.buyRequested = false;
+					// this.stopActionTimer2();
+					dojo.replaceClass( 'buttonBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+					dojo.replaceClass( 'buttonBuy', "textWhite", "textGray" ); // item, add, remove
+					dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+					dojo.replaceClass( 'buttonNotBuy', "textGray", "textWhite" ); // item, add, remove
+				}
+				//this.showHideButtons();
 			}
-			this.showHideButtons();
-			
-//			if ( notif.player_id == this.player_id ) {
-				
-			
-			if ( this.player_id == notif.player_id ) {
+			// Remove from all boards
+			dojo.removeClass( 'overall_player_board_' + notif.args.player_id, 'playerBoardBuyer' );
+
+			//this.showBuyButton2();
+/*
+			if ( this.player_id == notif.args.player_id ) {
 				// New variables for new timers on static buttons
 				this.enableDBStatic = 'No';
 				this.enableDBTimer = 'No'; // But let the timer run out if it's there
 				this.enDisStaticBuyButtons();
 				// this.stopActionTimerStatic(); // Stop the timer, we are not buying
+				dojo.replaceClass( 'buttonBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+				dojo.replaceClass( 'buttonBuy', "textWhite", "textGray" ); // item, add, remove
+				dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+				dojo.replaceClass( 'buttonNotBuy', "textGray", "textWhite" ); // item, add, remove
 			}
+			*/
 		},
 /////////
 /////////
@@ -4673,8 +4721,17 @@ console.log("[bmc] sound: It's Your Turn");
 					this.disableNextMoveSound();
 				}
 				dojo.addClass( 'overall_player_board_' + notif.args.player_id, 'playerBoardBuyer' );
-			
+
+				// If I requested it then change the buttons, otherwise don't
+				if ( this.player_id == notif.args.player_id ) {
+					// Buy allowed, change the buttons
+					dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+					dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
+					dojo.replaceClass( 'buttonNotBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+					dojo.replaceClass( 'buttonNotBuy', "textWhite", "textGray" ); // item, add, remove
+				}
 			}
+
 			return;
 			
 			// TODO: DELETE THE REST OF THIS UNRUNNABLE CODE:
