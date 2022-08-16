@@ -1750,19 +1750,6 @@ class LiverpoolRummy extends Table
 				'buyers' => $buyers
 			)
 		);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		self::trace("[bmc] EXIT notifyPlayerWantsToNotBuy");
 	}
 ////////
@@ -1848,8 +1835,8 @@ class LiverpoolRummy extends Table
 
 //		self::dump("[bmc] card_id          :",  $card_id );
 //		self::dump("[bmc] drawSource       :",  $drawSource );
-//		self::dump('[bmc] playingPlayer_id :',  $playingPlayer_id );
-//		self::dump('[bmc] player_name      :',  $activePlayer );
+		self::dump('[bmc] playingPlayer_id :',  $playingPlayer_id );
+		self::dump('[bmc] player_name      :',  $activePlayer );
 //		self::dump('[bmc] card_id          :',  $card_id );
 //		self::dump('[bmc] value            :',  $currentCard ['type_arg'] );
 //		self::dump('[bmc] value_displayed  :',  $this->values_label [$currentCard ['type_arg']] );
@@ -1937,28 +1924,65 @@ class LiverpoolRummy extends Table
 			}
 		}
 
+
+
+
+
+
+
+
 		// Notify spectators of the draw too
 		self::notifyAllPlayers(
 			'drawCardSpect',
 			// 08/16/2021 TODO: WHY IS NEXT LINE COMMENTED OUT?!??
-			//'${player_name} draws a card from the ${drawSourceText}.',
-			'',
+			'${player_name} draws a card from the ${drawSourceText}.',
+//f			'',
 			array(
-				'player_id' => $playingPlayer_id,
+				'player_id' => $activeTurnPlayer_id,
 				'player_name' => $activePlayer,
 				'card_id' => $card_id,
-				'value' => '',
-				'value_displayed' => '',
 				'color' => '',
-				'color_displayed' => '',
+				'value' => '',
 				'drawSource' => $drawSource,
-				'drawSourceText' => $drawSourceText,
 				'drawPlayer' => $drawPlayer,
 				'allHands' => $cardsByLocation,
 				'discardSize' => $discardSize,
+				'drawSourceText' => $drawSourceText,
 				'drawDeckSize' => $drawDeckSize
+//				'value_displayed' => '',
+//				'color_displayed' => '',
 			)
 		);
+		
+		// And notify
+/*		self::notifyAllPlayers(
+			'drawCardSpect',
+			clienttranslate('${player_name} draws a card from the ${drawSourceText}.'),
+			array (
+				'color' => $currentCard [ 'type' ],
+				'color_displayed' => $color_displayed,
+				'value' => $currentCard [ 'type_arg' ],
+				'value_displayed' => $value_displayed,
+
+				'card_id' => $card_id,
+				'nextTurnPlayer' => $nextTurnPlayer,
+				'allHands' => $cardsByLocationHand,
+				'discardSize' => $discardSize,
+				'drawDeckSize' => $drawDeckSize,
+				'buyers' => $buyerCount
+			)
+*/
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 		self::trace("[bmc] EXIT (almost) drawNotify");
 		// Next State
@@ -2711,7 +2735,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$crReturnValue = false;
 
 			if ( !$silent ) {
-				throw new BgaUserException( self::_("Not aa run. Run cards must be unique.") );
+				throw new BgaUserException( self::_("Not a run. Run cards must be unique.") );
 			}
 		} else {
 			self::trace("[bmc] Number of cards is correct for a run.");

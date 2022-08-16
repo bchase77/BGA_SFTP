@@ -109,8 +109,6 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 //
 // TODO: 101569962
-// X 08/15/2022: 2 Runs someone went down with 678T* and 8JQA* but the latter is not a valid run.
-// 08/13/2022: Spectators don't see the DRAWCARD in the log and should.
 // 08/13/2022: Don't allow zombie to buy (or draw).
 // 08/13/2022: BUY and NOT BUY buttons don't light right.
 // 08/13/2022: I clicked BUY right when someone else drew... I think... "when i buy but same times a persone Draw the cards it s block for me"
@@ -185,6 +183,8 @@ console.log("[bmc] Clear this.prepAreas2");
 //
 // Resolved Bugs:
 // --------------
+// X 08/13/2022: Spectators don't see the DRAWCARD in the log and should.
+// X 08/15/2022: 2 Runs someone went down with 678T* and 8JQA* but the latter is not a valid run.
 // X 08/08/2022: Need to refresh to see correct hand target, should update automatically.
 // X 08/06/2022: Icon is GOMOKU icon. Should be liverpool!
 // X 07/30/2022: On new hand, 1 player had RED Boarder around deck but it wasn't their turn. The active player had red boxes around both (as it should be).
@@ -5014,17 +5014,3 @@ Animate a slide of the DOM object referred to by domNodeToSlide from its current
         */
    });             
 });
-
-// Spectator Notify Needs:
-// notifyPlayerIsNotBuying()
-// notifyPlayerWantsToBuy()
-// drawnotify -> drawCard()
-//   Not sure why is 1749 is commented out
-// Scores 3287
-// stNewHand 3447
-// buyRequest 3802
-// Player wants to buy
-
-// Fixed a bug where 4 of the same value was incorrectly considered a run.
-// Fixed a bug where the game ended prematurely with playable cards still in the deck or discard pile.
-// Fixed a bug where the spectator table didn't update the target hand nor draw player names as the hands progressed.
