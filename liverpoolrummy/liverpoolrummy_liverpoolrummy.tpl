@@ -50,10 +50,45 @@
 					<input type="checkbox" id="voice" name="scales" checked> <label for="voices">Voices</label>
 					
 					<div id="myhand" class="myhand"></div>
+
+
 				</span>
 		</div>
 	</div>
 </div>
+
+<div id="wishListAreaWrap" class="wishListAreaWrapClass">
+	<div>
+		<div id="TLeftBox2" class="leftboxHandArea">
+			<div id="wishListAreaC" class="wishListAreaClass ">
+				<div id="myWishListClubs" class="wishListClass"></div>
+			</div>
+			<div id="wishListAreaS" class="wishListAreaClass ">
+				<div id="myWishListSpades" class="wishListClass"></div>
+			</div>
+			<div id="wishListAreaH" class="wishListAreaClass ">
+				<div id="myWishListHearts" class="wishListClass"></div>
+			</div>
+			<div id="wishListAreaD" class="wishListAreaClass ">
+				<div id="myWishListDiamonds" class="wishListClass"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+
+
+
+<div>
+</div>
+
+
+
 
 
 <div id="goDownArea_wrap" class="goDownWrap whiteblock">
@@ -94,13 +129,6 @@
 		<!-- END goDownArea -->
 	</div>
 	<div></div>
-<!-- 
-	<div id="wantedArea_div">
-	<img id="wantedArea" src="{GAMETHEMEURL}img/4ColorCardsx5.png"></img>
-	</div>
-	<div id="WAIntersectionMethod">
-	</div>
--->
 </div>
 
 <audio id="audiosrc_tutorialrumone_itsyourdraw" src="{GAMETHEMEURL}img/tutorialrumone_itsyourdraw.mp3" preload="none" autobuffer></audio>

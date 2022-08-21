@@ -146,6 +146,23 @@ $this->handTypes = array( // Hand targets associate with the down areas:
 //                "PLAYER_COLOR" => $players [$player_id] ['player_color']
 				));
         }
+
+/*
+        // this will inflate our wishListArea block with card images
+        $this->page->begin_block($template, "wishListArea");
+		
+        for ( $color = 1; $color <= 4; $color++ ) {
+			for ( $value = 1; $value <= 13; $value++ ) {
+				
+            $this->page->insert_block("wishListArea", array(
+				"color" => $color,
+				"value" => $value
+				));
+			}
+        }
+*/		
+
+
 		
         /*
         

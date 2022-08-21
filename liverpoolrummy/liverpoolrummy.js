@@ -576,6 +576,76 @@ console.log( "discardTopCard was null" );
 
 			}
 
+
+
+
+
+
+
+
+
+
+
+			this.wishListClubs = new ebg.stock();
+			this.wishListSpades = new ebg.stock();
+			this.wishListHearts = new ebg.stock();
+			this.wishListDiamonds = new ebg.stock();
+			this.wishListCardWidth = 36;
+			this.wishListCardHeight = 48;
+
+			// Create wishList area
+            this.wishListClubs.create( this, $('myWishListClubs'), this.wishListCardWidth, this.wishListCardHeight );
+            this.wishListSpades.create( this, $('myWishListSpades'), this.wishListCardWidth, this.wishListCardHeight );
+            this.wishListHearts.create( this, $('myWishListHearts'), this.wishListCardWidth, this.wishListCardHeight );
+            this.wishListDiamonds.create( this, $('myWishListDiamonds'), this.wishListCardWidth, this.wishListCardHeight );
+            // 13 images per row in the sprite file
+			this.wishListClubs.image_items_per_row = 13;
+			this.wishListSpades.image_items_per_row = 13;
+			this.wishListHearts.image_items_per_row = 13;
+			this.wishListDiamonds.image_items_per_row = 13;
+			
+            // Create 52 cards types:
+			for (var value = 1; value <= 13; value++) {
+				// Build card type id. Only create 52 here, 2 jokers below
+			
+				let wishListCardTypeClubID = this.getCardUniqueId(1, value);
+				let wishListCardTypeSpadeID = this.getCardUniqueId(2, value);
+				let wishListCardTypeHeartID = this.getCardUniqueId(3, value);
+				let wishListCardTypeDiamondID = this.getCardUniqueId(4, value);
+
+				this.wishListClubs.addItemType(wishListCardTypeClubID, wishListCardTypeClubID, g_gamethemeurl + 'img/4ColorCardsHalfSize.png', wishListCardTypeClubID);
+				this.wishListClubs.addToStockWithId( this.getCardUniqueId( 1, value ) , value );
+
+				this.wishListSpades.addItemType(wishListCardTypeSpadeID, wishListCardTypeSpadeID, g_gamethemeurl + 'img/4ColorCardsHalfSize.png', wishListCardTypeSpadeID);
+				this.wishListSpades.addToStockWithId( this.getCardUniqueId( 2, value ) , value );
+
+				this.wishListHearts.addItemType(wishListCardTypeHeartID, wishListCardTypeHeartID, g_gamethemeurl + 'img/4ColorCardsHalfSize.png', wishListCardTypeHeartID);
+				this.wishListHearts.addToStockWithId( this.getCardUniqueId( 3, value ) , value );
+
+				this.wishListDiamonds.addItemType(wishListCardTypeDiamondID, wishListCardTypeDiamondID, g_gamethemeurl + 'img/4ColorCardsHalfSize.png', wishListCardTypeDiamondID);
+				this.wishListDiamonds.addToStockWithId( this.getCardUniqueId( 4, value ) , value );
+
+				dojo.connect( $('myWishListClubs_item_' + value), 'onclick', this, 'onWishListCardClick');
+				dojo.connect( $('myWishListSpades_item_' + value), 'onclick', this, 'onWishListCardClick');
+				dojo.connect( $('myWishListHearts_item_' + value), 'onclick', this, 'onWishListCardClick');
+				dojo.connect( $('myWishListDiamonds_item_' + value), 'onclick', this, 'onWishListCardClick');
+					
+            }
+			this.wishListClubs.setOverlap( 80, 0 );
+			this.wishListSpades.setOverlap( 80, 0 );
+			this.wishListHearts.setOverlap( 80, 0 );
+			this.wishListDiamonds.setOverlap( 80, 0 );
+
+
+
+
+
+
+
+
+
+
+
 			// Create the variables which show how many cards in each pile (deck, hand, discard)
 			this.drawDeckSize = new ebg.counter();
 			this.drawDeckSize.create( 'drawDeckSize' );
@@ -2175,9 +2245,6 @@ console.log("[bmc] Card played by me");
                 // corresponding item
                 if ($('myhand_item_' + card_id)) {
 console.log("[bmc] Was in hand");
-
-
-// 7/5/2021 Not sure if this should be discardPileOne or discardPile
 
 //                    this.placeOnObject('myhand_item_' + card_id, 'discardPile');
                     this.placeOnObject('myhand_item_' + card_id, 'discardPileOne');
@@ -4110,6 +4177,52 @@ console.log( cards );
 				this.onPlayerSortButton2( cards );
 			}
 console.log("[bmc] EXIT onPlayerHandDoubleClick");
+		},
+/////////
+/////////
+/////////
+		onWishListCardClick : function() {
+console.log("[bmc] ENTER onWishListCardClick");
+            var wlClubs    = this.wishListClubs.getSelectedItems();
+            var wlSpades   = this.wishListSpades.getSelectedItems();
+            var wlHearts   = this.wishListHearts.getSelectedItems();
+            var wlDiamonds = this.wishListDiamonds.getSelectedItems();
+console.log( wlClubs );
+console.log( wlSpades );
+console.log( wlHearts );
+console.log( wlDiamonds );
+
+			for ( value = 1; value <= 13; value++ ) {
+				dojo.removeClass('myWishListClubs_item_'    + value, 'wishListItem_selected' );
+				dojo.removeClass('myWishListSpades_item_'   + value, 'wishListItem_selected' );
+				dojo.removeClass('myWishListHearts_item_'   + value, 'wishListItem_selected' );
+				dojo.removeClass('myWishListDiamonds_item_' + value, 'wishListItem_selected' );
+			}
+			
+			for ( item in wlClubs ) {
+				dojo.addClass('myWishListClubs_item_'    + wlClubs[ item ].id, 'wishListItem_selected');
+//console.log( 'ADDED: myWishListClubs_item_' + wlClubs[ item ].id );
+			}
+			for ( item in wlSpades ) {
+				dojo.addClass('myWishListSpades_item_'   + wlSpades[ item ].id, 'wishListItem_selected');
+//console.log( 'ADDED: myWishListSpades_item_' + wlClubs[ item ].id );
+			}
+			for ( item in wlHearts ) {
+				dojo.addClass('myWishListHearts_item_'   + wlHearts[ item ].id, 'wishListItem_selected');
+//console.log( 'ADDED: myWishListHearts_item_' + wlClubs[ item ].id );
+			}
+			for ( item in wlDiamonds ) {
+				dojo.addClass('myWishListDiamonds_item_' + wlDiamonds[ item ].id, 'wishListItem_selected');
+//console.log( 'ADDED: myWishListDiamonds_item_' + wlClubs[ item ].id );
+			}
+
+/*
+			if ( cards ) {
+//				this.onPlayerDiscardButton();
+				this.onPlayerSortButton2( cards );
+			}
+*/
+console.log("[bmc] EXIT onWishListCardClick");
 		},
 /////////
 /////////
