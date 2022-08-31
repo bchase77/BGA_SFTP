@@ -74,8 +74,10 @@ function (dojo, declare) {
 console.log("[bmc] Clear this.prepAreas2");
 			this.prepAreas = 0; // No card are prepped on the board upon refresh
 			// New variables for new timers on static buttons
-			this.enableDBStatic = 'Yes'; // (except the player whose turn it is
-			this.enableDBTimer = 'No';
+			//this.enableDBStatic = 'Yes'; // (except the player whose turn it is
+			this.enDisStaticBuyButtons('Yes');
+
+			// this.enableDBTimer = 'No';
 			this.playedSoundWentOut = false;
 			this.actionTimerLabelDefault = "Don't Buy";
 			this.dealMeInClicked = false;
@@ -109,6 +111,71 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 //
 // TODO: 101569962
+// 08/22/2022: Remove wishlist from spectator area
+// wantstobuy
+// discardCard
+//   notifyAllPlayers clearBuyers
+//   set next turn player
+//   move the card
+//   resolve the deck (i.e. shuffle or not)
+//   notifyallplayers discardCard
+//   nextState -> waitForAll
+// notifyallplayers
+// resolvebuyers
+// clearBuyers
+
+
+// buy
+// buy
+// buy
+// discardCard
+  // notifyallplayers of discard
+  // [JS] cancel any more buy requests
+
+
+// 2022-08-27: Konni automaticily wants to buy when she selected all 4 seves and then a 2S and 2D werer discarded.
+// Jo found 2x jokers on K** and put K in CARD for joker didn't allow to go down without selecting a jokere.
+
+
+// The Joker in Jo's K*K is sill selected after she used the other one.
+
+// Konni tried to buy it but it didn't buy.
+
+// Change buy button back to blue. Gray out text if not selectable.	
+
+// After the buy, take it off the list.
+
+// Need to verify 'theBuyer' gets updated properly each time there is no buyer in a hand.
+// Check that everyone can really buy only 3 times.
+
+// Add mouse-over text for the wishlist.
+
+// Implement a queue instead of database access.
+
+// Implement a handshake instead of queue.
+
+// Could process wishlist requests on the server side instead of the client.
+
+// The issue with the deadlock is this: Multiple players request to buy at the same time. One PHP function is processing buyRequest while another PHP function is trying to get the buyCount, but the other one hasn't finished the web transaction. So there is a database conflict. See this log:
+// 27/08 06:59:57 [bmc] ajaxcall for buyRequest2
+// 27/08 06:59:57 [bmc] ENTER buyRequest-NEW2
+// 27/08 06:59:57 [bmc] player_id: = string(7) "2333743"2
+// 27/08 06:59:57 [bmc] countDeckNEWWAY: = string(2) "69"2
+// 27/08 06:59:57 [bmc] countDiscardPileNEWWAY: = string(1) "2"2
+// 27/08 06:59:57 [bmc] ENTER getPlayersBuyCountGS2
+// The next database access causes deadlock because buyRequest-NEW has not yet finished but getPlayersBuyCountGS2 will hit DB.
+// Access database now:
+// OK setPlayerGoneDown()
+// OK getPlayerBuying()
+// OK setPlayerBuying()
+// OKOK getplayersBuyCount()
+// OKOK decPlayerBuyCount()
+// OKOK clearPlayersBuyCount()
+// OK clearPlayersBuying()
+// OK calcDisplayScoreDialog()
+// OK getPlayerGoneDown(): Only 1 player plays at a time
+// OK setPlayerGoneDown():  Only 1 player plays at a time
+
 // 08/13/2022: Don't allow zombie to buy (or draw).
 // 08/13/2022: BUY and NOT BUY buttons don't light right.
 // 08/13/2022: I clicked BUY right when someone else drew... I think... "when i buy but same times a persone Draw the cards it s block for me"
@@ -579,7 +646,7 @@ console.log( "discardTopCard was null" );
 
 
 
-
+console.log( this.gamedatas.playerOrderTrue );
 
 
 
@@ -943,6 +1010,7 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 
 			dojo.connect( $('buttonBuy'), 'onclick', this, 'onPlayerBuyButton' );
 			dojo.connect( $('voice'), 'onclick', this, "onVoiceCheckbox");
+			dojo.connect( $('wishListEnabled'), 'onclick', this, "onWishListCheckbox");
 
 			dojo.connect( $('buttonNotBuy'), 'onclick', this, 'onPlayerNotBuyButton' );
 
@@ -1048,12 +1116,12 @@ console.log(this.turnPlayer);
 console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 			// New variables for new timers on static buttons
 				this.enableDBStatic = 'Yes';
-				this.enableDBTimer = 'No'; // But let the timer run out if it's there
-				this.enDisStaticBuyButtons();
+				// this.enableDBTimer = 'No'; // But let the timer run out if it's there
+				// this.enDisStaticBuyButtons();
 			} else {
 //				this.enableDBStatic = 'No';
-				this.enableDBTimer = 'No'; // But let the timer run out if it's there
-				this.enDisStaticBuyButtons();
+				// this.enableDBTimer = 'No'; // But let the timer run out if it's there
+				// this.enDisStaticBuyButtons();
 			}
 
 */
@@ -1112,13 +1180,25 @@ console.log("[bmc] Doing the window.onload");
 
 			// Get status of the voices box
 			if ( $('voice').checked ) {
-				console.log("CHECKED");
+				console.log("Voices CHECKED");
 				this.voices = true;
 			} else {
-				console.log("UNCHECKED");
+				console.log("Voices UNCHECKED");
 				this.voices = false;
 			}
 			
+			// Get status of the wishList box
+			if ( $('wishListEnabled').checked ) {
+				console.log("WishList CHECKED");
+				this.wishListEnabled = true;
+			} else {
+				console.log("WishLIst UNCHECKED");
+				this.wishListEnabled = false;
+			}
+
+			// Color wishlist appropriately if it's on or off
+			this.setWishListColor( this.wishListEnabled );
+		
 			// Define table text variables which can be translated by each client. Each ID must be unique. The syntax for translation is underscore parentheses _('').
 			$(MYHANDTRANSLATED).innerHTML = _('My Hand'); 
 			$(CARDFORJOKERTRANSLATED).innerHTML = _('Card For Joker');
@@ -1468,12 +1548,24 @@ console.log("[bmc] ENTER onVoiceCheckbox");
 /////////
 /////////
 /////////
+		onWishListCheckbox : function() {
+console.log("[bmc] ENTER onWishListCheckbox");
+			if ( $('wishListEnabled').checked ) {
+				console.log("WL CHECKED");
+				this.wishListEnabled = true;
+			} else {
+				console.log("WL UNCHECKED");
+				this.wishListEnabled = false;
+			}
+			this.setWishListColor( this.wishListEnabled );
+
+		},
+/////////
+/////////
+/////////
 		onPlayerBuyButton : function() {
 console.log("[bmc] ENTER onPlayerBuyButton");
-
-console.log("onPlayerBuyButton");
 console.log(this.discardPileOne);
-
 			var dpCard = this.discardPileOne.getAllItems();
 console.log(dpCard);
 			this.reallyBuy();
@@ -1489,42 +1581,44 @@ console.log(dpCard);
 // console.log("[bmc] sound: It's Your Turn");
 				// playSound( 'tutorialrumone_ItsYourTurn' );
 			// } else {
+				
 				// Make sure there is a card to buy
+				// Make sure we have buys remaining
 
-				if ( this.discardPileOne.length != 0 ) {
+console.log(this.buyRequested);
+console.log(this.firstLoad);
+console.log("[bmc] this.buyCount:", this.buyCount[ this.player_id ][ 'current_value' ]);
+
+			if ( this.discardPileOne.length != 0 ) {
+				if ( this.buyCount[ this.player_id ][ 'current_value' ] > 0 ) {
 
 					var action = 'buyRequest';
-					
-console.log(this.firstLoad);
+//console.log(this.checkPossibleActions( action, true ));
 
-					if (( this.checkPossibleActions( action, true )  ||
-						( this.firstLoad == 'Yes' )) && 
-						( this.buyRequested != true)) {
-						
-						// Keep track so the button can only be hit once
-						this.buyRequested = true;
+					// If PHP is not resolving buyers then let the client try to buy
+					if ( this.resolvingBuyers != true ) {
 
-						console.log("[bmc] ajax " + action );
+	//					if (( this.checkPossibleActions( action, true )  ||
+	//						( this.firstLoad == 'Yes' )) && 
+						if ( this.buyRequested != true ) {
+							
+							// Keep track so the button can only be hit once
+							this.buyRequested = true;
 
-						this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-								player_id : this.player_id,
-								lock : true
-							}, this, function(result) {
-							}, function(is_error) {
-						});
-/*
-						// Buy allowed, change the buttons
-						dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
-						dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
-						dojo.replaceClass( 'buttonNotBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
-						dojo.replaceClass( 'buttonNotBuy', "textWhite", "textGray" ); // item, add, remove
-*/
+							console.log("[bmc] ajax " + action );
 
-					} else {
-						console.log("[bmc] Buy already requested or not allowed now");
+							this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+									player_id : this.player_id,
+									lock : true
+								}, this, function(result) {
+								}, function(is_error) {
+							});
+						} else {
+							console.log("[bmc] Buy already requested or not allowed now");
+						}
 					}
 				}
-			// }
+			}
 		},
 /////////
 /////////
@@ -1537,10 +1631,11 @@ console.log("[bmc] ENTER onPlayerNotBuyButton");
 			
 			var action = 'notBuyRequest';
 			
-console.log( "[bmc] checkaction: " + this.checkPossibleActions( action, true));
+//console.log( "[bmc] checkaction: " + this.checkPossibleActions( action, true));
 console.log( "[bmc] buyrequested: " + this.buyRequested);
 
-			if ( this.checkPossibleActions( action, true) && ( this.buyRequested == true)) {
+//			if ( this.checkPossibleActions( action, true) && ( this.buyRequested == true)) {
+			if ( this.buyRequested == true ) {
 				console.log("[bmc] ajax " + action );
 				
 				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
@@ -2119,9 +2214,10 @@ console.log( "[bmc] EXIT sortRun2" );
 /////////
 /////////
 /////////
-        discardCard : function( player_id, color, value, card_id, nextTurnPlayer, allHands, discardSize, drawDeckSize, buyers ) {
-			// (from PHP) Purpose is to show the played cards on the table, not really to play the card.
-			// Playing of the card is done on the server side (PHP).
+	      discardCard : function( player_id, color, value, card_id, nextTurnPlayer, allHands, discardSize, drawDeckSize ) {
+//        discardCard : function( player_id, color, value, card_id, nextTurnPlayer, allHands, discardSize, drawDeckSize, buyers ) {
+		// (from PHP) Purpose is to show the played cards on the table, not really to play the card.
+		// Playing of the card is done on the server side (PHP).
 console.log( "[bmc] ENTER discardCard" );
 console.log( player_id );
 console.log( this.player_id );
@@ -2136,25 +2232,18 @@ console.log( "discardPile and playerhand:" );
 //console.log( this.discardPile );
 console.log( this.discardPileOne );
 console.log( this.playerHand );
-console.log( buyers );
+//console.log( buyers );
 
 			// Clear the buy status because a new card has been discarded
 			this.buyRequested = false;
+			
+			// Set status to resolving buys to give the PHP database time to clear
+			this.resolvingBuyers = true;
 
 			// If it is us, play a special sound and show an alert
 			
 			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
 				
-				// var delay = ( function() {
-					// var timer = 0;
-					// return function(callback, ms) {
-						// clearTimeout (timer);
-						// timer = setTimeout(callback, ms);
-					// };
-				// })();
-				
-console.log("[bmc] Trying to wait 5 seconds but it doesn't work");
-
 					this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
 					dojo.addClass('myhand_wrap', "borderDrawer");
 					if ( this.voices ) {
@@ -2172,7 +2261,7 @@ console.log( 'deckOne_item_' + deck_items[0]['id']);
 //ALSO THE BUY WASN'T ALLOWED TO HAPPEN.
 
 			} else {
-				dojo.removeClass('myhand_wrap', "borderDrawer");				
+				dojo.removeClass('myhand_wrap', "borderDrawer");	
 			}
 			
 			// Adjust all hand card-counts because of the discard
@@ -2216,12 +2305,10 @@ console.log( this.discardPileOne );
 			
 console.log( this.discardPileOne );
 
-
 			// NEW FEATURE 4/24/2021. Make discard pile only 1 card
 //			if ( this.discardPile.length > 1 ) {
 //				this.discardPile = this.discardPile[this.discardPile.length - 1 ];
-//			}			
-
+//			}
 			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
 //				var dp_items = this.discardPile.getAllItems();
 				var dp_items = this.discardPileOne.getAllItems();
@@ -2250,18 +2337,6 @@ console.log("[bmc] Was in hand");
                     this.placeOnObject('myhand_item_' + card_id, 'discardPileOne');
                     this.playerHand.removeFromStockById(card_id);
                 }
-            } else if (( this.player_id != nextTurnPlayer ) && 
-					   ( buyers[ this.player_id ] > 0 )) {
-				// If we are not the next player and we have buys left then show the BUY button
-
-console.log("[bmc] Card played not by me");
-				this.buyCounterTimerShouldExist = 'Yes'; // A timer and a button should exit
-				this.showBuyButton2();
-				
-				// New variables for new timers on static buttons
-				this.enableDBStatic = 'Yes';
-				this.enableDBTimer = 'Yes';
-				this.enDisStaticBuyButtons();
             } else {
 				// Then we are the next player, who gets to draw it for free; No need for BUY buttons
 				console.log( "[bmc] I am the 'Next Player' who can draw the discard for free" );
@@ -2269,6 +2344,81 @@ console.log("[bmc] Card played not by me");
 			
 console.log("[bmc] EXIT discardCard");
         },
+/////////
+/////////
+/////////
+//		notif_updateBuyers : function( player_id, nextTurnPlayer, buyers ){
+		notif_updateBuyers : function( notif ){
+console.log("[bmc] updateBuyers");
+console.log(notif.args.player_id);
+console.log(notif.args.nextTurnPlayer);
+console.log(notif.args.buyers);
+console.log(this.player_id);
+
+			// Set status to back to show buyers have resolved
+			this.resolvingBuyers = false;
+
+			// Separating the update of the buyer update to try to clear the DB deadlock issue.
+		
+			if (( this.player_id != notif.args.nextTurnPlayer ) && ( notif.args.buyers[ this.player_id ] > 0 )) {
+				// If we are not the next player and we have buys left then show the BUY button
+
+console.log("[bmc] Card played not by me");
+				this.buyCounterTimerShouldExist = 'Yes'; // A timer and a button should exit
+				this.showBuyButton2();
+				
+				// New variables for new timers on static buttons
+				// this.enableDBStatic = 'Yes';
+				// this.enableDBTimer = 'Yes';
+				this.enDisStaticBuyButtons('Yes');
+				
+				// If the wishlist is active and it matches then try to buy
+
+				var wlClubs    = this.wishListClubs.getSelectedItems();
+				var wlSpades   = this.wishListSpades.getSelectedItems();
+				var wlHearts   = this.wishListHearts.getSelectedItems();
+				var wlDiamonds = this.wishListDiamonds.getSelectedItems();
+
+console.log( this.discardPileOne.items[0].id );
+console.log( color );
+console.log( value );
+
+				var wishListAll = wlClubs.concat( wlSpades ).concat( wlHearts ).concat( wlDiamonds );
+console.log( wishListAll );
+
+/*
+				if (this.wishListEnabled == true ) {
+*/					
+				for ( wLItem of wishListAll ) {
+console.log( wLItem );
+console.log( this.getColorValue( wLItem.type + 1 ));
+					
+					var [ dCColor, dCValue ] = this.getColorValue( wLItem.type );
+console.log("[bmc] match check");
+console.log( color );
+console.log( value );
+console.log( dCColor );
+console.log( dCValue );
+					if (( color == dCColor ) && ( value == dCValue )) {
+						console.log( "[bmc] WishListMatch!" );
+						
+						// Try to buy it. Insert some random amount of time from 1 to 10 seconds to avoid database deadlock
+						
+						// Make the delay depend on the last digit(s) of the player ID
+						// buyDelay = 5000 + (1000 * this.player_id.toString().slice(-1));
+						
+//						buyDelay = parseInt(500 + Math.random() * 5000 ); // 0.5 to 5.5 seconds
+// console.log("[bmc] buyDelay before: ", buyDelay);
+						
+						// This setTimeout does not delay at all. Zero seconds. I don't know why.
+						
+						//setTimeout( this.onPlayerBuyButton(), 5000 );
+						this.onPlayerBuyButton();
+// console.log("[bmc] buyDelay after: ", buyDelay);
+					}
+				}
+			}
+		},
 //function( mobile_obj, target_obj, duration, delay )
 /////////
 /////////
@@ -2353,9 +2503,11 @@ console.log("[bmc] EXIT showNotBuyButton");
 /////////
 /////////
 /////////
-		enDisStaticBuyButtons : function() {
+		enDisStaticBuyButtons : function( setting ) {
 console.log(this.enableDBStatic);
-			if ( this.enableDBStatic == 'Yes' ) {
+console.log(setting);
+			if (( this.enableDBStatic == 'Yes' ) ||
+			    ( setting == 'Yes' )) {
 console.log("[bmc] YES enDisStaticBuyButtons");
 //				dojo.replaceClass( 'buttonBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
 				// dojo.replaceClass( 'buttonNotBuy', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
@@ -2365,10 +2517,10 @@ console.log("[bmc] YES enDisStaticBuyButtons");
 				dojo.replaceClass( 'buttonNotBuy', "textGray", "textWhite" ); // item, add, remove
 
 				// Only start the timer if active during hand, not during game start nor hand start.
-				if ( this.enableDBTimer == 'Yes' ) {
-console.log("[bmc] YES enableDBTimer");
+				// if ( this.enableDBTimer == 'Yes' ) {
+// console.log("[bmc] YES enableDBTimer");
 					// this.startActionTimerStatic();
-				}
+				// }
 			} else {
 console.log("[bmc] NO enDisStaticBuyButtons");
 //				dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
@@ -4299,6 +4451,7 @@ console.log( '[bmc] ENTER notifications subscriptions setup' );
             dojo.subscribe( 'clearBuyers' ,        this, "notif_clearBuyers");
 			dojo.subscribe( 'close_btn' , 		   this, "onPlayerReviewedHandButton");
 			dojo.subscribe( 'itsYourTurn' ,        this, "notif_itsYourTurn");
+			dojo.subscribe( 'updateBuyers' ,       this, "notif_updateBuyers");
 
             // TODO: here, associate your game notifications with local methods
             
@@ -4673,10 +4826,10 @@ console.log("[bmc] EXIT notif_discardCard");
 console.log("[bmc] ENTER notif_drawcard");
 console.log( notif );
 
-			for ( player_id in this.gamedatas.players ) { 
+/*			for ( player_id in this.gamedatas.players ) { 
 				dojo.removeClass( 'overall_player_board_' + player_id, 'playerBoardBuyer' );
 			}
-
+*/
 			// If we drew or someone else drew the discard, then stop any timers.
 			if (( this.gamedatas.gamestate.active_player == notif.player_id ) ||
 				( notif.args.drawSource == 'discardPile' )) {
@@ -4743,9 +4896,9 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 			console.log(notif);
 //			this.stopActionTimer2();
 			this.showHideButtons();
-			this.enableDBStatic = 'No';
-			this.enableDBTimer = 'No'; // But let the timer run out if it's there
-			this.enDisStaticBuyButtons();
+//			this.enableDBStatic = 'No';
+			// this.enableDBTimer = 'No'; // But let the timer run out if it's there
+			this.enDisStaticBuyButtons('No');
 			// this.stopActionTimerStatic(); // Stop the timer, we are not buying			
 		},
 /////////
@@ -4778,9 +4931,9 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 /*
 			if ( this.player_id == notif.args.player_id ) {
 				// New variables for new timers on static buttons
-				this.enableDBStatic = 'No';
-				this.enableDBTimer = 'No'; // But let the timer run out if it's there
-				this.enDisStaticBuyButtons();
+				// this.enableDBStatic = 'No';
+				// this.enableDBTimer = 'No'; // But let the timer run out if it's there
+				// this.enDisStaticBuyButtons('No');
 				// this.stopActionTimerStatic(); // Stop the timer, we are not buying
 				dojo.replaceClass( 'buttonBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
 				dojo.replaceClass( 'buttonBuy', "textWhite", "textGray" ); // item, add, remove
@@ -4795,12 +4948,55 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 		notif_playerBought : function(notif) {
 			console.log("[bmc]notif_playerBought");
 			console.log(notif);
+			console.log(this.gamedatas.players);
+			
 			for ( player_id in this.gamedatas.players ) { 
 //				dojo.removeClass( 'overall_player_board_' + notif.args.player_id, 'playerBoardBuyer' );
 				dojo.removeClass( 'overall_player_board_' + player_id, 'playerBoardBuyer' );
+console.log(notif.args.buyCount[ player_id ]);
+console.log(notif.args.allHands[ player_id ]);
+
+				this.buyCount[  notif.args.player_id ].setValue( notif.args.buyCount[ player_id ] );
+				this.handCount[ notif.args.player_id ].setValue( notif.args.allHands[ player_id ] );
 			}
-			this.buyCount[  notif.args.player_id ].setValue( notif.args.buyCount[ notif.args.player_id ] );
-			this.handCount[ notif.args.player_id ].setValue( notif.args.allHands[ notif.args.player_id ] );
+			
+			// If I bought then turn off the wishlist if it's on
+			if ( this.player_id == notif.args.player_id ) {
+				this.wishListEnabled = false;
+				document.getElementById("wishListEnabled").checked = false;
+				this.setWishListColor( this.wishListEnabled );
+console.log( "[bmc] You bought a card!");
+			}
+		},
+/////////
+/////////
+/////////
+		setWishListColor : function( wLSetting ) {
+			console.log("[bmc] setWishListColor");
+			if ( wLSetting ) {
+				dojo.addClass(    'myWishListClubs',    'wishListClassOn' );
+				dojo.addClass(    'myWishListSpades',   'wishListClassOn' );
+				dojo.addClass(    'myWishListHearts',   'wishListClassOn' );
+				dojo.addClass(    'myWishListDiamonds', 'wishListClassOn' );
+				dojo.removeClass( 'myWishListClubs',    'wishListClassOff' );
+				dojo.removeClass( 'myWishListSpades',   'wishListClassOff' );
+				dojo.removeClass( 'myWishListHearts',   'wishListClassOff' );
+				dojo.removeClass( 'myWishListDiamonds', 'wishListClassOff' );
+			} else {
+				dojo.addClass(    'myWishListClubs',    'wishListClassOff' );
+				dojo.addClass(    'myWishListSpades',   'wishListClassOff' );
+				dojo.addClass(    'myWishListHearts',   'wishListClassOff' );
+				dojo.addClass(    'myWishListDiamonds', 'wishListClassOff' );
+				dojo.removeClass( 'myWishListClubs',    'wishListClassOn' );
+				dojo.removeClass( 'myWishListSpades',   'wishListClassOn' );
+				dojo.removeClass( 'myWishListHearts',   'wishListClassOn' );
+				dojo.removeClass( 'myWishListDiamonds', 'wishListClassOn' );
+			}
+			
+			
+			
+			
+			
 		},
 /////////
 /////////
@@ -4844,6 +5040,14 @@ console.log("[bmc] sound: It's Your Turn");
 					dojo.replaceClass( 'buttonNotBuy', "textWhite", "textGray" ); // item, add, remove
 				}
 			}
+			
+			// do another ajax call to let the PHP know the buy request has been registered?
+			
+			
+			
+			
+			
+			
 
 			return;
 			
@@ -4875,9 +5079,10 @@ console.log("[bmc] sound: It's Your Turn");
 				this.showBubble(anchor_id, text, delay, duration, custom_class);
 	*/			
 				// New variables for new timers on static buttons
-				this.enableDBStatic = 'No';
-				this.enableDBTimer = 'No'; // But let the timer run out if it's there
-				this.enDisStaticBuyButtons();
+//				this.enableDBStatic = 'No';
+				// this.enableDBTimer = 'No'; // But let the timer run out if it's there
+//				this.enDisStaticBuyButtons();
+				this.enDisStaticBuyButtons('No');
 				// this.stopActionTimerStatic(); // Stop the timer, someone else is buying
 			} else { // Do nothing just wait for the draw
 			}

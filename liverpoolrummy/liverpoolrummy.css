@@ -170,9 +170,20 @@
 	height: 180px;
 */
 }
-.wishListClass {
+.wishListClassOff {
 	float: Left;
 	background-color: gray;
+/*
+	margin: 1px;
+	border: 1px;
+	padding: 1px;
+*/
+	width: 468px;
+	/*height: 180px;*/
+}
+.wishListClassOn {
+	float: Left;
+	background-color: aqua;
 /*
 	margin: 1px;
 	border: 1px;

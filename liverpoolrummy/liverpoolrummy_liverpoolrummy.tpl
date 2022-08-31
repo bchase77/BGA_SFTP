@@ -48,6 +48,7 @@
 					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="CARDFORJOKERTRANSLATED"></span></a>
 					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="GODOWNTRANSLATED"></span></a>
 					<input type="checkbox" id="voice" name="scales" checked> <label for="voices">Voices</label>
+					<input type="checkbox" id="wishListEnabled" name="scales" checked> <label for="wishListOn">Wish List</label>
 					
 					<div id="myhand" class="myhand"></div>
 
@@ -61,16 +62,16 @@
 	<div>
 		<div id="TLeftBox2" class="leftboxHandArea">
 			<div id="wishListAreaC" class="wishListAreaClass ">
-				<div id="myWishListClubs" class="wishListClass"></div>
+				<div id="myWishListClubs" ></div>
 			</div>
 			<div id="wishListAreaS" class="wishListAreaClass ">
-				<div id="myWishListSpades" class="wishListClass"></div>
+				<div id="myWishListSpades" ></div>
 			</div>
 			<div id="wishListAreaH" class="wishListAreaClass ">
-				<div id="myWishListHearts" class="wishListClass"></div>
+				<div id="myWishListHearts" ></div>
 			</div>
 			<div id="wishListAreaD" class="wishListAreaClass ">
-				<div id="myWishListDiamonds" class="wishListClass"></div>
+				<div id="myWishListDiamonds" ></div>
 			</div>
 		</div>
 	</div>

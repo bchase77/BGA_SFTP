@@ -88,22 +88,22 @@ $machinestates = array(
         "possibleactions" => array( "drawCard", "buyRequest", "notBuyRequest", "zombiePass" ),
         "transitions" => array( "drawCard" => 35, "zombiePass" => 37 )
     ), 
-    32 => array(
-        "name" => "checkEmptyDeck",
-        "description" => '<span style:"color:gray"></span>',
-        "type" => "game",
-        "action" => "stCheckEmptyDeck", // ACTION: Do this upon entering the state
-        "transitions" => array( "drawAndLetPlayerPlay" => 35, "letPlayerDrawAfterBuy" => 57 )
-    ), 
-/*
-    33 => array(
-        "name" => "drawDiscard",
-        "description" => "[ST33]",
-        "type" => "game",
-        "action" => "stDrawDiscard", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 35 ) 
-    ),
-*/
+    // 32 => array(
+        // "name" => "checkEmptyDeck",
+        // "description" => '<span style:"color:gray"></span>',
+        // "type" => "game",
+        // "action" => "stCheckEmptyDeck", // ACTION: Do this upon entering the state
+        // "transitions" => array( "drawAndLetPlayerPlay" => 35, "letPlayerDrawAfterBuy" => 57 )
+    // ), 
+
+    // 33 => array(
+        // "name" => "drawDiscard",
+        // "description" => "[ST33]",
+        // "type" => "game",
+        // "action" => "stDrawDiscard", // ACTION: Do this upon entering the state
+        // "transitions" => array( "" => 35 ) 
+    // ),
+
     35 => array(
         "name" => "playerTurnPlay",
 		"description" => clienttranslate('${turnPlayerName} must ${thingsCanDo}'),
@@ -112,13 +112,14 @@ $machinestates = array(
 		"action" => "stPlayerTurnPlay", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnPlay",
         "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple', "zombiePass", "buyRequest", "notBuyRequest"),
-        "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35, "zombiePass" => 37 )
+        "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35, "buyRequest" => 60, "notBuyRequest" => 61, "zombiePass" => 37 )
     ), 
 	36 => array(
-		"name" => "waitForAll",
+		"name" => "registerB",
 		"description" => "[ST36]",
         "type" => "game",
         "action" => "stWaitForAll", // ACTION: Do this upon entering the state
+        "possibleactions" => array( "zombiePass" ),
 		"transitions" => array( "fullyResolved" => 37 )
     ), 
     37 => array(
@@ -155,25 +156,49 @@ $machinestates = array(
 ////        "transitions" => array( "checkEmptyDeck" => 32, "drawDiscard" => 33, "other" => 35 )
         // "transitions" => array( "checkEmptyDeck" => 32, "buyNotAllowed" => 37, "other" => 35 )
     // ),
-    57 => array(    // The turn-player is drawing a card from the deck
-        "name" => "turnPlayerDrawFromDeck",
-        "description" => clienttranslate('${actplayer} is drawing from the deck.'),
-        "descriptionmyturn" => clienttranslate('${you} are drawing from the deck.'),
-        "type" => "game",
-        "action" => "stDrawDeck", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 35 )
-    ),   
-    // Someone is trying to play a card
-/*
+    // 57 => array(    // The turn-player is drawing a card from the deck
+        // "name" => "turnPlayerDrawFromDeck",
+        // "description" => clienttranslate('${actplayer} is drawing from the deck.'),
+        // "descriptionmyturn" => clienttranslate('${you} are drawing from the deck.'),
+        // "type" => "game",
+        // "action" => "stDrawDeck", // ACTION: Do this upon entering the state
+        // "transitions" => array( "" => 35 )
+    // ),   
+	
+	// Someone is trying to buy a card
     60 => array(
-        "name" => "playCard",
-        "description" => clienttranslate("Someone is trying to play a card."),
-        "descriptionmyturn" => clienttranslate('${you} are trying to play a card.'),
+        "name" => "buyTryFromPTP",
+        "description" => clienttranslate("Someone is trying to buy the discard during PlayerTurnPlay."),
+        "descriptionmyturn" => clienttranslate('${you} are trying to buy the discard during PlayerTurnPlay.'),
         "type" => "activeplayer",
-        "action" => "stPlayCard", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 33 )
+        "action" => "stBuyTry", // ACTION: Do this upon entering the state
+        "transitions" => array( "" => 35 )
     ),     
-*/
+    61 => array(
+        "name" => "notBuyTryFromPTP",
+        "description" => clienttranslate("Someone is trying to NOT buy the discard during PlayerTurnPlay."),
+        "descriptionmyturn" => clienttranslate('${you} are trying to NOT buy the discard during PlayerTurnPlay.'),
+        "type" => "activeplayer",
+        "action" => "stNotBuyTry", // ACTION: Do this upon entering the state
+        "transitions" => array( "" => 35 )
+    ),     
+    65 => array(
+        "name" => "buyTryFromPTD",
+        "description" => clienttranslate("Someone is trying to buy the discard during PlayerTurnDraw."),
+        "descriptionmyturn" => clienttranslate('${you} are trying to buy the discard during PlayerTurnDraw.'),
+        "type" => "activeplayer",
+        "action" => "stBuyTry", // ACTION: Do this upon entering the state
+        "transitions" => array( "" => 30 )
+    ),     
+    66 => array(
+        "name" => "notBuyTryFromPTD",
+        "description" => clienttranslate("Someone is trying to NOT buy the discard during PlayerTurnDraw."),
+        "descriptionmyturn" => clienttranslate('${you} are trying to NOT buy the discard during PlayerTurnDraw.'),
+        "type" => "activeplayer",
+        "action" => "stNotBuyTry", // ACTION: Do this upon entering the state
+        "transitions" => array( "" => 30 )
+    ),     
+
 /*
     Examples:
     2 => array(
