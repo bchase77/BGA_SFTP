@@ -100,7 +100,15 @@ $game_options = array(
 			1  => array ( 'name' => totranslate( 'Yes' ) )
 		),
 		'default' => 0
-	)
+	),
+	108 => array(
+		'name' => totranslate( 'Enable wish list' ),
+		'values' => array(
+			0  => array ( 'name' => totranslate( 'No' )	),
+			1  => array ( 'name' => totranslate( 'Yes' ) )
+		),
+		'default' => 0
+	),
 	
 	// 200 => array(
 		// 'name' => totranslate( 'Game Speed' ),

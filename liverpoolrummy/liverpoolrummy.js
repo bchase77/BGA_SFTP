@@ -111,73 +111,14 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 //
 // TODO: 101569962
+// 09/05/2022: I usually wait until someone draws their card to try to buy something, so that I don't influence them
+// 09/05/2022: It would be nice to flip it closed or open. Like now, when I don't need it anymore, it could close.
+// 09/05/0222: it didn't tell me WISH LIST CLEARED when I clicked clear button (after I went down).
+// 09/05/2022: Spectators aren't supposed to see the wish list controls.  
 // 08/22/2022: Remove wishlist from spectator area
-// wantstobuy
-// discardCard
-//   notifyAllPlayers clearBuyers
-//   set next turn player
-//   move the card
-//   resolve the deck (i.e. shuffle or not)
-//   notifyallplayers discardCard
-//   nextState -> waitForAll
-// notifyallplayers
-// resolvebuyers
-// clearBuyers
-
-
-// buy
-// buy
-// buy
-// discardCard
-  // notifyallplayers of discard
-  // [JS] cancel any more buy requests
-
-
-// 2022-08-27: Konni automaticily wants to buy when she selected all 4 seves and then a 2S and 2D werer discarded.
-// Jo found 2x jokers on K** and put K in CARD for joker didn't allow to go down without selecting a jokere.
-
-
-// The Joker in Jo's K*K is sill selected after she used the other one.
-
-// Konni tried to buy it but it didn't buy.
-
-// Change buy button back to blue. Gray out text if not selectable.	
-
 // After the buy, take it off the list.
-
-// Need to verify 'theBuyer' gets updated properly each time there is no buyer in a hand.
-// Check that everyone can really buy only 3 times.
-
-// Add mouse-over text for the wishlist.
-
-// Implement a queue instead of database access.
-
-// Implement a handshake instead of queue.
-
-// Could process wishlist requests on the server side instead of the client.
-
-// The issue with the deadlock is this: Multiple players request to buy at the same time. One PHP function is processing buyRequest while another PHP function is trying to get the buyCount, but the other one hasn't finished the web transaction. So there is a database conflict. See this log:
-// 27/08 06:59:57 [bmc] ajaxcall for buyRequest2
-// 27/08 06:59:57 [bmc] ENTER buyRequest-NEW2
-// 27/08 06:59:57 [bmc] player_id: = string(7) "2333743"2
-// 27/08 06:59:57 [bmc] countDeckNEWWAY: = string(2) "69"2
-// 27/08 06:59:57 [bmc] countDiscardPileNEWWAY: = string(1) "2"2
-// 27/08 06:59:57 [bmc] ENTER getPlayersBuyCountGS2
-// The next database access causes deadlock because buyRequest-NEW has not yet finished but getPlayersBuyCountGS2 will hit DB.
-// Access database now:
-// OK setPlayerGoneDown()
-// OK getPlayerBuying()
-// OK setPlayerBuying()
-// OKOK getplayersBuyCount()
-// OKOK decPlayerBuyCount()
-// OKOK clearPlayersBuyCount()
-// OK clearPlayersBuying()
-// OK calcDisplayScoreDialog()
-// OK getPlayerGoneDown(): Only 1 player plays at a time
-// OK setPlayerGoneDown():  Only 1 player plays at a time
-
 // 08/13/2022: Don't allow zombie to buy (or draw).
-// 08/13/2022: BUY and NOT BUY buttons don't light right.
+// X 08/13/2022: BUY and NOT BUY buttons don't light right.
 // 08/13/2022: I clicked BUY right when someone else drew... I think... "when i buy but same times a persone Draw the cards it s block for me"
 // 08/09/2022: Chat window doesn't launch auto after SORT buttons are pressed.
 // 08/08/2022: Spectator, the WANTS TO BUY lights up very quickly, then disappears.
@@ -250,6 +191,13 @@ console.log("[bmc] Clear this.prepAreas2");
 //
 // Resolved Bugs:
 // --------------
+// X 2022-08-27: Konni automaticily wants to buy when she selected all 4 seves and then a 2S and 2D werer discarded.
+// X 08/16/2022: Jo found 2x jokers on K** and put K in CARD for joker didn't allow to go down without selecting a joker.
+// X 08/16/2022: The Joker in Jo's K*K is still selected after she used the other one.
+// X 09/01/2022: Change buy button back to blue. Gray out text if not selectable.	
+// X 09/01/0222: Add mouse-over text for the wishlist.
+// X 09/01/2022: Could process wishlist requests on the server side instead of the client. Implement a queue instead of database access. Implement a handshake instead of queue.
+// X 08/31/2022: I put the function on the server side. No deadlocks now. The issue with the deadlock is this: Multiple players request to buy at the same time. One PHP function is processing buyRequest while another PHP function is trying to get the buyCount, but the other one hasn't finished the web transaction. So there is a database conflict. See this log:
 // X 08/13/2022: Spectators don't see the DRAWCARD in the log and should.
 // X 08/15/2022: 2 Runs someone went down with 678T* and 8JQA* but the latter is not a valid run.
 // X 08/08/2022: Need to refresh to see correct hand target, should update automatically.
@@ -648,10 +596,14 @@ console.log( "discardTopCard was null" );
 
 console.log( this.gamedatas.playerOrderTrue );
 
+console.log("[bmc] this.gamedatas.enableWishList");
+console.log( this.gamedatas.enableWishList );
 
-
-
-
+			// Show the wishlist stuff if they set the game up this way
+			if ( this.gamedatas.enableWishList == true ) {
+				dojo.query( '.wishListMode' ).removeClass( 'wishListMode' );
+			}
+//			dojo.query( '.wishListMode' ).removeClass( 'wishListMode' );
 
 			this.wishListClubs = new ebg.stock();
 			this.wishListSpades = new ebg.stock();
@@ -702,15 +654,6 @@ console.log( this.gamedatas.playerOrderTrue );
 			this.wishListSpades.setOverlap( 80, 0 );
 			this.wishListHearts.setOverlap( 80, 0 );
 			this.wishListDiamonds.setOverlap( 80, 0 );
-
-
-
-
-
-
-
-
-
 
 
 			// Create the variables which show how many cards in each pile (deck, hand, discard)
@@ -1010,9 +953,20 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 
 			dojo.connect( $('buttonBuy'), 'onclick', this, 'onPlayerBuyButton' );
 			dojo.connect( $('voice'), 'onclick', this, "onVoiceCheckbox");
-			dojo.connect( $('wishListEnabled'), 'onclick', this, "onWishListCheckbox");
+			// dojo.connect( $('wishListEnabled'), 'onclick', this, "onWishListCheckbox");
+			
+			dojo.connect( $('buttonSubmitWishList'), 'onclick', this, 'onSubmitWishList' );
+			dojo.connect( $('buttonClearWishList'), 'onclick', this, 'onClearWishList' );
 
 			dojo.connect( $('buttonNotBuy'), 'onclick', this, 'onPlayerNotBuyButton' );
+
+			let tooltip_text1 = _('Click this button to disable and clear the wish list.');
+
+			this.addTooltipHtmlToClass('buttonClearWishList', tooltip_text1);
+
+			let tooltip_text2 = _('If you wish to buy while away from play, do 3 things: (1) Select cards from the small grid; (2) Click this button; (3) Wait for someone a matching discard. If no one ahead of you wants to buy it, the game will buy 1 card and disable the wish list.  Clicking an additional card in the wish list will disable it until you again click SUBMIT.');
+
+			this.addTooltipHtmlToClass('buttonSubmitWishList', tooltip_text2);
 
 			let tooltip_myPrepA = _('To go down, select cards for one meld & click a meld button or meld area (1 meld per area). See the cards move. To take a joker while going down, prepare all melds and 1 partial meld. Select the board joker. Put an appropriate card to replace the joker in CARD FOR JOKER. Click GO DOWN.');
 
@@ -1071,8 +1025,10 @@ console.log(this.turnPlayer);
 //   Not my turn
 //   Status is buying (2)
 //
+			this.clearButtons();
 
-			if ( this.player_id != this.gamedatas.activeTurnPlayer_id ) {
+			if (( this.player_id != this.gamedatas.activeTurnPlayer_id ) &&
+			    ( this.player_id != this.gamedatas.discardingPlayer_id)) {
 			    if (( this.gamedatas.buyers[ this.player_id ] == 0 ) || // buy undefined
 					( this.gamedatas.buyers[ this.player_id ] == 1 )) { // buy notbuying
 					this.showBuyButton2();
@@ -1147,9 +1103,9 @@ console.log( "[bmc] Showing buttons to those who haven't registered buy." );
 
 			// Highlight the potential buyer, if any
 			for ( let player_id in this.gamedatas.buyers ) {
-				console.log(player_id);
 				if ( this.gamedatas.buyers[ player_id ] == 2 ) {
 					dojo.addClass( 'overall_player_board_' + player_id, 'playerBoardBuyer' );
+					console.log(player_id);
 				}
 			}
 			
@@ -1188,13 +1144,13 @@ console.log("[bmc] Doing the window.onload");
 			}
 			
 			// Get status of the wishList box
-			if ( $('wishListEnabled').checked ) {
-				console.log("WishList CHECKED");
-				this.wishListEnabled = true;
-			} else {
-				console.log("WishLIst UNCHECKED");
-				this.wishListEnabled = false;
-			}
+			// if ( $('wishListEnabled').checked ) {
+				// console.log("WishList CHECKED");
+				// this.wishListEnabled = true;
+			// } else {
+				// console.log("WishLIst UNCHECKED");
+				// this.wishListEnabled = false;
+			// }
 
 			// Color wishlist appropriately if it's on or off
 			this.setWishListColor( this.wishListEnabled );
@@ -1210,15 +1166,12 @@ console.log("[bmc] Doing the window.onload");
 			$(GODOWNTRANSLATED).innerHTML = _('Go Down');
 			$(DRAWDECKTRANSLATED).innerHTML = _('Draw Deck');
 			$(DISCARDPILETRANSLATED).innerHTML = _('Discard Pile');
+			$(WISHLISTTRANSLATED).innerHTML = _('Submit Wish List');
+			$(CLEARWISHLISTTRANSLATED).innerHTML = _('Clear Wish List');
 
-			console.log( "Setting up Wanted Grid" );
+			// console.log( "Setting up Wanted Grid" );
 
-
-
-
-
-
-				// var player_board_div = $('player_board_' + player_id );
+			// var player_board_div = $('player_board_' + player_id );
 				// console.log("[bmc] player_board_div:");
 				// console.log( player_board_div );
 				
@@ -1226,52 +1179,47 @@ console.log("[bmc] Doing the window.onload");
 			
 				// dojo.place( this.format_block( 'jstpl_player_board', playergomoku ), player_board_div );
 
-
-
-
 			// Set up game Contants for selected wanted cards
 			//this.gameConstants = gamedatas.constants;
-			this.gameConstants = [];
-			this.gameConstants.X_ORIGIN = 0;
-			this.gameConstants.Y_ORIGIN = 0;
-			this.gameConstants.INTERSECTION_WIDTH = 30;
-			this.gameConstants.INTERSECTION_HEIGHT = 30;
-			this.gameConstants.INTERSECTION_X_SPACER = 2.8; // Float
-			this.gameConstants.INTERSECTION_Y_SPACER = 2.8; // Float
+			// this.gameConstants = [];
+			// this.gameConstants.X_ORIGIN = 0;
+			// this.gameConstants.Y_ORIGIN = 0;
+			// this.gameConstants.INTERSECTION_WIDTH = 30;
+			// this.gameConstants.INTERSECTION_HEIGHT = 30;
+			// this.gameConstants.INTERSECTION_X_SPACER = 2.8; // Float
+			// this.gameConstants.INTERSECTION_Y_SPACER = 2.8; // Float
 
-			this.addEventToClass( "gmk_intersection", "onclick", "onWantedAreaClick");
+			// this.addEventToClass( "gmk_intersection", "onclick", "onWantedAreaClick");
 
-            console.log( "gameConstants" );
-            console.log( this.gameConstants );
+            // console.log( "gameConstants" );
+            // console.log( this.gameConstants );
 
              // Setup intersections
-            for( var id = 0; id < 14; id++ )
-            {
-                var intersection = [];
-				intersection.coord_x = id;
-				intersection.coord_y = 0;
-/*
-                dojo.place( this.format_block('jstpl_intersection', {
-                    x:intersection.coord_x,
-                    y:intersection.coord_y,
-                    stone_type:(intersection.stone_color == null ? "no_stone" : 'stone_' + intersection.stone_color)
-                } ), $ ( 'WAIntersectionMethod' ) );
-*/
-console.log(intersection.coord_x);
-console.log(intersection.coord_y);
+            // for( var id = 0; id < 14; id++ )
+            // {
+                // var intersection = [];
+				// intersection.coord_x = id;
+				// intersection.coord_y = 0;
+// /*
+                // dojo.place( this.format_block('jstpl_intersection', {
+                    // x:intersection.coord_x,
+                    // y:intersection.coord_y,
+                    // stone_type:(intersection.stone_color == null ? "no_stone" : 'stone_' + intersection.stone_color)
+                // } ), $ ( 'WAIntersectionMethod' ) );
+// */
+// console.log(intersection.coord_x);
+// console.log(intersection.coord_y);
 
-                var x_pix = this.getXPixelCoordinates(intersection.coord_x);
-                var y_pix = this.getYPixelCoordinates(intersection.coord_y);
+                // var x_pix = this.getXPixelCoordinates(intersection.coord_x);
+                // var y_pix = this.getYPixelCoordinates(intersection.coord_y);
                 
-//                this.slideToObjectPos( $('intersection_'+intersection.coord_x+'_'+intersection.coord_y), $('gmk_background'), x_pix, y_pix, 10 ).play();
+               // this.slideToObjectPos( $('intersection_'+intersection.coord_x+'_'+intersection.coord_y), $('gmk_background'), x_pix, y_pix, 10 ).play();
 
-                if (intersection.stone_color != null) {
+                // if (intersection.stone_color != null) {
                     // This intersection is taken, it shouldn't appear as clickable anymore
-                    dojo.removeClass( 'intersection_' + intersection.coord_x + '_' + intersection.coord_y, 'clickable' );
-                }
-            } 
-
-		
+                    // dojo.removeClass( 'intersection_' + intersection.coord_x + '_' + intersection.coord_y, 'clickable' );
+                // }
+            // }
 		
             console.log( "[bmc] EXIT game setup" );
         },
@@ -1443,7 +1391,7 @@ console.log( this.player_id );
 				return;
 			}
 
-			//this.showHideButtons();
+console.log( '[bmc] EXIT onUpdateActionButtons: ' + stateName );
 		},
 /*
 		onUpdateActionButtons : function( stateName, args ) {
@@ -1548,18 +1496,19 @@ console.log("[bmc] ENTER onVoiceCheckbox");
 /////////
 /////////
 /////////
-		onWishListCheckbox : function() {
-console.log("[bmc] ENTER onWishListCheckbox");
-			if ( $('wishListEnabled').checked ) {
-				console.log("WL CHECKED");
-				this.wishListEnabled = true;
-			} else {
-				console.log("WL UNCHECKED");
-				this.wishListEnabled = false;
-			}
-			this.setWishListColor( this.wishListEnabled );
-
-		},
+		// onWishListCheckbox : function() {
+// console.log("[bmc] ENTER onWishListCheckbox");
+			// if ( $('wishListEnabled').checked ) {
+				// console.log("WL CHECKED");
+				// this.wishListEnabled = true;
+				// this.setWishListColor( this.wishListSubmitted );
+			// } else {
+				// console.log("WL UNCHECKED");
+				// this.wishListEnabled = false;
+				// this.setWishListColor( false );
+			// }
+// console.log("[bmc] EXIT onWishListCheckbox");
+		// },
 /////////
 /////////
 /////////
@@ -1617,6 +1566,8 @@ console.log("[bmc] this.buyCount:", this.buyCount[ this.player_id ][ 'current_va
 							console.log("[bmc] Buy already requested or not allowed now");
 						}
 					}
+				} else { // Turn off the BUY button
+					this.clearButtons();
 				}
 			}
 		},
@@ -2347,6 +2298,17 @@ console.log("[bmc] EXIT discardCard");
 /////////
 /////////
 /////////
+		notif_wishListSubmitted : function( notif ){
+console.log("[bmc] ENTER notif_wishListSubmitted");
+			this.wishListSubmitted = true;
+			this.wishListEnabled = true;
+			this.setWishListColor( true ); 
+			this.showClearWishListButton( true );
+console.log("[bmc] EXIT notif_wishListSubmitted");
+		},
+/////////
+/////////
+/////////
 //		notif_updateBuyers : function( player_id, nextTurnPlayer, buyers ){
 		notif_updateBuyers : function( notif ){
 console.log("[bmc] updateBuyers");
@@ -2372,8 +2334,10 @@ console.log("[bmc] Card played not by me");
 				// this.enableDBTimer = 'Yes';
 				this.enDisStaticBuyButtons('Yes');
 				
+				
+				// THIS IS THE ORIGINAL WISHLIST WAY, ONLY IN THE CLIENT. Move it to server.
 				// If the wishlist is active and it matches then try to buy
-
+/*
 				var wlClubs    = this.wishListClubs.getSelectedItems();
 				var wlSpades   = this.wishListSpades.getSelectedItems();
 				var wlHearts   = this.wishListHearts.getSelectedItems();
@@ -2386,9 +2350,9 @@ console.log( value );
 				var wishListAll = wlClubs.concat( wlSpades ).concat( wlHearts ).concat( wlDiamonds );
 console.log( wishListAll );
 
-/*
-				if (this.wishListEnabled == true ) {
-*/					
+
+				// if (this.wishListEnabled == true ) {
+					
 				for ( wLItem of wishListAll ) {
 console.log( wLItem );
 console.log( this.getColorValue( wLItem.type + 1 ));
@@ -2417,6 +2381,7 @@ console.log( dCValue );
 // console.log("[bmc] buyDelay after: ", buyDelay);
 					}
 				}
+*/
 			}
 		},
 //function( mobile_obj, target_obj, duration, delay )
@@ -2467,6 +2432,45 @@ console.log("[bmc] EXIT(nothing) startActionTimerStatic");
 			function remove because the project analyzer wouldn't pass
         },        
         */
+/////////
+/////////
+/////////
+
+
+
+//TODO: When several wishlist cards are selected and you click CLEAR, then deselect a little bit and should not.
+
+
+
+		// showSubmitWishListButton : function( onOff ) {
+// console.log("[bmc] ENTER showSubmitWishListButton");
+
+			// if ( onOff == true ) {
+				// dojo.replaceClass( 'buttonSubmitWishList', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
+				// dojo.replaceClass( 'buttonSubmitWishList', "textWhite", "textGray" ); // item, add, remove
+			// } else {
+				// dojo.replaceClass( 'buttonSubmitWishList', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
+				// dojo.replaceClass( 'buttonSubmitWishList', "textGray", "textWhite" ); // item, add, remove
+			// }
+// console.log("[bmc] EXIT showSubmitWishListButton");
+		// },
+/////////
+/////////
+/////////
+		showClearWishListButton : function( onOff ) {
+console.log("[bmc] ENTER showClearWishListButton");
+console.log(this.wishListEnabled);
+console.log(this.wishListSubmitted);
+console.log(onOff);
+			if ( onOff == true ) {
+				dojo.replaceClass( 'buttonClearWishList', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
+				dojo.replaceClass( 'buttonClearWishList', "textWhite", "textGray" ); // item, add, remove
+			} else {
+				dojo.replaceClass( 'buttonClearWishList', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
+				dojo.replaceClass( 'buttonClearWishList', "textGray", "textWhite" ); // item, add, remove
+			}
+console.log("[bmc] EXIT showClearWishListButton");
+		},
 /////////
 /////////
 /////////
@@ -2657,23 +2661,107 @@ console.log("[bmc] EXIT onMyHandAreaClick");
 /////////
 /////////
 /////////
+		unselectWishList : function() {
+			this.wishListClubs.unselectAll();
+			this.wishListSpades.unselectAll();
+			this.wishListHearts.unselectAll();
+			this.wishListDiamonds.unselectAll();
+			for ( value = 1; value <= 13; value++ ) {
+				dojo.removeClass('myWishListClubs_item_'    + value, 'wishListItem_selected' );
+				dojo.removeClass('myWishListSpades_item_'   + value, 'wishListItem_selected' );
+				dojo.removeClass('myWishListHearts_item_'   + value, 'wishListItem_selected' );
+				dojo.removeClass('myWishListDiamonds_item_' + value, 'wishListItem_selected' );
+			}
+		},
+/////////
+/////////
+/////////
+		disableWishList : function() {
+console.log("[bmc] ENTER disableWishList");
+console.log(this.wishListEnabled);
+//			this.showClearWishListButton( true );
 
+			if ( this.wishListEnabled == true ) {
+				this.wishListEnabled = false;
+				this.setWishListColor( false );
 
-//THIS FUNCTION NEEDS TO GET CALLED WHEN i CLICK BUT IT DOESN'T YET.
+				// Uncheck the box
+				// document.getElementById("wishListEnabled").checked = false;
 
+				var action = 'disableWishList';
+				
+console.log( "[bmc] disabling wishlist ");
+					
+				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						player_id : this.player_id,
+						lock : true
+					}, this, function(result) {
+					}, function(is_error) {
+				});
+			}
+console.log("[bmc] EXIT disableWishList");
+		},
+/////////
+/////////
+/////////
+		onClearWishList : function() {
+console.log("[bmc] ENTER onClearWishList");
+console.log(this.wishListEnabled);
+console.log(this.wishListSubmitted);
 
+			this.showClearWishListButton( false );
+			this.disableWishList();
+			this.unselectWishList();
 
-		onWantedAreaClick : function( evt ) {
-console.log("[bmc] ENTER onWantedAreaClick");
-console.log(evt)
-			dojo.stopEvent( evt );
-			var node = evt.currentTarget.id;
-			var coord_x = node.split('_')[1];
-            var coord_y = node.split('_')[2];
-            
-            console.log( '$$$$ Selected intersection : (' + coord_x + ', ' + coord_y + ')' );
-        
-console.log("[bmc] EXIT onWantedAreaClick");
+console.log("[bmc] EXIT onClearWishList");
+		},
+/////////
+/////////
+/////////
+		onSubmitWishList : function() {
+console.log("[bmc] ENTER onSubmitWishList");
+
+			var wlClubs    = this.wishListClubs.getSelectedItems();
+			var wlSpades   = this.wishListSpades.getSelectedItems();
+			var wlHearts   = this.wishListHearts.getSelectedItems();
+			var wlDiamonds = this.wishListDiamonds.getSelectedItems();
+
+			var wishListAll = wlClubs.concat( wlSpades ).concat( wlHearts ).concat( wlDiamonds );
+console.log( wishListAll );
+
+			wishList_type = new Array();
+			wishList_type_arg = new Array();
+/*
+				if (this.wishListEnabled == true ) {
+*/					
+			for ( wLItem of wishListAll ) {
+console.log( wLItem );
+console.log( this.getColorValue( wLItem.type + 1 ));
+				
+				var [ dCColor, dCValue ] = this.getColorValue( wLItem.type );
+				
+				wishList_type.push( dCColor );
+				wishList_type_arg.push( dCValue );
+			}
+console.log("[bmc] wishList");
+console.log( wishList_type );
+console.log( wishList_type_arg );
+
+			if ( wishList_type.length != 0 ){
+console.log( "[bmc] Submitting wishList!" );
+				
+				var action = 'submitWishList';
+				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+					player_id : this.player_id,
+					wishList_type : this.toNumberList( wishList_type ),
+					wishList_type_arg : this.toNumberList( wishList_type_arg ),
+					lock : true
+				}, this, function(result) {
+				}, function(is_error) {
+				});
+			}
+
+console.log("[bmc] EXIT onSubmitWishList");
 		},
 /////////
 /////////
@@ -3991,8 +4079,10 @@ console.log( this.player_id );
 			}
 
 			// Click the BUY button if it's not our turn and it's DRAW state
-			if (( this.gamedatas.gamestate.active_player != this.player_id ) &&
-				( this.gamedatas.gamestate.name == 'playerTurnDraw' )) {
+//			if (( this.gamedatas.gamestate.active_player != this.player_id ) &&
+			// Click the BUY button if it's not our turn, in any state
+//				( this.gamedatas.gamestate.name == 'playerTurnDraw' )) {
+			if ( this.gamedatas.gamestate.active_player != this.player_id ) {
 				this.onPlayerBuyButton();
 			}
 		},
@@ -4335,6 +4425,13 @@ console.log("[bmc] EXIT onPlayerHandDoubleClick");
 /////////
 		onWishListCardClick : function() {
 console.log("[bmc] ENTER onWishListCardClick");
+console.log(this.wishListEnabled);
+
+			// Disable the wishlist
+			this.disableWishList();
+			
+			// Go evaluate what they clicked. Resubmit only when they click SUBMIT again.
+			
             var wlClubs    = this.wishListClubs.getSelectedItems();
             var wlSpades   = this.wishListSpades.getSelectedItems();
             var wlHearts   = this.wishListHearts.getSelectedItems();
@@ -4368,12 +4465,6 @@ console.log( wlDiamonds );
 //console.log( 'ADDED: myWishListDiamonds_item_' + wlClubs[ item ].id );
 			}
 
-/*
-			if ( cards ) {
-//				this.onPlayerDiscardButton();
-				this.onPlayerSortButton2( cards );
-			}
-*/
 console.log("[bmc] EXIT onWishListCardClick");
 		},
 /////////
@@ -4452,6 +4543,9 @@ console.log( '[bmc] ENTER notifications subscriptions setup' );
 			dojo.subscribe( 'close_btn' , 		   this, "onPlayerReviewedHandButton");
 			dojo.subscribe( 'itsYourTurn' ,        this, "notif_itsYourTurn");
 			dojo.subscribe( 'updateBuyers' ,       this, "notif_updateBuyers");
+			dojo.subscribe( 'wishListSubmitted',   this, "notif_wishListSubmitted");
+			dojo.subscribe( 'wishListDisabled',    this, "notif_wishListDisabled");
+			//dojo.subscribe( 'wishListCleared',     this, "notif_wishListCleared");
 
             // TODO: here, associate your game notifications with local methods
             
@@ -4831,13 +4925,15 @@ console.log( notif );
 			}
 */
 			// If we drew or someone else drew the discard, then stop any timers.
-			if (( this.gamedatas.gamestate.active_player == notif.player_id ) ||
-				( notif.args.drawSource == 'discardPile' )) {
-				this.clearButtons();
+			// if (( this.gamedatas.gamestate.active_player == notif.player_id ) ||
+				// ( notif.args.drawSource == 'discardPile' )) {
+				// this.clearButtons();
 				// this.stopActionTimer2();
-			}
+			// }
 			
-			this.clearButtons();
+			if ( notif.args.drawsource == 'discardPile' ) {
+				this.clearButtons();
+			}
 
 			// Steadily increment every time a card is drawn to set the weight properly
 			this.drawCounter++;
@@ -4863,8 +4959,11 @@ console.log("[bmc] EXIT notif_drawcard");
 console.log("[bmc] ENTER notif_drawcardSpect");
 console.log(notif);
 
-			for ( player_id in this.gamedatas.players ) { 
-				dojo.removeClass( 'overall_player_board_' + player_id, 'playerBoardBuyer' );
+			// If the discard was drawn, turn off the indication of players requesting buy.
+			if ( notif.args.drawSource == 'discardPile' ) {
+				for ( player_id in this.gamedatas.players ) { 
+					dojo.removeClass( 'overall_player_board_' + player_id, 'playerBoardBuyer' );
+				}
 			}
 
             this.drawCardSpect(
@@ -4945,26 +5044,41 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 /////////
 /////////
 /////////
+		notif_wishListDisabled : function(notif) {
+			console.log("[bmc] ENTER notif_wishListDisabled");
+			console.log(notif);
+//			this.showClearWishListButton( false );
+			console.log("[bmc] EXIT notif_wishListDisabled");
+		},
+/////////
+/////////
+/////////
 		notif_playerBought : function(notif) {
 			console.log("[bmc]notif_playerBought");
 			console.log(notif);
 			console.log(this.gamedatas.players);
+			this.buyRequested = false;
 			
 			for ( player_id in this.gamedatas.players ) { 
+console.log(player_id);
 //				dojo.removeClass( 'overall_player_board_' + notif.args.player_id, 'playerBoardBuyer' );
 				dojo.removeClass( 'overall_player_board_' + player_id, 'playerBoardBuyer' );
 console.log(notif.args.buyCount[ player_id ]);
 console.log(notif.args.allHands[ player_id ]);
 
-				this.buyCount[  notif.args.player_id ].setValue( notif.args.buyCount[ player_id ] );
-				this.handCount[ notif.args.player_id ].setValue( notif.args.allHands[ player_id ] );
+				this.buyCount[  player_id ].setValue( notif.args.buyCount[ player_id ] );
+				this.handCount[ player_id ].setValue( notif.args.allHands[ player_id ] );
 			}
 			
 			// If I bought then turn off the wishlist if it's on
 			if ( this.player_id == notif.args.player_id ) {
 				this.wishListEnabled = false;
-				document.getElementById("wishListEnabled").checked = false;
+				// document.getElementById("wishListEnabled").checked = false;
 				this.setWishListColor( this.wishListEnabled );
+				
+				// Disable the wishlist on the server
+				this.disableWishList();
+				
 console.log( "[bmc] You bought a card!");
 			}
 		},
@@ -4972,8 +5086,8 @@ console.log( "[bmc] You bought a card!");
 /////////
 /////////
 		setWishListColor : function( wLSetting ) {
-			console.log("[bmc] setWishListColor");
-			if ( wLSetting ) {
+console.log("[bmc] setWishListColor: ", wLSetting );
+			if ( wLSetting == true ) {
 				dojo.addClass(    'myWishListClubs',    'wishListClassOn' );
 				dojo.addClass(    'myWishListSpades',   'wishListClassOn' );
 				dojo.addClass(    'myWishListHearts',   'wishListClassOn' );
@@ -4982,6 +5096,8 @@ console.log( "[bmc] You bought a card!");
 				dojo.removeClass( 'myWishListSpades',   'wishListClassOff' );
 				dojo.removeClass( 'myWishListHearts',   'wishListClassOff' );
 				dojo.removeClass( 'myWishListDiamonds', 'wishListClassOff' );
+				dojo.replaceClass( 'buttonSubmitWishList', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
+				dojo.replaceClass( 'buttonSubmitWishList', "textGray", "textWhite" ); // item, add, remove
 			} else {
 				dojo.addClass(    'myWishListClubs',    'wishListClassOff' );
 				dojo.addClass(    'myWishListSpades',   'wishListClassOff' );
@@ -4991,12 +5107,9 @@ console.log( "[bmc] You bought a card!");
 				dojo.removeClass( 'myWishListSpades',   'wishListClassOn' );
 				dojo.removeClass( 'myWishListHearts',   'wishListClassOn' );
 				dojo.removeClass( 'myWishListDiamonds', 'wishListClassOn' );
+				dojo.replaceClass( 'buttonSubmitWishList', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
+				dojo.replaceClass( 'buttonSubmitWishList', "textWhite", "textGray" ); // item, add, remove
 			}
-			
-			
-			
-			
-			
 		},
 /////////
 /////////
@@ -5038,6 +5151,9 @@ console.log("[bmc] sound: It's Your Turn");
 					dojo.replaceClass( 'buttonBuy', "textGray", "textWhite" ); // item, add, remove
 					dojo.replaceClass( 'buttonNotBuy', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
 					dojo.replaceClass( 'buttonNotBuy', "textWhite", "textGray" ); // item, add, remove
+					
+					// Also track the fact we requested it (from wish list)
+					this.buyRequested = true;
 				}
 			}
 			
@@ -5172,16 +5288,6 @@ console.log( isReadOnly );
 			if ( this.gamedatas.gamestate.active_player == this.player_id ) {
 				console.log("[bmc] I went down!");
 
-
-
-
-
-
-
-
-
-
-
 				if ( card_ids != undefined ) {
 
 					// And move the cards from my prep area to the board
@@ -5209,20 +5315,15 @@ console.log( isReadOnly );
 						}
 					}
 				}
+				
+				// Unselect all board cards
+				for ( var player in this.gamedatas.players ) {
+					this.downArea_A_[ player ].unselectAll();
+					this.downArea_B_[ player ].unselectAll();
+					this.downArea_C_[ player ].unselectAll();
+				}
 
-
-
-
-
-
-
-
-
-
-
-
-
-				// Remove the highlighted border
+				// Remove the highlighted border from prep areas
 				dojo.removeClass('myPrepA', "buyerLit");
 				dojo.removeClass('myPrepB', "buyerLit");
 				dojo.removeClass('myPrepC', "buyerLit");

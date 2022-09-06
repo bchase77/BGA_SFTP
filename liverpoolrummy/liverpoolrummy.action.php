@@ -115,7 +115,6 @@
 			self::trace("[bmc] ajaxcall for drawCard");
             $card_id = self::getArg("id", AT_posint, true);
 			$player_id = self::getArg("player_id", AT_posint, true);
-//			$drawSource = self::getArg("drawSource", AT_posint, true); // 0 == 'deck', 1 == 'discardPile'
 			$drawSource = self::getArg("drawSource", AT_alphanum, true);
             $this->game->drawCard( $card_id, $drawSource, $player_id );
             self::ajaxResponse();
@@ -143,6 +142,24 @@
             $this->game->playCardMultiple( $card_ids, $player_id, $boardArea, $boardPlayer ); 
             self::ajaxResponse();
         }
+        public function submitWishList()
+        {
+            self::setAjaxMode();
+			self::trace( "[bmc] ajaxcall for submitWishList" );
+			$player_id = self::getArg( "player_id", AT_posint, true );
+			$wishList_type = self::parseNumberList(self::getArg( "wishList_type", AT_numberlist, true ));
+			$wishList_type_arg = self::parseNumberList(self::getArg( "wishList_type_arg", AT_numberlist, true ));
+            $this->game->submitWishList( $player_id, $wishList_type, $wishList_type_arg ); 
+            self::ajaxResponse();
+        }
+		public function disableWishList()
+		{
+            self::setAjaxMode();
+			self::trace( "[bmc] ajaxcall for disableWishList" );
+			$player_id = self::getArg( "player_id", AT_posint, true );
+            $this->game->disableWishList( $player_id ); 
+            self::ajaxResponse();
+		}
     /*
     
     Example:

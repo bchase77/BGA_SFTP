@@ -27,6 +27,14 @@ ALTER TABLE `player` ADD `buy_count` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
 
+CREATE TABLE IF NOT EXISTS `wishList` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `player_id` int(10) unsigned NOT NULL,
+  `card_type` varchar(16) NOT NULL,
+  `card_type_arg` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `card` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `card_type` varchar(16) NOT NULL,
@@ -36,14 +44,5 @@ CREATE TABLE IF NOT EXISTS `card` (
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
-
 -- Example 2: add a custom field to the standard "player" table
 ALTER TABLE `player` ADD `player_my_custom_field` INT UNSIGNED NOT NULL DEFAULT '0';
-
-CREATE TABLE IF NOT EXISTS `wishList` (
-  `player_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `card_type` varchar(16) CHARACTER SET utf8 NOT NULL,
-  `card_type_arg` int(11) NOT NULL,
-   PRIMARY KEY (`card_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

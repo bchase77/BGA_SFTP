@@ -63,6 +63,10 @@
     display: none;
 }
 
+.wishListMode #TLeftBox2 {
+    display: none;
+}
+
 .gmk_intersection {
     width: 30px;
     height: 30px;
@@ -173,6 +177,9 @@
 .wishListClassOff {
 	float: Left;
 	background-color: gray;
+/*    filter: gray; /* IE6-9 */
+/*    -webkit-filter: grayscale(1); /* Google Chrome, Safari 6+ & Opera 15+ */
+/*    filter: grayscale(1); /* Microsoft Edge and Firefox 35+ */
 /*
 	margin: 1px;
 	border: 1px;
@@ -184,6 +191,8 @@
 .wishListClassOn {
 	float: Left;
 	background-color: aqua;
+/*	-webkit-filter: grayscale(0); */
+/*    filter: none; */
 /*
 	margin: 1px;
 	border: 1px;

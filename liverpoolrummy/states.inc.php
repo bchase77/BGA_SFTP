@@ -115,7 +115,7 @@ $machinestates = array(
         "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35, "buyRequest" => 60, "notBuyRequest" => 61, "zombiePass" => 37 )
     ), 
 	36 => array(
-		"name" => "registerB",
+		"name" => "afterDiscard",
 		"description" => "[ST36]",
         "type" => "game",
         "action" => "stWaitForAll", // ACTION: Do this upon entering the state

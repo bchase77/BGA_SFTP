@@ -95,6 +95,7 @@ class LiverpoolRummy extends Table
 			"numberOfBuys" => 105,
 			"alwaysDeal11" => 106,
 			"outReason" => 107,
+			"enableWishList" => 108,
 			"buyer0WantsGS" => 110,
 			"buyer1WantsGS" => 111,
 			"buyer2WantsGS" => 112,
@@ -176,6 +177,7 @@ class LiverpoolRummy extends Table
         }
         $sql .= implode( $values, ',' );
         self::DbQuery( $sql );
+
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
 
@@ -185,6 +187,13 @@ class LiverpoolRummy extends Table
 		//self::dump("[bmc] handTypes(line145):", $this->handTypes[$currentHandType]);
 
 		self::setGameLength();
+
+		// Show the wishlist to players if the gamestate was set for it
+		if ( $this->getGameStateValue( 'enableWishList' ) == 1 ) { // 0 == No. 1 == Yes.
+			// Not sure what to do. I wanted to set the style to display or not but that's a JS thing, not PHP.
+		}
+
+
 
         // Activate first player (which is in general a good idea :) )
         $player_id = $this->activeNextPlayer();
@@ -204,26 +213,26 @@ class LiverpoolRummy extends Table
 		self::setGameStateInitialValue( 'dealer', $dealer );
 
 		// Clear out the BUY counters for all players
-		//self::clearPlayersBuyCount();
-		self::clearPlayersBuyCountGS();
+		self::clearPlayersBuyCount();
+		// self::clearPlayersBuyCountGS();
 		//self::clearPlayersBuyCountGS2();
 		
-		self::setGameStateInitialValue( 'buyer0WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer1WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer2WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer3WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer4WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer5WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer6WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer7WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer8WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer9WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer10WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer11WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer12WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer13WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer14WantsGS', 0 ); // No buyers to start
-		self::setGameStateInitialValue( 'buyer15WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer0WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer1WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer2WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer3WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer4WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer5WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer6WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer7WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer8WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer9WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer10WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer11WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer12WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer13WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer14WantsGS', 0 ); // No buyers to start
+		// self::setGameStateInitialValue( 'buyer15WantsGS', 0 ); // No buyers to start
 
 		self::setGameStateInitialValue( 'discardWeightHistory', 300 ); // Start higher than any game will have qty of cards
 
@@ -406,6 +415,98 @@ class LiverpoolRummy extends Table
 		// This returns data to the JS code in gamedatas datastructure
 		self::trace("[bmc] ENTER getAllDatas");
 
+
+
+
+
+/*
+//WISHLIST DATABASE START: Below this code adds some example cards to the wishlist database
+//  and successfully retrieves them, and then deletes all for 1 player:v
+
+		$wishLists = array(
+			0 => array(
+				'player_id' => 2333744,
+				'card_type' => '3', // Suit
+				'card_type_arg' => '1' // Value
+				),
+			1 => array(
+				'player_id' => 2333742,
+				'card_type' => '2', // Suit
+				'card_type_arg' => '2' // Value
+				),
+			2 => array(
+				'player_id' => 2333744,
+				'card_type' => '3', // Suit
+				'card_type_arg' => '3' // Value
+				),
+			3 => array(
+				'player_id' => 2333743,
+				'card_type' => '3', // Suit
+				'card_type_arg' => '4' // Value
+				),
+			4 => array(
+				'player_id' => 2333742,
+				'card_type' => '2', // Suit
+				'card_type_arg' => '5' // Value
+				),
+			5 => array(
+				'player_id' => 2333744,
+				'card_type' => '2', // Suit
+				'card_type_arg' => '6' // Value
+				),
+			6 => array(
+				'player_id' => 2333743,
+				'card_type' => '4', // Suit
+				'card_type_arg' => '7' // Value
+				)
+			);
+
+		self::dump("[bmc] wishLists:", $wishLists);
+
+		$players = self::loadPlayersBasicInfos();
+
+		foreach( $wishLists as $entry ) {
+			self::dump("[bmc] wishList entry:", $entry);
+				
+			self::dump("[bmc] wishList SQL:", $entry['player_id']);
+
+		    $sql = "INSERT INTO wishList (player_id, card_type, card_type_arg) VALUES ";
+			$sql_values = "( " . $entry['player_id'] . "," . $entry['card_type'] . "," . $entry['card_type_arg'] . ")";
+			
+			self::DbQuery( $sql . $sql_values);
+		}
+
+		$sql = "SELECT id id, player_id, card_type, card_type_arg FROM wishList ";
+		
+		$result = self::getCollectionFromDb( $sql );
+
+		self::dump("[bmc] wishList after SQL SELECT:", $result);
+
+//WISHLIST DATABASE END: Above this code adds 2 example cards to the wishlist database and successfully retrieves them:^
+
+		// Delete all entries for the wishList for that player
+
+		$player_id = 2333742;
+		
+	    $sql = "DELETE FROM wishList WHERE player_id = '";
+		$sql_command = $player_id . "'";
+		self::DbQuery( $sql . $sql_command );
+
+		$sql = "SELECT id id, player_id, card_type, card_type_arg FROM wishList ";
+		
+		$result = self::getCollectionFromDb( $sql );
+
+		self::dump("[bmc] wishList after SQL SELECT:", $result);
+*/
+
+
+
+
+
+
+
+
+
 		$dpCard = $this->cards->getCardsInLocation( 'discardPile' );
 		
 		if ( isset( reset( $dpCard )[ 'id' ])) {
@@ -444,7 +545,13 @@ class LiverpoolRummy extends Table
 		self::dump( "[bmc] APL:", $APL);
 		
 		$result['currentPlayerId'] = $current_player_id;
-		$result['activePlayerId'] = self::getActivePlayerId();
+//		$result['activePlayerId'] = self::getActivePlayerId();
+		$result['discardingPlayer_id'] = $this->getPlayerBefore( self::getActivePlayerId() );
+		if ( $this->getGameStateValue( 'enableWishList' ) == 1 ) {
+			$result['enableWishList'] = true;
+		} else {
+			$result['enableWishList'] = false;
+		}
 		
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
@@ -476,19 +583,19 @@ class LiverpoolRummy extends Table
 
 		$result['handTypes']["Target"] = $this->handTypes; // Pull the description
 		
-		//$buyers = self::getPlayerBuying();
+		$buyers = self::getPlayerBuying();
 
-		//self::dump("[bmc] gamedatas buyers:", $buyers);
+		self::dump("[bmc] gamedatas buyers:", $buyers);
 
 		$players = self::loadPlayersBasicInfos();
 		
 		self::dump( "[bmc] players:", $players );
 
-		$buyersGS = self::getPlayerBuyingGS();
+		//$buyersGS = self::getPlayerBuyingGS();
 		
-		self::dump( "[bmc] buyersGS:", $buyersGS );
+		// self::dump( "[bmc] buyersGS:", $buyersGS );
 
-		$buyers = $buyersGS; // Use the new function which doesn't access the database (to avoid deadlock)
+		//$buyers = $buyersGS; // Use the new function which doesn't access the database (to avoid deadlock)
 
 //		self::dump( "[bmc] players reset:", reset( $players ) );
 
@@ -506,13 +613,13 @@ class LiverpoolRummy extends Table
 */
         $playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
 		
-		//$buyCount = self::getPlayersBuyCount();
-		$buyCountGS  = self::getPlayersBuyCountGS();
+		$buyCount = self::getPlayersBuyCount();
+		//$buyCountGS  = self::getPlayersBuyCountGS();
 		//$buyCountGS2 = self::getPlayersBuyCountGS2();
-		$buyCount = $buyCountGS;
+		//$buyCount = $buyCountGS;
 		
-		//self::dump("[bmc] gamedatas buyCount:",   $buyCount);
-		self::dump("[bmc] gamedatas buyCountGS:", $buyCountGS);
+		self::dump("[bmc] gamedatas buyCount:",   $buyCount);
+		// self::dump("[bmc] gamedatas buyCountGS:", $buyCountGS);
 		//self::dump("[bmc] gamedatas buyCountGS2:", $buyCountGS2);
 
 		$discardSize = count( $this->cards->countCardsByLocationArgs( 'discardPile' ));
@@ -1231,8 +1338,8 @@ class LiverpoolRummy extends Table
 
 		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
 
-//		$buyers = self::getPlayerBuying();
-		$buyers = self::getPlayerBuyingGS();
+		$buyers = self::getPlayerBuying();
+		// $buyers = self::getPlayerBuyingGS();
 		self::dump("[bmc] argPlayerTurnDraw buyers (PTD):", $buyers);
 
 		if ( $playerGoneDown[ $activeTurnPlayer_id ] == 1 ) {
@@ -1412,14 +1519,14 @@ class LiverpoolRummy extends Table
 /////
 /////
 /////
-    function getPlayerGoneDown() {
+	function getPlayerGoneDown() {
         $sql = "SELECT player_id, gone_down FROM player ";
         return self::getCollectionFromDB($sql, true);
-    }
-    function setPlayerGoneDown($player_id, $goneDown /* 0 or 1 */) {
+	}
+	function setPlayerGoneDown($player_id, $goneDown /* 0 or 1 */) {
         $sql = "UPDATE player SET gone_down = $goneDown WHERE player_id = $player_id ";
         self::DbQuery( $sql );
-    }
+	}
     // function clearPlayersGoneDown() {
         // $sql = "UPDATE player SET gone_down = 0 ";
         // self::DbQuery( $sql );
@@ -1427,36 +1534,36 @@ class LiverpoolRummy extends Table
 /////
 /////
 /////
-//    function getPlayerBuying() {
-//        $sql = "SELECT player_id, buying FROM player ";
-//        return self::getCollectionFromDB($sql, true);
-//    }
-//    function setPlayerBuying( $player_id, $buying ) { // (0==unknown, 1==Not buying 2==Buying)
-//        $sql = "UPDATE player SET buying = $buying WHERE player_id = $player_id ";
-//        self::DbQuery( $sql );
-//    }
-//    function clearPlayersBuying() {
-//        $sql = "UPDATE player SET buying = 0 ";
-//        self::DbQuery( $sql );
-//    }
-	function clearPlayersBuyingGS() {
-		self::setGameStateValue( 'buyer0WantsGS',  0 );
-		self::setGameStateValue( 'buyer1WantsGS',  0 );
-		self::setGameStateValue( 'buyer2WantsGS',  0 );
-		self::setGameStateValue( 'buyer3WantsGS',  0 );
-		self::setGameStateValue( 'buyer4WantsGS',  0 );
-		self::setGameStateValue( 'buyer5WantsGS',  0 );
-		self::setGameStateValue( 'buyer6WantsGS',  0 );
-		self::setGameStateValue( 'buyer7WantsGS',  0 );
-		self::setGameStateValue( 'buyer8WantsGS',  0 );
-		self::setGameStateValue( 'buyer9WantsGS',  0 );
-		self::setGameStateValue( 'buyer10WantsGS', 0 );
-		self::setGameStateValue( 'buyer11WantsGS', 0 );
-		self::setGameStateValue( 'buyer12WantsGS', 0 );
-		self::setGameStateValue( 'buyer13WantsGS', 0 );
-		self::setGameStateValue( 'buyer14WantsGS', 0 );
-		self::setGameStateValue( 'buyer15WantsGS', 0 );
+	function getPlayerBuying() {
+       $sql = "SELECT player_id, buying FROM player ";
+       return self::getCollectionFromDB($sql, true);
 	}
+	function setPlayerBuying( $player_id, $buying ) { // (0==unknown, 1==Not buying 2==Buying)
+       $sql = "UPDATE player SET buying = $buying WHERE player_id = $player_id ";
+       self::DbQuery( $sql );
+	}
+	function clearPlayersBuying() {
+       $sql = "UPDATE player SET buying = 0 ";
+       self::DbQuery( $sql );
+	}
+	// function clearPlayersBuyingGS() {
+		// self::setGameStateValue( 'buyer0WantsGS',  0 );
+		// self::setGameStateValue( 'buyer1WantsGS',  0 );
+		// self::setGameStateValue( 'buyer2WantsGS',  0 );
+		// self::setGameStateValue( 'buyer3WantsGS',  0 );
+		// self::setGameStateValue( 'buyer4WantsGS',  0 );
+		// self::setGameStateValue( 'buyer5WantsGS',  0 );
+		// self::setGameStateValue( 'buyer6WantsGS',  0 );
+		// self::setGameStateValue( 'buyer7WantsGS',  0 );
+		// self::setGameStateValue( 'buyer8WantsGS',  0 );
+		// self::setGameStateValue( 'buyer9WantsGS',  0 );
+		// self::setGameStateValue( 'buyer10WantsGS', 0 );
+		// self::setGameStateValue( 'buyer11WantsGS', 0 );
+		// self::setGameStateValue( 'buyer12WantsGS', 0 );
+		// self::setGameStateValue( 'buyer13WantsGS', 0 );
+		// self::setGameStateValue( 'buyer14WantsGS', 0 );
+		// self::setGameStateValue( 'buyer15WantsGS', 0 );
+	// }
 ////
 /////
 /////
@@ -1477,42 +1584,41 @@ string(1) "2"
 string(1) "1"
 */
 	
-    function getPlayerBuyingGS() {
+    // function getPlayerBuyingGS() {
 //      $sql = "SELECT player_id, buying FROM player ";
 //		return self::getCollectionFromDB($sql, true);
-		$gameStateList = array(
-			'buyer0WantsGS', 
-			'buyer1WantsGS', 
-			'buyer2WantsGS', 
-			'buyer3WantsGS', 
-			'buyer4WantsGS', 
-			'buyer5WantsGS', 
-			'buyer6WantsGS', 
-			'buyer7WantsGS', 
-			'buyer8WantsGS', 
-			'buyer9WantsGS', 
-			'buyer10WantsGS',
-			'buyer11WantsGS',
-			'buyer12WantsGS',
-			'buyer13WantsGS',
-			'buyer14WantsGS',
-			'buyer15WantsGS'
-		);
+		// $gameStateList = array(
+			// 'buyer0WantsGS', 
+			// 'buyer1WantsGS', 
+			// 'buyer2WantsGS', 
+			// 'buyer3WantsGS', 
+			// 'buyer4WantsGS', 
+			// 'buyer5WantsGS', 
+			// 'buyer6WantsGS', 
+			// 'buyer7WantsGS', 
+			// 'buyer8WantsGS', 
+			// 'buyer9WantsGS', 
+			// 'buyer10WantsGS',
+			// 'buyer11WantsGS',
+			// 'buyer12WantsGS',
+			// 'buyer13WantsGS',
+			// 'buyer14WantsGS',
+			// 'buyer15WantsGS'
+		// );
 		
-		$players = self::loadPlayersBasicInfos();
-		$index = 0;
-		$buyersGS = [];
-		//self::dump( "[bmc] gamestatelist:", $gameStateList );
+		// $players = self::loadPlayersBasicInfos();
+		// $index = 0;
+		// $buyersGS = [];
+		// self::dump( "[bmc] gamestatelist:", $gameStateList );
 
-		foreach ( $players as $player ) {
-			//self::dump( "[bmc] index:", $index );
-			//self::dump( "[bmc] gsl[]:", $gameStateList[ $index ] );
-			$buyersGS[ $player[ 'player_id' ]] = self::getGameStateValue( $gameStateList[ $index ]);
-			$index++;
-		}
+		// foreach ( $players as $player ) {
+			// self::dump( "[bmc] index:", $index );
+			// self::dump( "[bmc] gsl[]:", $gameStateList[ $index ] );
+			// $buyersGS[ $player[ 'player_id' ]] = self::getGameStateValue( $gameStateList[ $index ]);
+			// $index++;
+		// }
 
 //		self::dump( "[bmc] newGS buyers:", $buyersGS );
-	
 /*		
 		switch ( $key ) {
 			case 0:  $buyers[] = self::getGameStateValue( 'buyer0WantsGS' ); break;
@@ -1534,22 +1640,21 @@ string(1) "1"
 			default: break;
 		}
 */
-		return $buyersGS;
-
-    }
+		// return $buyersGS;
+    // }
 /////
 /////
 /////
-    function setPlayerBuyingGS( $player_id, $setValue ) { // (0==unknown, 1==Not buying 2==Buying)
-        $players = self::loadPlayersBasicInfos();
+    // function setPlayerBuyingGS( $player_id, $setValue ) { // (0==unknown, 1==Not buying 2==Buying)
+        // $players = self::loadPlayersBasicInfos();
 
-        $playerIDList = [];
+        // $playerIDList = [];
 
-		foreach ( $players as $playerIDOnly ) {
-			$playerIDList[] = $playerIDOnly[ "player_id" ];
-		}
+		// foreach ( $players as $playerIDOnly ) {
+			// $playerIDList[] = $playerIDOnly[ "player_id" ];
+		// }
 
-		$key = array_search( $player_id, $playerIDList );
+		// $key = array_search( $player_id, $playerIDList );
 
 //		self::dump( "[bmc] player_id:", $player_id );
 //		self::dump( "[bmc] key:", $key );
@@ -1558,38 +1663,30 @@ string(1) "1"
 		// Trying to resolve deadlock. If we don't write here, does it fix it?
 		//return;
 
+		// self::dump( "[bmc] setValue:", $setValue );
 
-
-		self::dump( "[bmc] setValue:", $setValue );
-
-
-
-
-
-
-		switch ( $key ) {
-			case 0:  self::setGameStateValue( 'buyer0WantsGS',  $setValue ); break;
-			case 1:  self::setGameStateValue( 'buyer1WantsGS',  $setValue ); break;
-			case 2:  self::setGameStateValue( 'buyer2WantsGS',  $setValue ); break;
-			case 3:  self::setGameStateValue( 'buyer3WantsGS',  $setValue ); break;
-			case 4:  self::setGameStateValue( 'buyer4WantsGS',  $setValue ); break;
-			case 5:  self::setGameStateValue( 'buyer5WantsGS',  $setValue ); break;
-			case 6:  self::setGameStateValue( 'buyer6WantsGS',  $setValue ); break;
-			case 7:  self::setGameStateValue( 'buyer7WantsGS',  $setValue ); break;
-			case 8:  self::setGameStateValue( 'buyer8WantsGS',  $setValue ); break;
-			case 9:  self::setGameStateValue( 'buyer9WantsGS',  $setValue ); break;
-			case 10: self::setGameStateValue( 'buyer10WantsGS', $setValue ); break;
-			case 11: self::setGameStateValue( 'buyer11WantsGS', $setValue ); break;
-			case 12: self::setGameStateValue( 'buyer12WantsGS', $setValue ); break;
-			case 13: self::setGameStateValue( 'buyer13WantsGS', $setValue ); break;
-			case 14: self::setGameStateValue( 'buyer14WantsGS', $setValue ); break;
-			case 15: self::setGameStateValue( 'buyer15WantsGS', $setValue ); break;
-			default: break;
-		}
-		
+		// switch ( $key ) {
+			// case 0:  self::setGameStateValue( 'buyer0WantsGS',  $setValue ); break;
+			// case 1:  self::setGameStateValue( 'buyer1WantsGS',  $setValue ); break;
+			// case 2:  self::setGameStateValue( 'buyer2WantsGS',  $setValue ); break;
+			// case 3:  self::setGameStateValue( 'buyer3WantsGS',  $setValue ); break;
+			// case 4:  self::setGameStateValue( 'buyer4WantsGS',  $setValue ); break;
+			// case 5:  self::setGameStateValue( 'buyer5WantsGS',  $setValue ); break;
+			// case 6:  self::setGameStateValue( 'buyer6WantsGS',  $setValue ); break;
+			// case 7:  self::setGameStateValue( 'buyer7WantsGS',  $setValue ); break;
+			// case 8:  self::setGameStateValue( 'buyer8WantsGS',  $setValue ); break;
+			// case 9:  self::setGameStateValue( 'buyer9WantsGS',  $setValue ); break;
+			// case 10: self::setGameStateValue( 'buyer10WantsGS', $setValue ); break;
+			// case 11: self::setGameStateValue( 'buyer11WantsGS', $setValue ); break;
+			// case 12: self::setGameStateValue( 'buyer12WantsGS', $setValue ); break;
+			// case 13: self::setGameStateValue( 'buyer13WantsGS', $setValue ); break;
+			// case 14: self::setGameStateValue( 'buyer14WantsGS', $setValue ); break;
+			// case 15: self::setGameStateValue( 'buyer15WantsGS', $setValue ); break;
+			// default: break;
+		// }	
 		// Search the player array to find the index of the set player
         //self::DbQuery( $sql );
-    }
+    // }
 /////
 /////
 /////
@@ -1602,9 +1699,9 @@ string(1) "1"
 /////
 /////
 /////
-/*
-TODO: Implement getPlayersBuyCount without using the database, since it seems to deadlock.
-*/
+
+// Trying to implement getPlayersBuyCount without using the database, since it seems to deadlock.
+
 /*	function getPlayersBuyCountGS2() {
 		self::trace( "[bmc] ENTER getPlayersBuyCountGS2" );
 		$numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
@@ -1622,12 +1719,6 @@ TODO: Implement getPlayersBuyCount without using the database, since it seems to
 			return $infiniteBuys;
 				
 		} else {
-			
-//TODO: this->buyCountGS2 is null. MIGHT Need another way to store the buy count actively.
-
-			foreach ( $players as $player ) {
-
-
 			self::dump( "[bmc] buyCountGS2:", $this->buyCountGS2 );
 			return $this->buyCountGS2;
 		}
@@ -1636,64 +1727,27 @@ TODO: Implement getPlayersBuyCount without using the database, since it seems to
 /////
 /////
 /////
-    function getPlayersBuyCountGS() {
-		self::trace( "[bmc] ENTER getPlayersBuyCountGS" );
+    // function getPlayersBuyCountGS() {
+		// self::trace( "[bmc] ENTER getPlayersBuyCountGS" );
 
-		$gameStateList = array(
-			'buyer0CountGS', 
-			'buyer1CountGS', 
-			'buyer2CountGS', 
-			'buyer3CountGS', 
-			'buyer4CountGS', 
-			'buyer5CountGS', 
-			'buyer6CountGS', 
-			'buyer7CountGS', 
-			'buyer8CountGS', 
-			'buyer9CountGS', 
-			'buyer10CountGS',
-			'buyer11CountGS',
-			'buyer12CountGS',
-			'buyer13CountGS',
-			'buyer14CountGS',
-			'buyer15CountGS'
-		);
-
-		$numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
-
-		if ( $numberOfBuys == 1 ) { // 0 == 3; 1 == Infinite buys
-			$players = self::loadPlayersBasicInfos();
-			$infiniteBuys = array();
-			
-			foreach ( $players as $player ) {
-				self::dump("[bmc] infiniteBuys(player): ", $player[ "player_id" ] );
-				
-				$infiniteBuys[ $player[ "player_id" ] ] = 99 ;
-			}
-			self::dump("[bmc] InfiniteBuys: ", $infiniteBuys );
-			return $infiniteBuys;
-				
-		} else {
-			$players = self::loadPlayersBasicInfos();
-			$index = 0;
-			$buyCountGS = [];
-			//self::dump( "[bmc] gamestatelist:", $gameStateList );
-
-			foreach ( $players as $player ) {
-//				self::dump( "[bmc] index:", $index );
-//				self::dump( "[bmc] gsl[]:", $gameStateList[ $index ] );
-				$buyCountGS[ $player[ 'player_id' ]] = self::getGameStateValue( $gameStateList[ $index ]);
-				$index++;
-			}
-		}
-		self::dump( "[bmc] buyCountGS:", $buyCountGS );
-		self::trace( "[bmc] EXIT getPlayersBuyCountGS" );
-		return $buyCountGS;
-	}
-/////
-/////
-/////
-    // function getPlayersBuyCount() {
-		// self::trace( "[bmc] ENTER getPlayersBuyCount" );
+		// $gameStateList = array(
+			// 'buyer0CountGS', 
+			// 'buyer1CountGS', 
+			// 'buyer2CountGS', 
+			// 'buyer3CountGS', 
+			// 'buyer4CountGS', 
+			// 'buyer5CountGS', 
+			// 'buyer6CountGS', 
+			// 'buyer7CountGS', 
+			// 'buyer8CountGS', 
+			// 'buyer9CountGS', 
+			// 'buyer10CountGS',
+			// 'buyer11CountGS',
+			// 'buyer12CountGS',
+			// 'buyer13CountGS',
+			// 'buyer14CountGS',
+			// 'buyer15CountGS'
+		// );
 
 		// $numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
 
@@ -1710,12 +1764,49 @@ TODO: Implement getPlayersBuyCount without using the database, since it seems to
 			// return $infiniteBuys;
 				
 		// } else {
-			// $sql = "SELECT player_id, buy_count FROM player ";
-			// $buy_countDB = self::getCollectionFromDB($sql, true);
-			// self::dump("[bmc] buy_countDB: ", $buy_countDB );
-			// return $buy_countDB;
+			// $players = self::loadPlayersBasicInfos();
+			// $index = 0;
+			// $buyCountGS = [];
+			// self::dump( "[bmc] gamestatelist:", $gameStateList );
+
+			// foreach ( $players as $player ) {
+				// self::dump( "[bmc] index:", $index );
+				// self::dump( "[bmc] gsl[]:", $gameStateList[ $index ] );
+				// $buyCountGS[ $player[ 'player_id' ]] = self::getGameStateValue( $gameStateList[ $index ]);
+				// $index++;
+			// }
 		// }
-    // }
+		// self::dump( "[bmc] buyCountGS:", $buyCountGS );
+		// self::trace( "[bmc] EXIT getPlayersBuyCountGS" );
+		// return $buyCountGS;
+	// }
+/////
+/////
+/////
+    function getPlayersBuyCount() {
+		self::trace( "[bmc] ENTER getPlayersBuyCount" );
+
+		$numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
+
+		if ( $numberOfBuys == 1 ) { // 0 == 3; 1 == Infinite buys
+			$players = self::loadPlayersBasicInfos();
+			$infiniteBuys = array();
+			
+			foreach ( $players as $player ) {
+				self::dump("[bmc] infiniteBuys(player): ", $player[ "player_id" ] );
+				
+				$infiniteBuys[ $player[ "player_id" ] ] = 99 ;
+			}
+			self::dump("[bmc] InfiniteBuys: ", $infiniteBuys );
+			return $infiniteBuys;
+				
+		} else {
+			$sql = "SELECT player_id, buy_count FROM player ";
+			$buy_countDB = self::getCollectionFromDB($sql, true);
+			self::dump("[bmc] buy_countDB: ", $buy_countDB );
+			return $buy_countDB;
+		}
+    }
 /////
 /////
 /////
@@ -1737,88 +1828,89 @@ TODO: Implement getPlayersBuyCount without using the database, since it seems to
 /////
 /////
 /////
-    // function decPlayerBuyCount( $player_id ) { // Track how many times they bought per hand
-		// self::dump("[bmc] ENTER decPlayerBuyCount", $player_id );
+    function decPlayerBuyCount( $player_id ) { // Track how many times they bought per hand
+		self::dump("[bmc] ENTER decPlayerBuyCount", $player_id );
+		$numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
+
+		if ( $numberOfBuys != 1 ) { // 0 == 3; 1 == Infinite buys
+			$sql = "SELECT player_id, buy_count FROM player ";
+			$buy_count = self::getCollectionFromDB( $sql, true );
+
+			self::dump("[bmc] buy_count[ player_id ] (decPlayerBuyCount): ", $buy_count );
+			
+			if ( $buy_count[ $player_id ] > 0 ) {
+				$bcUpdate = $buy_count[ $player_id ] - 1;
+				$sql = "UPDATE player SET buy_count = $bcUpdate WHERE player_id = $player_id ";
+				self::DbQuery( $sql );
+			} else {
+				throw new BgaUserException( self::_("You cannot buy any more this hand.") );
+				self::trace( "[bmc] BGA Exception: Cannot buy any more(decPlayerBuyCount)" );
+			}
+		} // If it == 1 then don't decrement
+    }
+/////
+/////
+/////
+    // function decPlayerBuyCountGS( $player_id ) { // Track how many times they bought per hand
+		// self::dump("[bmc] ENTER decPlayerBuyCountGS", $player_id );
 		// $numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
 
 		// if ( $numberOfBuys != 1 ) { // 0 == 3; 1 == Infinite buys
+
+			// $buy_countGS = self::getPlayersBuyCountGS();
+			// $buyCountGS2 = self::getPlayersBuyCountGS2();
 			// $sql = "SELECT player_id, buy_count FROM player ";
 			// $buy_count = self::getCollectionFromDB( $sql, true );
 
-			// self::dump("[bmc] buy_count[ player_id ] (decPlayerBuyCount): ", $buy_count );
+			// self::dump("[bmc] buyCountGS  (decPlayerBuyCount): ", $buy_countGS );
+			// self::dump("[bmc] buyCountGS2 (decPlayerBuyCount): ", $buy_countGS2 );
 			
-			// if ( $buy_count[ $player_id ] > 0 ) {
-				// $bcUpdate = $buy_count[ $player_id ] - 1;
+			// if ( $buy_countGS[ $player_id ] > 0 ) {
+				// $bcUpdate = $buy_countGS[ $player_id ] - 1;
+
 				// $sql = "UPDATE player SET buy_count = $bcUpdate WHERE player_id = $player_id ";
 				// self::DbQuery( $sql );
+
+				// $players = self::loadPlayersBasicInfos();
+
+				// $playerIDList = [];
+
+				// foreach ( $players as $playerIDOnly ) {
+					// $playerIDList[] = $playerIDOnly[ "player_id" ];
+				// }
+
+				// $key = array_search( $player_id, $playerIDList );
+
+				// self::dump( "[bmc] player_id:", $player_id );
+				// self::dump( "[bmc] key:", $key );
+
+				// switch ( $key ) {
+					// case 0:  self::setGameStateValue( 'buyer0CountGS',  $bcUpdate ); break;
+					// case 1:  self::setGameStateValue( 'buyer1CountGS',  $bcUpdate ); break;
+					// case 2:  self::setGameStateValue( 'buyer2CountGS',  $bcUpdate ); break;
+					// case 3:  self::setGameStateValue( 'buyer3CountGS',  $bcUpdate ); break;
+					// case 4:  self::setGameStateValue( 'buyer4CountGS',  $bcUpdate ); break;
+					// case 5:  self::setGameStateValue( 'buyer5CountGS',  $bcUpdate ); break;
+					// case 6:  self::setGameStateValue( 'buyer6CountGS',  $bcUpdate ); break;
+					// case 7:  self::setGameStateValue( 'buyer7CountGS',  $bcUpdate ); break;
+					// case 8:  self::setGameStateValue( 'buyer8CountGS',  $bcUpdate ); break;
+					// case 9:  self::setGameStateValue( 'buyer9CountGS',  $bcUpdate ); break;
+					// case 10: self::setGameStateValue( 'buyer10CountGS', $bcUpdate ); break;
+					// case 11: self::setGameStateValue( 'buyer11CountGS', $bcUpdate ); break;
+					// case 12: self::setGameStateValue( 'buyer12CountGS', $bcUpdate ); break;
+					// case 13: self::setGameStateValue( 'buyer13CountGS', $bcUpdate ); break;
+					// case 14: self::setGameStateValue( 'buyer14CountGS', $bcUpdate ); break;
+					// case 15: self::setGameStateValue( 'buyer15CountGS', $bcUpdate ); break;
+					// default: break;
+				// }
+
+// TODO: Now it is wedged on this line:
+
 			// } else {
 				// throw new BgaUserException( self::_("You cannot buy any more this hand(decPlayerBuyCount).") );
 			// }
 		// } // If it == 1 then don't decrement
     // }
-/////
-/////
-/////
-    function decPlayerBuyCountGS( $player_id ) { // Track how many times they bought per hand
-		self::dump("[bmc] ENTER decPlayerBuyCountGS", $player_id );
-		$numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
-
-		if ( $numberOfBuys != 1 ) { // 0 == 3; 1 == Infinite buys
-
-			$buy_countGS = self::getPlayersBuyCountGS();
-			//$buyCountGS2 = self::getPlayersBuyCountGS2();
-//			$sql = "SELECT player_id, buy_count FROM player ";
-//			$buy_count = self::getCollectionFromDB( $sql, true );
-
-			self::dump("[bmc] buyCountGS  (decPlayerBuyCount): ", $buy_countGS );
-			//self::dump("[bmc] buyCountGS2 (decPlayerBuyCount): ", $buy_countGS2 );
-			
-			if ( $buy_countGS[ $player_id ] > 0 ) {
-				$bcUpdate = $buy_countGS[ $player_id ] - 1;
-
-//				$sql = "UPDATE player SET buy_count = $bcUpdate WHERE player_id = $player_id ";
-//				self::DbQuery( $sql );
-
-				$players = self::loadPlayersBasicInfos();
-
-				$playerIDList = [];
-
-				foreach ( $players as $playerIDOnly ) {
-					$playerIDList[] = $playerIDOnly[ "player_id" ];
-				}
-
-				$key = array_search( $player_id, $playerIDList );
-
-		//		self::dump( "[bmc] player_id:", $player_id );
-		//		self::dump( "[bmc] key:", $key );
-
-				switch ( $key ) {
-					case 0:  self::setGameStateValue( 'buyer0CountGS',  $bcUpdate ); break;
-					case 1:  self::setGameStateValue( 'buyer1CountGS',  $bcUpdate ); break;
-					case 2:  self::setGameStateValue( 'buyer2CountGS',  $bcUpdate ); break;
-					case 3:  self::setGameStateValue( 'buyer3CountGS',  $bcUpdate ); break;
-					case 4:  self::setGameStateValue( 'buyer4CountGS',  $bcUpdate ); break;
-					case 5:  self::setGameStateValue( 'buyer5CountGS',  $bcUpdate ); break;
-					case 6:  self::setGameStateValue( 'buyer6CountGS',  $bcUpdate ); break;
-					case 7:  self::setGameStateValue( 'buyer7CountGS',  $bcUpdate ); break;
-					case 8:  self::setGameStateValue( 'buyer8CountGS',  $bcUpdate ); break;
-					case 9:  self::setGameStateValue( 'buyer9CountGS',  $bcUpdate ); break;
-					case 10: self::setGameStateValue( 'buyer10CountGS', $bcUpdate ); break;
-					case 11: self::setGameStateValue( 'buyer11CountGS', $bcUpdate ); break;
-					case 12: self::setGameStateValue( 'buyer12CountGS', $bcUpdate ); break;
-					case 13: self::setGameStateValue( 'buyer13CountGS', $bcUpdate ); break;
-					case 14: self::setGameStateValue( 'buyer14CountGS', $bcUpdate ); break;
-					case 15: self::setGameStateValue( 'buyer15CountGS', $bcUpdate ); break;
-					default: break;
-				}
-
-//TODO: Now it is wedged on this line:
-
-			} else {
-				throw new BgaUserException( self::_("You cannot buy any more this hand(decPlayerBuyCount).") );
-			}
-		} // If it == 1 then don't decrement
-    }
 /////
 /////
 /////
@@ -1842,38 +1934,38 @@ TODO: Implement getPlayersBuyCount without using the database, since it seems to
 /////
 /////
 /////
-    function clearPlayersBuyCountGS() {
-		self::trace( "[bmc] ENTER clearPlayersBuyCountGS" );
+    // function clearPlayersBuyCountGS() {
+		// self::trace( "[bmc] ENTER clearPlayersBuyCountGS" );
 
-		$gameStateList = array(
-			'buyer0CountGS', 
-			'buyer1CountGS', 
-			'buyer2CountGS', 
-			'buyer3CountGS', 
-			'buyer4CountGS', 
-			'buyer5CountGS', 
-			'buyer6CountGS', 
-			'buyer7CountGS', 
-			'buyer8CountGS', 
-			'buyer9CountGS', 
-			'buyer10CountGS',
-			'buyer11CountGS',
-			'buyer12CountGS',
-			'buyer13CountGS',
-			'buyer14CountGS',
-			'buyer15CountGS'
-		);
+		// $gameStateList = array(
+			// 'buyer0CountGS', 
+			// 'buyer1CountGS', 
+			// 'buyer2CountGS', 
+			// 'buyer3CountGS', 
+			// 'buyer4CountGS', 
+			// 'buyer5CountGS', 
+			// 'buyer6CountGS', 
+			// 'buyer7CountGS', 
+			// 'buyer8CountGS', 
+			// 'buyer9CountGS', 
+			// 'buyer10CountGS',
+			// 'buyer11CountGS',
+			// 'buyer12CountGS',
+			// 'buyer13CountGS',
+			// 'buyer14CountGS',
+			// 'buyer15CountGS'
+		// );
 
-		$players = self::loadPlayersBasicInfos();
-		$index = 0;
+		// $players = self::loadPlayersBasicInfos();
+		// $index = 0;
 
-		foreach ( $players as $player ) {
-			self::dump( "[bmc] index:", $index );
-			self::dump( "[bmc] gsl[]:", $gameStateList[ $index ] );
-			self::setGameStateValue( $gameStateList[ $index ], 3 );
-			$index++;
-		}
-    }
+		// foreach ( $players as $player ) {
+			// self::dump( "[bmc] index:", $index );
+			// self::dump( "[bmc] gsl[]:", $gameStateList[ $index ] );
+			// self::setGameStateValue( $gameStateList[ $index ], 3 );
+			// $index++;
+		// }
+    // }
 /////
 /////
 /////
@@ -1935,26 +2027,10 @@ TODO: Implement getPlayersBuyCount without using the database, since it seems to
 		// These next 2 active lines were previously outside the IF. However, if the player
 		//    is not allowed to buy, then the game state should not change.
 		// First resolve the buyers, then process the discard
-			//$this->resolveBuyers();
+			$this->resolveBuyers();
 		
-//			self::clearPlayersBuying();
+			self::clearPlayersBuying();
 			//self::clearPlayersBuyingGS();
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-
-//TODO: Maybe this is where the client side deadlock with the discard card is, in clearbuyers:
 
 			// Notifying players potentially buying the previous one that they were too slow!
 			self::notifyAllPlayers(
@@ -1976,7 +2052,7 @@ TODO: Implement getPlayersBuyCount without using the database, since it seems to
 			
 			$this->cards->insertCardOnExtremePosition( $card_id, 'discardPile', $bOnTop );
 	
-			$cardsInDp = $this->cards->getCardsInLocation( 'discardPile' );
+			//$cardsInDp = $this->cards->getCardsInLocation( 'discardPile' );
 			
 			//self::dump("[bmc] cardsInDp:", $cardsInDp );
 
@@ -2107,8 +2183,8 @@ TODO: Implement getPlayersBuyCount without using the database, since it seems to
 			$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 			$bossBuyer = $this->getPlayerAfter( $activeTurnPlayer_id );
 			
-//			$buyers = self::getPlayerBuying();
-			$buyers = self::getPlayerBuyingGS();
+			$buyers = self::getPlayerBuying();
+			// $buyers = self::getPlayerBuyingGS();
 		
 			self::dump("[bmc] buyers(drawCard):", $buyers);
 			
@@ -2129,6 +2205,8 @@ TODO: Implement getPlayersBuyCount without using the database, since it seems to
 					if ( $p_id == $bossBuyer ) {
 						self::trace("[bmc] Resolving Buyers early!");
 						$this->resolveBuyers();
+						
+						// TODO: Do I need to break out of this loop, because boss buyer bought?
 						//self::clearPlayersBuying();
 						//self::clearPlayersBuyingGS();
 					}
@@ -2244,8 +2322,8 @@ TODO: Implement getPlayersBuyCount without using the database, since it seems to
 // TODO: Trying to resolve deadlock issue by breaking up the changing of the database.
 
 //TODO: MOVE THIS TO LATER, after the notif 
-//		self::setPlayerBuying(   $player_id, 2 )
-		self::setPlayerBuyingGS( $player_id, 2 );
+		self::setPlayerBuying( $player_id, 2 );
+		// self::setPlayerBuyingGS( $player_id, 2 );
 
 		$drawSourceValue = self::getGameStateValue( 'drawSourceValue' );
 		self::dump("[bmc] drawSourceValue(notifyPlayerWantsToBuy):", $drawSourceValue );
@@ -2300,7 +2378,7 @@ self::trace("[bmc] Deadlock:2200");
 ////////
 ////////
 ////////
-    function drawNotify( $currentCard, $playingPlayer_id, $drawSource, $drawPlayer, $activeTurnPlayer_id ) {
+	function drawNotify( $currentCard, $playingPlayer_id, $drawSource, $drawPlayer, $activeTurnPlayer_id ) {
 		self::trace("[bmc] ENTER drawNotify");
 
 		self::dump("[bmc] currentCard    :",  $currentCard);
@@ -2359,7 +2437,7 @@ self::trace("[bmc] Deadlock:2200");
 				self::notifyPlayer(
 					$player_id,
 					'drawCard',
-					'You drew ${value_displayed}${color_displayed} from the ${drawSourceText}.',
+					clienttranslate('You drew ${value_displayed}${color_displayed} from the ${drawSourceText}.'),
 					array(
 						'player_id' => $player_id,
 						'player_name' => $activePlayer,
@@ -2659,7 +2737,7 @@ self::trace("[bmc] Deadlock:2200");
 
 			if (( $targetArea == false ) ||
 				( $jokerSwapResult == false )) {
-				throw new BgaUserException( self::_('Make a partial set (only 2 cards) or run (only 3 cards) for the swapped joker and select a joker to swap.') );
+				throw new BgaUserException( self::_('Make a partial set (only 2 cards) or run (only 3 cards) for the swapping joker and select one joker to swap.') );
 			} else {
 				$playerHand = $this->cards->getCardsInLocation( 'hand', $active_player_id );
 
@@ -3093,7 +3171,12 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			// If the cards w/o joker are still a run then take the joker, if not then don't
 			
 			$cardsInArea = $this->cards->getCardsInLocation( $boardArea, $boardPlayer);
-			$mightBeJoker = $this->checkForJoker( $cardsInArea );
+			
+			if ( count( $cardsInArea ) != 0 ) {
+				$mightBeJoker = $this->checkForJoker( $cardsInArea );
+			} else {
+				return false; // Exit early because no down area was selected
+			}
 
 			self::dump("[bmc] cardsInArea:", $cardsInArea);
 			self::dump("[bmc] mightBeJoker:", $mightBeJoker);
@@ -4114,10 +4197,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					$player_id,
 					"tableWindow", '', array(
 						"id" => 'handScoring',
-//						"title" => clienttranslate( "Woot! You went out! You want the most positive score:" ),
 						"title" => $outMsg1,
 						"table" => $table,
-//						"closing" => clienttranslate( "On to the next!" )
 						"closing" => $scoreMessage
 					)
 				); 
@@ -4128,7 +4209,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 						"id" => 'handScoring',
 						"title" => $otherMessage,
 						"table" => $table,
-//						"closing" => clienttranslate( "On to the next!" )
 						"closing" => $scoreMessage
 					)
 				); 
@@ -4159,7 +4239,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 ////
-    function stNewHand() {
+	function stNewHand() {
 		self::debug("[bmc] ENTER stNewHand");
 		
         // Take back all cards (from any location => null) to deck
@@ -4233,22 +4313,22 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 //		self::buyCountGS2 = array();
 //		self::buyCountGS2 = [];
-		$buyCountGS2 = [];
+//		$buyCountGS2 = [];
 
 		// Clear out the BUY counters for all players
-//		self::clearPlayersBuyCount();
-		self::clearPlayersBuyCountGS();
+		self::clearPlayersBuyCount();
+//		self::clearPlayersBuyCountGS();
 		//self::clearPlayersBuyCountGS2();
 
-//		$buyCount = self::getPlayersBuyCount();
-//		self::dump("[bmc] buyCount 3963:", $buyCount);
+		$buyCount = self::getPlayersBuyCount();
+		self::dump("[bmc] buyCount 4313:", $buyCount);
 
-		$buyCountGS  = self::getPlayersBuyCountGS();
+//		$buyCountGS  = self::getPlayersBuyCountGS();
 		//$buyCountGS2 = self::getPlayersBuyCountGS2();
-		self::dump("[bmc] buyCountGS  4129:", $buyCountGS);
+		// self::dump("[bmc] buyCountGS  4129:", $buyCountGS);
 		//self::dump("[bmc] buyCountGS2 4130:", $buyCountGS2);
 
-		$buyCount = $buyCountGS;
+		// $buyCount = $buyCountGS;
 
 		// Determine who is the next dealer: It's the next in the associative array
 		$playerOrder = self::getNextPlayerTable();
@@ -4263,6 +4343,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			self::setGameStateValue( 'dealer', $playerOrder[ $dealer ]);
 		}
 		
+//TODO: This next line complains about dealer being null. I think I added the game option wrong.
+	
 		$dealer_name = '<span style="color:#' . $players[ $dealer ]["player_color"] . ';">' . $players[ $dealer ]["player_name"] . '</span>';
 
 		$this->gamestate->changeActivePlayer( $playerOrder[ $dealer ] );
@@ -4346,7 +4428,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 // function stCheckEmptyDeck() {
-    function checkEmptyDeck() { // Just make this a function to shuffle the deck if needed
+	function checkEmptyDeck() { // Just make this a function to shuffle the deck if needed
 //		self::trace("[bmc] ENTER stCheckEmptyDeck");
 		self::trace("[bmc] ENTER checkEmptyDeck");
 		
@@ -4401,12 +4483,12 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 ////
-	function stBuyTry() {
-		self::trace( "[bmc] ENTER stBuyTry:" );
-   		self::setPlayerBuyingGS( $player_id, 2 ); // (0==unknown, 1==Not buying 2==Buying)
+	// function stBuyTry() {
+		// self::trace( "[bmc] ENTER stBuyTry:" );
+   		// self::setPlayerBuyingGS( $player_id, 2 ); // (0==unknown, 1==Not buying 2==Buying)
 
-		self::trace( "[bmc] EXIT stBuyTry:" );
-	}
+		// self::trace( "[bmc] EXIT stBuyTry:" );
+	// }
 ////
 ////
 ////
@@ -4437,19 +4519,19 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// Clear the variable for the next player, because this discard has been handled
 		self::setGameStateValue( 'drawSourceValue', 2 );
 		
-//		$buyCount = self::getPlayersBuyCount();
-//		self::dump("[bmc] buyCount:", $buyCount );
-		$buyCountGS  = self::getPlayersBuyCountGS();
+		$buyCount = self::getPlayersBuyCount();
+		self::dump("[bmc] buyCount:", $buyCount );
+		// $buyCountGS  = self::getPlayersBuyCountGS();
 		//$buyCountGS2 = self::getPlayersBuyCountGS2();
-		self::dump("[bmc] buyCountGS:",  $buyCountGS );
+		// self::dump("[bmc] buyCountGS:",  $buyCountGS );
 		//self::dump("[bmc] buyCountGS2:", $buyCountGS2 );
 
-		$buyCount = $buyCountGS;
+		// $buyCount = $buyCountGS;
 
 		$someoneIsBuying = false;
 		
-//		$buyers = self::getPlayerBuying();
-		$buyers = self::getPlayerBuyingGS();
+		$buyers = self::getPlayerBuying();
+		// $buyers = self::getPlayerBuyingGS();
 
 		self::dump("[bmc] buyers(resolveBuyers):", $buyers);
 		//self::clearPlayersBuying();
@@ -4504,22 +4586,21 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				// If there is a buyer then move the cards and notify everyone
 				
 				if ( $buyer_id != null ) {
-					//self::decPlayerBuyCount( $buyer_id );
+					self::decPlayerBuyCount( $buyer_id );
 					//self::decPlayerBuyCountGS( $buyer_id );
 					//self::decPlayerBuyCountGS2( $buyer_id );
 					self::setGameStateValue( 'findBuyerFailsafe', 0 );
 
+					self::clearPlayersBuying();
 
-
-
-					//$buyCount = self::getPlayersBuyCount();
-					$buyCountGS = self::getPlayersBuyCountGS();
+					$buyCount = self::getPlayersBuyCount();
+					// $buyCountGS = self::getPlayersBuyCountGS();
 					//$buyCountGS2 = self::getPlayersBuyCountGS2();
-					//self::dump("bmc] 4373: ", $buyCount);
-					self::dump("bmc] 4374: ", $buyCountGS);
+					self::dump("bmc] 4373: ", $buyCount);
+					// self::dump("bmc] 4374: ", $buyCountGS);
 					//self::dump("bmc] 4375: ", $buyCountGS2);
 
-					$buyCount = $buyCountGS;
+					// $buyCount = $buyCountGS;
 
 					//Move the cards for the buyer (the turnPlayer will get their cards in drawCard)
 					
@@ -4563,6 +4644,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 							'allHands' => $cardsByLocation
 						)
 					);
+					// This is usually fired from JS, but need to give the player an entry in their log that the wishlist is disabled				
+					$this->disableWishList( $buyer_id );	 
 				}
 			} else {
 				// There is no buyer
@@ -4579,8 +4662,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			// Set players buy status to NOT BUY
 			$players = self::loadPlayersBasicInfos();
 			foreach ( $players as $player_id => $player ) {
-//				self::setPlayerBuying(   $player_id, 1 );
-				self::setPlayerBuyingGS( $player_id, 1 );
+				self::setPlayerBuying(   $player_id, 1 );
+				// self::setPlayerBuyingGS( $player_id, 1 );
 			}
 
 			$buyingPlayerNames = [];
@@ -4635,17 +4718,17 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// If the dealer cannot buy the card, then uncomment this. If they are OK to buy then comment it out.
 //		$this->gamestate->setPlayerNonMultiactive( $discardingPlayer_id, 'discardCard' );
 
-		$this->clearBuyers();
+		//$this->clearBuyers();
 
 		// TODO: Might have to allow for dealer to buy here in the first deal:
-//		self::setPlayerBuying(   $activeTurnPlayer_id, 1 ) ; // 1 = not buying, they can get it for free
-		self::setPlayerBuyingGS( $activeTurnPlayer_id, 1 );
+		self::setPlayerBuying(   $activeTurnPlayer_id, 1 ) ; // 1 = not buying, they can get it for free
+		// self::setPlayerBuyingGS( $activeTurnPlayer_id, 1 );
 
 		$skipFirstDeal = self::getGameStateValue( 'skipFirstDeal' );
 		
 		if ( $skipFirstDeal == 0 ) {  // 0 is false. 1 is true. It seems to want integers.
-//			self::setPlayerBuying(   $discardingPlayer_id, 1 ) ; // 1 = not buying, they just discarded it
-			self::setPlayerBuyingGS( $discardingPlayer_id, 1 );
+			self::setPlayerBuying(   $discardingPlayer_id, 1 ) ; // 1 = not buying, they just discarded it
+			// self::setPlayerBuyingGS( $discardingPlayer_id, 1 );
 			
 			// Discarding player is no longer active
 			$this->gamestate->setPlayerNonMultiactive( $discardingPlayer_id, '' );
@@ -4679,49 +4762,148 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 /////
 	function notBuyRequest( $player_id ) { 
 		self::dump("[bmc] ENTER NotBuyRequest:", $player_id );
-		self::setPlayerBuyingGS( $player_id, 1 ); // (0==unknown, 1==Not buying 2==Buying)
+		self::setPlayerBuying( $player_id, 1 ); // (0==unknown, 1==Not buying 2==Buying)
+		// self::setPlayerBuyingGS( $player_id, 1 ); // (0==unknown, 1==Not buying 2==Buying)
 		$this->notifyPlayerWantsToNotBuy( $player_id );
 		self::trace("[bmc] EXIT NotBuyRequest" );
 	}
 /////
 /////
 /////
-	function notBuyRequest_orig( $player_id ) { 
-		self::dump("[bmc] ENTER NotBuyRequest:", $player_id );
-		//self::checkAction('notBuyRequest');
+	// function notBuyRequest_orig( $player_id ) { 
+		// self::dump("[bmc] ENTER NotBuyRequest:", $player_id );
+		// self::checkAction('notBuyRequest');
 		
-		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
-		self::dump("[bmc] player_id:", $player_id);
+		// $player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
+		// self::dump("[bmc] player_id:", $player_id);
 
 		// Check if that player has requested to buy and clear it
 
-//		$buyers = self::getPlayerBuying();
-		$buyers = self::getPlayerBuyingGS();
+		// $buyers = self::getPlayerBuying();
+		// $buyers = self::getPlayerBuyingGS();
 		
-		if ( $buyers[ $player_id ] == true ) {
-			self::dump("[bmc] clearing buy from player:", $player_id);
-//			self::setPlayerBuying(   $player_id, 1 ); // (0==unknown, 1==Not buying 2==Buying)
-			self::setPlayerBuyingGS( $player_id, 1 ); // (0==unknown, 1==Not buying 2==Buying)
+		// if ( $buyers[ $player_id ] == true ) {
+			// self::dump("[bmc] clearing buy from player:", $player_id);
+			// self::setPlayerBuying(   $player_id, 1 ); // (0==unknown, 1==Not buying 2==Buying)
+			// self::setPlayerBuyingGS( $player_id, 1 ); // (0==unknown, 1==Not buying 2==Buying)
 
-			$this->notifyPlayerWantsToNotBuy( $player_id );
+			// $this->notifyPlayerWantsToNotBuy( $player_id );
+		// }
+
+		// self::trace("[bmc] EXIT (truly) NotBuyRequest:" );
+	// }
+////
+////
+////
+	// function buyNotifyDone( $player_id ) {
+		// self::trace("[bmc] ENTER buyNotifyDone");
+		// self::setPlayerBuying(   $player_id, 2 );
+		// self::setPlayerBuyingGS( $player_id, 2 );
+		// self::trace("[bmc] EXIT buyNotifyDone");
+	// }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+////
+////
+////
+	function submitWishList( $player_id, $wishList_type, $wishList_type_arg ) {
+		self::trace("[bmc] ENTER submitWishList");
+		self::dump("[bmc] wishList_type:", $wishList_type);
+		self::dump("[bmc] wishList_type_arg:", $wishList_type_arg);
+
+		// Delete all entries for the wishList for that player
+		
+	    $sql = "DELETE FROM wishList WHERE player_id = '";
+		$sql_command = $player_id . "'";
+		self::DbQuery( $sql . $sql_command );
+
+		$wishList = [];
+		
+		$index = 0;
+		
+		$numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
+
+		if ( $numberOfBuys != 1 ) { // 0 == 3; 1 == Infinite buys
+			$sql = "SELECT player_id, buy_count FROM player ";
+			$buy_count = self::getCollectionFromDB( $sql, true );
+
+			self::dump("[bmc] buy_count[ player_id ] (buyRequestFinish): ", $buy_count );
+			
+			if ( $buy_count[ $player_id ] < 1 ) {
+				throw new BgaUserException( self::_("All your wishes for this hand have already come true!") );
+				self::trace( "[bmc] BGA Exception: Cannot buy any more(buyRequestFinish)" );
+
+			}
+		} // If it > 0 then keep processing the buy
+	
+		// $testPlayerHandArray[3] = array(
+			// 14 => array(
+				// 'type' => '3', // Suit
+				// 'type_arg' => '13' // Value
+				// )
+			// );
+
+		foreach( $wishList_type as $wlt ){
+			$wishList[] = array(
+				'type' => $wishList_type[ $index ],
+				'type_arg' => $wishList_type_arg[ $index ] );
+			$index++;
 		}
 
-		self::trace("[bmc] EXIT (truly) NotBuyRequest:" );
-	}
-////
-////
-////
-	function buyNotifyDone( $player_id ) {
-		self::trace("[bmc] ENTER buyNotifyDone");
-//		self::setPlayerBuying(   $player_id, 2 );
-		self::setPlayerBuyingGS( $player_id, 2 );
-		self::trace("[bmc] EXIT buyNotifyDone");
-	}
-////
-////
-////
-	function submitWishList( $player_id, $wishList ) {
-		self::trace("[bmc] ENTER submitWishList");
+//		$wishList = array_combine( $wishList_type, $wishList_type_arg );
+
+		self::dump("[bmc] wishList_total:", $wishList);
+
+		foreach( $wishList as $wl ) {
+			self::dump("[bmc] wishList type:", $wl['type']);
+			self::dump("[bmc] wishList type_arg:", $wl['type_arg']);
+
+		    $sql = "INSERT INTO wishList (player_id, card_type, card_type_arg) VALUES ";
+			$sql_command = "( " . $player_id . "," . $wl['type'] . "," . $wl['type_arg'] . " )";
+			
+			self::DbQuery( $sql . $sql_command );
+		}
+
+		$this->notifyPlayer(
+			$player_id,
+			"wishListSubmitted",
+			clienttranslate('Wish list submitted and active.'),
+			array (
+				'player_id' => $player_id
+			)
+		); 
 
 		self::trace("[bmc] EXIT submitWishList");
 	}
@@ -4761,25 +4943,10 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 ////
-	function buyRequest( $player_id ) {
-		self::trace("[bmc] ENTER buyRequest-BETTER");
+	function buyRequestFinish( $player_id ) {
+		self::trace("[bmc] ENTER buyRequestFinish");
 		self::dump("[bmc] player_id:", $player_id);
-		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
-		self::dump("[bmc] player_id:", $player_id);
-		
-		// Check if it's the player's turn, so no need to buy (TODO: Or buy it for free???)
-		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
-		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id);
-		
-		if ( $player_id == $activeTurnPlayer_id ) {
-			self::trace("[bmc] Sending notif for itsYourTurn");
-			self::notifyPlayer(
-				$player_id,
-				'itsYourTurn',
-				"It's your turn",
-				array()
-			);
-		}
+				
 		// If there aren't enough cards, don't allow it
 		$countDeck = self::getGameStateValue( 'countDeck' );
 		$countDiscardPile = self::getGameStateValue( 'countDiscardPile' );
@@ -4791,89 +4958,124 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			throw new BgaUserException( self::_('There are not enough down cards for you to buy.') );
 		}
 	
-//TODO: Deadlock debug: Comment this out and should never see deadlock:
-		self::setPlayerBuyingGS( $player_id, 2 ); // (0==unknown, 1==Not buying 2==Buying)
-
-// TODO: Keeping it all in 1 function to see if this avoids deadlock. So putting the notifyplayerwants to buy right before it exits.
-//		$this->notifyPlayerWantsToBuy( $player_id );
-
-
-
-
-
-
-
-
-
-
-
-		self::dump("[bmc] ENTER notifyPlayerWantsToBuy(embedded):",  $player_id);
-		$players = self::loadPlayersBasicInfos();
-		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
-		self::dump("[bmc] ATPI", $activeTurnPlayer_id );
-		$currentCard = $this->cards->getCardOnTop( 'discardPile' );
+		// Check if it's the player's turn, so no need to buy (TODO: Or buy it for free???)
+		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
+		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id);
 		
-		if ( $currentCard != null ) {
-			self::dump( "[bmc] cardToBeBought[id]:",  $currentCard['id'] );
-			if ( $currentCard[ 'type' ] == 5 ) {
-				$value_displayed = ' a joker';
-				$color_displayed = '!';
-			} else {
-				$value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
-				$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
-			}
-			self::notifyAllPlayers(
-				'playerWantsToBuy',
-				clienttranslate('${player_name} wants to buy ${value_displayed}${color_displayed}'),
-				array(
-					'player_id' => $player_id,
-					'activeTurnPlayer_id' => $activeTurnPlayer_id,
-					'player_name' => $players[ $player_id ][ 'player_name' ],
-					'cardToBeBought' => $currentCard,
-					'value_displayed' => $value_displayed,
-					'color_displayed' => $color_displayed
-				)
+		$currentPlayerId = self::getCurrentPlayerId();
+		self::dump("[bmc] currentPlayerId:", $currentPlayerId);
+		
+		$nextPlayer = $this->getPlayerAfter( $currentPlayerId ); 
+		self::dump("[bmc] nextPlayer:", $nextPlayer);
+
+		if ( $player_id == $nextPlayer ) {
+			self::dump("[bmc] It's your turn so no need to buy:",  $player_id);
+			
+			self::trace("[bmc] Sending notif for itsYourTurn");
+			self::notifyPlayer(
+				$player_id,
+				'itsYourTurn',
+				clienttranslate("It's your turn"),
+				array()
 			);
-		} else {
-			self::trace("[bmc] Yikes! No card was found to buy!");
-		}
-		self::trace("[bmc] EXIT notifyPlayerWantsToBuy(embedded)");
+		
+		// Might be a good buy, so continue trying to process it; Ignore if it's the player who discarded
+		} else if ( $player_id != $activeTurnPlayer_id ) {
 
+			self::trace("[bmc] Registering the buy request");
 
+			$numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
 
+			if ( $numberOfBuys != 1 ) { // 0 == 3; 1 == Infinite buys
+				$sql = "SELECT player_id, buy_count FROM player ";
+				$buy_count = self::getCollectionFromDB( $sql, true );
 
+				self::dump("[bmc] buy_count[ player_id ] (buyRequestFinish): ", $buy_count );
+				
+				if ( $buy_count[ $player_id ] < 1 ) {
+					throw new BgaUserException( self::_("You cannot buy any more this hand.") );
+					self::trace( "[bmc] BGA Exception: Cannot buy any more(buyRequestFinish)" );
+				}
+			} // If it > 0 then keep processing the buy
 
+			self::setPlayerBuying( $player_id, 2 ); // (0==unknown, 1==Not buying 2==Buying)
+			// self::setPlayerBuyingGS( $player_id, 2 ); // (0==unknown, 1==Not buying 2==Buying)
 
+			self::dump("[bmc] ENTER notifyPlayerWantsToBuy(embedded):",  $player_id);
+			$players = self::loadPlayersBasicInfos();
 
+			$currentCard = $this->cards->getCardOnTop( 'discardPile' );
+			
+			if ( $currentCard != null ) {
+				self::dump( "[bmc] cardToBeBought[id]:",  $currentCard['id'] );
+				if ( $currentCard[ 'type' ] == 5 ) {
+					$value_displayed = ' a joker';
+					$color_displayed = '!';
+				} else {
+					$value_displayed = 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ';
+					$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.';
+				}
+				self::notifyAllPlayers(
+					'playerWantsToBuy',
+					clienttranslate('${player_name} wants to buy ${value_displayed}${color_displayed}'),
+					array(
+						'player_id' => $player_id,
+						'activeTurnPlayer_id' => $activeTurnPlayer_id,
+						'player_name' => $players[ $player_id ][ 'player_name' ],
+						'cardToBeBought' => $currentCard,
+						'value_displayed' => $value_displayed,
+						'color_displayed' => $color_displayed
+					)
+				);
+			} else {
+				self::trace("[bmc] Yikes! No card was found to buy!");
+			}
+		} // Else the discarder tried to buy so just ignore
+		self::trace("[bmc] EXIT buyRequestFinish");
+	}
+////
+////
+////
+	function disableWishList( $player_id ) {
+		self::trace("[bmc] ENTER disableWishList");
+		
+	    $sql = "DELETE FROM wishList WHERE player_id = '";
+		$sql_command = $player_id . "'";
+		self::DbQuery( $sql . $sql_command );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		self::trace("[bmc] EXIT buyRequest-BETTER");
+		self::notifyPlayer(
+			$player_id,
+			'wishListDisabled',
+			clienttranslate("Wish list disabled"),
+			array(
+				'player_id' => $player_id,
+			)
+		);
+		self::trace("[bmc] EXIT disableWishList");
+	}
+////
+////
+////
+	function buyRequest() { // This is from JS
+		self::trace("[bmc] ENTER buyRequest_fromJS");
+		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
+		self::dump("[bmc] player_id:", $player_id);	
+		$this->buyRequestFinish( $player_id );
+		self::trace("[bmc] EXIT buyRequest_fromJS");
+	}
+////
+////
+////
+	function buyRequest_fromPHP ( $player_id ) {
+		self::trace("[bmc] ENTER buyRequest_fromPHP");
+		$this->buyRequestFinish( $player_id );
+		self::trace("[bmc] EXIT buyRequest_fromPHP");
 	}
 ////
 ////
 ////
 	function buyRequest_orig( $player_id ) {
-		self::trace("[bmc] ENTER buyRequest-NEW");
+		self::trace("[bmc] ENTER buyRequest_orig");
 		//self::checkAction("buyRequest"); // Cannot do checkAction or the server blocks with "It's not your turn"
 
 //		$state = $this->gamestate->state();
@@ -4891,7 +5093,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				self::notifyPlayer(
 					$player_id,
 					'itsYourTurn',
-					"It's your turn",
+					clienttranslate("It's your turn"),
 					array()
 				);
 			}
@@ -4928,15 +5130,15 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			// } // else $buyMethod == Seat order, so just keep track and resolve later
 
 			// Check that this player can still buy this hand
-//			$playersBuyCount = self::getPlayersBuyCount();
-			$playersBuyCountGS  = self::getPlayersBuyCountGS();
+			$playersBuyCount = self::getPlayersBuyCount();
+			// $playersBuyCountGS  = self::getPlayersBuyCountGS();
 			//$playersBuyCountGS2 = self::getPlayersBuyCountGS2();
 
-//			self::dump("[bmc] 4429:", $playersBuyCount);
-			self::dump("[bmc] 4430:", $playersBuyCountGS);
+			self::dump("[bmc] 4429:", $playersBuyCount);
+			// self::dump("[bmc] 4430:", $playersBuyCountGS);
 			//self::dump("[bmc] 4430:", $playersBuyCountGS2);
 			
-			$playersBuyCount = $playersBuyCountGS;
+			// $playersBuyCount = $playersBuyCountGS;
 
 			if ( $playersBuyCount[ $player_id ] < 1 ) {
 				throw new BgaUserException( self::_("You cannot buy. You already bought 3 times this hand.") );
@@ -5011,8 +5213,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$players = self::loadPlayersBasicInfos();
 		foreach ( $players as $player_id => $player) {
 			// Every discard clear the buyers (0==unknown, 1==Not buying 2==Buying)
-//			self::setPlayerBuying(   $player_id, 0 );
-			self::setPlayerBuyingGS( $player_id, 0 );
+			self::setPlayerBuying(   $player_id, 0 );
+			// self::setPlayerBuyingGS( $player_id, 0 );
 		}
 		self::trace("[bmc] EXIT clearBuyers.");
 	}
@@ -5070,9 +5272,10 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::dump("[bmc] waitForAll buyer_id:", $buyer_id);
 
 
-		if ( $buyer_id != 0 ) {
-			self::decPlayerBuyCountGS( $buyer_id );
-		}
+//		if ( $buyer_id != 0 ) {
+//			self::decPlayerBuyCount( $buyer_id );
+			// self::decPlayerBuyCountGS( $buyer_id );
+//		}
 		
 		// Don't need to wait any more since once the player discards over a card that can be
 		//   bought, that card can no longer be bought.
@@ -5097,10 +5300,11 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$nextTurnPlayer = $this->getPlayerAfter( $activeTurnPlayer_id );
 			
 		// Adding clearPlayersBuying to try to fix deadlock issue.
-		self::clearPlayersBuyingGS();
-		$buyerCountGS = self::getPlayersBuyCountGS();
-		self::dump("[bmc] buyerCountGS  Status(discardCard):", $buyerCountGS);
-		$buyerCount = $buyerCountGS;
+		self::clearPlayersBuying();
+		// self::clearPlayersBuyingGS();
+		// $buyerCountGS = self::getPlayersBuyCountGS();
+		// self::dump("[bmc] buyerCountGS  Status(discardCard):", $buyerCountGS);
+		// $buyerCount = $buyerCountGS;
 
 		// self::notifyAllPlayers(
 			// 'updateBuyers',
@@ -5113,8 +5317,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// );
 
 		self::trace( "[bmc] about to go to fullyResolved" );
+
 		$this->gamestate->nextState( 'fullyResolved' );
-		self::trace( "[bmc] EXIT (truly - does this ever run?) stWaitForAll" );
+		self::trace( "[bmc] EXIT stWaitForAll" );
 	}
 ////
 ////
@@ -5125,7 +5330,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// Notify clients all buyers have resolved, so allow buying again
 		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 		$nextTurnPlayer = $this->getPlayerAfter( $activeTurnPlayer_id );
-		$buyerCount = self::getPlayersBuyCountGS();
+		$buyerCount = self::getPlayersBuyCount();
+		// $buyerCount = self::getPlayersBuyCountGS();
 		
 		self::notifyAllPlayers(
 			'updateBuyers',
@@ -5203,6 +5409,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$activePlayerId = $this->getActivePlayerId();
 			self::dump( "[bmc] activePlayerId (before change):", $activePlayerId );
 
+			$discardingPlayer_id = $activePlayerId;
+
 			$previous_player_id = $this->getPlayerBefore( $activePlayerId );
 			$next_player_id = $this->getPlayerAfter( $activePlayerId );
 			
@@ -5228,13 +5436,13 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			self::trace( "[bmc] stNextPlayer clearing buyers.");
 			$this->clearBuyers();
 		
-			$discardingPlayer_id = $this->getPlayerBefore( $activePlayerId );
+			//Set above: $discardingPlayer_id = $this->getPlayerBefore( $activePlayerId );
 
-//			self::setPlayerBuying(   $discardingPlayer_id, 1 ) ; // 1 = not buying, they just discarded it
-			self::setPlayerBuyingGS( $discardingPlayer_id, 1 ); // 1 = not buying, they just discarded it
+			self::setPlayerBuying(   $discardingPlayer_id, 1 ) ; // 1 = not buying, they just discarded it
+			// self::setPlayerBuyingGS( $discardingPlayer_id, 1 ); // 1 = not buying, they just discarded it
 
-//			self::setPlayerBuying(   $activePlayerId, 1 ) ; // 1 = not buying, they can get it for free
-			self::setPlayerBuyingGS( $activePlayerId, 1 ); // 1 = not buying, they can get it for free
+			self::setPlayerBuying(   $activePlayerId, 1 ) ; // 1 = not buying, they can get it for free
+			// self::setPlayerBuyingGS( $activePlayerId, 1 ); // 1 = not buying, they can get it for free
 
 			// Just make sure it stuck!
 			$activePlayerId = $this->getActivePlayerId();
@@ -5244,8 +5452,63 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$state = $this->gamestate->state();
 			//self::dump("[bmc] stNextPlayer state:", $state);
 
+//TODO: Verify the buying still works! I tried to revert back to the original buy code.
+
+			// Process the wish lists
+			// $wishLists = array(
+				// 0 => array(
+					// 'player_id' => 2333744,
+					// 'card_type' => '3', // Suit
+					// 'card_type_arg' => '1' // Value
+					// ),
+				// 1 => array(
+					// 'player_id' => 2333742,
+					// 'card_type' => '2', // Suit
+					// 'card_type_arg' => '2' // Value
+					// )
+				//}
+
+			$sql = "SELECT id id, player_id, card_type, card_type_arg FROM wishList ";
+		
+			$wishLists = self::getCollectionFromDb( $sql );
+
+			//$dpCard = $this->cards->getCardsInLocation( 'discardPile' );
+			$dpCard = $this->cards->getCardOnTop( 'discardPile' );
+			self::dump("[bmc] 5432dpCard:",  $dpCard );
+			// self::dump("[bmc] 5428dpCard:",  $this->cards->getCard( $dpCard ));
+
+			if ( isset( $dpCard[ 'id' ])) {
+
+				//self::dump("[bmc] dpCard:", $dpCard[ 'id' ]);
+
+				//$currentCard = $this->cards->getCard( $dpCard[ 'id' ] );
+
+				//self::dump("[bmc] currentCardInDP:", $currentCard);
+				
+				$discardColor = $dpCard[ 'type' ];
+				$discardValue = $dpCard[ 'type_arg' ];
+				
+				foreach( $wishLists as $entry ) {
+					self::dump("[bmc] wishList entry:", $entry);
+					self::dump("[bmc] wishList SQL:", $entry['player_id']);
+					
+					if (( $entry[ 'player_id' ] != $discardingPlayer_id ) &&
+						( $entry[ 'player_id' ] != $next_player_id )) {
+							
+						if (( $entry[ 'card_type' ] == $discardColor ) &&
+							( $entry[ 'card_type_arg' ] == $discardValue )) {
+							
+							self::trace("[bmc] BUY MATCH!");
+							// Call buyRequest with the player id
+							
+							$this->buyRequest_fromPHP( $entry[ 'player_id' ]);
+						}
+					}
+				}
+			}
 			$this->gamestate->nextState( 'nextPlayer' );					
 		}
+	self::trace("[bmc] EXIT NextPlayer");
 	}
 ////
 ////
@@ -5309,7 +5572,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			}
 		}
 		self::dump("[bmc] count(UPV) :", count( $unplayedValues ));
-		self::dump("[bmc] unplayedValues :", $unplayedValues );
+		//self::dump("[bmc] unplayedValues :", $unplayedValues );
 
 		// Check if all jokers have been played, if not then keep playing
 
