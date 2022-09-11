@@ -5092,7 +5092,8 @@ console.log("[bmc] EXIT notif_drawcardSpect");
 		notif_wishListDisabled : function(notif) {
 			console.log("[bmc] ENTER notif_wishListDisabled");
 			console.log(notif);
-//			this.showClearWishListButton( false );
+			this.setWishListColor( false );
+			this.showClearWishListButton( false );
 			console.log("[bmc] EXIT notif_wishListDisabled");
 		},
 /////////

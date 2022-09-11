@@ -4285,7 +4285,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 			foreach ( $players as $player_id => $player ) {
 				$this->cards->pickCards( $qtyToDeal, 'deck', $player_id );
-				self::setPlayerGoneDown($player_id, 0 /* 0 (not gone down) or 1 (gone down) */);
+				self::setPlayerGoneDown( $player_id, 0 ); /* 0 (not gone down) or 1 (gone down) */
+				$this->disableWishList( $player_id );
 			}
 		}
 				
