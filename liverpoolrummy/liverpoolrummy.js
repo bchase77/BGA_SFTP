@@ -111,6 +111,9 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 //
 // TODO: 101569962
+// 09/06/2022: Ability to hide wishlist (especially for phone players)
+// 09/05/2022: the wishlist is still active from one hand to the next and should not be.
+// 09/05/2022: Cannot play on low end of run with joker. 567* won't allow 3 to play.
 // 09/05/2022: I usually wait until someone draws their card to try to buy something, so that I don't influence them
 // 09/05/2022: It would be nice to flip it closed or open. Like now, when I don't need it anymore, it could close.
 // 09/05/0222: it didn't tell me WISH LIST CLEARED when I clicked clear button (after I went down).
@@ -617,6 +620,9 @@ console.log( this.gamedatas.enableWishList );
             this.wishListSpades.create( this, $('myWishListSpades'), this.wishListCardWidth, this.wishListCardHeight );
             this.wishListHearts.create( this, $('myWishListHearts'), this.wishListCardWidth, this.wishListCardHeight );
             this.wishListDiamonds.create( this, $('myWishListDiamonds'), this.wishListCardWidth, this.wishListCardHeight );
+			
+			this.showHideWishList = false;
+
             // 13 images per row in the sprite file
 			this.wishListClubs.image_items_per_row = 13;
 			this.wishListSpades.image_items_per_row = 13;
@@ -953,7 +959,7 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 
 			dojo.connect( $('buttonBuy'), 'onclick', this, 'onPlayerBuyButton' );
 			dojo.connect( $('voice'), 'onclick', this, "onVoiceCheckbox");
-			// dojo.connect( $('wishListEnabled'), 'onclick', this, "onWishListCheckbox");
+			dojo.connect( $('buttonShowHideWishList'), 'onclick', this, "onShowHideWishList");
 			
 			dojo.connect( $('buttonSubmitWishList'), 'onclick', this, 'onSubmitWishList' );
 			dojo.connect( $('buttonClearWishList'), 'onclick', this, 'onClearWishList' );
@@ -1168,6 +1174,7 @@ console.log("[bmc] Doing the window.onload");
 			$(DISCARDPILETRANSLATED).innerHTML = _('Discard Pile');
 			$(WISHLISTTRANSLATED).innerHTML = _('Submit Wish List');
 			$(CLEARWISHLISTTRANSLATED).innerHTML = _('Clear Wish List');
+			$(SHOWHIDEWISHLIST).innerHTML = _('Show / Hide Wish List');
 
 			// console.log( "Setting up Wanted Grid" );
 
@@ -2721,46 +2728,50 @@ console.log("[bmc] EXIT onClearWishList");
 		onSubmitWishList : function() {
 console.log("[bmc] ENTER onSubmitWishList");
 
-			var wlClubs    = this.wishListClubs.getSelectedItems();
-			var wlSpades   = this.wishListSpades.getSelectedItems();
-			var wlHearts   = this.wishListHearts.getSelectedItems();
-			var wlDiamonds = this.wishListDiamonds.getSelectedItems();
+			var isReadOnly = this.isReadOnly();
+			
+			if ( !isReadOnly ) { // Spectators are read only, no need to show wishlist stuff
+			
+				var wlClubs    = this.wishListClubs.getSelectedItems();
+				var wlSpades   = this.wishListSpades.getSelectedItems();
+				var wlHearts   = this.wishListHearts.getSelectedItems();
+				var wlDiamonds = this.wishListDiamonds.getSelectedItems();
 
-			var wishListAll = wlClubs.concat( wlSpades ).concat( wlHearts ).concat( wlDiamonds );
-console.log( wishListAll );
+				var wishListAll = wlClubs.concat( wlSpades ).concat( wlHearts ).concat( wlDiamonds );
+	console.log( wishListAll );
 
-			wishList_type = new Array();
-			wishList_type_arg = new Array();
-/*
-				if (this.wishListEnabled == true ) {
-*/					
-			for ( wLItem of wishListAll ) {
-console.log( wLItem );
-console.log( this.getColorValue( wLItem.type + 1 ));
-				
-				var [ dCColor, dCValue ] = this.getColorValue( wLItem.type );
-				
-				wishList_type.push( dCColor );
-				wishList_type_arg.push( dCValue );
+				wishList_type = new Array();
+				wishList_type_arg = new Array();
+	/*
+					if (this.wishListEnabled == true ) {
+	*/					
+				for ( wLItem of wishListAll ) {
+	console.log( wLItem );
+	console.log( this.getColorValue( wLItem.type + 1 ));
+					
+					var [ dCColor, dCValue ] = this.getColorValue( wLItem.type );
+					
+					wishList_type.push( dCColor );
+					wishList_type_arg.push( dCValue );
+				}
+	console.log("[bmc] wishList");
+	console.log( wishList_type );
+	console.log( wishList_type_arg );
+
+				if ( wishList_type.length != 0 ){
+	console.log( "[bmc] Submitting wishList!" );
+					
+					var action = 'submitWishList';
+					this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						player_id : this.player_id,
+						wishList_type : this.toNumberList( wishList_type ),
+						wishList_type_arg : this.toNumberList( wishList_type_arg ),
+						lock : true
+					}, this, function(result) {
+					}, function(is_error) {
+					});
+				}
 			}
-console.log("[bmc] wishList");
-console.log( wishList_type );
-console.log( wishList_type_arg );
-
-			if ( wishList_type.length != 0 ){
-console.log( "[bmc] Submitting wishList!" );
-				
-				var action = 'submitWishList';
-				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-					player_id : this.player_id,
-					wishList_type : this.toNumberList( wishList_type ),
-					wishList_type_arg : this.toNumberList( wishList_type_arg ),
-					lock : true
-				}, this, function(result) {
-				}, function(is_error) {
-				});
-			}
-
 console.log("[bmc] EXIT onSubmitWishList");
 		},
 /////////
@@ -3163,6 +3174,40 @@ console.log("[bmc] Removed.");
 /////////
 /////////
 /////////
+		onShowHideWishList : function() {
+			console.log("[bmc] ENTER onShowHideWishList");
+
+			// Show the wishlist stuff if they set the game up this way
+			if ( this.showHideWishList == true ) {
+			console.log("[bmc] FALSE onShowHideWishList");
+				this.showHideWishList = false;
+				// var obj = { visibility: "hidden" };
+				var obj = { display: "none" };
+				
+				// dojo.query( '.wishListMode' ).addClass( 'wishListMode' );
+				// dojo.removeClass( 'TLeftBox2', 'wishListMode' );
+				// dojo.removeClass( 'buttonClearWishList', 'wishListMode' );
+			} else {
+			console.log("[bmc] TRUE onShowHideWishList");
+				this.showHideWishList = true;
+				// var obj = { visibility: "visible" };
+				// var obj = { display: "block" };
+				var obj = { display: "inline" };
+				
+				// dojo.setAttr("TLeftBox2", "wishListMode", obj);
+				// dojo.query( '.wishListMode' ).removeClass( 'wishListMode' );
+				// dojo.addClass( 'TLeftBox2', 'wishListMode' );
+				// dojo.addClass( 'buttonClearWishList', 'wishListMode' );
+			}
+console.log(obj);
+			dojo.setAttr("TLeftBox2", "style", obj );
+
+			console.log("[bmc] EXIT onShowHideWishList");
+		},
+/////////
+/////////
+/////////
+
 		// updateCardsDisplay : function(){
 // console.log("[bmc] ENTER UPDATECARDSDISPLAY");
 

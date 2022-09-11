@@ -4801,12 +4801,30 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// self::setPlayerBuyingGS( $player_id, 2 );
 		// self::trace("[bmc] EXIT buyNotifyDone");
 	// }
-	
-	
-	
-	
-	
-	
+////
+////
+////
+/* I may need this is they agree to try to save my old games
+	function upgradeTableDb( $from_version ){
+ 
+	if( $from_version <= 2209060102 ){ // where your CURRENT version in production has number YYMMDD-HHMM
+ 
+           // You DB schema update request.
+           // Note: all tables names should be prefixed by "DBPREFIX_" to be compatible with the applyDbUpgradeToAllDB method you should use below
+           //$sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
+		   $sql = "CREATE TABLE IF NOT EXISTS `wishList` (
+		   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+		   `player_id` int(10) unsigned NOT NULL,
+		   `card_type` varchar(16) NOT NULL,
+		   `card_type_arg` int(11) NOT NULL,
+		   PRIMARY KEY (`id`)
+		   ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+
+           // The method below is applying your DB schema update request to all tables, including the BGA framework utility tables like "zz_replayXXXX" or "zz_savepointXXXX".
+           // You should really use this request, in conjunction with "DBPREFIX_" in your $sql, so ALL tables are updated. All utility tables MUST have the same schema than the main table, otherwise the game may be blocked.
+           self::applyDbUpgradeToAllDB( $sql ); 
+ }}	
+*/
 	
 	
 	
@@ -4843,68 +4861,82 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::dump("[bmc] wishList_type:", $wishList_type);
 		self::dump("[bmc] wishList_type_arg:", $wishList_type_arg);
 
-		// Delete all entries for the wishList for that player
-		
-	    $sql = "DELETE FROM wishList WHERE player_id = '";
-		$sql_command = $player_id . "'";
-		self::DbQuery( $sql . $sql_command );
+		// Check if really a player or a spectator
+		$players = self::loadPlayersBasicInfos();
+        $playerIDList = [];
 
-		$wishList = [];
-		
-		$index = 0;
-		
-		$numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
-
-		if ( $numberOfBuys != 1 ) { // 0 == 3; 1 == Infinite buys
-			$sql = "SELECT player_id, buy_count FROM player ";
-			$buy_count = self::getCollectionFromDB( $sql, true );
-
-			self::dump("[bmc] buy_count[ player_id ] (buyRequestFinish): ", $buy_count );
-			
-			if ( $buy_count[ $player_id ] < 1 ) {
-				throw new BgaUserException( self::_("All your wishes for this hand have already come true!") );
-				self::trace( "[bmc] BGA Exception: Cannot buy any more(buyRequestFinish)" );
-
-			}
-		} // If it > 0 then keep processing the buy
-	
-		// $testPlayerHandArray[3] = array(
-			// 14 => array(
-				// 'type' => '3', // Suit
-				// 'type_arg' => '13' // Value
-				// )
-			// );
-
-		foreach( $wishList_type as $wlt ){
-			$wishList[] = array(
-				'type' => $wishList_type[ $index ],
-				'type_arg' => $wishList_type_arg[ $index ] );
-			$index++;
+		foreach ( $players as $playerIDOnly ) {
+			$playerIDList[] = $playerIDOnly[ "player_id" ];
 		}
 
-//		$wishList = array_combine( $wishList_type, $wishList_type_arg );
+		self::dump("[bmc] player_id:", $player_id);
+		self::dump("[bmc] players from submitWishList:", $playerIDList);
+		self::dump("[bmc] in_array:", in_array( $player_id, $playerIDList));
 
-		self::dump("[bmc] wishList_total:", $wishList);
-
-		foreach( $wishList as $wl ) {
-			self::dump("[bmc] wishList type:", $wl['type']);
-			self::dump("[bmc] wishList type_arg:", $wl['type_arg']);
-
-		    $sql = "INSERT INTO wishList (player_id, card_type, card_type_arg) VALUES ";
-			$sql_command = "( " . $player_id . "," . $wl['type'] . "," . $wl['type_arg'] . " )";
+		if ( in_array( $player_id, $playerIDList )) {
+			// Delete all entries for the wishList for that player
 			
+			$sql = "DELETE FROM wishList WHERE player_id = '";
+			$sql_command = $player_id . "'";
 			self::DbQuery( $sql . $sql_command );
+
+			$wishList = [];
+			
+			$index = 0;
+			
+			$numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
+
+			if ( $numberOfBuys != 1 ) { // 0 == 3; 1 == Infinite buys
+				$sql = "SELECT player_id, buy_count FROM player ";
+				$buy_count = self::getCollectionFromDB( $sql, true );
+
+				self::dump("[bmc] buy_count[ player_id ] (buyRequestFinish): ", $buy_count );
+				
+				if ( $buy_count[ $player_id ] < 1 ) {
+					throw new BgaUserException( self::_("All your wishes for this hand have already come true!") );
+					self::trace( "[bmc] BGA Exception: Cannot buy any more(buyRequestFinish)" );
+
+				}
+			} // If it > 0 then keep processing the buy
+		
+			// $testPlayerHandArray[3] = array(
+				// 14 => array(
+					// 'type' => '3', // Suit
+					// 'type_arg' => '13' // Value
+					// )
+				// );
+
+			foreach( $wishList_type as $wlt ){
+				$wishList[] = array(
+					'type' => $wishList_type[ $index ],
+					'type_arg' => $wishList_type_arg[ $index ] );
+				$index++;
+			}
+
+	//		$wishList = array_combine( $wishList_type, $wishList_type_arg );
+
+			self::dump("[bmc] wishList_total:", $wishList);
+
+			foreach( $wishList as $wl ) {
+				self::dump("[bmc] wishList type:", $wl['type']);
+				self::dump("[bmc] wishList type_arg:", $wl['type_arg']);
+
+				$sql = "INSERT INTO wishList (player_id, card_type, card_type_arg) VALUES ";
+				$sql_command = "( " . $player_id . "," . $wl['type'] . "," . $wl['type_arg'] . " )";
+				
+				self::DbQuery( $sql . $sql_command );
+			}
+
+			$this->notifyPlayer(
+				$player_id,
+				"wishListSubmitted",
+				clienttranslate('Wish list submitted and active.'),
+				array (
+					'player_id' => $player_id
+				)
+			); 
+
 		}
-
-		$this->notifyPlayer(
-			$player_id,
-			"wishListSubmitted",
-			clienttranslate('Wish list submitted and active.'),
-			array (
-				'player_id' => $player_id
-			)
-		); 
-
 		self::trace("[bmc] EXIT submitWishList");
 	}
 ////
@@ -5270,6 +5302,20 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$buyer_id = self::getGameStateValue( 'theBuyer' );
 		
 		self::dump("[bmc] waitForAll buyer_id:", $buyer_id);
+
+
+
+//TODO: Check for "liverpool" playable card here.
+
+		$dpCard = $this->cards->getCardOnTop( 'discardPile' );
+
+
+
+
+
+
+
+
 
 
 //		if ( $buyer_id != 0 ) {

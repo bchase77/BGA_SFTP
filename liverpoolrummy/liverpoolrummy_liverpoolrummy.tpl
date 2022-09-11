@@ -47,6 +47,7 @@
 					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep C</a>
 					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="CARDFORJOKERTRANSLATED"></span></a>
 					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="GODOWNTRANSLATED"></span></a>
+					<a href="#" id="buttonShowHideWishList" class="bgabutton prepButton bgabutton_blue"><span id="SHOWHIDEWISHLIST"></span></a>
 					<input type="checkbox" id="voice" name="scales" checked> <label for="voices">Voices</label>
 					
 					<div id="myhand" class="myhand"></div>
@@ -57,19 +58,19 @@
 	</div>
 </div>
 
-<div id="wishListAreaWrap" class="wishListAreaWrapClass wishListMode">
+<div id="wishListAreaWrap" class="wishListAreaWrapClass spectatorMode wishListMode">
 	<div>
-		<div id="TLeftBox2" class="leftboxHandArea wishListMode">
-			<div id="wishListAreaC" class="wishListAreaClass wishListMode">
+		<div id="TLeftBox2" class="leftboxHandArea spectatorMode wishListMode">
+			<div id="wishListAreaC" class="wishListAreaClass spectatorMode wishListMode">
 				<div id="myWishListClubs" ></div>
 			</div>
-			<div id="wishListAreaS" class="wishListAreaClass wishListMode">
+			<div id="wishListAreaS" class="wishListAreaClass spectatorMode wishListMode">
 				<div id="myWishListSpades" ></div>
 			</div>
-			<div id="wishListAreaH" class="wishListAreaClass wishListMode">
+			<div id="wishListAreaH" class="wishListAreaClass spectatorMode wishListMode">
 				<div id="myWishListHearts" ></div>
 			</div>
-			<div id="wishListAreaD" class="wishListAreaClass wishListMode">
+			<div id="wishListAreaD" class="wishListAreaClass spectatorMode wishListMode">
 				<div id="myWishListDiamonds" ></div>
 			</div>
 			<a href="#" id="buttonSubmitWishList" class="bgabutton bgabutton_blue spectatorMode wishListMode"> <span id="WISHLISTTRANSLATED"></span>! </a>
