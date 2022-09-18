@@ -111,6 +111,36 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 //
 // TODO: 101569962
+// 9/28/2022: Trying to add 89 to *JQKA diamonds. but they don't go 2 at a time. Must done 8 and 9 1 card at a time. Error is "Not a run. It doesn't reach!'
+// Chipati draws a card from the discard pile.
+// jojo2k discards the 7 of clubs.
+// (binnok bought the 2 of spades)
+// binnok draws a card from the discard pile.
+// binnok draws a card from the deck.
+// 11:39 PM
+// jojo2k draws a card from the deck.
+// binnok wants to buy the 2 of spades.
+// mandj2000 discards the 2 of spades.
+// binnok tried but could not buy the discard.
+// binnok wants to buy the Ace of spades.
+// mandj2000 draws a card from the discard pile.
+// GoDodyGo discards the King of spades.
+// GoDodyGo draws a card from the deck.
+// You drew the 9 of hearts from the deck.
+// rikhav discards the Ace of spades.
+// 09/10/2022: Jo got in some state where it woulnd't let her go down with more
+// cards than the melds, with card-for-joker. Then she pulled the card out of card
+// for joker and put it back in, then the GODOWN button turned on. The GO DOWN buttonBuy
+// did not light up at all beforehand.
+
+// 09/10/2022: Mark and I both tried to buy a QD but someone picked it up and got a 3D instead, and we could not buy.
+// 09/10/2022: K could not go down with 9C replacing a joker, and 2 runs, and her 2 melds each needed a joker. She had to put only the right number of cards then go down, then play the rest.
+// 09/10/2022: Add "you" to the wish list logs
+// 09/10/2022: without wishlist option, notifcation "WISH LIST DISABLED" appeared in the log and should not have
+// 09/10/2022: Add a sound "It fits right there!" when your buy goes through.
+// 09/10/2022: Konni had gone done. had a card in her wishist and the person before discarded it. Her browser froze with MOVE RECORDED. She could not pick up the discard. She refreshed her browser. Then she clicked on NOT BUY, she might have clicked on CLEAR WISHLIST. Then che clicked on the discard to pick it up and it recorded it as a buy.
+// 09/10/2022: 789 onto 10*QK gives "NOT A RUN DOESNT READCH" but it should reach.
+// 0/10/: Konni's WL still tried to buy after she went down and discable swishlist.
 // 09/06/2022: Ability to hide wishlist (especially for phone players)
 // 09/05/2022: the wishlist is still active from one hand to the next and should not be.
 // 09/05/2022: Cannot play on low end of run with joker. 567* won't allow 3 to play.
@@ -662,6 +692,47 @@ console.log( this.gamedatas.enableWishList );
 			this.wishListDiamonds.setOverlap( 80, 0 );
 
 
+			// Get wishList settings from the server and apply to grid
+
+			this.wishListAllObj = this.gamedatas.wishList;
+			console.log("[bmc] this.wishListAll");
+//			console.log(this.wishListAllObj);
+			
+			this.wishListAll = Object.values(this.wishListAllObj);
+			console.log(this.wishListAll);
+
+			if ( this.wishListAll != null ){
+				if ( this.wishListAll.length > 0 ) {
+					
+					this.setWishListColor( true );
+					this.notif_wishListSubmitted();
+
+					for ( item in this.wishListAll ) {
+						console.log(item);
+						console.log(this.wishListAll[ item ][ 'card_type' ]);
+						//console.log('myWishListClubs_item_'    + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+						switch( this.wishListAll[ item ][ 'card_type' ]) {
+							case '1' :
+								console.log('myWishListClubs_item_'    + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+								dojo.addClass('myWishListClubs_item_'    + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+								break;
+							case '2' :
+								console.log('myWishListSpades_item_'    + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+								dojo.addClass('myWishListSpades_item_'   + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+								break;
+							case '3' :
+								console.log('myWishListHearts_item_'    + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+								dojo.addClass('myWishListHearts_item_'   + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+								break;
+							case '4' :
+								console.log('myWishListDiamonds_item_'    + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+								dojo.addClass('myWishListDiamonds_item_' + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+								break;
+						}
+					}
+				}
+			}
+
 			// Create the variables which show how many cards in each pile (deck, hand, discard)
 			this.drawDeckSize = new ebg.counter();
 			this.drawDeckSize.create( 'drawDeckSize' );
@@ -958,13 +1029,15 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 			dojo.connect( $('buttonGoDownStatic'), 'onclick', this, 'onPlayerGoDownButton' );
 
 			dojo.connect( $('buttonBuy'), 'onclick', this, 'onPlayerBuyButton' );
+			dojo.connect( $('buttonNotBuy'), 'onclick', this, 'onPlayerNotBuyButton' );
+
 			dojo.connect( $('voice'), 'onclick', this, "onVoiceCheckbox");
+
 			dojo.connect( $('buttonShowHideWishList'), 'onclick', this, "onShowHideWishList");
-			
 			dojo.connect( $('buttonSubmitWishList'), 'onclick', this, 'onSubmitWishList' );
 			dojo.connect( $('buttonClearWishList'), 'onclick', this, 'onClearWishList' );
 
-			dojo.connect( $('buttonNotBuy'), 'onclick', this, 'onPlayerNotBuyButton' );
+			dojo.connect( $('buttonLiverpool'), 'onclick', this, "onLiverpoolButton");
 
 			let tooltip_text1 = _('Click this button to disable and clear the wish list.');
 
@@ -1012,25 +1085,25 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 			// this.buyTimeInSecondsDefault = this.gamedatas.options.buyTimeInSeconds;
 			// console.log( this.buyTimeInSecondsDefault );
 			
-console.log("[bmc] Buy setup");
-console.log(this.firstLoad);
-console.log(this.player_id);
-console.log(this.gamedatas.buyCount[ this.player_id ]);
-console.log(this.turnPlayer);
+			console.log("[bmc] Buy setup");
+			console.log(this.firstLoad);
+			console.log(this.player_id);
+			console.log(this.gamedatas.buyCount[ this.player_id ]);
+			console.log(this.turnPlayer);
 
-// Show neither buy nor notBuy buttons if:
-//   It's my turn
-//
-// Show buy button if:
-//   First load
-//   Not my turn
-//   undefined or not buying (0 or 1)
-//
-// Show not buy button if:
-//   First load
-//   Not my turn
-//   Status is buying (2)
-//
+			// Show neither buy nor notBuy buttons if:
+			//   It's my turn
+			//
+			// Show buy button if:
+			//   First load
+			//   Not my turn
+			//   undefined or not buying (0 or 1)
+			//
+			// Show not buy button if:
+			//   First load
+			//   Not my turn
+			//   Status is buying (2)
+			//
 			this.clearButtons();
 
 			if (( this.player_id != this.gamedatas.activeTurnPlayer_id ) &&
@@ -1044,57 +1117,6 @@ console.log(this.turnPlayer);
 					console.log("showNotBuyButton");
 				}
 			}
-
-
-
-/*
-// TODO: Remove this?
-			if ((( this.firstLoad == 'Yes' ) && 
-			     ( this.player_id != this.gamedatas.activeTurnPlayer_id ) &&
-				 
-//				(( this.gamedatas.gamestate.action == 'playerTurnDraw' ) ||
-				(( this.gamedatas.gamestate.name == 'playerTurnDraw' ) || // draw state
-				 ( this.gamedatas.gamestate.action == 'stShowBuyButtons' ))) || // draw state
-				 
-			    (( this.gamedatas.buyers[ this.player_id ] == 0 ) && // buy status undefined
-				 ( this.turnPlayer != this.player_id ) && // the current player
-				 ( this.player_id != this.gamedatas.playerOrderTrue[ this.player_id ] ) && // the next player
-				 ( this.gamedatas.gamestate.action == 'playerTurnDraw' ) && // draw state
-				 ( this.gamedatas.buyCount[ this.player_id ] > 0 ))) { // Player has buys left
-					
-				console.log("[bmc] Decided yes, should show BUY button.");
-				this.buyCounterTimerShouldExist = 'Yes'; // A timer and a button should exist
-				this.showBuyButton2();
-				
-			}
-
-			if ((( this.firstLoad == 'Yes' ) && 
-			     ( this.player_id != this.gamedatas.activeTurnPlayer_id ) && // It's not our turn
-			     ( this.gamedatas.buyers[ this.player_id ] == 0 ) && // buy status undefined
-				 //( this.player_id != this.gamedatas.playerOrderTrue[ this.gamedatas.activeTurnPlayer_id ] ) && // the next player
-				 ( this.gamedatas.gamestate.name == 'playerTurnDraw' )) && // draw state
-				 ( this.gamedatas.buyCount[ this.player_id ] > 0 )) { // Player has buys left
-				
-console.log( "[bmc] Showing buttons to those who haven't registered buy." );
-			// New variables for new timers on static buttons
-				this.enableDBStatic = 'Yes';
-				// this.enableDBTimer = 'No'; // But let the timer run out if it's there
-				// this.enDisStaticBuyButtons();
-			} else {
-//				this.enableDBStatic = 'No';
-				// this.enableDBTimer = 'No'; // But let the timer run out if it's there
-				// this.enDisStaticBuyButtons();
-			}
-
-*/
-
-
-
-
-
-
-//			this.currentHandType = this.gamedatas.currentHandType;
-//			this.totalHandCount = this.gamedatas.totalHandCount;
 
 			$(handNumber).innerHTML = _("Target Hand " + currentHandNumber + " of " + this.totalHandCount + ": ");
 			$(redTarget).innerHTML = this.gamedatas.handTarget;
@@ -1175,59 +1197,8 @@ console.log("[bmc] Doing the window.onload");
 			$(WISHLISTTRANSLATED).innerHTML = _('Submit Wish List');
 			$(CLEARWISHLISTTRANSLATED).innerHTML = _('Clear Wish List');
 			$(SHOWHIDEWISHLIST).innerHTML = _('Show / Hide Wish List');
+			$(LIVERPOOL).innerHTML = _('Liverpool');
 
-			// console.log( "Setting up Wanted Grid" );
-
-			// var player_board_div = $('player_board_' + player_id );
-				// console.log("[bmc] player_board_div:");
-				// console.log( player_board_div );
-				
-				// var playergomoku = this.gamedatas.players[ player_id ];
-			
-				// dojo.place( this.format_block( 'jstpl_player_board', playergomoku ), player_board_div );
-
-			// Set up game Contants for selected wanted cards
-			//this.gameConstants = gamedatas.constants;
-			// this.gameConstants = [];
-			// this.gameConstants.X_ORIGIN = 0;
-			// this.gameConstants.Y_ORIGIN = 0;
-			// this.gameConstants.INTERSECTION_WIDTH = 30;
-			// this.gameConstants.INTERSECTION_HEIGHT = 30;
-			// this.gameConstants.INTERSECTION_X_SPACER = 2.8; // Float
-			// this.gameConstants.INTERSECTION_Y_SPACER = 2.8; // Float
-
-			// this.addEventToClass( "gmk_intersection", "onclick", "onWantedAreaClick");
-
-            // console.log( "gameConstants" );
-            // console.log( this.gameConstants );
-
-             // Setup intersections
-            // for( var id = 0; id < 14; id++ )
-            // {
-                // var intersection = [];
-				// intersection.coord_x = id;
-				// intersection.coord_y = 0;
-// /*
-                // dojo.place( this.format_block('jstpl_intersection', {
-                    // x:intersection.coord_x,
-                    // y:intersection.coord_y,
-                    // stone_type:(intersection.stone_color == null ? "no_stone" : 'stone_' + intersection.stone_color)
-                // } ), $ ( 'WAIntersectionMethod' ) );
-// */
-// console.log(intersection.coord_x);
-// console.log(intersection.coord_y);
-
-                // var x_pix = this.getXPixelCoordinates(intersection.coord_x);
-                // var y_pix = this.getYPixelCoordinates(intersection.coord_y);
-                
-               // this.slideToObjectPos( $('intersection_'+intersection.coord_x+'_'+intersection.coord_y), $('gmk_background'), x_pix, y_pix, 10 ).play();
-
-                // if (intersection.stone_color != null) {
-                    // This intersection is taken, it shouldn't appear as clickable anymore
-                    // dojo.removeClass( 'intersection_' + intersection.coord_x + '_' + intersection.coord_y, 'clickable' );
-                // }
-            // }
-		
             console.log( "[bmc] EXIT game setup" );
         },
 /////////
@@ -2316,6 +2287,15 @@ console.log("[bmc] EXIT notif_wishListSubmitted");
 /////////
 /////////
 /////////
+		notif_liverpoolExists : function( notif ){
+console.log("[bmc] ENTER Liverpool Exists");
+console.log(notif);
+			dojo.replaceClass( 'buttonLiverpool', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+console.log("[bmc] EXIT Liverpool Exists");
+		},
+/////////
+/////////
+/////////
 //		notif_updateBuyers : function( player_id, nextTurnPlayer, buyers ){
 		notif_updateBuyers : function( notif ){
 console.log("[bmc] updateBuyers");
@@ -2707,6 +2687,23 @@ console.log( "[bmc] disabling wishlist ");
 				});
 			}
 console.log("[bmc] EXIT disableWishList");
+		},
+/////////
+/////////
+/////////
+		onLiverpoolButton : function() {
+console.log("[bmc] ENTER onLiverpoolButton");
+				var action = 'liverpool';
+				
+console.log( "[bmc] Trying for Liverpool! ");
+					
+				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						player_id : this.player_id,
+						lock : true
+					}, this, function(result) {
+					}, function(is_error) {
+				});
+console.log("[bmc] EXIT onLiverpoolButton");
 		},
 /////////
 /////////
@@ -3903,15 +3900,12 @@ console.log(dp_items);
 				dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 			}
 			for ( let i in dp_items ) {
-				
-				
-				
-				
-				
-// 7/5/2021 Not sure if this should be discardPileOne or discardPile
-//				dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
 				dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 			}
+
+			// Unlight the Liverpool button if lit up
+			dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+
 
 console.log(this.handCount);
 			if ( drawSource.match(/playerDown/g) ) {
@@ -4412,15 +4406,14 @@ console.log( this.gamedatas.activeTurnPlayer_id );
 			//
 			// Show GO DOWN button if prepped, not gone down and my turn
 			//
-			var goDownDOM = document.getElementById( 'buttonPlayerGoDown' );
+			// var goDownDOM = document.getElementById( 'buttonPlayerGoDown' );
 
-// TODO: Add condition that player has already drawn			
-//			if (  showButtons['prepped'] && 
 			if (( this.prepAreas > 0 ) &&
 				 !showButtons['goneDown'] &&
 				  showButtons['myturn'] && 
-				( this.gamedatas.gamestate.name != "playerTurnDraw" ) &&
-				( goDownDOM == null )) {
+				( this.gamedatas.gamestate.name != "playerTurnDraw" )) {
+				// ( this.gamedatas.gamestate.name != "playerTurnDraw" ) &&
+				// ( goDownDOM == null )) {
 
 				dojo.replaceClass( 'buttonGoDownStatic', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
 				//this.addActionButton( 'buttonPlayerGoDown', _("Go Down!"), 'onPlayerGoDownButton' );
@@ -4590,6 +4583,7 @@ console.log( '[bmc] ENTER notifications subscriptions setup' );
 			dojo.subscribe( 'updateBuyers' ,       this, "notif_updateBuyers");
 			dojo.subscribe( 'wishListSubmitted',   this, "notif_wishListSubmitted");
 			dojo.subscribe( 'wishListDisabled',    this, "notif_wishListDisabled");
+			dojo.subscribe( 'liverpoolExists',     this, "notif_liverpoolExists");
 			//dojo.subscribe( 'wishListCleared',     this, "notif_wishListCleared");
 
             // TODO: here, associate your game notifications with local methods
@@ -5144,6 +5138,7 @@ console.log("[bmc] setWishListColor: ", wLSetting );
 				dojo.removeClass( 'myWishListDiamonds', 'wishListClassOff' );
 				dojo.replaceClass( 'buttonSubmitWishList', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 				dojo.replaceClass( 'buttonSubmitWishList', "textGray", "textWhite" ); // item, add, remove
+				console.log("Went To True Path");
 			} else {
 				dojo.addClass(    'myWishListClubs',    'wishListClassOff' );
 				dojo.addClass(    'myWishListSpades',   'wishListClassOff' );
@@ -5155,6 +5150,7 @@ console.log("[bmc] setWishListColor: ", wLSetting );
 				dojo.removeClass( 'myWishListDiamonds', 'wishListClassOn' );
 				dojo.replaceClass( 'buttonSubmitWishList', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
 				dojo.replaceClass( 'buttonSubmitWishList', "textWhite", "textGray" ); // item, add, remove
+				console.log("Went To False Path");
 			}
 		},
 /////////

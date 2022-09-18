@@ -160,6 +160,14 @@
             $this->game->disableWishList( $player_id ); 
             self::ajaxResponse();
 		}
+		public function liverpool()
+		{
+            self::setAjaxMode();
+			self::trace( "[bmc] ajaxcall for liverpool" );
+			$player_id = self::getArg( "player_id", AT_posint, true );
+            $this->game->liverpool( $player_id ); 
+            self::ajaxResponse();
+		}
     /*
     
     Example:
