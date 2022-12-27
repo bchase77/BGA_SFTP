@@ -745,10 +745,75 @@ class LiverpoolRummy extends Table
 				)
 			);
 		$testPlayerHandArray[1] = array(
-			14 => array(
+			0 => array(
+				'type' => '1', // Suit
+				'type_arg' => '1' // Value
+				),
+			1 => array(
+				'type' => '1', // Suit
+				'type_arg' => '2' // Value
+				),
+			2 => array(
+				'type' => '1', // Suit
+				'type_arg' => '3' // Value
+				),
+			3 => array(
+				'type' => '1', // Suit
+				'type_arg' => '5' // Value
+				),
+			4 => array(
+				'type' => '1', // Suit
+				'type_arg' => '6' // Value
+				),
+			5 => array(
+				'type' => '5', // Suit
+				'type_arg' => '2' // Value
+				),
+			6 => array(
 				'type' => '3', // Suit
+				'type_arg' => '5' // Value
+				),
+			7 => array(
+				'type' => '3', // Suit
+				'type_arg' => '6' // Value
+				),
+			8 => array(
+				'type' => '3', // Suit
+				'type_arg' => '8' // Value
+				),
+			9 => array(
+				'type' => '3', // Suit
+				'type_arg' => '9' // Value
+				),
+			10 => array(
+				'type' => '5', // Suit
+				'type_arg' => '1' // Value
+				),
+			11 => array(
+				'type' => '2', // Suit
 				'type_arg' => '12' // Value
-				)
+				),
+			12 => array(
+				'type' => '2', // Suit
+				'type_arg' => '13' // Value
+				),
+			13 => array(
+				'type' => '2', // Suit
+				'type_arg' => '1' // Value
+				),
+			14 => array(
+				'type' => '5', // Suit
+				'type_arg' => '2' // Value
+				),
+			15 => array(
+				'type' => '1', // Suit
+				'type_arg' => '4' // Value
+				),
+			16 => array(
+				'type' => '1', // Suit
+				'type_arg' => '3' // Value
+				),
+
 			);
 		$testPlayerHandArray[2] = array(
 			14 => array(
@@ -764,56 +829,44 @@ class LiverpoolRummy extends Table
 				),
 			1 => array(
 				'type' => '4', // Suit
-				'type_arg' => '8' // Value
+				'type_arg' => '13' // Value
 				),
 			2 => array(
 				'type' => '4', // Suit
-				'type_arg' => '11' // Value
-				),
-			3 => array(
-				'type' => '4', // Suit
 				'type_arg' => '12' // Value
 				),
-			4 => array(
-				'type' => '5', // Suit
-				'type_arg' => '2' // Value
-				),
-			5 => array(
-				'type' => '3', // Suit
-				'type_arg' => '6' // Value
-				),
-			6 => array(
+			3 => array(
 				'type' => '3', // Suit
 				'type_arg' => '7' // Value
 				),
-			7 => array(
+			4 => array(
 				'type' => '3', // Suit
 				'type_arg' => '8' // Value
 				),
-			8 => array(
+			5 => array(
+				'type' => '3', // Suit
+				'type_arg' => '9' // Value
+				),
+			6 => array(
 				'type' => '3', // Suit
 				'type_arg' => '10' // Value
 				),
-			9 => array(
-				'type' => '5', // Suit
-				'type_arg' => '1' // Value
+			7 => array(
+				'type' => '3', // Suit
+				'type_arg' => '11' // Value
 				),
-			10 => array(
-				'type' => '1', // Suit
-				'type_arg' => '2' // Value
-				),
-			11 => array(
-				'type' => '1', // Suit
-				'type_arg' => '2' // Value
-				),
-			12 => array(
-				'type' => '1', // Suit
+			8 => array(
+				'type' => '2', // Suit
 				'type_arg' => '7' // Value
 				),
-			13 => array(
-				'type' => '3', // Suit
-				'type_arg' => '6' // Value
-				)
+			9 => array(
+				'type' => '2', // Suit
+				'type_arg' => '8' // Value
+				),
+			10 => array(
+				'type' => '2', // Suit
+				'type_arg' => '9' // Value
+				),
 /*
 ,
 			14 => array(
@@ -2566,6 +2619,7 @@ self::trace("[bmc] Deadlock:2200");
 		$cntCardGroupA = count( $cardIDGroupA );
 		$cntCardGroupB = count( $cardIDGroupB );
 		$cntCardGroupC = count( $cardIDGroupC );
+		$cntCardGroupJ = count( $handItemIds );
 		
 //		$jokerCount = 0;
 
@@ -2574,6 +2628,11 @@ self::trace("[bmc] Deadlock:2200");
 		self::dump("[bmc] cardIDGroupC:", $cardIDGroupC);
 		self::dump("[bmc] handItemIds:", $handItemIds);
 				
+		self::dump("[bmc] cntCardGroupA:", $cntCardGroupA);
+		self::dump("[bmc] cntCardGroupB:", $cntCardGroupB);
+		self::dump("[bmc] cntCardGroupC:", $cntCardGroupC);
+		self::dump("[bmc] cntCardGroupJ:", $cntCardGroupJ);
+
 		$cardGroupA = $this->cards->getCards( $cardIDGroupA );
 		$cardGroupB = $this->cards->getCards( $cardIDGroupB );
 		$cardGroupC = $this->cards->getCards( $cardIDGroupC );
@@ -2582,7 +2641,8 @@ self::trace("[bmc] Deadlock:2200");
 		$countCardsInPlayerHand = intval($this->cards->countCardsByLocationArgs( 'hand' )[$active_player_id]);
 		self::dump("CCIPH:", $countCardsInPlayerHand);
 		
-		$countCardsToPlay = $cntCardGroupA + $cntCardGroupB + $cntCardGroupC;
+		//$countCardsToPlay = $cntCardGroupA + $cntCardGroupB + $cntCardGroupC;
+		$countCardsToPlay = $cntCardGroupA + $cntCardGroupB + $cntCardGroupC + $cntCardGroupJ;
 		//count($cardGroupA) + count($cardGroupB) + count($cardGroupC);
 		self::dump("CCTP:", $countCardsToPlay);
 		
@@ -3104,12 +3164,10 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////////
 	function checkSetOrRun ( $cardGroup ) {
 		self::trace("[bmc] ENTER checkSetOrRun");
-/*
-		if (( $this->checkSet( $cardGroup )) &&
-		    ( $this->checkRun( $cardGroup, true ))) { // Check run silently (don't throw exception if not)
-			self::trace("[bmc] checkSetOrRun: both evaluated true!");
-			return true;
-*/			
+		
+		// If true, it means the cardGroup will evaluate true as a set or a run. So the
+		//   cards are both a set and a run.
+
 // start new code
 		if ( $this->checkSet( $cardGroup )) {
 			if ( $this->checkRun( $cardGroup, true )) {
@@ -3118,9 +3176,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				return false;
 			}
 // end new code
-
-
-
 
 		} else {
 			return false;
@@ -3606,25 +3661,30 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		// If all the cards are a run then keep trying to play them until it works
 		
-		// TODO: Fix this so it plays 56 onto 890*
+		// TODO Oct 2022: Fix this so it plays 56 onto 890*
+		// Method: Try to play them in all the orders possible and see if 1 goes through
 		
 //		$multipleCardsAreRun = $this->checkRun( $boardPlusHandCards, false );
-		
-		 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		foreach ( $card_ids as $card_id ) {
-			self::dump( "[bmc] (MULTIPLE Playing Card", $card_id );
+
+// Start change for playing multiple Nov 2022.
+		if ( $this->checkRun( $boardPlusHandCards, true ) == true ) {
+			self::trace( "[bmc] Playing multiple on run." );
 			$this->playCardFinish( $card_id, $player_id, $boardArea, $boardPlayer, false );
+		} else if ( $this->checkSet( $boardplushandcards ) == true ) {
+			self::trace( "[bmc] Playing multiple on set." );
+			$this->playCardFinish( $card_id, $player_id, $boardArea, $boardPlayer, false );
+		} else {
+			// Throw exception that it's not a set nor a run
+			throw new BgaUserException( self::_('Cannot play those cards on that meld.') );
+			return;
 		}
+		
+		// foreach ( $card_ids as $card_id ) {
+			// self::dump( "[bmc] (MULTIPLE Playing Card", $card_id );
+			// $this->playCardFinish( $card_id, $player_id, $boardArea, $boardPlayer, false );
+		// }
+// End change for playing multiple Nov 2022.
+
 		self::trace( "[bmc] EXIT playCardMultiple" );
 	}
 ////
@@ -3771,7 +3831,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					)
 				);
 			} else {
-				self::trace("[bmc] 3058 not same values for set.");
+				self::trace("[bmc] 3799 not same values for set.");
 				throw new BgaUserException( self::_('Cannot play that card on that set.') );
 			}
 		} else if ( $this->checkRun( $cardsInArea, false ) == true ) {
@@ -3956,13 +4016,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
     function stWentOut() {
 		self::trace("[bmc] ENTER stWentOut");
 
-
-
-
-
-
-
-
 // todo MAYBE NOT INCLUDE THIS
 // Update all the clients after the final discard
 		$cardsByLocationHand  = $this->cards->countCardsByLocationArgs( 'hand' );
@@ -3988,10 +4041,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 // END MAYBE NOT INCLUDE THIS
 
 
-
-
-
-
 		// Notify players to review their hands and click to continue
 		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
 		$players = self::loadPlayersBasicInfos();
@@ -4005,19 +4054,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				'player_name' => $players[ $activeTurnPlayer_id ][ 'player_name' ]
 			)
 		); 
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 		// Check end of game condition here. Message and route the players accordingly.
 
@@ -4212,6 +4248,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			)
 		); 
 		// Deactivate player; if none left, transition to next '' state
+		// IF THIS LINE IS NOT THERE THE GAME WON'T GO TO THE NEXT HAND
 		$this->gamestate->setPlayerNonMultiactive( $player_id, 'playerHasReviewedHand' );
 	}
 ////
@@ -4267,7 +4304,14 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				$this->disableWishList( $player_id );
 			}
 		}
-				
+		
+		// Disable everyone's wish list between hands
+		foreach ( $players as $player_id => $player ) {
+			$this->disableWishList( $player_id );
+		}
+
+//TODO: I broke the end-hand stuff. It shows more and more DEAL ME IN BUTTONS. Should revert to the last good one.
+			
 		// Put 1 card from the deck into the discard pile and give it a starting weight of 100
 		$this->cards->moveCard( $this->cards->getCardOnTop ( 'deck' )[ 'id' ], 'discardPile', 100); 
 		
@@ -5120,8 +5164,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				array()
 			);
 		}
-
-// TODO: 8/24/2022: These 2 database calls to 'countCardsByLocationArgs' are triggering deadlock because multiple people try to buy at same time. Need to put them into gamestatevariables.
 
 		// If there aren't enough cards, don't allow it
 		$countDeck = self::getGameStateValue( 'countDeck' );

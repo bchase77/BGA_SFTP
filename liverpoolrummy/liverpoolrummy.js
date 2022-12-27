@@ -111,6 +111,9 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 //
 // TODO: 101569962
+// Add extra PREP area just for storing cards to get rid of later.
+// Add ability to SAVE PREP areas on the server.
+// Make it more playable on phone screens.
 // 9/28/2022: Trying to add 89 to *JQKA diamonds. but they don't go 2 at a time. Must done 8 and 9 1 card at a time. Error is "Not a run. It doesn't reach!'
 // Chipati draws a card from the discard pile.
 // jojo2k discards the 7 of clubs.
@@ -133,6 +136,9 @@ console.log("[bmc] Clear this.prepAreas2");
 // for joker and put it back in, then the GODOWN button turned on. The GO DOWN buttonBuy
 // did not light up at all beforehand.
 
+// 12/26/2022: Someone went down with 12 cards and then could not discard. The card quantity check was not right. Need to verify the fix.
+// 12/26/2022:   Spades: AKQ Hearts: 7890J Diamonds: 789* then swapped out for the 7H on the board.
+// 12/26/2022:   On board is C:A23*56 H:56*89 H:*QKA
 // 09/10/2022: Mark and I both tried to buy a QD but someone picked it up and got a 3D instead, and we could not buy.
 // 09/10/2022: K could not go down with 9C replacing a joker, and 2 runs, and her 2 melds each needed a joker. She had to put only the right number of cards then go down, then play the rest.
 // 09/10/2022: Add "you" to the wish list logs
