@@ -4310,8 +4310,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$this->disableWishList( $player_id );
 		}
 
-//TODO: I broke the end-hand stuff. It shows more and more DEAL ME IN BUTTONS. Should revert to the last good one.
-			
 		// Put 1 card from the deck into the discard pile and give it a starting weight of 100
 		$this->cards->moveCard( $this->cards->getCardOnTop ( 'deck' )[ 'id' ], 'discardPile', 100); 
 		

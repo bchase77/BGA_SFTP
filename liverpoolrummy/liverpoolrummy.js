@@ -114,7 +114,7 @@ console.log("[bmc] Clear this.prepAreas2");
 // Add extra PREP area just for storing cards to get rid of later.
 // Add ability to SAVE PREP areas on the server.
 // Make it more playable on phone screens.
-// 9/28/2022: Trying to add 89 to *JQKA diamonds. but they don't go 2 at a time. Must done 8 and 9 1 card at a time. Error is "Not a run. It doesn't reach!'
+// 9/28/2022: Trying to add 89 to *JQKA diamonds. but they don't go 2 at a time. Must do 8 and 9 1 card at a time. Error is "Not a run. It doesn't reach!'
 // Chipati draws a card from the discard pile.
 // jojo2k discards the 7 of clubs.
 // (binnok bought the 2 of spades)
@@ -136,22 +136,19 @@ console.log("[bmc] Clear this.prepAreas2");
 // for joker and put it back in, then the GODOWN button turned on. The GO DOWN buttonBuy
 // did not light up at all beforehand.
 
-// 12/26/2022: Someone went down with 12 cards and then could not discard. The card quantity check was not right. Need to verify the fix.
-// 12/26/2022:   Spades: AKQ Hearts: 7890J Diamonds: 789* then swapped out for the 7H on the board.
-// 12/26/2022:   On board is C:A23*56 H:56*89 H:*QKA
+// Joker placement: it’s a two in a run from ace to 5, but it will show up like it was the 6
+// Turn off the wishlist after a player goes down.
+// Display "You bought X" from wishlist buy (not sure how to display it)
 // 09/10/2022: Mark and I both tried to buy a QD but someone picked it up and got a 3D instead, and we could not buy.
 // 09/10/2022: K could not go down with 9C replacing a joker, and 2 runs, and her 2 melds each needed a joker. She had to put only the right number of cards then go down, then play the rest.
 // 09/10/2022: Add "you" to the wish list logs
 // 09/10/2022: without wishlist option, notifcation "WISH LIST DISABLED" appeared in the log and should not have
 // 09/10/2022: Add a sound "It fits right there!" when your buy goes through.
-// 09/10/2022: Konni had gone done. had a card in her wishist and the person before discarded it. Her browser froze with MOVE RECORDED. She could not pick up the discard. She refreshed her browser. Then she clicked on NOT BUY, she might have clicked on CLEAR WISHLIST. Then che clicked on the discard to pick it up and it recorded it as a buy.
+// 09/10/2022: Konni had gone down. had a card in her wishist and the person before discarded it. Her browser froze with MOVE RECORDED. She could not pick up the discard. She refreshed her browser. Then she clicked on NOT BUY, she might have clicked on CLEAR WISHLIST. Then che clicked on the discard to pick it up and it recorded it as a buy.
 // 09/10/2022: 789 onto 10*QK gives "NOT A RUN DOESNT READCH" but it should reach.
-// 0/10/: Konni's WL still tried to buy after she went down and discable swishlist.
-// 09/06/2022: Ability to hide wishlist (especially for phone players)
-// 09/05/2022: the wishlist is still active from one hand to the next and should not be.
+// 09/10/2022: Konni's WL still tried to buy after she went down and disable swishlist.
 // 09/05/2022: Cannot play on low end of run with joker. 567* won't allow 3 to play.
 // 09/05/2022: I usually wait until someone draws their card to try to buy something, so that I don't influence them
-// 09/05/2022: It would be nice to flip it closed or open. Like now, when I don't need it anymore, it could close.
 // 09/05/0222: it didn't tell me WISH LIST CLEARED when I clicked clear button (after I went down).
 // 09/05/2022: Spectators aren't supposed to see the wish list controls.  
 // 08/22/2022: Remove wishlist from spectator area
@@ -230,6 +227,12 @@ console.log("[bmc] Clear this.prepAreas2");
 //
 // Resolved Bugs:
 // --------------
+// X 09/05/2022: Flip WL closed or open. When I don't need it anymore, it could close.
+// X 09/06/2022: Ability to hide wishlist (especially for phone players)
+// X 09/05/2022: the wishlist is still active from one hand to the next and should not be.
+// X 12/26/2022: Someone went down with 12 cards and then could not discard. The card quantity check was not right. Need to verify the fix.
+// X 12/26/2022:   Spades: AKQ Hearts: 7890J Diamonds: 789* then swapped out for the 7H on the board.
+// X 12/26/2022:   On board is C:A23*56 H:56*89 H:*QKA
 // X 2022-08-27: Konni automaticily wants to buy when she selected all 4 seves and then a 2S and 2D werer discarded.
 // X 08/16/2022: Jo found 2x jokers on K** and put K in CARD for joker didn't allow to go down without selecting a joker.
 // X 08/16/2022: The Joker in Jo's K*K is still selected after she used the other one.
