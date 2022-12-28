@@ -3,7 +3,7 @@
 <!-- 
 --------
 -- BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
--- MatRetDev implementation : © <Your name here> <Your email address here>
+-- MatRetDev implementation : © Mike & Jack McKeever and Bryan Chase bryanchase@yahoo.com
 -- 
 -- This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
 -- See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -26,8 +26,37 @@
 -->
 
 
-This is your game interface. You can edit this HTML in your ".tpl" file.
+This is your game interface2. You can edit this HTML in your ".tpl" file.
 
+<!-- Comment: Administrative Area -->
+
+<h3>
+	<span> 
+		<span id="periodNumber" style="color:Black"></span>
+	</span>
+</h3>
+
+<!-- Comment: My Hand Area -->
+
+<div id="myHandWrap" class="myHandWrapClass whiteblock">
+<div id="myHand" class="myHandClass"></div>
+
+</div>
+
+<!-- Comment: Main Game Board Area -->
+
+<div id="mainBoardWrap" class="mainBoardWrapClass whiteblock">
+   <div id="cardMoveOpp" class="cardMoveClass">
+   </div>
+   <div id="cardwrestlerOpp" class="cardMoveClass">
+   </div>
+   <div id="cardScramble" class="cardMoveClass">
+   </div>
+   <div id="cardMoveMine" class="cardMoveClass">
+   </div>
+   <div id="cardWrestlerMine" class="cardMoveClass">
+   </div>
+</div>
 
 <script type="text/javascript">
 

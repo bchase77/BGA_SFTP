@@ -1,7 +1,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * MatRetDev implementation : © <Your name here> <Your email address here>
+ * MatRetDev implementation : © Mike & Jack McKeever, Bryan Chase bryanchase@yahoo.com.
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -15,10 +15,15 @@
  *
  */
 
+// Task / Bug tracking:
+//
+//
+
 define([
     "dojo","dojo/_base/declare",
     "ebg/core/gamegui",
-    "ebg/counter"
+    "ebg/counter",
+	"ebg/stock"
 ],
 function (dojo, declare) {
     return declare("bgagame.matretdev", ebg.core.gamegui, {
@@ -28,6 +33,9 @@ function (dojo, declare) {
             // Here, you can init the global variables of your user interface
             // Example:
             // this.myGlobalValue = 0;
+
+            this.cardWidth = 72;
+            this.cardHeight = 96;
 
         },
         
@@ -49,12 +57,16 @@ function (dojo, declare) {
             console.log( "Starting game setup" );
             
             // Setting up player boards
-            for( var player_id in gamedatas.players )
-            {
-                var player = gamedatas.players[player_id];
+            // for( var player_id in gamedatas.players )
+            // {
+                // var player = gamedatas.players[player_id];
                          
                 // TODO: Setting up players boards if needed
-            }
+            // }
+
+            // Player hand
+            this.playerHand = new ebg.stock(); // new stock object for hand
+			this.playerHand.create( this, $('myHand'), this.cardWidth, this.cardHeight );
             
             // TODO: Set up your game interface here, according to "gamedatas"
             
