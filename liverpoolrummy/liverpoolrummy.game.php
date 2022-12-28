@@ -759,19 +759,19 @@ class LiverpoolRummy extends Table
 				),
 			3 => array(
 				'type' => '1', // Suit
-				'type_arg' => '5' // Value
+				'type_arg' => '4' // Value
 				),
 			4 => array(
 				'type' => '1', // Suit
-				'type_arg' => '6' // Value
+				'type_arg' => '5' // Value
 				),
 			5 => array(
 				'type' => '5', // Suit
 				'type_arg' => '2' // Value
 				),
 			6 => array(
-				'type' => '3', // Suit
-				'type_arg' => '5' // Value
+				'type' => '5', // Suit
+				'type_arg' => '1' // Value
 				),
 			7 => array(
 				'type' => '3', // Suit
@@ -779,15 +779,15 @@ class LiverpoolRummy extends Table
 				),
 			8 => array(
 				'type' => '3', // Suit
-				'type_arg' => '8' // Value
+				'type_arg' => '7' // Value
 				),
 			9 => array(
 				'type' => '3', // Suit
-				'type_arg' => '9' // Value
+				'type_arg' => '8' // Value
 				),
 			10 => array(
-				'type' => '5', // Suit
-				'type_arg' => '1' // Value
+				'type' => '3', // Suit
+				'type_arg' => '9' // Value
 				),
 			11 => array(
 				'type' => '2', // Suit
