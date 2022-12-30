@@ -1,7 +1,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * MatRetDev implementation : © Mike & Jack McKeever, Bryan Chase bryanchase@yahoo.com.
+ * MatRetDev implementation : © Mike & Jack McKeever and Bryan Chase bryanchase@yahoo.com
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -66,13 +66,20 @@ function (dojo, declare) {
 
             // Player hand
             this.playerHand = new ebg.stock(); // new stock object for hand
-			this.playerHand.create( this, $('myHand'), this.cardWidth, this.cardHeight );
+			this.playerHand.create( this, $('handsWrap'), this.cardWidth, this.cardHeight );
             
             // TODO: Set up your game interface here, according to "gamedatas"
             
  
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
+			
+			$(MOVECARDOPPTRANSLATED).innerHTML = _('Move Card (Opponent)');
+			$(WRESTLERCARDOPPTRANSLATED).innerHTML = _('Wrestler Card (Opponent)');
+			$(SCRAMBLECARDTRANSLATED).innerHTML = _('Scramble Card');
+			$(MOVECARDMINETRANSLATED).innerHTML = _('Move Card (Mine)');
+			$(WRESTLERCARDMINETRANSLATED).innerHTML = _('Wrestler Card (Mine)');
+
 
             console.log( "Ending game setup" );
         },

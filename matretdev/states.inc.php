@@ -2,7 +2,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * MatRetDev implementation : © <Your name here> <Your email address here>
+ * MatRetDev implementation : © Mike & Jack McKeever and Bryan Chase bryanchase@yahoo.com
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -58,12 +58,43 @@ $machinestates = array(
         "description" => "",
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array( "" => 2 )
+        "transitions" => array( "" => 10 )
     ),
     
-    // Note: ID=2 => your first state
-
-    2 => array(
+	// States:
+	//  Player Setup:
+	//  	Choose wrestlers and Special Moves
+	//  Game Setup:
+	//		Set period and rounds
+	//		Take stats from chosen cards to set gameboard
+	//		Player with higher conditioning goes first
+	//  ActivePlayer chooses Offense or Defense
+	//     Take stats from chosen cards to adjust gameboard (temporary)
+	//	Both players choose a card; Reveal
+	//  Game adjusts conditioning based on cards chosen
+	//  Roll Red and Blue
+	//	
+	//	 
+	
+	
+    // Note: ID=10 => your first state
+    10 => array(
+    		"name" => "chooseWrestler",
+    		"description" => clienttranslate('${actplayer} must choose a wrestler'),
+    		"descriptionmyturn" => clienttranslate('${you} must choose a wrestler'),
+    		"type" => "activeplayer",
+    		"possibleactions" => array( "chooseWrestler" ),
+    		"transitions" => array( "chooseWrestler" => 20 )
+    ),
+    20 => array(
+    		"name" => "chooseSpecialMoves",
+    		"description" => clienttranslate('${actplayer} must chooose Special Moves cards'),
+    		"descriptionmyturn" => clienttranslate('${you} must chooose Special Moves cards'),
+    		"type" => "activeplayer",
+    		"possibleactions" => array( "chooseMoves" ),
+    		"transitions" => array( "chooseMoves" => 30 )
+    ),
+    30 => array(
     		"name" => "playerTurn",
     		"description" => clienttranslate('${actplayer} must play a card or pass'),
     		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
@@ -71,7 +102,14 @@ $machinestates = array(
     		"possibleactions" => array( "playCard", "pass" ),
     		"transitions" => array( "playCard" => 2, "pass" => 2 )
     ),
-    
+    10 => array(
+    		"name" => "playerTurn",
+    		"description" => clienttranslate('${actplayer} must play a card or pass'),
+    		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
+    		"type" => "activeplayer",
+    		"possibleactions" => array( "playCard", "pass" ),
+    		"transitions" => array( "playCard" => 2, "pass" => 2 )
+    ),
 /*
     Examples:
     

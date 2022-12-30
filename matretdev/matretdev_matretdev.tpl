@@ -38,23 +38,35 @@ This is your game interface2. You can edit this HTML in your ".tpl" file.
 
 <!-- Comment: My Hand Area -->
 
-<div id="myHandWrap" class="myHandWrapClass whiteblock">
-<div id="myHand" class="myHandClass"></div>
-
+<div id="handsWrap" class="myHandWrapClass whiteblock">
+	   <div id="boxMoveCardMine" class="moveCardClass">
+	      <h3><span id="MOVECARDMINETRANSLATED"></span></h3>
+		  <div id="moveCardMine"></div>
+	   </div>
+	   <div id="boxWrestlerCardMine" class="moveCardClass">
+	      <h3><span id="WRESTLERCARDMINETRANSLATED"></span></h3>
+		  <div id="wrestlerCardMine"></div>
+	   </div>
+	   <div id="boxMoveCardOpp" class="moveCardClass">
+	      <h3><span id="MOVECARDOPPTRANSLATED" style="float: Left;"></span></h3>
+		  <div id="moveCardOpp"></div>
+	   </div>
+	   <div id="boxWrestlerCardOpp" class="moveCardClass">
+	      <h3><span id="WRESTLERCARDOPPTRANSLATED"></span></h3>
+		  <div id="wrestlerCardOpp"></div>
+	   </div>
 </div>
 
 <!-- Comment: Main Game Board Area -->
 
 <div id="mainBoardWrap" class="mainBoardWrapClass whiteblock">
-   <div id="cardMoveOpp" class="cardMoveClass">
-   </div>
-   <div id="cardwrestlerOpp" class="cardMoveClass">
-   </div>
-   <div id="cardScramble" class="cardMoveClass">
-   </div>
-   <div id="cardMoveMine" class="cardMoveClass">
-   </div>
-   <div id="cardWrestlerMine" class="cardMoveClass">
+   <div id="boxes">
+	   <div></div>
+	   <div id="boxScrambleCard" class="moveCardClass">
+	      <h3><span id="SCRAMBLECARDTRANSLATED"></span></h3>
+		  <div id="scrambleCard"></div>
+	   </div>
+	   <div></div>
    </div>
 </div>
 

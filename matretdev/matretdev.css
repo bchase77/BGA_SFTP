@@ -1,7 +1,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * MatRetDev implementation : © <Your name here> <Your email address here>
+ * MatRetDev implementation : © Mike & Jack McKeever and Bryan Chase bryanchase@yahoo.com
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -69,8 +69,9 @@
 
 .mainBoardWrapClass {
 	float: Left;
-    background-image: url('img/MainBoard.png');
-	background-size: cover;
+    background-image: url('img/MainMatt.png');
+	background-size: contain;
+	background-repeat: no-repeat;
 	margin: 10px;
 	border: 10px;
 	padding: 10px;
@@ -82,22 +83,26 @@
 	border: 10px;
 	padding: 10px;
 	width: 95%;
+	height: 350px;
 }
-.myHandClass {
+/*.myHandClass {
 	float: Left;
 	margin: 10px;
 	border: 10px;
 	padding: 10px;
 	width: 95%;
 }
-.cardMoveClass {
+*/
+.moveCardClass {
 	float: Left;
     background-image: url('img/MRGameCards1.9_c_Page_073.png');
-	background-size: cover;
+	background-size: contain;
+	background-repeat: no-repeat;
 	margin: 10px;
 	border: 10px;
 	padding: 10px;
-	width: 95%;
+	width: 250px;
+	height: 350px;
 }
 
 
