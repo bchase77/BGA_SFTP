@@ -72,10 +72,50 @@ $machinestates = array(
 	//     Take stats from chosen cards to adjust gameboard (temporary)
 	//	Both players choose a card; Reveal
 	//  Game adjusts conditioning based on cards chosen
-	//  Roll Red and Blue
+	//  Both players roll 1 die, either red or blue
+	//		Pay TOKENS to reroll if desired
+	//		Resolve STAR card outcome
+	//		Apply effects from MOVE card + Wrestler trademark
+	//		Collect or pay TOKENS as needed
+	//      If ActivePlayer plays a scoring card & has higher stats then do Scramble
+	//  Scramble:
+	//      Depends on the rules on the scramble card
+	//
+	//      For example (5/25 solo):
+	//        Roll D12.
+	//		  Guess higher/lower until incorrect.
+	//        If 3 or fewer, lose.
+	//        If 4 or 5, win.
+	//        If 6, burst.
+	//      
+	//      For example (7/25 ):
+	//	 	  Both players choose a number 1-20.
+	//        One player rolls D20.
+	//		  Player who is closer wins (tie goes to defender).
+	//		  Play 7 rounds.
+	//        If 3 or fewer, lose.
+	//        If 4, win.
+	//        If 5,6,7 or guess a roll exactly, burst.
 	//	
-	//	 
-	
+	//	    After Scramble:
+	//        If ActivePlayer won:
+	//			Score the points from the card.
+	//			Start on TOP.
+	//			Other player's turn is skipped.
+	//		  If ActivePlayer got burst and it's Pin Round 1:
+	//			Score 2 points.
+	//			Go to Pin Round 2.
+	//			Draw another Scramble card.
+	//		  If ActivePlayer got burst and it's Pin Round 2:
+	//			Score 2 points.
+	//			Go to Pin Round 3.
+	//		  If ActivePlayer got burst and it's Pin Round 3:
+	//			Score 2 points.
+	//			Go to Pin Round 3.
+	//	
+	//	
+	//	
+	//	
 	
     // Note: ID=10 => your first state
     10 => array(
