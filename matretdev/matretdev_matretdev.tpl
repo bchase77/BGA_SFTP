@@ -26,7 +26,7 @@
 -->
 
 
-This is your game interface2. You can edit this HTML in your ".tpl" file.
+This is your game interface4. It's January 2nd 2023. You can edit this HTML in your ".tpl" file.
 
 <!-- Comment: Administrative Area -->
 
