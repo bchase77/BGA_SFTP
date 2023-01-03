@@ -143,7 +143,7 @@ $machinestates = array(
     		"name" => "roundSetup",
     		"description" => clienttranslate('[ST40] roundSetup'),
     		"type" => "game",
-			"action" => "stRoundSetup"
+			"action" => "stRoundSetup",
     		"transitions" => array( "" => 50 )
     ),
     50 => array(
@@ -157,28 +157,28 @@ $machinestates = array(
     		"name" => "evaluateMoves",
     		"description" => clienttranslate('[ST60] evaluateMoves'),
     		"type" => "game",
-			"action" => "stEvaluateMoves"
+			"action" => "stEvaluateMoves",
     		"transitions" => array( "scramble" => 70, "endGame" => 99, "newRound" => 40, "newPeriod" => 80 )
     ),
     70 => array(
     		"name" => "scrambleGame",
     		"description" => clienttranslate('[ST60 evaluateMoves'),
     		"type" => "multipleactiveplayer",
-			"action" => "stScrambleGame"
+			"action" => "stScrambleGame",
     		"transitions" => array( "endScramble" => 90 )
     ),
     80 => array(
     		"name" => "updatePeriod",
     		"description" => clienttranslate('[ST80] updatePeriod'),
     		"type" => "game",
-			"action" => "stUpdatePeriod"
+			"action" => "stUpdatePeriod",
     		"transitions" => array( "" => 40)
     ),
     90 => array(
     		"name" => "evaluateScramble",
     		"description" => clienttranslate('[ST90] evaluateScramble'),
     		"type" => "game",
-			"action" => "stEvaluateScramble"
+			"action" => "stEvaluateScramble",
     		"transitions" => array( "endGame" => 99, "newRound" => 40, "newPeriod" => 80 )
     ),
 
