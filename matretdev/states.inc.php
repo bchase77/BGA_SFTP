@@ -63,7 +63,7 @@ $machinestates = array(
     
 	// States:
 	// 
-	// Hey Ben this is a comment in the states file and I'll do a PULL REQUEST. Tell me what you see.
+	// Hey Ben this is a 2nd comment in the states file and I'll do a PULL REQUEST. Tell me what you see.
 	//
 	//  Player Setup:
 	//  	Choose wrestlers and Special Moves
