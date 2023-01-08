@@ -26,6 +26,14 @@
 
 $game_options = array(
 
+	100 => array(
+		'name' => totranslate( 'Game Length' ),
+		'values' => array(
+			1 => array( 'name' => totranslate( '3 periods; 9, 6 & 6 Rounds' ) ),
+			2 => array( 'name' => totranslate( '3 periods; 6, 3 & 3 Rounds' ) ),
+		),
+		'default' => 1
+	)
     /*
     
     // note: game variant ID should start at 100 (ie: 100, 101, 102, ...). The maximum is 199.

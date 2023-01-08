@@ -39,6 +39,7 @@ class MatRetDev extends Table
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
+			"period" => 10
         ) );        
 	}
 	
@@ -56,7 +57,7 @@ class MatRetDev extends Table
         the game is ready to be played.
     */
     protected function setupNewGame( $players, $options = array() )
-    {    
+    {
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
@@ -88,7 +89,10 @@ class MatRetDev extends Table
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
         // TODO: setup the initial game situation here
-       
+		
+		self::setGameLength();
+
+        self::setGameStateInitialValue( 'period', 1 );
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -96,6 +100,42 @@ class MatRetDev extends Table
         /************ End of the game initialization *****/
     }
 
+
+	function stDeckSetup()
+	{
+		self::trace("[bmc] Enter setupNewDeck");
+		$cardsWrestler = array();
+		
+		foreach ( $this->wrestlers as $wrestler ) {
+			$cardsWrestler[] = array ( 
+				"Name"  => $wrestler["Name"],
+				"ConR1" => $wrestler["conR1"],
+				"ConR2" => $wrestler["conR2"],
+				"ConR3" => $wrestler["ConR3"],
+				"Off"   => $wrestler["Off"],
+				"Def"   => $wrestler["Def"],
+				"Top"   => $wrestler["Top"],
+				"Bot"   => $wrestler["Bot"],
+				"Token" => $wrestler["Token"],
+				"Star"  => $wrestler["Star"],
+				"TM"    => $wrestler["TM"]
+			)
+		}
+		
+		$this->cards->createCards( $cardsWrestler, 'deckWrestler' );
+
+		$cardsDebug = $this->cards->getCardsInLocation( 'deckWrestler' );
+
+		self::dump( "[bmc] cardsWrestler: ", $cardsDebug );
+		
+		// $cardsScramble = array();
+		// $cardsOffense = array();
+		// $cardsDefense = array();
+		// $cardsTop = array();
+		// $cardsBottom = array();
+		
+		self::trace("[bmc] Exit setupNewDeck");
+	}
     /*
         getAllDatas: 
         
@@ -115,9 +155,31 @@ class MatRetDev extends Table
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
-  
+
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
   
+		// Let the clients know game state so they know to have them choose wrestler or other actions
+		$state = $this->gamestate->state();
+
+		$result[ 'state' ] = $state;
+		
+		$result[ 'deckWrestler' ]  = $this->cards->getCardsInLocation( 'deckWrestler' );
+		$result[ 'deckScramble' ]  = $this->cards->getCardsInLocation( 'deckScramble' );
+		$result[ 'deckOffsense' ]  = $this->cards->getCardsInLocation( 'deckOffsense' );
+		$result[ 'deckDefensee' ]  = $this->cards->getCardsInLocation( 'deckDefensee' );
+		$result[ 'deckTop' ]       = $this->cards->getCardsInLocation( 'deckTop' );
+		$result[ 'deckBottom' ]    = $this->cards->getCardsInLocation( 'deckBottom' );
+		$result[ 'boardScramble' ] = $this->cards->getCardsInLocation( 'boardScramble' );
+
+		$current_player_id = self::getCurrentPlayerId(); // !! Must only return informations visible by this player !!
+
+		$players = self::loadPlayersBasicInfos();
+
+		foreach ( $players as $player_id => $player ) {
+			$result[ 'boardWrestler' ][ player_id ] = $this->cards->getCardsInLocation( 'boardWrestler' , $player_id );
+			$result[ 'boardMove' ][ player_id ] = $this->cards->getCardsInLocation( 'boardMove' , $player_id );
+		}
+		
         return $result;
     }
 
@@ -147,7 +209,15 @@ class MatRetDev extends Table
         In this space, you can put any utility methods useful for your game logic
     */
 
+	function setGameLength() {
+		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
 
+		if ( $gameLengthOption == 1 ) {
+			$this->gameType = $this->gameType1;
+		} else {
+			$this->gameType = $this->gameType2;
+		}
+	}
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions

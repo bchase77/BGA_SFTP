@@ -34,8 +34,8 @@ function (dojo, declare) {
             // Example:
             // this.myGlobalValue = 0;
 
-            this.cardWidth = 72;
-            this.cardHeight = 96;
+            this.cardWidth = 500;
+            this.cardHeight = 700;
 
         },
         
@@ -56,6 +56,9 @@ function (dojo, declare) {
         {
             console.log( "Starting game setup" );
             
+			console.log("[bmc] GAMEDATAS");
+			console.log(this.gamedatas);
+
             // Setting up player boards
             // for( var player_id in gamedatas.players )
             // {
@@ -64,12 +67,35 @@ function (dojo, declare) {
                 // TODO: Setting up players boards if needed
             // }
 
+
+
+
+TODO: SEt up the hand. I'm thinking to have the players hand alternate between TOP, BOTTOM, OFFENSE, DEFENSE and WRESTLER decks, depending upon the game state. Then just show that deck in the $('myHand') area.
+
+
+
             // Player hand
             this.playerHand = new ebg.stock(); // new stock object for hand
-			this.playerHand.create( this, $('handsWrap'), this.cardWidth, this.cardHeight );
-            
+			this.playerHand.create( this, $('myHand'), this.cardWidth, this.cardHeight );
+
+            // 13 images per row in the sprite file
+			this.playerHand.image_items_per_row = 4;
+			
+
             // TODO: Set up your game interface here, according to "gamedatas"
-            
+
+			for ( var i in this.gamedatas.deckWrestler ) {
+				
+			}
+			
+
+
+
+
+
+
+
+
  
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -79,7 +105,6 @@ function (dojo, declare) {
 			$(SCRAMBLECARDTRANSLATED).innerHTML = _('Scramble Card');
 			$(MOVECARDMINETRANSLATED).innerHTML = _('Move Card (Mine)');
 			$(WRESTLERCARDMINETRANSLATED).innerHTML = _('Wrestler Card (Mine)');
-
 
             console.log( "Ending game setup" );
         },

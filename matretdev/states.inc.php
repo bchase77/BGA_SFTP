@@ -69,15 +69,17 @@ $machinestates = array(
 	//  Player Setup:
 	//  	Choose wrestlers and Special Moves
 	//  Game Setup:
-	//		Add special move cards to Basic Moves cards to make the deck
+	//		Add Special Move cards to Basic Moves cards to make the deck
+	//         Basic Move cards don't have stars. Special Move cards have stars.
 	//		Set period and rounds
 	//		Take stats from chosen cards to set Base gameboard settings
 	//		Player with higher conditioning goes first
 	//  ActivePlayer chooses Offense or Defense
 	//     Take stats from chosen cards to adjust Temporary gameboard settings
-	//	Both players choose a MOVE card; Reveal
-	//  Game adjusts conditioning based on cards chosen
-	//  Both players roll 1 die, either red or blue
+	//	Both players choose a MOVE card simultaneously
+	//  Reveal ActivePlayer card
+	//      Game adjusts conditioning based on cards chosen
+	//  ActivePlayer roll 1 die, either red or blue
 	//		Pay TOKENS to reroll if desired
 	//		Resolve STAR card outcome
 	//		Apply effects from MOVE card + Wrestler trademark
@@ -103,23 +105,24 @@ $machinestates = array(
 	//        If 5,6,7 or guess a roll exactly, burst.
 	//	
 	//	    After Scramble:
-	//        If ActivePlayer won:
+	//        If ActivePlayer won (this is Pin Round 1):
 	//			Score the points from the card.
 	//			Start on TOP.
 	//			Other player's turn is skipped.
-	//		  If ActivePlayer got burst and it's Pin Round 1:
-	//			Score 2 points.
-	//			Go to Pin Round 2.
-	//			Draw another Scramble card.
 	//		  If ActivePlayer got burst and it's Pin Round 2:
 	//			Score 2 points.
-	//			Go to Pin Round 3.
+	//			If successful go to Pin Round 3.
+	//			If unsuccessful, the round is over.
+	//			Draw another Scramble card.
 	//		  If ActivePlayer got burst and it's Pin Round 3:
-	//			Score 2 points.
-	//			Go to Pin Round 3.
-	//	
-	//	
-	//	
+	//			Draw another Scramble card.
+	//			If unsuccessful, the round is over.
+	//			If successful then it's a pin and the game is over.
+	//
+	//	If there was a score and it was the ActivePlayer's STAR card then the other player doesn't get to play
+	//	    <do the other steps above>
+	//
+	//	After all scramble games, go to next round or next period
 	//	
 	
     // Note: ID=10 => your first state
