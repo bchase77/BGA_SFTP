@@ -34,8 +34,8 @@ function (dojo, declare) {
             // Example:
             // this.myGlobalValue = 0;
 
-            this.cardWidth = 72;
-            this.cardHeight = 96;
+            this.cardWidth = 500;
+            this.cardHeight = 700;
 
         },
         
@@ -56,6 +56,9 @@ function (dojo, declare) {
         {
             console.log( "Starting game setup" );
             
+			console.log("[bmc] GAMEDATAS");
+			console.log(this.gamedatas);
+
             // Setting up player boards
             // for( var player_id in gamedatas.players )
             // {
@@ -64,12 +67,59 @@ function (dojo, declare) {
                 // TODO: Setting up players boards if needed
             // }
 
+			// The players hand will alternate between TOP, BOTTOM, OFFENSE, DEFENSE and WRESTLER decks.
+			// Which is shown depends upon the game state. Then just show that deck in the $('myHand') area.
+
             // Player hand
             this.playerHand = new ebg.stock(); // new stock object for hand
-			this.playerHand.create( this, $('handsWrap'), this.cardWidth, this.cardHeight );
-            
+			this.playerHand.create( this, $('myHand'), this.cardWidth, this.cardHeight );
+
+            // 13 images per row in the sprite file
+			this.playerHand.image_items_per_row = 4;
+
+
+
+			
+			// Set the hand type per each player's position (offense, defense, top or bottom)
+			
+			this.playerHandType = new Array();
+			
+			if        ( this.gamedatas.playerOnOffsense == this.player_id ) {
+				this.playerHandType = "Offense";
+			} else if ( this.gamedatas.playerOnDefense  == this.player_id ) {
+				this.playerHandType = "Defense";
+			} else if ( this.gamedatas.playerOnTop      == this.player_id ) {
+				this.playerHandType = "Top";
+			} else if ( this.gamedatas.playerOnBottom   == this.player_id ) {
+				this.playerHandType = "Bottom";
+			} else {
+				exit (0); // Fatal Error! no player in any valid position
+			}
+
+			console.log("this.playerHandType");
+			console.log(this.playerHandType);
+
+			int i = 0;
+			
+			switch ( this.playerHandType ) {
+				console.log("My Hand is " + this.playerHandType);
+				case 'Offense' :
+					for ( card in this.gamedatas.deckOffsense ) {
+						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsOffsense_v1.9.png', i)
+					}
+					break;
+				case 'Defense' :
+					for ( card in this.gamedatas.deckDefense ) {
+						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsDefense_v1.9.png', i)
+					}
+					break;
+				case 'Top' :
+					break;
+				case 'Bottom' :
+					break;
+			}
+
             // TODO: Set up your game interface here, according to "gamedatas"
-            
  
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -79,7 +129,6 @@ function (dojo, declare) {
 			$(SCRAMBLECARDTRANSLATED).innerHTML = _('Scramble Card');
 			$(MOVECARDMINETRANSLATED).innerHTML = _('Move Card (Mine)');
 			$(WRESTLERCARDMINETRANSLATED).innerHTML = _('Wrestler Card (Mine)');
-
 
             console.log( "Ending game setup" );
         },

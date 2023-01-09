@@ -61,13 +61,6 @@ class LiverpoolRummy extends Table
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-          // NOTE: Hand Types Order: 2 sets
-          //                         1 set 1 run
-          //                         2 runs
-          //                         3 sets
-          //                         2 sets 1 run
-          //                         1 set 2 runs
-          //                         3 runs
 		  // To track buyers realtime, instead of using the database which can lock, use a gamestate. Each player gets 1 variable.
 
 

@@ -39,6 +39,11 @@ class MatRetDev extends Table
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
+			"period" => 10,
+            "playerOnOffsense" => 11,
+            "playerOnDefense" => 12,
+            "playerOnTop" => 13,
+            "playerOnBottom" => 14
         ) );        
 	}
 	
@@ -56,7 +61,7 @@ class MatRetDev extends Table
         the game is ready to be played.
     */
     protected function setupNewGame( $players, $options = array() )
-    {    
+    {
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
@@ -88,14 +93,137 @@ class MatRetDev extends Table
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
         // TODO: setup the initial game situation here
-       
+		
+		self::setGameLength();
+
+        self::setGameStateInitialValue( 'period', 1 );
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
+		
+		// Initial values are 0. Player with higher conditioning will choose Off or Def; Coin flip if tied.
+		
+		self::setGameStateInitialValue( 'playerOnOffsense', 0 );
+		self::setGameStateInitialValue( 'playerOnDefense', 0 );
+		self::setGameStateInitialValue( 'playerOnTop', 0 );
+		self::setGameStateInitialValue( 'playerOnBottom', 0 );
 
         /************ End of the game initialization *****/
     }
 
+
+	function stDeckSetup()
+	{
+		self::trace("[bmc] Enter setupNewDeck");
+		
+		// Set up Wrestler deck
+		$cardsWrestler = array();
+		
+		foreach ( $this->wrestlerCards as $wrestler ) {
+			$cardsWrestler[] = array ( 
+				"Name"  => $wrestler["Name"],
+				"ConR1" => $wrestler["conR1"],
+				"ConR2" => $wrestler["conR2"],
+				"ConR3" => $wrestler["ConR3"],
+				"Off"   => $wrestler["Off"],
+				"Def"   => $wrestler["Def"],
+				"Top"   => $wrestler["Top"],
+				"Bot"   => $wrestler["Bot"],
+				"Token" => $wrestler["Token"],
+				"Star"  => $wrestler["Star"],
+				"TM"    => $wrestler["TM"]
+			)
+		}
+		
+		$this->cards->createCards( $cardsWrestler, 'deckWrestler' );
+
+		$cardsDebug = $this->cards->getCardsInLocation( 'deckWrestler' );
+
+		self::dump( "[bmc] deckWrestler: ", $cardsDebug );
+		
+		// $cardsScramble = array();
+		
+		// Set up Offense deck
+		$cardsOffense = array();
+		
+		foreach ( $this->offenseCards as $card ) {
+			$cardsOffense[] = array ( 
+				"Name"         => $card["Name"],
+				"MyCon"        => $card["MyCon"],
+				"MyTokens"     => $card["MyTokens"],
+				"RollDie"      => $card["RollDie"],
+				"SplEff"       => $card["SplEff"],
+				"BD_A"         => $card["BD_A"],
+				"BD_B"         => $card["BD_B"],
+				"BD_C"         => $card["BD_C"],
+				"BD_D"         => $card["BD_D"],
+				"BD_E"         => $card["BD_E"],
+				"BD_F"         => $card["BD_F"],
+				"BD_G"         => $card["BD_G"],
+				"BD_H"         => $card["BD_H"],
+				"BD_A"         => $card["RD_A"],
+				"RD_B"         => $card["RD_B"],
+				"RD_C"         => $card["RD_C"],
+				"RD_D"         => $card["RD_D"],
+				"RD_E"         => $card["RD_E"],
+				"RD_F"         => $card["RD_F"],
+				"RD_G"         => $card["RD_G"],
+				"RD_H"         => $card["RD_H"],
+				"OppAdjust"    => $card["OppAdjust"],
+				"Scoring"      => $card["Scoring"],
+				"DrawScramble" => $card["DrawScramble"]
+			)
+		}
+		
+		$this->cards->createCards( $cardsOffense, 'deckOffsense' );
+
+		$cardsDebug = $this->cards->getCardsInLocation( 'deckOffsense' );
+
+		self::dump( "[bmc] deckOffsense: ", $cardsDebug );
+
+		// Set up Defense deck
+		$cardsDefense = array();
+		
+		foreach ( $this->defenseCards as $card ) {
+			$cardsDefense[] = array (
+				"Name"         => $card["Name"],
+				"MyCon"        => $card["MyCon"],
+				"MyTokens"     => $card["MyTokens"],
+				"RollDie"      => $card["RollDie"],
+				"SplEff"       => $card["SplEff"],
+				"BD_A"         => $card["BD_A"],
+				"BD_B"         => $card["BD_B"],
+				"BD_C"         => $card["BD_C"],
+				"BD_D"         => $card["BD_D"],
+				"BD_E"         => $card["BD_E"],
+				"BD_F"         => $card["BD_F"],
+				"BD_G"         => $card["BD_G"],
+				"BD_H"         => $card["BD_H"],
+				"BD_A"         => $card["RD_A"],
+				"RD_B"         => $card["RD_B"],
+				"RD_C"         => $card["RD_C"],
+				"RD_D"         => $card["RD_D"],
+				"RD_E"         => $card["RD_E"],
+				"RD_F"         => $card["RD_F"],
+				"RD_G"         => $card["RD_G"],
+				"RD_H"         => $card["RD_H"],
+				"OppAdjust"    => $card["OppAdjust"],
+				"Scoring"      => $card["Scoring"],
+				"DrawScramble" => $card["DrawScramble"]
+			)
+		}
+		
+		$this->cards->createCards( $cardsDefense, 'deckDefense' );
+
+		$cardsDebug = $this->cards->getCardsInLocation( 'deckDefense' );
+
+		self::dump( "[bmc] cardsDefense: ", $cardsDebug );
+
+		// $cardsTop = array();
+		// $cardsBottom = array();
+		
+		self::trace("[bmc] Exit setupNewDeck");
+	}
     /*
         getAllDatas: 
         
@@ -115,9 +243,47 @@ class MatRetDev extends Table
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
-  
+
         // TODO: Gather all information about current game situation (visible by player $current_player_id).
   
+		// Let the clients know game state so they know to have them choose wrestler or other actions
+		$state = $this->gamestate->state();
+
+		$result[ 'state' ] = $state;
+		
+		$result[ 'deckWrestler' ]  = $this->cards->getCardsInLocation( 'deckWrestler' );
+		$result[ 'deckScramble' ]  = $this->cards->getCardsInLocation( 'deckScramble' );
+		$result[ 'deckOffsense' ]  = $this->cards->getCardsInLocation( 'deckOffsense' );
+		$result[ 'deckDefensee' ]  = $this->cards->getCardsInLocation( 'deckDefensee' );
+		$result[ 'deckTop' ]       = $this->cards->getCardsInLocation( 'deckTop' );
+		$result[ 'deckBottom' ]    = $this->cards->getCardsInLocation( 'deckBottom' );
+		$result[ 'boardScramble' ] = $this->cards->getCardsInLocation( 'boardScramble' );
+
+		$current_player_id = self::getCurrentPlayerId(); // !! Must only return informations visible by this player !!
+
+		$players = self::loadPlayersBasicInfos();
+
+		$playerOnOffsense = self::getGameStateValue( 'playerOnOffsense' );
+		$playerOnDefense  = self::getGameStateValue( 'playerOnDefense' );
+		$playerOnTop      = self::getGameStateValue( 'playerOnTop' );
+		$playerOnBottom   = self::getGameStateValue( 'playerOnBottom' );
+
+		$result[ 'playerOnOffsense' ] = $playerOnOffsense;
+		$result[ 'playerOnDefense' ]  = $playerOnDefense;
+		$result[ 'playerOnTop' ]      = $playerOnTop;
+		$result[ 'playerOnBottom' ]   = $playerOnBottom;
+
+		foreach ( $players as $player_id => $player ) {
+			$result[ 'boardWrestler' ][ player_id ] = $this->cards->getCardsInLocation( 'boardWrestler' , $player_id );
+			$result[ 'boardMove' ][ player_id ] = $this->cards->getCardsInLocation( 'boardMove' , $player_id );
+		}
+		
+		$result[ 'deckWrestler' ] = $this->cards->getCardsInLocation( 'deckWrestler' );
+		$result[ 'deckOffsense' ] = $this->cards->getCardsInLocation( 'deckOffsense' );
+		$result[ 'deckDefense' ]  = $this->cards->getCardsInLocation( 'deckDefense' );
+		$result[ 'deckTop' ]      = $this->cards->getCardsInLocation( 'deckTop' );
+		$result[ 'deckBottom' ]   = $this->cards->getCardsInLocation( 'deckBottom' );
+		
         return $result;
     }
 
@@ -147,7 +313,15 @@ class MatRetDev extends Table
         In this space, you can put any utility methods useful for your game logic
     */
 
+	function setGameLength() {
+		$gameLengthOption = $this->getGameStateValue( 'gameLengthOption' );
 
+		if ( $gameLengthOption == 1 ) {
+			$this->gameType = $this->gameType1;
+		} else {
+			$this->gameType = $this->gameType2;
+		}
+	}
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
