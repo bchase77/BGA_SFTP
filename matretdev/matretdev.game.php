@@ -39,7 +39,11 @@ class MatRetDev extends Table
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
             //      ...
-			"period" => 10
+			"period" => 10,
+            "playerOnOffsense" => 11,
+            "playerOnDefense" => 12,
+            "playerOnTop" => 13,
+            "playerOnBottom" => 14
         ) );        
 	}
 	
@@ -96,6 +100,13 @@ class MatRetDev extends Table
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
+		
+		// Initial values are 0. Player with higher conditioning will choose Off or Def; Coin flip if tied.
+		
+		self::setGameStateInitialValue( 'playerOnOffsense', 0 );
+		self::setGameStateInitialValue( 'playerOnDefense', 0 );
+		self::setGameStateInitialValue( 'playerOnTop', 0 );
+		self::setGameStateInitialValue( 'playerOnBottom', 0 );
 
         /************ End of the game initialization *****/
     }
@@ -104,9 +115,11 @@ class MatRetDev extends Table
 	function stDeckSetup()
 	{
 		self::trace("[bmc] Enter setupNewDeck");
+		
+		// Set up Wrestler deck
 		$cardsWrestler = array();
 		
-		foreach ( $this->wrestlers as $wrestler ) {
+		foreach ( $this->wrestlerCards as $wrestler ) {
 			$cardsWrestler[] = array ( 
 				"Name"  => $wrestler["Name"],
 				"ConR1" => $wrestler["conR1"],
@@ -126,11 +139,86 @@ class MatRetDev extends Table
 
 		$cardsDebug = $this->cards->getCardsInLocation( 'deckWrestler' );
 
-		self::dump( "[bmc] cardsWrestler: ", $cardsDebug );
+		self::dump( "[bmc] deckWrestler: ", $cardsDebug );
 		
 		// $cardsScramble = array();
-		// $cardsOffense = array();
-		// $cardsDefense = array();
+		
+		// Set up Offense deck
+		$cardsOffense = array();
+		
+		foreach ( $this->offenseCards as $card ) {
+			$cardsOffense[] = array ( 
+				"Name"         => $card["Name"],
+				"MyCon"        => $card["MyCon"],
+				"MyTokens"     => $card["MyTokens"],
+				"RollDie"      => $card["RollDie"],
+				"SplEff"       => $card["SplEff"],
+				"BD_A"         => $card["BD_A"],
+				"BD_B"         => $card["BD_B"],
+				"BD_C"         => $card["BD_C"],
+				"BD_D"         => $card["BD_D"],
+				"BD_E"         => $card["BD_E"],
+				"BD_F"         => $card["BD_F"],
+				"BD_G"         => $card["BD_G"],
+				"BD_H"         => $card["BD_H"],
+				"BD_A"         => $card["RD_A"],
+				"RD_B"         => $card["RD_B"],
+				"RD_C"         => $card["RD_C"],
+				"RD_D"         => $card["RD_D"],
+				"RD_E"         => $card["RD_E"],
+				"RD_F"         => $card["RD_F"],
+				"RD_G"         => $card["RD_G"],
+				"RD_H"         => $card["RD_H"],
+				"OppAdjust"    => $card["OppAdjust"],
+				"Scoring"      => $card["Scoring"],
+				"DrawScramble" => $card["DrawScramble"]
+			)
+		}
+		
+		$this->cards->createCards( $cardsOffense, 'deckOffsense' );
+
+		$cardsDebug = $this->cards->getCardsInLocation( 'deckOffsense' );
+
+		self::dump( "[bmc] deckOffsense: ", $cardsDebug );
+
+		// Set up Defense deck
+		$cardsDefense = array();
+		
+		foreach ( $this->defenseCards as $card ) {
+			$cardsDefense[] = array (
+				"Name"         => $card["Name"],
+				"MyCon"        => $card["MyCon"],
+				"MyTokens"     => $card["MyTokens"],
+				"RollDie"      => $card["RollDie"],
+				"SplEff"       => $card["SplEff"],
+				"BD_A"         => $card["BD_A"],
+				"BD_B"         => $card["BD_B"],
+				"BD_C"         => $card["BD_C"],
+				"BD_D"         => $card["BD_D"],
+				"BD_E"         => $card["BD_E"],
+				"BD_F"         => $card["BD_F"],
+				"BD_G"         => $card["BD_G"],
+				"BD_H"         => $card["BD_H"],
+				"BD_A"         => $card["RD_A"],
+				"RD_B"         => $card["RD_B"],
+				"RD_C"         => $card["RD_C"],
+				"RD_D"         => $card["RD_D"],
+				"RD_E"         => $card["RD_E"],
+				"RD_F"         => $card["RD_F"],
+				"RD_G"         => $card["RD_G"],
+				"RD_H"         => $card["RD_H"],
+				"OppAdjust"    => $card["OppAdjust"],
+				"Scoring"      => $card["Scoring"],
+				"DrawScramble" => $card["DrawScramble"]
+			)
+		}
+		
+		$this->cards->createCards( $cardsDefense, 'deckDefense' );
+
+		$cardsDebug = $this->cards->getCardsInLocation( 'deckDefense' );
+
+		self::dump( "[bmc] cardsDefense: ", $cardsDebug );
+
 		// $cardsTop = array();
 		// $cardsBottom = array();
 		
@@ -175,10 +263,26 @@ class MatRetDev extends Table
 
 		$players = self::loadPlayersBasicInfos();
 
+		$playerOnOffsense = self::getGameStateValue( 'playerOnOffsense' );
+		$playerOnDefense  = self::getGameStateValue( 'playerOnDefense' );
+		$playerOnTop      = self::getGameStateValue( 'playerOnTop' );
+		$playerOnBottom   = self::getGameStateValue( 'playerOnBottom' );
+
+		$result[ 'playerOnOffsense' ] = $playerOnOffsense;
+		$result[ 'playerOnDefense' ]  = $playerOnDefense;
+		$result[ 'playerOnTop' ]      = $playerOnTop;
+		$result[ 'playerOnBottom' ]   = $playerOnBottom;
+
 		foreach ( $players as $player_id => $player ) {
 			$result[ 'boardWrestler' ][ player_id ] = $this->cards->getCardsInLocation( 'boardWrestler' , $player_id );
 			$result[ 'boardMove' ][ player_id ] = $this->cards->getCardsInLocation( 'boardMove' , $player_id );
 		}
+		
+		$result[ 'deckWrestler' ] = $this->cards->getCardsInLocation( 'deckWrestler' );
+		$result[ 'deckOffsense' ] = $this->cards->getCardsInLocation( 'deckOffsense' );
+		$result[ 'deckDefense' ]  = $this->cards->getCardsInLocation( 'deckDefense' );
+		$result[ 'deckTop' ]      = $this->cards->getCardsInLocation( 'deckTop' );
+		$result[ 'deckBottom' ]   = $this->cards->getCardsInLocation( 'deckBottom' );
 		
         return $result;
     }
