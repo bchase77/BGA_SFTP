@@ -127,20 +127,18 @@ $machinestates = array(
 	
     // Note: ID=10 => your first state
     10 => array(
+    		"name" => "deckSetup",
+    		"description" => clienttranslate('Deck Setup [ST10]'),
+    		"type" => "game",
+			"action" => "stDeckSetup",
+    		"transitions" => array( "" => 20 )
+    ),
+    20 => array(
     		"name" => "chooseWrestler",
     		"description" => clienttranslate('${actplayer} must choose a wrestler'),
     		"descriptionmyturn" => clienttranslate('${you} must choose a wrestler'),
     		"type" => "activeplayer",
-    		"possibleactions" => array( "chooseWrestler" ),
-    		"transitions" => array( "chooseWrestler" => 20 )
-    ),
-    20 => array(
-    		"name" => "chooseSpecialMoves",
-    		"description" => clienttranslate('${actplayer} must chooose Special Moves cards'),
-    		"descriptionmyturn" => clienttranslate('${you} must chooose Special Moves cards'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "chooseMoves" ),
-    		"transitions" => array( "chooseMoves" => 40 )
+    		"transitions" => array( "wrestlerChosen" => 40 )
     ),
     40 => array(
     		"name" => "roundSetup",
@@ -217,5 +215,4 @@ $machinestates = array(
         "action" => "stGameEnd",
         "args" => "argGameEnd"
     )
-
 );

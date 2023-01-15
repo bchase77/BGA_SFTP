@@ -44,6 +44,33 @@ $this->gameType2 = array(
   2 => array( "Length" => "3 Rounds!", "qtyRounds" => 3 )
 );
 
+
+// Delete this values_labels after I get the cards working:
+$this->values_label = array(
+    1 => clienttranslate('Ace'),
+    2 => '2',
+    3 => '3',
+    4 => '4',
+    5 => '5',
+    6 => '6',
+    7 => '7',
+    8 => '8',
+    9 => '9',
+    10 => '10',
+    11 => clienttranslate('Jack'),
+    12 => clienttranslate('Queen'),
+    13 => clienttranslate('King')
+);
+
+
+
+
+
+
+
+
+
+
 $this->wrestlerCards = array(
   0 => array(
 	"Name"  => "Goldie Meadows",
@@ -72,7 +99,7 @@ $this->wrestlerCards = array(
 	"TM"    => 2 ), // 2 == All Star Cards cost 0 conditioning
 );
 
-$this->offsenseCards = array(
+$this->offenseCards = array(
   0 => array(
 	"Name"  => "Hand Fight",
 	"MyCon" => -2,

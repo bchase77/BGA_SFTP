@@ -69,7 +69,7 @@
 
 .mainBoardWrapClass {
 	float: Left;
-    background-image: url('img/MainMatt.png');
+    background-image: url('img/MainMat.png');
 	background-size: contain;
 	background-repeat: no-repeat;
 	margin: 10px;
@@ -95,7 +95,7 @@
 */
 .moveCardClass {
 	float: Left;
-    background-image: url('img/MRGameCards1.9_c_Page_073.png');
+/*    background-image: url('img/MRGameCards1.9_c_Page_073.png');*/
 	background-size: contain;
 	background-repeat: no-repeat;
 	margin: 10px;

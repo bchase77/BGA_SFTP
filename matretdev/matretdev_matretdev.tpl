@@ -39,6 +39,8 @@ This is your game interface4. It's January 2nd 2023. You can edit this HTML in y
 <!-- Comment: My Hand Area -->
 
 <div id="handsWrap" class="myHandWrapClass whiteblock">
+	<div id="myHand" class="myHandClass"></div>
+
 	   <div id="boxMoveCardMine" class="moveCardClass">
 	      <h3><span id="MOVECARDMINETRANSLATED"></span></h3>
 		  <div id="moveCardMine"></div>

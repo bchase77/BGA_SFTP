@@ -54,7 +54,7 @@ function (dojo, declare) {
         
         setup: function( gamedatas )
         {
-            console.log( "Starting game setup" );
+            console.log("[bmc] Starting game setup");
             
 			console.log("[bmc] GAMEDATAS");
 			console.log(this.gamedatas);
@@ -77,14 +77,11 @@ function (dojo, declare) {
             // 13 images per row in the sprite file
 			this.playerHand.image_items_per_row = 4;
 
-
-
-			
 			// Set the hand type per each player's position (offense, defense, top or bottom)
 			
-			this.playerHandType = new Array();
+			this.playerHandType = 'NoType';
 			
-			if        ( this.gamedatas.playerOnOffsense == this.player_id ) {
+			if        ( this.gamedatas.playerOnOffense == this.player_id ) {
 				this.playerHandType = "Offense";
 			} else if ( this.gamedatas.playerOnDefense  == this.player_id ) {
 				this.playerHandType = "Defense";
@@ -93,24 +90,34 @@ function (dojo, declare) {
 			} else if ( this.gamedatas.playerOnBottom   == this.player_id ) {
 				this.playerHandType = "Bottom";
 			} else {
+
+				console.log("[bmc] FATAL ERROR: Player not in any valid position.");
 				exit (0); // Fatal Error! no player in any valid position
 			}
 
-			console.log("this.playerHandType");
+			console.log("[bmc] this.playerHandType");
 			console.log(this.playerHandType);
 
-			int i = 0;
+			var i = 1;
 			
+			console.log("[bmc] My Hand is " + this.playerHandType);
+
 			switch ( this.playerHandType ) {
-				console.log("My Hand is " + this.playerHandType);
 				case 'Offense' :
-					for ( card in this.gamedatas.deckOffsense ) {
-						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsOffsense_v1.9.png', i)
+					for ( card of this.gamedatas.deckOffense ) {
+						console.log("[bmc] Adding Cards");
+						console.log(card);
+						console.log(i);
+						console.log(g_gamethemeurl + 'img/CardsOffense_v1.9.png', i);
+						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsOffense_v1.9.png', i);
+						this.playerHand.addToStockWithId(i, i);
+						i++;
 					}
 					break;
 				case 'Defense' :
-					for ( card in this.gamedatas.deckDefense ) {
-						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsDefense_v1.9.png', i)
+					for ( card of this.gamedatas.deckDefense ) {
+						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsDefense_v1.9.png', i);
+						i++;
 					}
 					break;
 				case 'Top' :
@@ -118,6 +125,8 @@ function (dojo, declare) {
 				case 'Bottom' :
 					break;
 			}
+
+
 
             // TODO: Set up your game interface here, according to "gamedatas"
  
