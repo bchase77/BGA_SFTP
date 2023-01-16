@@ -20,23 +20,15 @@
 
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
 
+ALTER TABLE `player` ADD `wrestler` int UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `player` ADD `move` int UNSIGNED NOT NULL DEFAULT '0';
+
 CREATE TABLE IF NOT EXISTS `card` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `card_type` varchar(16) NOT NULL,
   `card_type_arg` int(11) NOT NULL,
   `card_location` varchar(16) NOT NULL,
   `card_location_arg` int(11) NOT NULL,
-  `card_Name`  varchar(16) NOT NULL,
-  `card_ConR1` int(11) NOT NULL,
-  `card_ConR2` int(11) NOT NULL,
-  `card_ConR3` int(11) NOT NULL,
-  `card_Off`   int(11) NOT NULL,
-  `card_Def`   int(11) NOT NULL,
-  `card_Top`   int(11) NOT NULL,
-  `card_Bot`   int(11) NOT NULL,
-  `card_Token` int(11) NOT NULL,
-  `card_Star`  varchar(16) NOT NULL,
-  `card_TM`    int(11) NOT NULL,
 
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

@@ -185,251 +185,72 @@ class MatRetDev extends Table
 		// So, will create a deck for each Offense, Defense, Top, Bottom and Wrestler cards and make parallel data
 		// structures to store the other parameters, like conditioning modifiers.
 		
-		// Set up Wrestler deck
-		// $cardsWrestler = array();
-		// $cards = array();
-		
-//		self::dump( "[bmc] this->wrestlerCards: ", $this->wrestlerCards );
-
-		// for( $colors = 1; $colors <=4; $colors ++ ) {
-			// $color_id = $colors;
-            // spade, heart, diamond, club
-            // foreach( $this->values_label as $value => $type_arg ) {
-                 // A, 2, 3, 4, ... K
-				// if( !array_key_exists("51", $cards)) {
-					// $cards [] = array ('type' => $color_id, 'type_arg' => $value, 'nbr' => 1, "ConR1" =>"bob" );
-				// }
-            // }
-        // }
-
-		// for( $id = 1; $id <= count( $this->wrestlerCards ); $id++ ) {
-			// $cardsWrestler[] = array( 'type' => 'wrestler', 'type_arg' => $id, 'nbr' => 1 );
-		// }
-		
-        // $this->cards->createCards( $cardsWrestler, 'deckWrestler' );
-
-		// for( $id = 1; $id <= count( $this->offenseCards ); $id++ ) {
-			// $cardsOffense[] = array( 'type' => 'offense', 'type_arg' => $id, 'nbr' => 1 );
-			// $CO
-		// }
-		
-		$this->deck = [];
+		//
+		// Create Offense Card Deck
+		//
+		$deck = (array) null;
 		
 		foreach( $this->offenseCards as $CO ) {
 			$deck[] = array( 'type' => $CO['Name'], 'type_arg' => 'type_arg', 'nbr' => 1 );
 		}
 
-		self::dump( "[bmc] OffenseCards: ", $deck );
+        $this->cards->createCards( $deck, $location='deckOffense' );
 
-        $this->cards->createCards( $deck, 'deckOffense' );
-
-//		foreach( $cardsOffense as &$CO ) {
-//			"Name"        => $this->offenseCards["Name"]
-//			);
-/*				"MyCon"        => $card["MyCon"],
-				"MyTokens"     => $card["MyTokens"],
-				"RollDie"      => $card["RollDie"],
-				"SplEff"       => $card["SplEff"],
-				"BD_A"         => $card["BD_A"],
-				"BD_B"         => $card["BD_B"],
-				"BD_C"         => $card["BD_C"],
-				"BD_D"         => $card["BD_D"],
-				"BD_E"         => $card["BD_E"],
-				"BD_F"         => $card["BD_F"],
-				"BD_G"         => $card["BD_G"],
-				"BD_H"         => $card["BD_H"],
-				"BD_A"         => $card["RD_A"],
-				"RD_B"         => $card["RD_B"],
-				"RD_C"         => $card["RD_C"],
-				"RD_D"         => $card["RD_D"],
-				"RD_E"         => $card["RD_E"],
-				"RD_F"         => $card["RD_F"],
-				"RD_G"         => $card["RD_G"],
-				"RD_H"         => $card["RD_H"],
-				"OppAdjust"    => $card["OppAdjust"],
-				"Scoring"      => $card["Scoring"],
-				"DrawScramble" => $card["DrawScramble"]
-*/
-
-
-
-
-
-/// THE REST MAY BE BAD, ABOVE MAY BE GOOD
-
-
-
-		// for ($id = 1; $id <= count( $this->defenseCards ); $id++ ) {
-			// $cardsDefense[] = array( 'type' => 'defense', 'type_arg' => $id, 'nbr' => 1 );
-		// }
-
-        // $this->cards->createCards( $cardsDefense, 'deckDefense' );
-
-
-
-
-
-        // $this->cards->createCards( $cards, 'deck' );
-
-		// $cardsWrestler = array(
-			// array( 'type' => 1, 'type_arg' => 99, 'nbr' => 1,
-			// "Name"  => "Goldie Meadows",
-			// "ConR1" => 22,
-			// "ConR2" => 14,
-			// "ConR3" => 15,
-			// "Off"   => 10,
-			// "Def"   => 10,
-			// "Top"   => 10,
-			// "Bot"   => 10,
-			// "Token" => 7,
-			// "Star"  => 0, 	// 0 == None are available
-			// "TM"    => 1
-			// ),
-			// array( 'type' => 2, 'type_arg' => 12, 'nbr' => 4,
-			// "Name"  => "Goldie Meadows",
-			// "ConR1" => 22,
-			// "ConR2" => 14,
-			// "ConR3" => 15,
-			// "Off"   => 10,
-			// "Def"   => 10,
-			// "Top"   => 10,
-			// "Bot"   => 10,
-			// "Token" => 7,
-			// "Star"  => 0, 	// 0 == None are available
-			// "TM"    => 1
-			// ),
-			// array( 'type' => 3, 'type_arg' => 33, 'nbr' => 2,
-			// "Name"  => "Goldie Meadows",
-			// "ConR1" => 22,
-			// "ConR2" => 14,
-			// "ConR3" => 15,
-			// "Off"   => 10,
-			// "Def"   => 10,
-			// "Top"   => 10,
-			// "Bot"   => 10,
-			// "Token" => 7,
-			// "Star"  => 0, 	// 0 == None are available
-			// "TM"    => 1
-			// )
-		// );
-		
-		// This creates only the default fields, not the custom ones.
-		// Use SQL Commands to add the other fields, something like this:
 		//
-		// $sql = "INSERT INTO wishList (player_id, card_type, card_type_arg) VALUES ";
-		// $sql_values = "( " . $entry['player_id'] . "," . $entry['card_type'] . "," . $entry['card_type_arg'] . ")";
-		
-		// self::DbQuery( $sql . $sql_values);
+		// Create Defense Card Deck
+		//
+		$deck = (array) null;
 
-//        $this->cards->createCards( $cardsWrestler, 'deckWrestler', 0 );
-
-/*		if ( count ( $this->wrestlerCards ) > 0 ) {
-			foreach ( $this->wrestlerCards as $wrestler ) {
-				$cardsWrestler[] = array (
-					"Name"  => $wrestler["Name"],
-					"ConR1" => $wrestler["ConR1"],
-					"ConR2" => $wrestler["ConR2"],
-					"ConR3" => $wrestler["ConR3"],
-					"Off"   => $wrestler["Off"],
-					"Def"   => $wrestler["Def"],
-					"Top"   => $wrestler["Top"],
-					"Bot"   => $wrestler["Bot"],
-					"Token" => $wrestler["Token"],
-					"Star"  => $wrestler["Star"],
-					"TM"    => $wrestler["TM"],
-					'nbr'   => 1
-				);
-			}
-			
-//			$this->cards->createCards( $cardsWrestler, 'deckWrestler' );
-//		}
-*/
-/*		
-		$cardsDebug = $this->cards->getCardsInLocation( 'deckWrestler' );
-
-		self::dump( "[bmc] deckWrestler: ", $cardsDebug );
-		
-		// $cardsScramble = array();
-		
-		// Set up Offense deck
-		$cardsOffense = array();
-		
-		foreach ( $this->offenseCards as $card ) {
-			$cardsOffense[] = array ( 
-				"Name"         => $card["Name"],
-				"MyCon"        => $card["MyCon"],
-				"MyTokens"     => $card["MyTokens"],
-				"RollDie"      => $card["RollDie"],
-				"SplEff"       => $card["SplEff"],
-				"BD_A"         => $card["BD_A"],
-				"BD_B"         => $card["BD_B"],
-				"BD_C"         => $card["BD_C"],
-				"BD_D"         => $card["BD_D"],
-				"BD_E"         => $card["BD_E"],
-				"BD_F"         => $card["BD_F"],
-				"BD_G"         => $card["BD_G"],
-				"BD_H"         => $card["BD_H"],
-				"BD_A"         => $card["RD_A"],
-				"RD_B"         => $card["RD_B"],
-				"RD_C"         => $card["RD_C"],
-				"RD_D"         => $card["RD_D"],
-				"RD_E"         => $card["RD_E"],
-				"RD_F"         => $card["RD_F"],
-				"RD_G"         => $card["RD_G"],
-				"RD_H"         => $card["RD_H"],
-				"OppAdjust"    => $card["OppAdjust"],
-				"Scoring"      => $card["Scoring"],
-				"DrawScramble" => $card["DrawScramble"]
-			);
+		foreach( $this->defenseCards as $CO ) {
+			$deck[] = array( 'type' => $CO['Name'], 'type_arg' => 'type_arg', 'nbr' => 1 );
 		}
+
+        $this->cards->createCards( $deck, $location='deckDefense' );
+
+		//
+		// Create Top Card Deck
+		//
+		$deck = (array) null;
 		
-		$this->cards->createCards( $cardsOffense, 'deckOffense' );
-
-		$cardsDebug = $this->cards->getCardsInLocation( 'deckOffense' );
-
-		self::dump( "[bmc] deckOffense: ", $cardsDebug );
-
-		// Set up Defense deck
-		$cardsDefense = array();
-		
-		foreach ( $this->defenseCards as $card ) {
-			$cardsDefense[] = array (
-				"Name"         => $card["Name"],
-				"MyCon"        => $card["MyCon"],
-				"MyTokens"     => $card["MyTokens"],
-				"RollDie"      => $card["RollDie"],
-				"SplEff"       => $card["SplEff"],
-				"BD_A"         => $card["BD_A"],
-				"BD_B"         => $card["BD_B"],
-				"BD_C"         => $card["BD_C"],
-				"BD_D"         => $card["BD_D"],
-				"BD_E"         => $card["BD_E"],
-				"BD_F"         => $card["BD_F"],
-				"BD_G"         => $card["BD_G"],
-				"BD_H"         => $card["BD_H"],
-				"BD_A"         => $card["RD_A"],
-				"RD_B"         => $card["RD_B"],
-				"RD_C"         => $card["RD_C"],
-				"RD_D"         => $card["RD_D"],
-				"RD_E"         => $card["RD_E"],
-				"RD_F"         => $card["RD_F"],
-				"RD_G"         => $card["RD_G"],
-				"RD_H"         => $card["RD_H"],
-				"OppAdjust"    => $card["OppAdjust"],
-				"Scoring"      => $card["Scoring"],
-				"DrawScramble" => $card["DrawScramble"]
-			);
+		foreach( $this->topCards as $CO ) {
+			$deck[] = array( 'type' => $CO['Name'], 'type_arg' => 'type_arg', 'nbr' => 1 );
 		}
-		
-		$this->cards->createCards( $cardsDefense, 'deckDefense' );
 
-		$cardsDebug = $this->cards->getCardsInLocation( 'deckDefense' );
+        $this->cards->createCards( $deck, $location='deckTop' );
 
-		self::dump( "[bmc] cardsDefense: ", $cardsDebug );
-*/
-		// $cardsTop = array();
-		// $cardsBottom = array();
+		//
+		// Create Bottom Card Deck
+		//
+		$deck = (array) null;
 		
+		foreach( $this->bottomCards as $CO ) {
+			$deck[] = array( 'type' => $CO['Name'], 'type_arg' => 'type_arg', 'nbr' => 1 );
+		}
+
+        $this->cards->createCards( $deck, $location='deckBottom' );
+
+		//
+		// Create Scramble Card Deck
+		//
+		$deck = (array) null;
+		
+		foreach( $this->scrambleCards as $CO ) {
+			$deck[] = array( 'type' => $CO['Name'], 'type_arg' => 'type_arg', 'nbr' => 1 );
+		}
+
+        $this->cards->createCards( $deck, $location='deckScramble' );
+
+		//
+		// Create Wrestler Card Deck
+		//
+		$deck = (array) null;
+		
+		foreach( $this->wrestlerCards as $CO ) {
+			$deck[] = array( 'type' => $CO['Name'], 'type_arg' => 'type_arg', 'nbr' => 1 );
+		}
+
+        $this->cards->createCards( $deck, $location='deckWrestler' );
+
 		// Go to the next game state
         $this->gamestate->nextState();	
 
@@ -462,90 +283,174 @@ class MatRetDev extends Table
 
 		$result[ 'state' ] = $state;
 		
-		self::dump( "[bmc] offenseCards: ", $this->offenseCards );
-
-		
-		$this->playerOnOffense = $current_player_id;
-		$this->playerOnDefense = $this->getPlayerAfter( $current_player_id );
-		$this->playerOnTop = 'none';
-		$this->playerOnBottom = 'none';
+		// Randomly set Offense & Defense based on player ID (TODO: Should change this to coin flip
+		// THESE 4 LINES ARE TEMPORARY:
+		// $this->playerOnOffense = $current_player_id;
+		// $this->playerOnDefense = $this->getPlayerAfter( $current_player_id );
+		// $this->playerOnTop = 'none';
+		// $this->playerOnBottom = 'none';
+		$this->playerOnOffense = self::getGameStateValue( 'playerOnOffense' );
+		$this->playerOnDefense = self::getGameStateValue( 'playerOnDefense' );
+		$this->playerOnTop = self::getGameStateValue( 'playerOnTop' );
+		$this->playerOnBottom = self::getGameStateValue( 'playerOnBottom' );
 		
 		$result[ 'playerOnOffense' ] = $this->playerOnOffense;
+		$result[ 'playerOnOffense_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnOffense' )];
 		$result[ 'playerOnDefense' ] = $this->playerOnDefense;
+		$result[ 'playerOnDefense_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnDefense' )];
 		$result[ 'playerOnTop' ]     = $this->playerOnTop;
+		$result[ 'playerOnTop_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnTop' )];
 		$result[ 'playerOnBottom' ]  = $this->playerOnBottom;
+		$result[ 'playerOnBottom_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnBottom' )];
+
+		// Add the fields with statistics to each back deck to send to the JS clients
 		
-		
-		
-		
-		
-		
-		
+		//
+		// Deck of Offense cards
+		//
+
 		$deckO = $this->cards->getCardsInLocation( 'deckOffense' );
+		self::dump( "[bmc] OffenseCards: ", $deckO );
 		
-//		$this->deckOffense = [];
-		
-		$fullDeck = [];
+//		$fullDeck = [];
+		$fullDeck = (array) null;
 		
 		foreach( $deckO as $card ) {
-			self::dump( "[bmc] card: ", $card );
+			// self::dump( "[bmc] card: ", $card );
 			$searchKey = array('Name' => $card['type']);
-			self::dump( "[bmc] searchKey: ", $searchKey );
+			// self::dump( "[bmc] searchKey: ", $searchKey );
 
 			$searchResult = self::searchForCard( $this->offenseCards, $searchKey );
-			self::dump( "[bmc] searchResult: ", $searchResult );
+			// self::dump( "[bmc] searchResult: ", $searchResult );
 
 			$fullDeck[] = array_merge( $card, $searchResult );
 		}
 		
-		self::dump( "[bmc] fullDeck: ", $fullDeck );
+		// self::dump( "[bmc] fullDeck: ", $fullDeck );
 		$result[ 'deckOffense' ]   = $fullDeck;
 
+		//
+		// Deck of Defense cards
+		//
+		
+		$deckO = $this->cards->getCardsInLocation( 'deckDefense' );
+		self::dump( "[bmc] DefenseCards: ", $deckO );
+		
+		$fullDeck = (array) null;
+		
+		foreach( $deckO as $card ) {
+			// self::dump( "[bmc] card: ", $card );
+			$searchKey = array('Name' => $card['type']);
+			// self::dump( "[bmc] searchKey: ", $searchKey );
 
-// REPEAT FOR THE OTHER DECKS		
+			$searchResult = self::searchForCard( $this->defenseCards, $searchKey );
+			// self::dump( "[bmc] searchResult: ", $searchResult );
 
+			$fullDeck[] = array_merge( $card, $searchResult );
+		}
+		
+		// self::dump( "[bmc] fullDeck: ", $fullDeck );
+		$result[ 'deckDefense' ]   = $fullDeck;
 
+		//
+		// Deck of Top cards
+		//
+		
+		$deckO = $this->cards->getCardsInLocation( 'deckTop' );
+		self::dump( "[bmc] TopCards: ", $deckO );
+		
+		$fullDeck = (array) null;
+		
+		foreach( $deckO as $card ) {
+			// self::dump( "[bmc] card: ", $card );
+			$searchKey = array('Name' => $card['type']);
+			// self::dump( "[bmc] searchKey: ", $searchKey );
 
+			$searchResult = self::searchForCard( $this->topCards, $searchKey );
+			// self::dump( "[bmc] searchResult: ", $searchResult );
 
+			$fullDeck[] = array_merge( $card, $searchResult );
+		}
+		
+		// self::dump( "[bmc] fullDeck: ", $fullDeck );
+		$result[ 'deckTop' ]   = $fullDeck;
 
+		//
+		// Deck of Bottom cards
+		//
+		
+		$deckO = $this->cards->getCardsInLocation( 'deckBottom' );
+		self::dump( "[bmc] BottomCards: ", $deckO );
+		
+		$fullDeck = (array) null;
+		
+		foreach( $deckO as $card ) {
+			// self::dump( "[bmc] card: ", $card );
+			$searchKey = array('Name' => $card['type']);
+			// self::dump( "[bmc] searchKey: ", $searchKey );
 
+			$searchResult = self::searchForCard( $this->bottomCards, $searchKey );
+			// self::dump( "[bmc] searchResult: ", $searchResult );
 
+			$fullDeck[] = array_merge( $card, $searchResult );
+		}
+		
+		// self::dump( "[bmc] fullDeck: ", $fullDeck );
+		$result[ 'deckBottom' ]   = $fullDeck;
 
+		//
+		// Deck of Wrester cards
+		//
+		
+		$deckO = $this->cards->getCardsInLocation( 'deckWrestler' );
+		self::dump( "[bmc] WrestlerCards: ", $deckO );
+		
+		$fullDeck = (array) null;
+		
+		foreach( $deckO as $card ) {
+			// self::dump( "[bmc] card: ", $card );
+			$searchKey = array('Name' => $card['type']);
+			// self::dump( "[bmc] searchKey: ", $searchKey );
 
-		$result[ 'deckWrestler' ]  = $this->cards->getCardsInLocation( 'deckWrestler' );
-//		$result[ 'deckScramble' ]  = $this->cards->getCardsInLocation( 'deckScramble' );
-//		$result[ 'deckOffense' ]   = $this->cards->getCardsInLocation( 'deckOffense' );
-		$result[ 'deckDefense' ]   = $this->cards->getCardsInLocation( 'deckDefense' );
-		// $result[ 'deckTop' ]       = $this->cards->getCardsInLocation( 'deckTop' );
-		// $result[ 'deckBottom' ]    = $this->cards->getCardsInLocation( 'deckBottom' );
-		// $result[ 'boardScramble' ] = $this->cards->getCardsInLocation( 'boardScramble' );
+			$searchResult = self::searchForCard( $this->wrestlerCards, $searchKey );
+			// self::dump( "[bmc] searchResult: ", $searchResult );
 
-/*		$current_player_id = self::getCurrentPlayerId(); // !! Must only return informations visible by this player !!
+			$fullDeck[] = array_merge( $card, $searchResult );
+		}
+		
+		// self::dump( "[bmc] fullDeck: ", $fullDeck );
+		$result[ 'deckWrestler' ]   = $fullDeck;
 
-		$players = self::loadPlayersBasicInfos();
+		//
+		// Deck of Scramble cards
+		//
+		
+		$deckO = $this->cards->getCardsInLocation( 'deckScramble' );
+		self::dump( "[bmc] ScrambleCards: ", $deckO );
+		
+		$fullDeck = (array) null;
+		
+		foreach( $deckO as $card ) {
+			// self::dump( "[bmc] card: ", $card );
+			$searchKey = array('Name' => $card['type']);
+			// self::dump( "[bmc] searchKey: ", $searchKey );
 
-		$playerOnOffense = self::getGameStateValue( 'playerOnOffense' );
-		$playerOnDefense  = self::getGameStateValue( 'playerOnDefense' );
-		$playerOnTop      = self::getGameStateValue( 'playerOnTop' );
-		$playerOnBottom   = self::getGameStateValue( 'playerOnBottom' );
+			$searchResult = self::searchForCard( $this->scrambleCards, $searchKey );
+			// self::dump( "[bmc] searchResult: ", $searchResult );
 
-		$result[ 'playerOnOffense' ] = $playerOnOffense;
-		$result[ 'playerOnDefense' ]  = $playerOnDefense;
-		$result[ 'playerOnTop' ]      = $playerOnTop;
-		$result[ 'playerOnBottom' ]   = $playerOnBottom;
-/*
+			$fullDeck[] = array_merge( $card, $searchResult );
+		}
+		
+		// self::dump( "[bmc] fullDeck: ", $fullDeck );
+		$result[ 'deckScramble' ]   = $fullDeck;
+
 /*
 		foreach ( $players as $player_id => $player ) {
 			$result[ 'boardWrestler' ][ player_id ] = $this->cards->getCardsInLocation( 'boardWrestler' , $player_id );
 			$result[ 'boardMove' ][ player_id ] = $this->cards->getCardsInLocation( 'boardMove' , $player_id );
 		}
 */		
-/*		$result[ 'deckWrestler' ] = $this->cards->getCardsInLocation( 'deckWrestler' );
-		$result[ 'deckOffense' ] = $this->cards->getCardsInLocation( 'deckOffense' );
-		$result[ 'deckDefense' ]  = $this->cards->getCardsInLocation( 'deckDefense' );
-		$result[ 'deckTop' ]      = $this->cards->getCardsInLocation( 'deckTop' );
-		$result[ 'deckBottom' ]   = $this->cards->getCardsInLocation( 'deckBottom' );
-*/
+
         return $result;
     }
 
@@ -566,7 +471,6 @@ class MatRetDev extends Table
         return 0;
     }
 
-
 //////////////////////////////////////////////////////////////////////////////
 //////////// Utility functions
 ////////////    
@@ -584,6 +488,72 @@ class MatRetDev extends Table
 		} else {
 			$this->gameType = $this->gameType2;
 		}
+	}
+
+	function setPlayerWrestler( $player_id, $wrestlerCard ) {
+		self::dump("[bmc] setPlayerWrestler:", $wrestlerCard );
+		$sql = "UPDATE player SET wrestler = $wrestlerCard WHERE player_id = $player_id ";
+		self::DbQuery( $sql );
+	}
+
+	function getPlayerWrestlers() {
+		$sql = "SELECT player_id, wrestler FROM player ";
+		return self::getCollectionFromDb($sql, true);
+	}
+
+	function stRoundSetup()
+	{
+		self::trace( "[bmc] ENTER stRoundSetup (from states.inc.php)" );
+		// All players have chosen a wrestler. Now set up the game
+		$wrestlers = self::getPlayerWrestlers();
+		self::dump( "[bmc] Chosen wrestlers:",  $wrestlers);
+
+        $players = self::loadPlayersBasicInfos();
+		self::dump( "[bmc] players:",  $players);
+		self::dump( "[bmc] players:",  reset($players));
+
+		$first = reset( $players );
+		$player_id = $first[ "player_id" ];
+
+		$cond1 = $this->wrestlerCards[ $wrestlers[ $player_id ]][ "ConR1" ];
+		$cond2 = $this->wrestlerCards[ $wrestlers[ $this->getPlayerAfter( $player_id )]][ "ConR1" ];
+
+		self::dump( "[bmc] 1:",  $cond1 );		
+		self::dump( "[bmc] 2:",  $cond2 );
+
+		if( $cond1 == $cond2 ) { // TODO: Change this to Flip a coin instead of fixed by player number:
+			self::setGameStateValue( "playerOnOffense", $player_id );
+			self::setGameStateValue( "playerOnDefense", $this->getPlayerAfter( $player_id ));
+		} else if ( $cond1 > $cond2 ) { // Set Offsense & Defense according to conditioning
+			self::setGameStateValue( "playerOnOffense", int( $player_id ));
+			self::setGameStateValue( "playerOnDefense", $this->getPlayerAfter( $player_id ));
+		} else {
+			self::setGameStateValue( "playerOnOffense", $this->getPlayerAfter( $player_id ));
+			self::setGameStateValue( "playerOnDefense", int( $player_id ));
+		}
+
+		self::dump( "[bmc] Offense:", self::getGameStateValue( 'playerOnOffense' ));
+		self::dump( "[bmc] Defense:", self::getGameStateValue( 'playerOnDefense' ));
+		
+		// Nofify players of their position
+		self::notifyAllPlayers(
+			"SetPositions",
+			clienttranslate( 'Positions Changed' ),
+			array(
+				'playerOnBottom'  => self::getGameStateValue( 'playerOnBottom' ),
+				'playerOnTop'     => self::getGameStateValue( 'playerOnTop' ),
+				'playerOnOffense' => self::getGameStateValue( 'playerOnOffense' ),
+				'playerOnDefense' => self::getGameStateValue( 'playerOnDefense' )
+			)
+		);
+
+
+//TODO: The setup seems OK. I just added the int() around the player_ids above. Next is to adjust the stats. Then have players choose a move.
+
+
+//		$this->gamestate->nextState( '' );
+
+		self::trace("[bmc] EXIT stRoundSetup");
 	}
 
 //////////////////////////////////////////////////////////////////////////////
@@ -621,6 +591,16 @@ class MatRetDev extends Table
     
     */
 
+	function choseWrestler( $wrestlerCard ){
+		self::trace( "[bmc] ENTER choseWrestler (from JS via action.php)" );
+		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
+		self::dump( "[bmc] wrestlerCard:",  $wrestlerCard );		
+		
+		self::setPlayerWrestler( $player_id, $wrestlerCard );
+		
+		$this->gamestate->setPlayerNonMultiactive($player_id, 'roundSetup'); // deactivate player; if none left, transition to 'next' state
+		self::trace("[bmc] EXIT choseWrestler (from JS)");
+	}
     
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments

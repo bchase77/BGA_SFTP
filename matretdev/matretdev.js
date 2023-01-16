@@ -34,9 +34,8 @@ function (dojo, declare) {
             // Example:
             // this.myGlobalValue = 0;
 
-            this.cardWidth = 500;
-            this.cardHeight = 700;
-
+            this.cardWidth = 250;
+            this.cardHeight = 350;
         },
         
         /*
@@ -54,18 +53,41 @@ function (dojo, declare) {
         
         setup: function( gamedatas )
         {
+            // TODO: Set up your game interface here, according to "gamedatas"
+ 
             console.log("[bmc] Starting game setup");
-            
 			console.log("[bmc] GAMEDATAS");
 			console.log(this.gamedatas);
 
             // Setting up player boards
-            // for( var player_id in gamedatas.players )
-            // {
-                // var player = gamedatas.players[player_id];
-                         
-                // TODO: Setting up players boards if needed
-            // }
+            for( var player_id in gamedatas.players )
+            {
+                var player = gamedatas.players[player_id];
+				
+				if( this.gamedatas.playerOnOffense == this.player_id ){ 
+
+				// OppDefBase
+				// OppOffBase
+				// OppBotBase
+				// OppTopBase
+				// OppCondBase
+				// OppDefTemp
+				// OppOffTemp
+				// OppBotTemp
+				// OppTopTemp
+				// OppCondTemp
+				// MyOffBase
+				// MyDefBase
+				// MyTopBase
+				// MyBotBase
+				// MyCondBase
+				// MyOffTemp
+				// MyDefTemp
+				// MyTopTemp
+				// MyBotTemp
+				// MyCondTemp	
+				}
+			}
 
 			// The players hand will alternate between TOP, BOTTOM, OFFENSE, DEFENSE and WRESTLER decks.
 			// Which is shown depends upon the game state. Then just show that deck in the $('myHand') area.
@@ -73,6 +95,7 @@ function (dojo, declare) {
             // Player hand
             this.playerHand = new ebg.stock(); // new stock object for hand
 			this.playerHand.create( this, $('myHand'), this.cardWidth, this.cardHeight );
+			this.playerHand.setSelectionMode(1); // 0=Cannot select; 1=Can select 1; 2=Can select multiple
 
             // 13 images per row in the sprite file
 			this.playerHand.image_items_per_row = 4;
@@ -81,54 +104,94 @@ function (dojo, declare) {
 			
 			this.playerHandType = 'NoType';
 			
-			if        ( this.gamedatas.playerOnOffense == this.player_id ) {
-				this.playerHandType = "Offense";
-			} else if ( this.gamedatas.playerOnDefense  == this.player_id ) {
-				this.playerHandType = "Defense";
-			} else if ( this.gamedatas.playerOnTop      == this.player_id ) {
-				this.playerHandType = "Top";
-			} else if ( this.gamedatas.playerOnBottom   == this.player_id ) {
-				this.playerHandType = "Bottom";
+			if ( this.gamedatas.state = 'chooseWrestler' ){
+				this.playerHandType = "Wrestler";
 			} else {
 
-				console.log("[bmc] FATAL ERROR: Player not in any valid position.");
-				exit (0); // Fatal Error! no player in any valid position
+				if        ( this.gamedatas.playerOnOffense == this.player_id ) {
+					this.playerHandType = "Offense";
+				} else if ( this.gamedatas.playerOnDefense  == this.player_id ) {
+					this.playerHandType = "Defense";
+				} else if ( this.gamedatas.playerOnTop      == this.player_id ) {
+					this.playerHandType = "Top";
+				} else if ( this.gamedatas.playerOnBottom   == this.player_id ) {
+					this.playerHandType = "Bottom";
+				} else {
+					console.log("[bmc] FATAL ERROR: Player not in any valid position.");
+					exit (0); // Fatal Error! no player in any valid position
+				}
 			}
-
+			
 			console.log("[bmc] this.playerHandType");
 			console.log(this.playerHandType);
 
-			var i = 1;
+			var i = 0;
 			
 			console.log("[bmc] My Hand is " + this.playerHandType);
 
 			switch ( this.playerHandType ) {
 				case 'Offense' :
+					console.log("[bmc] Adding Off Cards");
 					for ( card of this.gamedatas.deckOffense ) {
-						console.log("[bmc] Adding Cards");
-						console.log(card);
-						console.log(i);
-						console.log(g_gamethemeurl + 'img/CardsOffense_v1.9.png', i);
-						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsOffense_v1.9.png', i);
+						// console.log(card);
+						// console.log(i);
+						// console.log(g_gamethemeurl + 'img/CardsOffense_v1.9.png', i);
+						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsOffense_v1.9_50.png', i);
 						this.playerHand.addToStockWithId(i, i);
 						i++;
 					}
 					break;
 				case 'Defense' :
+					console.log("[bmc] Adding Def Cards");
 					for ( card of this.gamedatas.deckDefense ) {
-						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsDefense_v1.9.png', i);
+						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsDefense_v1.9_50.png', i);
+						this.playerHand.addToStockWithId(i, i);
 						i++;
 					}
 					break;
 				case 'Top' :
+					console.log("[bmc] Adding Top Cards");
+					for ( card of this.gamedatas.deckTop ) {
+						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsTop_v1.9_50.png', i);
+						this.playerHand.addToStockWithId(i, i);
+						i++;
+					}
 					break;
 				case 'Bottom' :
+					console.log("[bmc] Adding Bot Cards");
+					for ( card of this.gamedatas.deckBottom ) {
+						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsBottom_v1.9_50.png', i);
+						this.playerHand.addToStockWithId(i, i);
+						i++;
+					}
+					break;
+				case 'Scamble' :
+					console.log("[bmc] Adding Scramble Cards");
+					for ( card of this.gamedatas.deckScramble ) {
+						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsScramble_v1.9_50.png', i);
+						this.playerHand.addToStockWithId(i, i);
+						i++;
+					}
+					break;
+				case 'Wrestler' :
+					console.log("[bmc] Adding Wrestler Cards");
+					for ( card of this.gamedatas.deckWrestler ) {
+						this.playerHand.addItemType( i, i, g_gamethemeurl + 'img/CardsWrestler_v1.9_50.png', i);
+						this.playerHand.addToStockWithId(i, i);
+						i++;
+					}
+					break;
+				default:
+					console.log("[bmc] Fatal error. Player has no hand.");
+					exit(0); // Fatal error, player has no hand
 					break;
 			}
 
+ 
 
 
-            // TODO: Set up your game interface here, according to "gamedatas"
+ 
+ 
  
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -138,6 +201,9 @@ function (dojo, declare) {
 			$(SCRAMBLECARDTRANSLATED).innerHTML = _('Scramble Card');
 			$(MOVECARDMINETRANSLATED).innerHTML = _('Move Card (Mine)');
 			$(WRESTLERCARDMINETRANSLATED).innerHTML = _('Wrestler Card (Mine)');
+
+			dojo.connect( $('myhand'),      'ondblclick',        this, 'onMyHandDoubleClick' );
+            //dojo.connect( this.playerHand,  'onChangeSelection', this, 'onPlayerHandSelectionChanged' );
 
             console.log( "Ending game setup" );
         },
@@ -165,7 +231,9 @@ function (dojo, declare) {
                 
                 break;
            */
-           
+			case 'chooseWrestler':
+				
+				break;
            
             case 'dummmy':
                 break;
@@ -281,8 +349,39 @@ function (dojo, declare) {
 
                          } );        
         },        
-        
         */
+		onMyHandDoubleClick : function( control_name ) {
+			console.log("[bmc] ENTER onMyHandDoubleClick");
+			console.log(control_name);
+            var cards = this.playerHand.getSelectedItems();
+			console.log( cards );
+			
+			if ( cards ) {
+				console.log( cards[0].id );
+				if ( this.gamedatas.state == 'chooseWrestler' ) {
+					var action = 'choseWrestler';
+					this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+							// player_id : this.player_id,
+							chosenWrestler: cards[0].id,
+							lock : true
+						}, this, function(result) {
+						}, function(is_error) {
+					});
+				}
+			}
+		console.log("[bmc] EXIT onMyHandDoubleClick");
+		},
+		
+		onPlayerHandSelectionChanged : function( control_name, item_id ) {
+			console.log("[bmc] ENTER onPlayerHandSelectionChanged");
+			console.log(control_name);
+			console.log(item_id);
+
+			console.log("[bmc] EXIT onPlayerHandSelectionChanged");
+		},
+		
+		
+        
 
         
         ///////////////////////////////////////////////////
@@ -312,6 +411,9 @@ function (dojo, declare) {
             // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
             // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
             // 
+			
+			dojo.subscribe( 'SetPositions',    this, "notif_SetPositions");
+			
         },  
         
         // TODO: from this point and below, you can write your game notifications handling methods
@@ -330,5 +432,12 @@ function (dojo, declare) {
         },    
         
         */
+		
+		notif_SetPositions: function( notif )
+		{
+			console.log("[bmc] notif_SetPositions", notif);
+
+		},
+		
    });             
 });

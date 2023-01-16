@@ -135,10 +135,11 @@ $machinestates = array(
     ),
     20 => array(
     		"name" => "chooseWrestler",
-    		"description" => clienttranslate('${actplayer} must choose a wrestler'),
-    		"descriptionmyturn" => clienttranslate('${you} must choose a wrestler'),
+    		"description"       => clienttranslate('You must choose a wrestler [ST20]'),
+    		"descriptionmyturn" => clienttranslate('You must choose a wrestler [ST20]'),
+			"action" => "stMakeEveryoneActive",
     		"type" => "activeplayer",
-    		"transitions" => array( "wrestlerChosen" => 40 )
+    		"transitions" => array( "roundSetup" => 40 )
     ),
     40 => array(
     		"name" => "roundSetup",
@@ -149,35 +150,35 @@ $machinestates = array(
     ),
     50 => array(
     		"name" => "playerTurnPlay",
-    		"description" => clienttranslate('${actplayer} must choose a card to play'),
-    		"descriptionmyturn" => clienttranslate('${you} must choose a card to play'),
+    		"description" => clienttranslate('${actplayer} must choose a card to play [ST50]'),
+    		"descriptionmyturn" => clienttranslate('${you} must choose a card to play [ST50]'),
     		"type" => "multipleactiveplayer", //multipleactiveplayer //activeplayer
     		"transitions" => array( "" => 60 )
     ),
     60 => array(
     		"name" => "evaluateMoves",
-    		"description" => clienttranslate('[ST60] evaluateMoves'),
+    		"description" => clienttranslate('[ST60] evaluateMoves [ST60]'),
     		"type" => "game",
 			"action" => "stEvaluateMoves",
     		"transitions" => array( "scramble" => 70, "endGame" => 99, "newRound" => 40, "newPeriod" => 80 )
     ),
     70 => array(
     		"name" => "scrambleGame",
-    		"description" => clienttranslate('[ST60 evaluateMoves'),
+    		"description" => clienttranslate('Scramble Game [ST70]'),
     		"type" => "multipleactiveplayer",
 			"action" => "stScrambleGame",
     		"transitions" => array( "endScramble" => 90 )
     ),
     80 => array(
     		"name" => "updatePeriod",
-    		"description" => clienttranslate('[ST80] updatePeriod'),
+    		"description" => clienttranslate('updatePeriod [ST80]'),
     		"type" => "game",
 			"action" => "stUpdatePeriod",
     		"transitions" => array( "" => 40)
     ),
     90 => array(
     		"name" => "evaluateScramble",
-    		"description" => clienttranslate('[ST90] evaluateScramble'),
+    		"description" => clienttranslate('evaluateScramble [ST90]'),
     		"type" => "game",
 			"action" => "stEvaluateScramble",
     		"transitions" => array( "endGame" => 99, "newRound" => 40, "newPeriod" => 80 )
