@@ -44,6 +44,10 @@ class MatRetDev extends Table
             "playerOnDefense" => 12,
             "playerOnTop" => 13,
             "playerOnBottom" => 14,
+            "playerOnOffenseCard" => 15,
+            "playerOnDefenseCard" => 16,
+            "playerOnTopCard" => 17,
+            "playerOnBottomCard" => 18,
 			"gameLengthOption" => 15
         ) );        
         $this->cards = self::getNew( "module.common.deck" );
@@ -289,19 +293,20 @@ class MatRetDev extends Table
 		// $this->playerOnDefense = $this->getPlayerAfter( $current_player_id );
 		// $this->playerOnTop = 'none';
 		// $this->playerOnBottom = 'none';
+		
 		$this->playerOnOffense = self::getGameStateValue( 'playerOnOffense' );
 		$this->playerOnDefense = self::getGameStateValue( 'playerOnDefense' );
-		$this->playerOnTop = self::getGameStateValue( 'playerOnTop' );
-		$this->playerOnBottom = self::getGameStateValue( 'playerOnBottom' );
+		$this->playerOnTop     = self::getGameStateValue( 'playerOnTop' );
+		$this->playerOnBottom  = self::getGameStateValue( 'playerOnBottom' );
 		
 		$result[ 'playerOnOffense' ] = $this->playerOnOffense;
-		$result[ 'playerOnOffense_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnOffense' )];
+		$result[ 'playerOnOffense_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnOffenseCard' )];
 		$result[ 'playerOnDefense' ] = $this->playerOnDefense;
-		$result[ 'playerOnDefense_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnDefense' )];
+		$result[ 'playerOnDefense_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnDefenseCard' )];
 		$result[ 'playerOnTop' ]     = $this->playerOnTop;
-		$result[ 'playerOnTop_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnTop' )];
+		$result[ 'playerOnTop_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnTopCard' )];
 		$result[ 'playerOnBottom' ]  = $this->playerOnBottom;
-		$result[ 'playerOnBottom_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnBottom' )];
+		$result[ 'playerOnBottom_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnBottomCard' )];
 
 		// Add the fields with statistics to each back deck to send to the JS clients
 		
@@ -524,21 +529,32 @@ class MatRetDev extends Table
 		if( $cond1 == $cond2 ) { // TODO: Change this to Flip a coin instead of fixed by player number:
 			self::setGameStateValue( "playerOnOffense", $player_id );
 			self::setGameStateValue( "playerOnDefense", $this->getPlayerAfter( $player_id ));
+			$this->activeNextPlayer(); // TODO: Confirm these 3 lines are right for setting active player and Off/Def cards
+			self::setGameStateValue( 'playerOnOffenseCard', $this->wrestlerCards[ $wrestlers[ $player_id ]][ "WID" ] );
+			self::setGameStateValue( 'playerOnDefenseCard', $this->wrestlerCards[ $wrestlers[ $this->getPlayerAfter( $player_id ) ]][ "WID" ] );
 		} else if ( $cond1 > $cond2 ) { // Set Offsense & Defense according to conditioning
-			self::setGameStateValue( "playerOnOffense", int( $player_id ));
+			self::setGameStateValue( "playerOnOffense", intval( $player_id ));
 			self::setGameStateValue( "playerOnDefense", $this->getPlayerAfter( $player_id ));
+			$this->activePrevPlayer();
+			self::setGameStateValue( 'playerOnOffenseCard', $this->wrestlerCards[ $wrestlers[ $player_id ]][ "WID" ] );
+			self::setGameStateValue( 'playerOnDefenseCard', $this->wrestlerCards[ $wrestlers[ $this->getPlayerAfter( $player_id ) ]][ "WID" ] );
 		} else {
 			self::setGameStateValue( "playerOnOffense", $this->getPlayerAfter( $player_id ));
-			self::setGameStateValue( "playerOnDefense", int( $player_id ));
+			self::setGameStateValue( "playerOnDefense", intval( $player_id ));
+			$this->activeNextPlayer();
+			self::setGameStateValue( 'playerOnOffenseCard', $this->wrestlerCards[ $wrestlers[ $this->getPlayerAfter( $player_id ) ]][ "WID" ] );
+			self::setGameStateValue( 'playerOnDefenseCard', $this->wrestlerCards[ $wrestlers[ $player_id ]][ "WID" ] );
 		}
 
-		self::dump( "[bmc] Offense:", self::getGameStateValue( 'playerOnOffense' ));
-		self::dump( "[bmc] Defense:", self::getGameStateValue( 'playerOnDefense' ));
+		self::dump( "[bmc] PlayerOnOffense:", self::getGameStateValue( 'playerOnOffense' ));
+		self::dump( "[bmc] PlayerOnDefense:", self::getGameStateValue( 'playerOnDefense' ));
+		self::dump( "[bmc] PlayerOnOffenseCard:", self::getGameStateValue( 'playerOnOffenseCard' ));
+		self::dump( "[bmc] PlayerOnDefenseCard:", self::getGameStateValue( 'playerOnDefenseCard' ));
 		
 		// Nofify players of their position
 		self::notifyAllPlayers(
-			"SetPositions",
-			clienttranslate( 'Positions Changed' ),
+			"setPositions",
+			clienttranslate('Wrestlers have been chosen. Adjusting player statistics.'),
 			array(
 				'playerOnBottom'  => self::getGameStateValue( 'playerOnBottom' ),
 				'playerOnTop'     => self::getGameStateValue( 'playerOnTop' ),
@@ -547,11 +563,36 @@ class MatRetDev extends Table
 			)
 		);
 
+		foreach( $players as $player_id => $player ) {
+			if( $player_id == $this->getActivePlayerId() ) {
+				self::notifyPlayer(
+					$player_id,
+					'setStats',
+					clienttranslate('You are on Offense.'),
+					array(
+						'player_id' => $player_id,
+						'myWrestlerCard'  => $this->wrestlerCards[ self::getGameStateValue( 'playerOnOffenseCard' )],
+						'oppWrestlerCard' => $this->wrestlerCards[ self::getGameStateValue( 'playerOnDefenseCard' )]
+					)
+				);
+			} else {
+				self::notifyPlayer(
+					$player_id,
+					'setStats',
+					clienttranslate('You are on Defense.'),
+					array(
+						'player_id' => $player_id,
+						'myWrestlerCard'  => $this->wrestlerCards[ self::getGameStateValue( 'playerOnDefenseCard' )],
+						'oppWrestlerCard' => $this->wrestlerCards[ self::getGameStateValue( 'playerOnOffenseCard' )]
+					)
+				);
+			}
+		}
 
-//TODO: The setup seems OK. I just added the int() around the player_ids above. Next is to adjust the stats. Then have players choose a move.
+//TODO: The setup seems OK. I just added the intval() around the player_ids above. Next is to adjust the stats. Then have players choose a move.
 
 
-//		$this->gamestate->nextState( '' );
+		$this->gamestate->nextState( '' );
 
 		self::trace("[bmc] EXIT stRoundSetup");
 	}

@@ -146,7 +146,7 @@ $machinestates = array(
     		"description" => clienttranslate('[ST40] roundSetup'),
     		"type" => "game",
 			"action" => "stRoundSetup",
-    		"transitions" => array( "" => 50 )
+    		"transitions" => array( "" => 20 ) // Should be 50, but for now loop to choosing wrestler to get the datastructures right
     ),
     50 => array(
     		"name" => "playerTurnPlay",

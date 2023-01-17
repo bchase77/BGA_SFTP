@@ -79,7 +79,7 @@ $this->wrestlerCards = array(
 
   1 => array(
 	"Name"  => "Goldie Meadows",
-	"WID"   => 0,
+	"WID"   => 1,
 	"ConR1" => 22,
 	"ConR2" => 14,
 	"ConR3" => 15,
@@ -93,7 +93,7 @@ $this->wrestlerCards = array(
 	
   2 => array(
 	"Name"  => "Frankie Boulay",
-	"WID"   => 1,
+	"WID"   => 2,
 	"ConR1" => 25,
 	"ConR2" => 0,
 	"ConR3" => 0,
@@ -107,7 +107,7 @@ $this->wrestlerCards = array(
 
   3 => array(
 	"Name"  => "Najat Abbas",
-	"WID"   => 2,
+	"WID"   => 3,
 	"ConR1" => 28,
 	"ConR2" => 10,
 	"ConR3" => 9,

@@ -356,13 +356,17 @@ function (dojo, declare) {
             var cards = this.playerHand.getSelectedItems();
 			console.log( cards );
 			
+			wrestlerID = cards[0].id + 1;
+			
+			console.log( wrestlerID );
+			
 			if ( cards ) {
 				console.log( cards[0].id );
 				if ( this.gamedatas.state == 'chooseWrestler' ) {
 					var action = 'choseWrestler';
 					this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
 							// player_id : this.player_id,
-							chosenWrestler: cards[0].id,
+							chosenWrestler: wrestlerID,
 							lock : true
 						}, this, function(result) {
 						}, function(is_error) {
@@ -398,7 +402,7 @@ function (dojo, declare) {
         */
         setupNotifications: function()
         {
-            console.log( 'notifications subscriptions setup' );
+            console.log( '[bmc] ENTER notifications subscriptions setup' );
             
             // TODO: here, associate your game notifications with local methods
             
@@ -412,7 +416,9 @@ function (dojo, declare) {
             // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
             // 
 			
-			dojo.subscribe( 'SetPositions',    this, "notif_SetPositions");
+			dojo.subscribe( 'setPositions', this, "notif_setPositions");
+			dojo.subscribe( 'setStats',     this, "notif_setStats");
+            console.log( '[bmc] EXIT notifications subscriptions setup' );
 			
         },  
         
@@ -433,11 +439,17 @@ function (dojo, declare) {
         
         */
 		
-		notif_SetPositions: function( notif )
+		notif_setPositions: function( notif )
 		{
-			console.log("[bmc] notif_SetPositions", notif);
+			console.log("[bmc] notif_setPositions", notif);
 
 		},
+		notif_setStats: function( notif )
+		{
+			console.log("[bmc] notif_setStats", notif);
+
+		},
+
 		
    });             
 });
