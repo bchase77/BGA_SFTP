@@ -49,13 +49,13 @@ This is your game interface4. It's January 2nd 2023. You can edit this HTML in y
 	      <h3><span id="WRESTLERCARDMINETRANSLATED"></span></h3>
 		  <div id="wrestlerCardMine"></div>
 	   </div>
-	   <div id="boxMoveCardOpp" class="moveCardClass">
-	      <h3><span id="MOVECARDOPPTRANSLATED" style="float: Left;"></span></h3>
-		  <div id="moveCardOpp"></div>
+	   <div id="boxMoveCardOppo" class="moveCardClass">
+	      <h3><span id="MOVECARDOPPOTRANSLATED" style="float: Left;"></span></h3>
+		  <div id="moveCardOppo"></div>
 	   </div>
-	   <div id="boxWrestlerCardOpp" class="moveCardClass">
-	      <h3><span id="WRESTLERCARDOPPTRANSLATED"></span></h3>
-		  <div id="wrestlerCardOpp"></div>
+	   <div id="boxWrestlerCardOppo" class="moveCardClass">
+	      <h3><span id="WRESTLERCARDOPPOTRANSLATED"></span></h3>
+		  <div id="wrestlerCardOppo"></div>
 	   </div>
 </div>
 

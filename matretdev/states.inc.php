@@ -135,32 +135,36 @@ $machinestates = array(
     ),
     20 => array(
     		"name" => "chooseWrestler",
-    		"description"       => clienttranslate('You must choose a wrestler [ST20]'),
-    		"descriptionmyturn" => clienttranslate('You must choose a wrestler [ST20]'),
+    		"description"       => clienttranslate('${actplayer} must choose a Wrestler card [ST20]'),
+    		"descriptionmyturn" => clienttranslate('${you} must choose a Wrestler card [ST20]'),
 			"action" => "stMakeEveryoneActive",
-    		"type" => "activeplayer",
+    		"type" => "multipleactiveplayer",
     		"transitions" => array( "roundSetup" => 40 )
+			// Transition is triggered from game.php after all players have chosen $this->gamestate->setPlayerNonMultiactive($player_id, 'roundSetup');
     ),
     40 => array(
     		"name" => "roundSetup",
     		"description" => clienttranslate('[ST40] roundSetup'),
     		"type" => "game",
 			"action" => "stRoundSetup",
-    		"transitions" => array( "" => 20 ) // Should be 50, but for now loop to choosing wrestler to get the datastructures right
+    		"transitions" => array( "" => 50 ) // Should be 50, but for now loop to choosing wrestler to get the datastructures right
     ),
     50 => array(
-    		"name" => "playerTurnPlay",
-    		"description" => clienttranslate('${actplayer} must choose a card to play [ST50]'),
-    		"descriptionmyturn" => clienttranslate('${you} must choose a card to play [ST50]'),
+    		"name" => "chooseMove",
+    		"description" => clienttranslate('${actplayer} must choose a Move card [ST50]'),
+    		"descriptionmyturn" => clienttranslate('${you} must choose a Move card [ST50]'),
+			"action" => "stChooseMove",
     		"type" => "multipleactiveplayer", //multipleactiveplayer //activeplayer
-    		"transitions" => array( "" => 60 )
+    		"transitions" => array( "evaluateMoves" => 60 ) // Should be 60 but need to make the choosing of cards work
+			// Transition is triggered from game.php after all players have chosen
     ),
     60 => array(
     		"name" => "evaluateMoves",
     		"description" => clienttranslate('[ST60] evaluateMoves [ST60]'),
     		"type" => "game",
 			"action" => "stEvaluateMoves",
-    		"transitions" => array( "scramble" => 70, "endGame" => 99, "newRound" => 40, "newPeriod" => 80 )
+    		"transitions" => array( "" => 20 ) // delete this line until the evaluate works
+    		// "transitions" => array( "scramble" => 70, "endGame" => 99, "newRound" => 40, "newPeriod" => 80 )
     ),
     70 => array(
     		"name" => "scrambleGame",

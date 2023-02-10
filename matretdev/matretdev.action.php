@@ -63,8 +63,17 @@
 		self::setAjaxMode();
 		self::trace( "[bmc] ajaxcall for choseWrestler" );
 		// $player_id = self::getArg( "player_id", AT_posint, true );
-		$wrestlerCard = self::getArg( "chosenWrestler", AT_posint, true );
-		$this->game->choseWrestler( $wrestlerCard ); 
+		$cardID = self::getArg( "chosenCardID", AT_posint, true );
+		$this->game->choseWrestler( $cardID ); 
+		self::ajaxResponse();
+	}
+	public function choseMove()
+	{
+		self::setAjaxMode();
+		self::trace( "[bmc] ajaxcall for choseMove" );
+		// $player_id = self::getArg( "player_id", AT_posint, true );
+		$cardID = self::getArg( "chosenCardID", AT_posint, true );
+		$this->game->choseMove( $cardID ); 
 		self::ajaxResponse();
 	}
   }

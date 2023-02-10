@@ -117,7 +117,21 @@ $this->wrestlerCards = array(
 	"Bot"   => 9,
 	"Token" => 4,
 	"Star"  => array( "Headlock", "Spladle", "Splits", "Tilt", "Cradle", "Granby Roll", "Peterson Roll" ),
-	"TM"    => 2 ), // 2 == All Star Cards cost 0 conditioning
+	"TM"    => 3 ), // 3 == All Cards cost 2 conditioning
+
+  4 => array(
+	"Name"  => "Raj Chandra",
+	"WID"   => 4,
+	"ConR1" => 328,
+	"ConR2" => 20,
+	"ConR3" => 12,
+	"Off"   => 9,
+	"Def"   => 3,
+	"Top"   => 9,
+	"Bot"   => 6,
+	"Token" => 3,
+	"Star"  => array( "Headlock", "Chin Whip", "Granby Roll", "Peterson Roll" ),
+	"TM"    => 4 ), // 4 == Can collect up to 10 tokens
 );
 
 $this->offenseCards = array(

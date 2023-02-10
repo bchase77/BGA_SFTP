@@ -300,13 +300,13 @@ class MatRetDev extends Table
 		$this->playerOnBottom  = self::getGameStateValue( 'playerOnBottom' );
 		
 		$result[ 'playerOnOffense' ] = $this->playerOnOffense;
-		$result[ 'playerOnOffense_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnOffenseCard' )];
 		$result[ 'playerOnDefense' ] = $this->playerOnDefense;
-		$result[ 'playerOnDefense_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnDefenseCard' )];
 		$result[ 'playerOnTop' ]     = $this->playerOnTop;
-		$result[ 'playerOnTop_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnTopCard' )];
 		$result[ 'playerOnBottom' ]  = $this->playerOnBottom;
-		$result[ 'playerOnBottom_card' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnBottomCard' )];
+		$result[ 'playerOnOffenseCard' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnOffenseCard' )];
+		$result[ 'playerOnDefenseCard' ] = $this->wrestlerCards[ self::getGameStateValue( 'playerOnDefenseCard' )];
+		$result[ 'playerOnTopCard' ]     = $this->wrestlerCards[ self::getGameStateValue( 'playerOnTopCard' )];
+		$result[ 'playerOnBottomCard' ]  = $this->wrestlerCards[ self::getGameStateValue( 'playerOnBottomCard' )];
 
 		// Add the fields with statistics to each back deck to send to the JS clients
 		
@@ -495,9 +495,17 @@ class MatRetDev extends Table
 		}
 	}
 
-	function setPlayerWrestler( $player_id, $wrestlerCard ) {
-		self::dump("[bmc] setPlayerWrestler:", $wrestlerCard );
-		$sql = "UPDATE player SET wrestler = $wrestlerCard WHERE player_id = $player_id ";
+	function setPlayerWrestler( $player_id, $card ) {
+		self::dump("[bmc] setPlayerWrestler:", $card );
+		$sql = "UPDATE player SET wrestler = $card WHERE player_id = $player_id ";
+		self::DbQuery( $sql );
+	}
+
+	function setPlayerMove( $player_id, $card, $position ) {
+		self::dump("[bmc] setPlayerMove:", $card );
+		$sql = "UPDATE player SET move = $card  WHERE player_id = $player_id ";
+		self::DbQuery( $sql );
+		$sql = "UPDATE player SET position = $position WHERE player_id = $player_id ";
 		self::DbQuery( $sql );
 	}
 
@@ -506,10 +514,19 @@ class MatRetDev extends Table
 		return self::getCollectionFromDb($sql, true);
 	}
 
-	function stRoundSetup()
-	{
+	function getPlayerMoves() {
+		$sql = "SELECT player_id, move FROM player ";
+		return self::getCollectionFromDb($sql, true);
+	}
+
+	function getPlayerPositions() {
+		$sql = "SELECT player_id, position FROM player ";
+		return self::getCollectionFromDb($sql, true);
+	}
+	function stRoundSetup() {
 		self::trace( "[bmc] ENTER stRoundSetup (from states.inc.php)" );
-		// All players have chosen a wrestler. Now set up the game
+		
+		// All players have chosen a wrestler. Now set up the game and play the wrestlers
 		$wrestlers = self::getPlayerWrestlers();
 		self::dump( "[bmc] Chosen wrestlers:",  $wrestlers);
 
@@ -556,10 +573,14 @@ class MatRetDev extends Table
 			"setPositions",
 			clienttranslate('Wrestlers have been chosen. Adjusting player statistics.'),
 			array(
-				'playerOnBottom'  => self::getGameStateValue( 'playerOnBottom' ),
-				'playerOnTop'     => self::getGameStateValue( 'playerOnTop' ),
-				'playerOnOffense' => self::getGameStateValue( 'playerOnOffense' ),
-				'playerOnDefense' => self::getGameStateValue( 'playerOnDefense' )
+				'playerOnBottom'      => self::getGameStateValue( 'playerOnBottom'      ),
+				'playerOnTop'         => self::getGameStateValue( 'playerOnTop'         ),
+				'playerOnOffense'     => self::getGameStateValue( 'playerOnOffense'     ),
+				'playerOnDefense'     => self::getGameStateValue( 'playerOnDefense'     ),
+				'playerOnBottomCard'  => self::getGameStateValue( 'playerOnBottomCard'  ),
+				'playerOnTopCard'     => self::getGameStateValue( 'playerOnTopCard'     ),
+				'playerOnOffenseCard' => self::getGameStateValue( 'playerOnOffenseCard' ),
+				'playerOnDefenseCard' => self::getGameStateValue( 'playerOnDefenseCard' )
 			)
 		);
 
@@ -593,10 +614,77 @@ class MatRetDev extends Table
 
 
 		$this->gamestate->nextState( '' );
+		
+		self::dump( "[bmc] state:", $this->gamestate->state());
 
 		self::trace("[bmc] EXIT stRoundSetup");
 	}
 
+	function stChooseMove() {
+		self::trace( "[bmc] ENTER stChooseMove (from states.inc.php)" );
+		
+		$this->gamestate->setAllPlayersMultiactive();
+
+		// Each player's hand is set in JS according to their position
+		// Each player nows needs to play a move card
+
+        $players = self::loadPlayersBasicInfos();
+		self::dump( "[bmc] players:",  $players);
+		self::dump( "[bmc] players:",  reset($players));
+		
+		// Show the available move cards to each player
+				
+		self::trace("[bmc] EXIT stChooseMove");
+	}
+
+    function stEvaluateMoves() {
+		self::trace( "[bmc] ENTER stEvaluateMoves (from states.inc.php)" );
+		
+		// Play the move cards
+		// Change the stats accordingly
+		
+        $players = self::loadPlayersBasicInfos();
+		self::dump( "[bmc] players:",  $players);
+		self::dump( "[bmc] players:",  reset($players));
+		
+		// All players have chosen a move. Now show the moves and positions
+		$moves = self::getPlayerMoves();
+		self::dump( "[bmc] Chosen moves:",  $moves );
+
+		$positions = self::getPlayerPositions();
+		self::dump( "[bmc] Positions:",  $positions );
+
+		// Nofify players of the moves
+		self::notifyAllPlayers(
+			"showMoves",
+			clienttranslate('Players have made their moves.'),
+			array(
+				'moves'  => $moves,
+				'positions' => $positions
+			)
+		);
+
+		
+		// Change the stats on the board
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		$this->gamestate->nextState( '' );
+		
+		self::trace("[bmc] EXIT stEvaluateMoves");
+	}
+	
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
@@ -643,6 +731,43 @@ class MatRetDev extends Table
 		self::trace("[bmc] EXIT choseWrestler (from JS)");
 	}
     
+	function choseMove( $moveCard ){
+		self::trace( "[bmc] ENTER choseMove (from JS via action.php)" );
+		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
+		self::dump( "[bmc] moveCard:",  $moveCard );		
+		
+		// Get position of CurrentPlayer
+		
+		$playerOnBottom      => self::getGameStateValue( 'playerOnBottom'      ),
+		$playerOnTop         => self::getGameStateValue( 'playerOnTop'         ),
+		$playerOnOffense     => self::getGameStateValue( 'playerOnOffense'     ),
+		$playerOnDefense     => self::getGameStateValue( 'playerOnDefense'     ),
+
+		switch ( $player_id ) {
+			case $playerOnBottom :
+				$position = 'Bottom';
+				break;
+			case $playerOnTop :
+				$position = 'Top';
+				break;
+			case $playerOnOffense :
+				$position = 'Offsense';
+				break;
+			case $playerOnDefense :
+				$position = 'Defense';
+				break;
+			default:
+				$position = 'NONE!';
+				self::trace( "[bmc] ERROR player not in any position!" );
+				break;
+		}
+		
+		self::setPlayerMove( $player_id, $moveCard, $position );
+		
+		$this->gamestate->setPlayerNonMultiactive($player_id, 'evaluateMoves'); // deactivate player; if none left, transition to 'next' state
+		self::trace("[bmc] EXIT choseMove (from JS)");
+	}
+	
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
 ////////////
