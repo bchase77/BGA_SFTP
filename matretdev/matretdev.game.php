@@ -738,10 +738,10 @@ class MatRetDev extends Table
 		
 		// Get position of CurrentPlayer
 		
-		$playerOnBottom      => self::getGameStateValue( 'playerOnBottom'      ),
-		$playerOnTop         => self::getGameStateValue( 'playerOnTop'         ),
-		$playerOnOffense     => self::getGameStateValue( 'playerOnOffense'     ),
-		$playerOnDefense     => self::getGameStateValue( 'playerOnDefense'     ),
+		$playerOnBottom      = self::getGameStateValue( 'playerOnBottom'      );
+		$playerOnTop         = self::getGameStateValue( 'playerOnTop'         );
+		$playerOnOffense     = self::getGameStateValue( 'playerOnOffense'     );
+		$playerOnDefense     = self::getGameStateValue( 'playerOnDefense'     );
 
 		switch ( $player_id ) {
 			case $playerOnBottom :

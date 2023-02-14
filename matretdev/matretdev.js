@@ -26,17 +26,18 @@ define([
 	"ebg/stock"
 ],
 
-
-
-// TODO (Bryan):
-// 2/4/2023: How to remove the text "You must choose a wrestler" after one player chose but not the other one?
-// 2/5/2023: When changing hand types (e.g. wrester -> move, clear out the old cards from stock
-// 2/5/2023: Wrester selection IDs are not right
+// TODO (Bryan's list, anyone feel free to fix them):
 // 2/5/2023: Limit the players choice in wrestlers to the number of wrestlers.
-// 2/5/2023: I updated the move display so hopefully the move cards show now.
 // 2/5/2023: Resolve error when double-click but nothing is selected.
+// 2/9/2023: Immediate wrester choice is wrong but refresh choice is correct.
+// 2/9/2023: Make the red borders larger (can't tell which card is selected).
+// 2/9/2023: Change position type to be TEXT in SQL model
 
-
+// Completed:
+// X2/4/2023: How to remove the text "You must choose a wrestler" after one player chose but not the other one?
+// X2/5/2023: When changing hand types (e.g. wrester -> move, clear out the old cards from stock
+// X2/5/2023: Wrester selection IDs are not right
+// X2/5/2023: I updated the move display so hopefully the move cards show now.
 
 function (dojo, declare) {
     return declare("bgagame.matretdev", ebg.core.gamegui, {
@@ -437,13 +438,16 @@ function (dojo, declare) {
 
 			// Not sure if really need to create this new or can reuse
             // Player hand
-            this.playerHand = new ebg.stock(); // new stock object for hand
-			this.playerHand.create( this, $('myHand'), this.cardWidth, this.cardHeight );
-			this.playerHand.setSelectionMode(1); // 0=Cannot select; 1=Can select 1; 2=Can select multiple
+			if( typeof this.playerHand === 'undefined' ) {
+				this.playerHand = new ebg.stock(); // new stock object for hand
+				this.playerHand.create( this, $('myHand'), this.cardWidth, this.cardHeight );
+				this.playerHand.setSelectionMode(1); // 0=Cannot select; 1=Can select 1; 2=Can select multiple
 
-            // 4 images per row in the sprite file
-			this.playerHand.image_items_per_row = 4;
-
+				// 4 images per row in the sprite file
+				this.playerHand.image_items_per_row = 4;
+			} else {
+				this.playerHand.removeAll();
+			}
 			// Set the hand type per each player's position (offense, defense, top or bottom)
 
 //			this.playerHandType = 'NoType';
