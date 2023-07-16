@@ -3724,7 +3724,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		self::dump("[bmc] Count of cards in area:", count( $cardsInArea ));
 		
-		if ( count( $cardsInArea ) > 13 ) {
+		if ( count( $cardsInArea ) > 14 ) { // Could have A234 up to JQKA, so 14 cards is OK
 			throw new BgaUserException( self::_('Cannot play there. That board area is full.') );
 		}
 		

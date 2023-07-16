@@ -505,7 +505,7 @@ class MatRetDev extends Table
 		self::dump("[bmc] setPlayerMove:", $card );
 		$sql = "UPDATE player SET move = $card  WHERE player_id = $player_id ";
 		self::DbQuery( $sql );
-		$sql = "UPDATE player SET position = $position WHERE player_id = $player_id ";
+		$sql = "UPDATE player SET position = '$position' WHERE player_id = $player_id ";
 		self::DbQuery( $sql );
 	}
 
@@ -563,11 +563,13 @@ class MatRetDev extends Table
 			self::setGameStateValue( 'playerOnDefenseCard', $this->wrestlerCards[ $wrestlers[ $player_id ]][ "WID" ] );
 		}
 
-		self::dump( "[bmc] PlayerOnOffense:", self::getGameStateValue( 'playerOnOffense' ));
-		self::dump( "[bmc] PlayerOnDefense:", self::getGameStateValue( 'playerOnDefense' ));
+		self::dump( "[bmc] PlayerOnOffense:",     self::getGameStateValue( 'playerOnOffense' ));
+		self::dump( "[bmc] PlayerOnDefense:",     self::getGameStateValue( 'playerOnDefense' ));
 		self::dump( "[bmc] PlayerOnOffenseCard:", self::getGameStateValue( 'playerOnOffenseCard' ));
 		self::dump( "[bmc] PlayerOnDefenseCard:", self::getGameStateValue( 'playerOnDefenseCard' ));
-		
+
+		$notif_state = $this->gamestate->state();
+
 		// Nofify players of their position
 		self::notifyAllPlayers(
 			"setPositions",
@@ -580,7 +582,8 @@ class MatRetDev extends Table
 				'playerOnBottomCard'  => self::getGameStateValue( 'playerOnBottomCard'  ),
 				'playerOnTopCard'     => self::getGameStateValue( 'playerOnTopCard'     ),
 				'playerOnOffenseCard' => self::getGameStateValue( 'playerOnOffenseCard' ),
-				'playerOnDefenseCard' => self::getGameStateValue( 'playerOnDefenseCard' )
+				'playerOnDefenseCard' => self::getGameStateValue( 'playerOnDefenseCard' ),
+				'state' => $notif_state
 			)
 		);
 
@@ -609,9 +612,6 @@ class MatRetDev extends Table
 				);
 			}
 		}
-
-//TODO: The setup seems OK. I just added the intval() around the player_ids above. Next is to adjust the stats. Then have players choose a move.
-
 
 		$this->gamestate->nextState( '' );
 		
@@ -654,13 +654,16 @@ class MatRetDev extends Table
 		$positions = self::getPlayerPositions();
 		self::dump( "[bmc] Positions:",  $positions );
 
+		$notif_state = $this->gamestate->state();
+
 		// Nofify players of the moves
 		self::notifyAllPlayers(
 			"showMoves",
 			clienttranslate('Players have made their moves.'),
 			array(
 				'moves'  => $moves,
-				'positions' => $positions
+				'positions' => $positions,
+				'state' => $notif_state
 			)
 		);
 

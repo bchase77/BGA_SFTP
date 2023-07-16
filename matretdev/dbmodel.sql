@@ -21,8 +21,8 @@
 -- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
 
 ALTER TABLE `player` ADD `wrestler` int UNSIGNED NOT NULL DEFAULT '0';
-ALTER TABLE `player` ADD `move`     int UNSIGNED NOT NULL DEFAULT '0';
-ALTER TABLE `player` ADD `position` int UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `player` ADD `move`     varchar(32) NOT NULL;
+ALTER TABLE `player` ADD `position` varchar(32) NOT NULL;
 
 CREATE TABLE IF NOT EXISTS `card` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,

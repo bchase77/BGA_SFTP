@@ -27,6 +27,7 @@ define([
 ],
 
 // TODO (Bryan's list, anyone feel free to fix them):
+// 2/15/2023: It's stuck in roundsetup with players trying to choose move cards. REFRESH updates the state to be correct.
 // 2/5/2023: Limit the players choice in wrestlers to the number of wrestlers.
 // 2/5/2023: Resolve error when double-click but nothing is selected.
 // 2/9/2023: Immediate wrester choice is wrong but refresh choice is correct.
@@ -591,6 +592,7 @@ function (dojo, declare) {
             var cards = this.playerHand.getSelectedItems();
 			console.log( cards );
 			console.log( "state: ", this.gamedatas.state );
+			console.log( "state.name: ", this.gamedatas.state.name );
 						
 			// If state == choose wrester then call that function.
 			// If state == choose move then call that function.		
@@ -610,14 +612,19 @@ function (dojo, declare) {
 						var action = 'choseMove';
 						break;
 				}
-
-				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-						chosenCardID: chosenCardID,
-						lock : true
-					}, this, function(result) {
-					}, function(is_error) {
-				});
 				
+				console.log( 'action:', action );
+
+				if ( action ) {
+					this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+							chosenCardID: chosenCardID,
+							lock : true
+						}, this, function(result) {
+						}, function(is_error) {
+					});
+				} else {
+					console.log( 'action Null!' );
+				}
 			}
 		console.log("[bmc] EXIT onMyHandDoubleClick");
 		},
@@ -691,6 +698,13 @@ function (dojo, declare) {
 			this.gamedatas.playerOnTop     = notif.args.playerOnTop;
 			this.gamedatas.playerOnBottom  = notif.args.playerOnBottom;
 
+			this.gamedatas.playerOnOffenseCard = notif.args.playerOnOffenseCard;
+			this.gamedatas.playerOnDefenseCard = notif.args.playerOnDefenseCard;
+			this.gamedatas.playerOnTopCard     = notif.args.playerOnTopCard;
+			this.gamedatas.playerOnBottomCard  = notif.args.playerOnBottomCard;
+
+			this.gamedatas.state = notif.args.state;
+			
 			// this.playerHandType = "Offense";
 			// this.playerHandType = "Defense";
 			// this.playerHandType = "Top";
@@ -717,7 +731,18 @@ function (dojo, declare) {
 			this.moveCardOppo.image_items_per_row = 4;
 
 			moveArray = notif.args.moves;
-			positionArray = notif.arges.positions;
+			positionArray = notif.args.positions;
+			
+			console.log( 'moveArray', moveArray );
+			console.log( 'moveArray.length' );
+			console.log( moveArray.length );
+			
+			The moveArray.length is undefined, not sure why because it has 2 objects:
+			
+			moveArray Object { 2333742: "1", 2333747: "2" }
+			
+			
+//			This movearray doesn't work:
 			
 			moveArray.forEach( function( moveID, playerID ) {
 				console.log( '%s: %s', playerID, moveID );
@@ -731,13 +756,6 @@ function (dojo, declare) {
 			});
 			
 			
-			
-			
-			
-			
-
-
-
 			// this.gamedatas.playerOnOffense = notif.args.playerOnOffense;
 			// this.gamedatas.playerOnDefense = notif.args.playerOnDefense;
 			// this.gamedatas.playerOnTop     = notif.args.playerOnTop;
