@@ -127,59 +127,62 @@ $machinestates = array(
 	
     // Note: ID=10 => your first state
     10 => array(
-    		"name" => "chooseWrestler",
-    		"description" => clienttranslate('${actplayer} must choose a wrestler'),
-    		"descriptionmyturn" => clienttranslate('${you} must choose a wrestler'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "chooseWrestler" ),
-    		"transitions" => array( "chooseWrestler" => 20 )
+    		"name" => "deckSetup",
+    		"description" => clienttranslate('Deck Setup [ST10]'),
+    		"type" => "game",
+			"action" => "stDeckSetup",
+    		"transitions" => array( "" => 20 )
     ),
     20 => array(
-    		"name" => "chooseSpecialMoves",
-    		"description" => clienttranslate('${actplayer} must chooose Special Moves cards'),
-    		"descriptionmyturn" => clienttranslate('${you} must chooose Special Moves cards'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "chooseMoves" ),
-    		"transitions" => array( "chooseMoves" => 40 )
+    		"name" => "chooseWrestler",
+    		"description"       => clienttranslate('${actplayer} must choose a Wrestler card [ST20]'),
+    		"descriptionmyturn" => clienttranslate('${you} must choose a Wrestler card [ST20]'),
+			"action" => "stMakeEveryoneActive",
+    		"type" => "multipleactiveplayer",
+    		"transitions" => array( "roundSetup" => 40 )
+			// Transition is triggered from game.php after all players have chosen $this->gamestate->setPlayerNonMultiactive($player_id, 'roundSetup');
     ),
     40 => array(
     		"name" => "roundSetup",
     		"description" => clienttranslate('[ST40] roundSetup'),
     		"type" => "game",
 			"action" => "stRoundSetup",
-    		"transitions" => array( "" => 50 )
+    		"transitions" => array( "" => 50 ) // Should be 50, but for now loop to choosing wrestler to get the datastructures right
     ),
     50 => array(
-    		"name" => "playerTurnPlay",
-    		"description" => clienttranslate('${actplayer} must choose a card to play'),
-    		"descriptionmyturn" => clienttranslate('${you} must choose a card to play'),
+    		"name" => "chooseMove",
+    		"description" => clienttranslate('${actplayer} must choose a Move card [ST50]'),
+    		"descriptionmyturn" => clienttranslate('${you} must choose a Move card [ST50]'),
+			"action" => "stChooseMove",
     		"type" => "multipleactiveplayer", //multipleactiveplayer //activeplayer
-    		"transitions" => array( "" => 60 )
+    		"transitions" => array( "evaluateMoves" => 60 ) // Should be 60 but need to make the choosing of cards work
+			// Transition is triggered from game.php after all players have chosen
     ),
     60 => array(
     		"name" => "evaluateMoves",
-    		"description" => clienttranslate('[ST60] evaluateMoves'),
+    		"description" => clienttranslate('[ST60] evaluateMoves [ST60]'),
     		"type" => "game",
 			"action" => "stEvaluateMoves",
-    		"transitions" => array( "scramble" => 70, "endGame" => 99, "newRound" => 40, "newPeriod" => 80 )
+    		"transitions" => array( "" => 20 ) // delete this line until the evaluate works
+    		// "transitions" => array( "scramble" => 70, "endGame" => 99, "newRound" => 40, "newPeriod" => 80 )
     ),
     70 => array(
     		"name" => "scrambleGame",
-    		"description" => clienttranslate('[ST60 evaluateMoves'),
+    		"description" => clienttranslate('Scramble Game [ST70]'),
     		"type" => "multipleactiveplayer",
 			"action" => "stScrambleGame",
     		"transitions" => array( "endScramble" => 90 )
     ),
     80 => array(
     		"name" => "updatePeriod",
-    		"description" => clienttranslate('[ST80] updatePeriod'),
+    		"description" => clienttranslate('updatePeriod [ST80]'),
     		"type" => "game",
 			"action" => "stUpdatePeriod",
     		"transitions" => array( "" => 40)
     ),
     90 => array(
     		"name" => "evaluateScramble",
-    		"description" => clienttranslate('[ST90] evaluateScramble'),
+    		"description" => clienttranslate('evaluateScramble [ST90]'),
     		"type" => "game",
 			"action" => "stEvaluateScramble",
     		"transitions" => array( "endGame" => 99, "newRound" => 40, "newPeriod" => 80 )
@@ -217,5 +220,4 @@ $machinestates = array(
         "action" => "stGameEnd",
         "args" => "argGameEnd"
     )
-
 );

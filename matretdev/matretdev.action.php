@@ -40,10 +40,7 @@
   	} 
   	
   	// TODO: defines your action entry points there
-
-
     /*
-    
     Example:
   	
     public function myAction()
@@ -60,9 +57,23 @@
 
         self::ajaxResponse( );
     }
-    
     */
-
+	public function choseWrestler()
+	{
+		self::setAjaxMode();
+		self::trace( "[bmc] ajaxcall for choseWrestler" );
+		// $player_id = self::getArg( "player_id", AT_posint, true );
+		$cardID = self::getArg( "chosenCardID", AT_posint, true );
+		$this->game->choseWrestler( $cardID ); 
+		self::ajaxResponse();
+	}
+	public function choseMove()
+	{
+		self::setAjaxMode();
+		self::trace( "[bmc] ajaxcall for choseMove" );
+		// $player_id = self::getArg( "player_id", AT_posint, true );
+		$cardID = self::getArg( "chosenCardID", AT_posint, true );
+		$this->game->choseMove( $cardID ); 
+		self::ajaxResponse();
+	}
   }
-  
-
