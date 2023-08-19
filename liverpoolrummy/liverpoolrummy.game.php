@@ -89,6 +89,7 @@ class LiverpoolRummy extends Table
 			"alwaysDeal11" => 106,
 			"outReason" => 107,
 			"enableWishList" => 108,
+			"allowJokerSwapping" => 109,
 			"buyer0WantsGS" => 110,
 			"buyer1WantsGS" => 111,
 			"buyer2WantsGS" => 112,
@@ -3771,7 +3772,28 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 					if ( $this->getCardNotJoker( $boardArea, $boardPlayer )['type_arg'] == $card_type_argA[ 0 ] ) {
 						self::trace("[bmc] 2351 getCardNotJoker is true");
-						$this->takeTheJoker( $mightBeJoker, $player_id, $card_id, $boardArea, $boardPlayer );
+						
+						// Add new option to not take jokers (uncomment the next line)
+						//if ( $this->getGameStateValue( 'allowJokerSwapping' ) == 1 ) { // 0 == No. 1 == Yes.
+							
+							
+							
+							
+							
+							
+							
+						// Need to also add this in the RUN check area	
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							$this->takeTheJoker( $mightBeJoker, $player_id, $card_id, $boardArea, $boardPlayer );
+						//}
 					} else {
 						self::trace("[bmc] 2354: Not same values for set.");
 						throw new BgaUserException( self::_('Cannot play that card on that set.') );
@@ -3855,6 +3877,20 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					throw new BgaUserException( self::_('Cannot play that card on that run.') );
 				}
 			} else {
+				// Plan to add option to not allow joker swapping (except when going down).
+				// Check for that and don't swap if not allowed.
+				//if ( $this->getGameStateValue( 'allowJokerSwapping' ) == 1 ) { // 0 == No. 1 == Yes.
+
+
+
+
+
+
+
+
+
+
+
 				self::trace("[bmc] YES joker on board, try to play the card.");
 				// If here, then there's a joker on the board.
 				// Try adding card and remove the joker; check if a run, if yes, then swap.

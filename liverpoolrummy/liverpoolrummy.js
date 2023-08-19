@@ -109,7 +109,19 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 ////////
 ////////
-//
+// TODO: 3 new bugs added (some translations)
+//    Translations:
+//      board: "Voices"
+//      board: "Target Hand..."
+//      board: "Prep A, B C"
+//      log: "the 3 of diamonds"
+//      log: "a joker!"
+//      log: "remove exclamations. separate articles"
+//      log: '<player_name> draws a card from the deck"
+//      log: "It's your draw"
+// TODO: 8/13/2023: Chrissy NZ says she was not able to put 2 5s onto table 5s, no joker
+// TODO: 8/5/2023:
+// When someone draws from deck the card animation doesn't   and should. but when they draw from discard pile it shows.
 // TODO: 101569962
 // Add extra PREP area just for storing cards to get rid of later.
 // Add ability to SAVE PREP areas on the server.
@@ -227,6 +239,7 @@ console.log("[bmc] Clear this.prepAreas2");
 //
 // Resolved Bugs:
 // --------------
+// X 07/16/2023: Cannot swap out a 2 Spade for a joker on a 14-card run.
 // X 09/05/2022: Flip WL closed or open. When I don't need it anymore, it could close.
 // X 09/06/2022: Ability to hide wishlist (especially for phone players)
 // X 09/05/2022: the wishlist is still active from one hand to the next and should not be.
@@ -1207,6 +1220,10 @@ console.log("[bmc] Doing the window.onload");
 			$(CLEARWISHLISTTRANSLATED).innerHTML = _('Clear Wish List');
 			$(SHOWHIDEWISHLIST).innerHTML = _('Show / Hide Wish List');
 			$(LIVERPOOL).innerHTML = _('Liverpool');
+			$(PREPATRANSLATED).innerHTML = _('Prep A');
+			$(PREPBTRANSLATED).innerHTML = _('Prep B');
+			$(PREPCTRANSLATED).innerHTML = _('Prep C');
+			$(VOICESTRANSLATED).innerHTML = _('Voices');
 
             console.log( "[bmc] EXIT game setup" );
         },
@@ -2706,12 +2723,12 @@ console.log("[bmc] ENTER onLiverpoolButton");
 				
 console.log( "[bmc] Trying for Liverpool! ");
 					
-				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-						player_id : this.player_id,
-						lock : true
-					}, this, function(result) {
-					}, function(is_error) {
-				});
+				// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						// player_id : this.player_id,
+						// lock : true
+					// }, this, function(result) {
+					// }, function(is_error) {
+				// });
 console.log("[bmc] EXIT onLiverpoolButton");
 		},
 /////////
