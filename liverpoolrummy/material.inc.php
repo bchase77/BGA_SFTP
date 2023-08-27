@@ -48,7 +48,7 @@ $this->values_label = array(
     13 => clienttranslate('King')
 );
 
-$target_translated = self::_("Target"); 
+$target_translated  = self::_("Target"); 
 $hand0MI_translated = self::_("2 Sets; No more no less (Set is 3 any suit of same value)"); 
 $hand1MI_translated = self::_("1 Set and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)");
 $hand2MI_translated = self::_("2 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)"); 
@@ -87,19 +87,19 @@ $this->handTypesMayI = array( // Hand targets associate with the down areas:
 */
 
 $this->handTypesFull = array( // Hand targets associate with the down areas:
-  0 => array( "Target" => "2 Sets; No more no less (Set is 3 any suit of same value)",
+  0 => array( "Target" => self::_( "2 Sets; No more no less (Set is 3 any suit of same value)"),
 	"QtySets" => 2, "QtyRuns" => 0, "deal" => 10 ),
-  1 => array( "Target" => "1 Set and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)",
-	"QtySets" => 1, "QtyRuns" => 1, "deal" => 11 ),
-  2 => array( "Target" => "2 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)",
+  1 => array( "Target" => self::_( "1 Set and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"),
+    "QtySets" => 1, "QtyRuns" => 1, "deal" => 11 ),
+  2 => array( "Target" => self::_( "2 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)"),
 	"QtySets" => 0, "QtyRuns" => 2, "deal" => 11 ),
-  3 => array( "Target" => "3 Sets; No more no less (Set is 3 any suit of same value)",
+  3 => array( "Target" => self::_( "3 Sets; No more no less (Set is 3 any suit of same value)"),
 	"QtySets" => 3, "QtyRuns" => 0, "deal" => 12 ),
-  4 => array( "Target" => "2 Sets and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)",
+  4 => array( "Target" => self::_( "2 Sets and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"),
 	"QtySets" => 2, "QtyRuns" => 1, "deal" => 12 ),
-  5 => array( "Target" => "1 Set and 2 Runs; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)",
+  5 => array( "Target" => self::_( "1 Set and 2 Runs; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"),
 	"QtySets" => 1, "QtyRuns" => 2, "deal" => 12 ),
-  6 => array( "Target" => "3 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)",
+  6 => array( "Target" => self::_( "3 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)"),
 	"QtySets" => 0, "QtyRuns" => 3, "deal" => 12 )
 );
 
@@ -147,90 +147,6 @@ $this->handTypesShort = array( // Hand targets associate with the down areas:
   2 => $this->handTypesFull[4],
   3 => $this->handTypesFull[6]
 );
-
-// $this->handTypesShort = array( // Hand targets associate with the down areas:
-  // 0 => array( "Target" => "2 Sets; No more no less (Set is 3 of same value)",
-	// "QtySets" => 2, "QtyRuns" => 0, "deal" => 10 ),
-  // 1 => array( "Target" => "2 Runs; No more no less (Run is 4 in sequence of same suit)",
-	// "QtySets" => 0, "QtyRuns" => 2, "deal" => 11 ),
-  // 2 => array( "Target" => "2 Sets and 1 Run; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
-	// "QtySets" => 2, "QtyRuns" => 1, "deal" => 12 ),
-  // 3 => array( "Target" => "3 Runs; No more no less (Run is 4 in sequence of same suit)",
-	// "QtySets" => 0, "QtyRuns" => 3, "deal" => 12 )
-// );
-// $this->handTypesThree = array( // Hand targets associate with the down areas:
-  // 0 => array( "Target" => "2 Sets; No more no less (Set is 3 of same value)",
-	// "QtySets" => 2, "QtyRuns" => 0, "deal" => 10 ),
-  // 1 => array( "Target" => "1 Set and 2 Runs; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
-	// "QtySets" => 1, "QtyRuns" => 2, "deal" => 12 ),
-  // 2 => array( "Target" => "3 Runs; No more no less (Run is 4 in sequence of same suit)",
-	// "QtySets" => 0, "QtyRuns" => 3, "deal" => 12 )
-// );
-// $this->handTypesTwo = array( // Hand targets associate with the down areas:
-  // 0 => array( "Target" => "2 Sets; No more no less (Set is 3 of same value)",
-	// "QtySets" => 2, "QtyRuns" => 0, "deal" => 10 ),
-  // 1 => array( "Target" => "2 Runs; No more no less (Run is 4 in sequence of same suit)",
-	// "QtySets" => 0, "QtyRuns" => 2, "deal" => 11 )
-// );
-
-// $this->setsRunsShort = array ( // Places in the downArea where the cards should go, per hand
- // 0 => array( "Area_A", "Area_B", "None",   "None",   "None",   "None" ),
- // 2 => array( "None",   "None",   "None",   "Area_A", "Area_B", "None" ),
- // 4 => array( "Area_A", "Area_B", "None",   "Area_C", "None",   "None" ),
- // 6 => array( "None",   "None",   "None",   "Area_A", "Area_B", "Area_C" )
-// );
-
-// $this->setsRunsTwo = array ( // Places in the downArea where the cards should go, per hand
- // 0 => array( "Area_A", "Area_B", "None",   "None",   "None",   "None" ),
- // 1 => array( "None",   "None",   "None",   "Area_A", "Area_B", "None" )
-// );
-
-// $this->setsRunsOne = array ( // Places in the downArea where the cards should go, per hand
- // 0 => array( "Area_A", "Area_B", "None",   "None",   "None",   "None" )
-// );
-
-// $this->setsRunsFull = array ( // Places in the downArea where the cards should go, per hand
- // 0 => array( "Area_A", "Area_B", "None",   "None",   "None",   "None" ),
- // 1 => array( "Area_A", "None",   "None",   "Area_B", "None",   "None" ),
- // 2 => array( "None",   "None",   "None",   "Area_A", "Area_B", "None" ),
- // 3 => array( "Area_A", "Area_B", "Area_C", "None",   "None",   "None" ),
- // 4 => array( "Area_A", "Area_B", "None",   "Area_C", "None",   "None" ),
- // 5 => array( "Area_A", "None",   "None",   "Area_B", "Area_C", "None" ),
- // 6 => array( "None",   "None",   "None",   "Area_A", "Area_B", "Area_C" )
-// );
-/*
-$this->handTypesShort = array( // Hand targets associate with the down areas:
-  0 => array( "Target" => "2 Sets; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
-	"QtySets" => 2, "QtyRuns" => 0, "deal" => 10, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Empty" ),
-  // 2 => array( "Target" => "2 Runs; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
-	// "QtySets" => 0, "QtyRuns" => 2, "deal" => 10, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Empty" ),
-  // 4 => array( "Target" => "2 Sets and 1 Run; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
-	// "QtySets" => 2, "QtyRuns" => 1, "deal" => 12, "Area_A" => "Set", "Area_B" => "Set", "Area_C" => "Run" ),
-  // 6 => array( "Target" => "3 Runs; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)",
-	// "QtySets" => 0, "QtyRuns" => 3, "deal" => 12, "Area_A" => "Run", "Area_B" => "Run", "Area_C" => "Run" )
-);
-
-$this->setsRunsShort = array ( // Places in the downArea where the cards should go, per hand
- 0 => array( "Area_A", "Area_B", "None",   "None",   "None",   "None" ),
- // 2 => array( "None",   "None",   "None",   "Area_A", "Area_B", "None" ),
- // 4 => array( "Area_A", "Area_B", "None",   "Area_C", "None",   "None" ),
- // 6 => array( "None",   "None",   "None",   "Area_A", "Area_B", "Area_C" )
-);
-*/
-
-
-/*
-  0 => array( "m2 Sets", 2, 0),
-  1 => array( "m1 Set and 1 Run", 1, 1),
-  2 => array( "m2 Runs", 0, 2),
-  3 => array( "m3 Sets", 3, 0),
-  4 => array( "m2 Sets and 1 Run", 2, 1),
-  5 => array( "m1 Set and 2 Runs", 1, 2),
-  6 => array( "m3 Runs", 0, 3)
-
-*/
-
-
 
 /*
 

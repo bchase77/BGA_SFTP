@@ -109,7 +109,14 @@ $game_options = array(
 		),
 		'default' => 0
 	),
-	
+	109 => array(
+		'name' => totranslate( 'Allow joker swapping' ),
+		'values' => array(
+			0  => array ( 'name' => totranslate( 'No' )	),
+			1  => array ( 'name' => totranslate( 'Yes' ) )
+		),
+		'default' => 1
+	),
 	// 200 => array(
 		// 'name' => totranslate( 'Game Speed' ),
 		// 'values' => array(

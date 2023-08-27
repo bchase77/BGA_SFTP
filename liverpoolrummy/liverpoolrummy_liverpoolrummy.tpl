@@ -40,18 +40,18 @@
 					<a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue spectatorMode"><span id="SORTRUNSTRANSLATED"></span></a>
 					<span style="margin-left:15px"></span>
 					
-					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray spectatorMode"> <span id="BUYTRANSLATED"></span>! </a>
-					<a href="#" id="buttonNotBuy" class="bgabutton bgabutton_gray spectatorMode"> <span id="NOTBUYTRANSLATED"></span>! </a>
+					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray spectatorMode"> <span id="BUYTRANSLATED"></span> </a>
+					<a href="#" id="buttonNotBuy" class="bgabutton bgabutton_gray spectatorMode"> <span id="NOTBUYTRANSLATED"></span> </a>
 					<span style="margin-left:15px"></span>
-					<a href="#" id="buttonLiverpool" class="bgabutton bgabutton_gray spectatorMode"> <span id="LIVERPOOL"></span>! </a>
+					<a href="#" id="buttonLiverpool" class="bgabutton bgabutton_gray spectatorMode"> <span id="LIVERPOOL"></span> </a>
 
-					<a href="#" id="buttonPrepAreaA" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep A</a>
-					<a href="#" id="buttonPrepAreaB" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep B</a>
-					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode">Prep C</a>
+					<a href="#" id="buttonPrepAreaA" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="BUTPREPATRANSLATED"></span></a>
+					<a href="#" id="buttonPrepAreaB" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="BUTPREPBTRANSLATED"></span></a>
+					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="BUTPREPCTRANSLATED"></span></a>
 					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="CARDFORJOKERTRANSLATED"></span></a>
 					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="GODOWNTRANSLATED"></span></a>
 					<a href="#" id="buttonShowHideWishList" class="bgabutton prepButton bgabutton_blue"><span id="SHOWHIDEWISHLIST"></span></a>
-					<input type="checkbox" id="voice" name="scales" checked> <label for="voices">Voices</label>
+					<input type="checkbox" id="voice" name="scales" checked><span id="VOICESTRANSLATED"></span></label>
 					
 					<div id="myhand" class="myhand"></div>
 
@@ -96,15 +96,15 @@
 			<div id="discardPileOne"></div>
 		</div>
 		<div id="myPrepA" class="prepbox">
-			<h3>Prep A</h3>
+			<h3><span id="PREPATRANSLATED"></span></h3>
 			<div id="PrepA"></div>
 		</div>
 		<div id="myPrepB" class="prepbox">
-			<h3>Prep B</h3>
+			<h3><span id="PREPBTRANSLATED"></span></h3>
 			<div id="PrepB"></div>
 		</div>
 		<div id="myPrepC" class="prepbox">
-			<h3>Prep C</h3>
+			<h3><span id="PREPCTRANSLATED"></span></h3>
 			<div id="PrepC"></div>
 		</div>
 		<div id="myPrepJoker" class="prepjoker">
