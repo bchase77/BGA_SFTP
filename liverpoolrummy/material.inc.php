@@ -87,19 +87,19 @@ $this->handTypesMayI = array( // Hand targets associate with the down areas:
 */
 
 $this->handTypesFull = array( // Hand targets associate with the down areas:
-  0 => array( "Target" => "2 Sets; No more no less (Set is 3 any suit of same value)",
+  0 => array( "Target" => clienttranslate( "2 Sets; No more no less (Set is 3 any suit of same value)"),
 	"QtySets" => 2, "QtyRuns" => 0, "deal" => 10 ),
-  1 => array( "Target" => "1 Set and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)",
-	"QtySets" => 1, "QtyRuns" => 1, "deal" => 11 ),
-  2 => array( "Target" => "2 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)",
+  1 => array( "Target" => clienttranslate( "1 Set and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"),
+    "QtySets" => 1, "QtyRuns" => 1, "deal" => 11 ),
+  2 => array( "Target" => clienttranslate( "2 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)"),
 	"QtySets" => 0, "QtyRuns" => 2, "deal" => 11 ),
-  3 => array( "Target" => "3 Sets; No more no less (Set is 3 any suit of same value)",
+  3 => array( "Target" => clienttranslate( "3 Sets; No more no less (Set is 3 any suit of same value)"),
 	"QtySets" => 3, "QtyRuns" => 0, "deal" => 12 ),
-  4 => array( "Target" => "2 Sets and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)",
+  4 => array( "Target" => clienttranslate( "2 Sets and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"),
 	"QtySets" => 2, "QtyRuns" => 1, "deal" => 12 ),
-  5 => array( "Target" => "1 Set and 2 Runs; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)",
+  5 => array( "Target" => clienttranslate( "1 Set and 2 Runs; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"),
 	"QtySets" => 1, "QtyRuns" => 2, "deal" => 12 ),
-  6 => array( "Target" => "3 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)",
+  6 => array( "Target" => clienttranslate( "3 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)"),
 	"QtySets" => 0, "QtyRuns" => 3, "deal" => 12 )
 );
 

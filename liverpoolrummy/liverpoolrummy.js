@@ -111,14 +111,16 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 // TODO: 3 new bugs added (some translations)
 //    Translations:
-//      board: "Voices"
-//      board: "Target Hand..."
-//      board: "Prep A, B C"
-//      log: "the 3 of diamonds"
-//      log: "a joker!"
-//      log: "remove exclamations. separate articles"
-//      log: '<player_name> draws a card from the deck"
-//      log: "It's your draw"
+//      Xboard: "Voices"
+//      Xboard: "Target Hand..."
+//      Xboard: "Prep A, B C"
+//      Xlog: "the 3 of diamonds"
+//      Xlog: "a joker!"
+//         Xmight need: "$value_displayed = clienttranslate( ' joker ' );"
+//      Xlog: "remove exclamations. separate articles"
+//      Xlog: '<player_name> draws a card from the deck"
+//         Xsearch for showmessage
+//      Xlog: "It's your draw"
 // TODO: 8/13/2023: Chrissy NZ says she was not able to put 2 5s onto table 5s, no joker
 // TODO: 8/5/2023:
 // When someone draws from deck the card animation doesn't   and should. but when they draw from discard pile it shows.
@@ -1140,7 +1142,7 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 				}
 			}
 
-			$(handNumber).innerHTML = _("Target Hand " + currentHandNumber + " of " + this.totalHandCount + ": ");
+			$(handNumber).innerHTML = _("Target Hand ") + currentHandNumber + _(" of ") + this.totalHandCount + ": ";
 			$(redTarget).innerHTML = this.gamedatas.handTarget;
 			console.log( $(redTarget) );
 			
@@ -1223,6 +1225,9 @@ console.log("[bmc] Doing the window.onload");
 			$(PREPATRANSLATED).innerHTML = _('Prep A');
 			$(PREPBTRANSLATED).innerHTML = _('Prep B');
 			$(PREPCTRANSLATED).innerHTML = _('Prep C');
+			$(BUTPREPATRANSLATED).innerHTML = _('Prep A');
+			$(BUTPREPBTRANSLATED).innerHTML = _('Prep B');
+			$(BUTPREPCTRANSLATED).innerHTML = _('Prep C');
 			$(VOICESTRANSLATED).innerHTML = _('Voices');
 
             console.log( "[bmc] EXIT game setup" );
@@ -1521,7 +1526,10 @@ console.log("[bmc] ENTER onPlayerBuyButton");
 console.log(this.discardPileOne);
 			var dpCard = this.discardPileOne.getAllItems();
 console.log(dpCard);
-			this.reallyBuy();
+			if (dpCard.length > 0) {
+				console.log("discardpile has a card");
+				this.reallyBuy();
+			}
         return; // nothing should be called or done after calling this, all action must be done in the handler  
 		},
 /////////
@@ -2199,7 +2207,7 @@ console.log( this.playerHand );
 			
 			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
 				
-					this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
+					this.showMessage( _("It's Your Draw!"), 'error' ); // 'info' or 'error'
 					dojo.addClass('myhand_wrap', "borderDrawer");
 					if ( this.voices ) {
 						playSound( 'tutorialrumone_itsyourdraw' );
@@ -4159,7 +4167,7 @@ console.log( this.player_id );
 			console.log(this.player_id);
 			
 			if ( this.goneDown[ this.player_id ] == 1 ) { // If player already went down, do nothing
-				this.showMessage("You already went down");
+				this.showMessage( _("You already went down" ));
 				return;
 			} else {
 				this.clearButtons();
@@ -4224,7 +4232,7 @@ console.log( cardId ) ;
 
 
 			if ( this.goneDown[ this.player_id ] == 1 ) { // If player already went down, do nothing
-				this.showMessage("You already went down");
+				this.showMessage( _("You already went down" ));
 				return;
 			} else {
 				this.clearButtons();
@@ -4276,7 +4284,7 @@ console.log("[bmc] INCREMENTED prepAreas");
 			console.log("[bmc] BUTTON onPlayerPrepArea_B_Button");
 			console.log(this.player_id);
 			if ( this.goneDown[ this.player_id ] == 1 ) { // If player already went down, do nothing
-				this.showMessage("You already went down");
+				this.showMessage( _("You already went down" ));
 				return;
 			} else {
 				this.clearButtons();
@@ -4318,7 +4326,7 @@ console.log("[bmc] BUTTON onPlayerPrepAreaCButton");
 console.log(this.player_id);
 			// If player already went down, do nothing
 			if ( this.goneDown[ this.player_id ] == 1 ) {
-				this.showMessage("You already went down");
+				this.showMessage( _("You already went down" ));
 				return;
 			} else {
 				this.clearButtons();
@@ -4647,12 +4655,12 @@ console.log("[bmc] ENTER showReviewButton");
 console.log( $('close_btn'));
 console.log( player_id );
 
-			this.buttonMessage = 'Deal me in!';
+			this.buttonMessage = _('Deal me in!');
 			
 			if ( $('close_btn') != null ) {
 console.log( $('close_btn').innerHTML );
 				if ( $('close_btn').innerHTML.includes( 'Game Over!' )) {
-					this.buttonMessage = "Final Standings" ;
+					this.buttonMessage = _("Final Standings") ;
 					this.onPlayerReviewedHandButton(); // click the 'review' button for them so it ends faster
 				}
 			}
@@ -4875,7 +4883,7 @@ console.log("Set up players new hand");
 				dojo.addClass('myhand_wrap', "borderDrawer");				
 				
 				// Notify them it's their turn
-				this.showMessage( "It's Your Draw!", 'error' ); // 'info' or 'error'
+				this.showMessage( _( "It's Your Draw!"), 'error' ); // 'info' or 'error'
 				if ( this.voices ) {
 					playSound( 'tutorialrumone_itsyourdraw' );
 					this.disableNextMoveSound();
@@ -4901,7 +4909,7 @@ console.log("Set up players new hand");
 			$('myPrepA').innerHTML = _("Prep A");
 			$('myPrepB').innerHTML = _("Prep B");
 			$('myPrepC').innerHTML = _("Prep C");
-			$('myPrepJoker').innerHTML = _("Card For  Joker");
+			$('myPrepJoker').innerHTML = _("Card For Joker");
 
 			// Update the webpage with the new target
 
@@ -4909,7 +4917,7 @@ console.log("Set up players new hand");
 			this.totalHandCount = notif.args.updTotalHandCount;
 			this.currentHandNumber = parseInt (this.currentHandType) + 1;
 
-			$(handNumber).innerHTML = _("Target Hand " + this.currentHandNumber + " of " + this.totalHandCount + ": ");
+			$(handNumber).innerHTML = _("Target Hand ") + this.currentHandNumber + _(" of ") + this.totalHandCount + ": ";
 
 			console.log( $(handNumber) );
 
