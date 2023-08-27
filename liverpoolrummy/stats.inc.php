@@ -77,6 +77,9 @@ $stats_type = array(
                     "name" => totranslate("Number of buys"),
                     "type" => "int" ),
     
+        "jokers_number" => array("id"=> 11,
+                    "name" => totranslate("Number of jokers"),
+                    "type" => "int" ),
 /*
         Examples:    
         

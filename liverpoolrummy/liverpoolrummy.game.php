@@ -254,6 +254,7 @@ class LiverpoolRummy extends Table
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
         self::initStat( 'table',  'turns_number', 0 );
         self::initStat( 'player', 'buys_number', 0 );
+        self::initStat( 'player', 'jokers_number', 0 );
       
 
 
@@ -505,11 +506,11 @@ class LiverpoolRummy extends Table
 			self::dump("[bmc] currentCardInDP:", $currentCard);
 				
 			if ( $currentCard[ 'type' ] == 5 ) {
-				$value_displayed = clienttranslate(' joker');
+				$value_displayed = self::_(' joker');
 				$color_displayed = '';
 			} else {
-				$value_displayed = clienttranslate('The ') . clienttranslate($this->values_label[ $currentCard[ 'type_arg' ]]) . clienttranslate(' of ');
-				$color_displayed = clienttranslate($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
+				$value_displayed = self::_('The ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
+				$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
 			}
 
 			self::dump("[bmc] vd:", $value_displayed);
@@ -1449,9 +1450,9 @@ class LiverpoolRummy extends Table
 		//self::dump("[bmc] argPlayerTurnPlay buyers(PTP):", $buyers);
 
 		if ( $playerGoneDown[ $activeTurnPlayer_id ] == 1 ) {
-			$thingsCanDo = clienttranslate( 'play or discard.');
+			$thingsCanDo = self::_( 'play or discard.');
 		} else {
-			$thingsCanDo = clienttranslate( 'discard or go down (must go down to play on other melds).');
+			$thingsCanDo = self::_( 'discard or go down (must go down to play on other melds).');
 		}
 		
 		//self::dump("[bmc] currentHandType argPlayerTurnPlay:", $this->handTypes[$currentHandType]["Target"] );
@@ -1733,11 +1734,11 @@ class LiverpoolRummy extends Table
 			$currentCard = $this->cards->getCard( $card_id );
 			
 			if ( $currentCard[ 'type' ] == 5 ) {
-				$value_displayed = clienttranslate(' joker');
+				$value_displayed = self::_(' joker');
 				$color_displayed = '';
 			} else {
-				$value_displayed = clienttranslate('the ') . clienttranslate($this->values_label[ $currentCard[ 'type_arg' ]]) . clienttranslate(' of ');
-				$color_displayed = clienttranslate($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
+				$value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
+				$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
 			}
 
 			$this->checkEmptyDeck(); // Make sure the deck has cards
@@ -1745,14 +1746,13 @@ class LiverpoolRummy extends Table
 
 //082023
 			$player_name = self::getActivePlayerName();
-			$outMsg1 = clienttranslate( " discards ");
+			$outMsg1 = self::_( " discards ");
 			$outMsg = $player_name . $outMsg1 . $value_displayed . $color_displayed;
 
 			// And notify
 			self::notifyAllPlayers(
 				'discardCard',
 				$outMsg,
-//				clienttranslate('${player_name} discards ${value_displayed}${color_displayed}'),
 				array (
 					'player_id' => $activeTurnPlayer_id,
 					'player_name' => self::getActivePlayerName(),
@@ -1896,7 +1896,7 @@ class LiverpoolRummy extends Table
 
 		self::notifyAllPlayers(
 			'playerWantsToNotBuy',
-			clienttranslate('${player_name} no longer wants to buy.'),
+			self::_('${player_name} no longer wants to buy.'),
 			array(
 				'player_id' => $player_id,
 				'player_name' => $players[ $player_id ][ 'player_name' ]
@@ -1917,15 +1917,15 @@ class LiverpoolRummy extends Table
 		
 		if ( $currentCard != null ) {
 			if ( $currentCard[ 'type' ] == 5 ) {
-				$value_displayed = clienttranslate(' joker');
+				$value_displayed = self::_(' joker');
 				$color_displayed = '';
 			} else {
-				$value_displayed = clienttranslate('the ') . clienttranslate($this->values_label[ $currentCard[ 'type_arg' ]]) . clienttranslate(' of ');
-				$color_displayed = clienttranslate($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
+				$value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
+				$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
 			}
 			self::notifyAllPlayers(
 				'playerWantsToBuy',
-				clienttranslate('${player_name} wants to buy ${value_displayed}${color_displayed}'),
+				self::_('${player_name} wants to buy ${value_displayed}${color_displayed}'),
 				array(
 					'player_id' => $player_id,
 					'activeTurnPlayer_id' => $activeTurnPlayer_id,
@@ -1972,18 +1972,18 @@ self::trace("[bmc] Deadlock:2179");
 
 				if ( $currentCard[ 'type' ] == 5 ) {
 self::trace("[bmc] Deadlock:2192");
-					$value_displayed = clienttranslate(' joker');
+					$value_displayed = self::_(' joker');
 					$color_displayed = '';
 				} else {
 self::trace("[bmc] Deadlock:2196");
-					$value_displayed = clienttranslate('the ') . clienttranslate($this->values_label[ $currentCard[ 'type_arg' ]]) . clienttranslate(' of ');
-					$color_displayed = clienttranslate($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
+					$value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
+					$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
 				}
 self::trace("[bmc] Deadlock:2200");
 
 				self::notifyAllPlayers(
 					'playerWantsToBuy',
-					clienttranslate('${player_name} wants to buy ${value_displayed}${color_displayed}'),
+					self::_('${player_name} wants to buy ${value_displayed}${color_displayed}'),
 					array(
 						'player_id' => $player_id,
 						'activeTurnPlayer_id' => $activeTurnPlayer_id,
@@ -2044,13 +2044,13 @@ self::trace("[bmc] Deadlock:2200");
 		// Show text differently to players for a joker.
 		
 		if ( $currentCard[ 'type' ] == 5 ) {
-			$value_displayed = clienttranslate(' joker');
+			$value_displayed = self::_(' joker');
 			$color_displayed = '';
 		} else {
 			self::dump("[bmc] APPARENTLY sometimes get undefined index here", $currentCard);
-			$value_displayed = clienttranslate('the ') . clienttranslate($this->values_label[ $currentCard[ 'type_arg' ]] . ' of ');
+			$value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]] . ' of ');
 
-			$color_displayed = clienttranslate($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
+			$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
 		}
 		
 		foreach ( $players as $player_id => $player ) {
@@ -2069,7 +2069,7 @@ self::trace("[bmc] Deadlock:2200");
 					$player_id,
 					'drawCard',
 					$outMsg,
-//					clienttranslate('You drew ${value_displayed}${color_displayed} from the ${drawSourceText}.'),
+//					self::_('You drew ${value_displayed}${color_displayed} from the ${drawSourceText}.'),
 					array(
 						'player_id' => $player_id,
 						'player_name' => $activePlayer,
@@ -2115,7 +2115,7 @@ self::trace("[bmc] Deadlock:2200");
 //082023
 		$player_name = $activePlayer;
 
-		$outMsg1 = clienttranslate( ' draws a card from the ');
+		$outMsg1 = self::_( ' draws a card from the ');
 		$outMsg = $player_name . $outMsg1 . $drawSourceText;
 
 		// Notify spectators of the draw too
@@ -2124,7 +2124,7 @@ self::trace("[bmc] Deadlock:2200");
 			// 08/16/2021 TODO: WHY IS NEXT LINE COMMENTED OUT?!??
 			// It was commented out because 2 entries appear in the log if it's not blank. Now I commented out the per-player one above.
 			$outMsg,
-//			clienttranslate( '${player_name} draws a card from the ${drawSourceText}.'),
+//			self::_( '${player_name} draws a card from the ${drawSourceText}.'),
 //			'',
 			array(
 				'player_id' => $activeTurnPlayer_id,
@@ -2459,6 +2459,23 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		self::dump("[bmc] joker before checkifreallyinhand:", $joker);
 
+		// Keep track of how many jokers the player is using
+		// Count number of jokers in cards about to go down
+		// For each joker, increment the counter for that PLAYER
+		// 08/26/2023
+		// self::incStat( 1, 'jokers_number', $player_id );
+
+
+
+
+
+
+
+
+
+
+
+
 		// $cardGroupAMJoker = $cardGroupA;
 		// $cardGroupBMJoker = $cardGroupB;
 		// $cardGroupCMJoker = $cardGroupC;
@@ -2538,7 +2555,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		// Notify all players about the cards played
 		self::notifyAllPlayers('playerGoDown',
-			clienttranslate('${player_name} went down.'),
+			self::_('${player_name} went down.'),
 			array(
 				'player_name' => self::getActivePlayerName(),
 				'player_id' => $active_player_id,
@@ -3227,6 +3244,15 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::dump("[bmc] Card being played CARD TYPE ARG:", $card_type_argA );
 		self::dump("[bmc] currentCard:", $currentCard );
 
+		// Count the jokers being played for stats
+		// self::incStat( 1, 'jokers_number', $player_id );
+		// 08/26/2023
+
+		// $jokerCount = $countJokers( $
+		// foreach ( $joker in $
+
+
+
 		$mightBeJoker = $this->checkForJoker( $cardsInArea );
 		self::dump("[bmc] Might Be Joker", $mightBeJoker );
 		
@@ -3304,24 +3330,24 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				self::trace("[bmc] Notify of played card (set)");
 
 				if ( $currentCard[ 'type' ] == 5 ) {
-					$value_displayed = clienttranslate(' a joker');
+					$value_displayed = self::_(' a joker');
 					$color_displayed = '!';
 				} else {
-					$value_displayed = clienttranslate('the ') . clienttranslate($this->values_label[ $currentCard[ 'type_arg' ]]) . clienttranslate(' of ');
-					$color_displayed = clienttranslate($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
+					$value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
+					$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
 				}
 
 				$cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
 
 //082023
 				$player_name = self::getActivePlayerName();
-				$outMsgP1 = clienttranslate(" plays ");
+				$outMsgP1 = self::_(" plays ");
 				$outMsg = $player_name . $outMsgP1 . $value_displayed . $color_displayed;
 
 				self::notifyAllPlayers(
 					'cardPlayed',
 					$outMsg,
-//					clienttranslate('${player_name} plays ${value_displayed}${color_displayed}'),
+//					self::_('${player_name} plays ${value_displayed}${color_displayed}'),
 					array (
 						'card_id' => $card_id,
 						'player_id' => $player_id,
@@ -3447,17 +3473,17 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 //		$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
 
 		if ( $currentCard[ 'type' ] == 5 ) {
-			$value_displayed = clienttranslate(' joker');
+			$value_displayed = self::_(' joker');
 			$color_displayed = '';
 		} else {
-			$value_displayed = clienttranslate( 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ');
-			$color_displayed = clienttranslate( $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
+			$value_displayed = self::_( 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ');
+			$color_displayed = self::_( $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
 		}
 
 		self::notifyAllPlayers(
 			'cardPlayed',
-//			clienttranslate('${player_name} plays the ${color_displayed} ${value_displayed} '),
-			clienttranslate('${player_name} plays ${value_displayed}${color_displayed}'),
+//			self::_('${player_name} plays the ${color_displayed} ${value_displayed} '),
+			self::_('${player_name} plays ${value_displayed}${color_displayed}'),
 			array (
 				'card_id' => $card_id,
 				'player_id' => $player_id,
@@ -3513,7 +3539,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
         // ...
         
         Notify all players about the card played
-        // self::notifyAllPlayers( "cardPlayed", clienttranslate( '${player_name} plays ${card_name}' ), array(
+        // self::notifyAllPlayers( "cardPlayed", self::_( '${player_name} plays ${card_name}' ), array(
             // 'player_id' => $player_id,
             // 'player_name' => self::getActivePlayerName(),
             // 'card_name' => $card_name,
@@ -3567,11 +3593,11 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 //082023
 
-		$outMsg = $player_name . clienttranslate(" went out." );
+		$outMsg = $player_name . self::_(" went out." );
 
         self::notifyAllPlayers(
 			'wentOut',
-//			clienttranslate( '${player_name} went out.' ),
+//			self::_( '${player_name} went out.' ),
 			$outMsg,
 			array(
 				'player_id' => $activeTurnPlayer_id,
@@ -3598,14 +3624,14 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		if ( $currentHandType >= $countHandTypes ) {
 			self::debug("[bmc] Game Over!");
-			$scoreMessage = clienttranslate( "Game Over!" );
+			$scoreMessage = self::_( "Game Over!" );
 			$this->calcDisplayScoreDialog( $scoreMessage );
 			$this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
 			//$this->game->playerHasReviewedHand();
 			// $this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
 		} else {
 			self::debug("[bmc] On To The Next!");
-			$scoreMessage = clienttranslate( "On to the next!") ;
+			$scoreMessage = self::_( "On to the next!") ;
 			$this->calcDisplayScoreDialog( $scoreMessage );
 			$this->gamestate->setAllPlayersMultiactive();
 		}
@@ -3663,25 +3689,25 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 //082023
 				$player_name = $players[ $player_id ][ 'player_name' ];
-				$msg1 = clienttranslate(" gets ");
-				$msg2 = clienttranslate(" points ");
+				$msg1 = self::_(" gets ");
+				$msg2 = self::_(" points ");
 				$outMsg = $player_name . $msg1 . $point_number . $msg2;
 
                 self::notifyAllPlayers("points",
     				$outMsg,
-//                self::notifyAllPlayers("points", clienttranslate( '${player_name} gets ${nbr} points' ), array (
+//                self::notifyAllPlayers("points", self::_( '${player_name} gets ${nbr} points' ), array (
 					array (
                         'player_id' => $player_id,'player_name' => $players[ $player_id ][ 'player_name' ],
                         'nbr' => $point_number ));
             } else {
 		        // No point lost (just notify)
 				
-				$outMsg1 = clienttranslate( ' did not get any points');
+				$outMsg1 = self::_( ' did not get any points');
 				$outMsg = $player_name . $outMsg1;
 				
                 self::notifyAllPlayers("points",
 					$outMsg,
-//					clienttranslate('${player_name} did not get any points'),
+//					self::_('${player_name} did not get any points'),
 					array (
                         'player_id' => $player_id,
 						'player_name' => $players[ $player_id ][ 'player_name' ]
@@ -3700,8 +3726,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// Show the scoring dialog box
 		
 		$firstRow = array( '' );
-		$secondRow = array( clienttranslate( 'This Hand' ));
-		$thirdRow = array( clienttranslate( 'Total' ));
+		$secondRow = array( self::_( 'This Hand' ));
+		$thirdRow = array( self::_( 'Total' ));
 
         foreach( $players as $player_id => $player ) {
             $firstRow[] = array( 'str' => '${player_name}',
@@ -3728,23 +3754,23 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$outReason = self::getGameStateValue( 'outReason' );
 			
 		if( $outReason == 1 ) {
-			$outMsg1 = clienttranslate( "Deck has been shuffled 5 times. Ending the hand." );
+			$outMsg1 = self::_( "Deck has been shuffled 5 times. Ending the hand." );
 			$outMsg2 = $outMsg1;
 		} else if ($outReason == 2 ) {
-			$outMsg1 = clienttranslate( "All playable cards have been played. Ending the hand." );
+			$outMsg1 = self::_( "All playable cards have been played. Ending the hand." );
 			$outMsg2 = $outMsg1;
 		} else { // Someone went out normally
-			$outMsg1 = clienttranslate( "Woot! You went out! You want the most positive score." );
+			$outMsg1 = self::_( "Woot! You went out! You want the most positive score." );
 			$outMsg2_player = $players[ $activeTurnPlayer_id ][ 'player_name' ];
 			
 //082023
-			$outMsg2_raw = clienttranslate( "Bummer! " );
-			$outMsg2a_raw = clienttranslate( " went out. You want the most positive score." );
+			$outMsg2_raw = self::_( "Bummer! " );
+			$outMsg2a_raw = self::_( " went out. You want the most positive score." );
 
 			$outMsg2 = $outMsg2_raw . $outMsg2_player . $outMsg2a_raw;
 
 //			. $outMsg2_player . " went out! You want the most positive score:";
-//			$outMsg2 = clienttranslate( $outMsg2_raw );
+//			$outMsg2 = self::_( $outMsg2_raw );
 		}
 
 		$otherMessage = $outMsg2;
@@ -3912,11 +3938,11 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::dump("[bmc] currentCardInDP:", $currentCard);
 			
 		if ( $currentCard[ 'type' ] == 5 ) {
-			$value_displayed = clienttranslate(' joker');
+			$value_displayed = self::_(' joker');
 			$color_displayed = '';
 		} else {
-			$value_displayed = clienttranslate('The ') . clienttranslate($this->values_label[ $currentCard[ 'type_arg' ]]) . clienttranslate(' of ');
-			$color_displayed = clienttranslate($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
+			$value_displayed = self::_('The ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
+			$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
 		}
 
 		// Update the hand count number when there is a new hand
@@ -3928,7 +3954,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		self::notifyAllPlayers( // Including spectators
 			'newHand',
-			clienttranslate('New Hand! ${dealer} has dealt the cards. New target is ${handTarget}. ${value_displayed}${color_displayed} is in the discard pile.'),
+//			self::_('New Hand! ${dealer} has dealt the cards. New target is ${handTarget}. ${value_displayed}${color_displayed} is in the discard pile.'),
+			self::_('New Hand! ${dealer} has dealt the cards. New target is ${handTarget}. ${value_displayed}${color_displayed} is in the discard pile.'),
 			array(
 				'deck' => array_keys($this->cards->getCardsInLocation( 'deck' )),
 				'discardPile' => $this->cards->getCardsInLocation( 'discardPile' ),
@@ -4014,7 +4041,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			
 			self::notifyAllPlayers(
 				"deckShuffled",
-				clienttranslate( 'Discard pile shuffled into deck.' ),
+				self::_( 'Discard pile shuffled into deck.' ),
 				array(
 					'deck' => array_keys( $this->cards->getCardsInLocation('deck'))
 				)
@@ -4160,11 +4187,11 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					$this->drawNotify( $currentCard, $buyer_id, 'discardPile', $buyer_id, $buyer_id );
 					
 					if ( $currentCard[ 'type' ] == 5 ) {
-						$value_displayed = clienttranslate( ' joker ' );
+						$value_displayed = self::_( ' joker ' );
 						$color_displayed = '';
 					} else {
-						$value_displayed = clienttranslate(' the ') . clienttranslate($this->values_label[ $currentCard[ 'type_arg' ]]) . clienttranslate(' of ');
-						$color_displayed = clienttranslate($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
+						$value_displayed = self::_(' the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
+						$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
 					}
 
 					$cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
@@ -4174,13 +4201,13 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 //082023
 					$player_name = $players[ $buyer_id ][ 'player_name' ];
-					$outMsg1 = clienttranslate( " bought ");
+					$outMsg1 = self::_( " bought ");
 					$outMsg = $player_name . $outMsg1 . $value_displayed . $color_displayed;
 					
 					self::notifyAllPlayers(
 						'playerBought',
 						$outMsg,
-//						clienttranslate('(${player_name} bought ${value_displayed} ${color_displayed})'),
+//						self::_('(${player_name} bought ${value_displayed} ${color_displayed})'),
 						array (
 	//						'buyingPlayer' => $buyer_id,
 							'color_displayed' => $color_displayed,
@@ -4224,7 +4251,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				$players = self::loadPlayersBasicInfos();
 				self::notifyAllPlayers(
 					'playerDidNotBuy',
-					clienttranslate('${buyingPlayerNames} tried but could not buy the discard.'),
+					self::_('${buyingPlayerNames} tried but could not buy the discard.'),
 					array (
 						'buyingPlayers' => $buyingPlayers,
 						'buyingPlayerNames' => $buyingPlayerNames
@@ -4382,7 +4409,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$this->notifyPlayer(
 				$player_id,
 				"wishListSubmitted",
-				clienttranslate('Your wish list was received and is active.'),
+				self::_('Your wish list was received and is active.'),
 				array (
 					'player_id' => $player_id
 				)
@@ -4436,7 +4463,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			self::notifyPlayer(
 				$player_id,
 				'itsYourTurn',
-				clienttranslate("It's your turn"),
+				self::_("It's your turn"),
 				array()
 			);
 		
@@ -4470,15 +4497,15 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			if ( $currentCard != null ) {
 				self::dump( "[bmc] cardToBeBought[id]:",  $currentCard['id'] );
 				if ( $currentCard[ 'type' ] == 5 ) {
-					$value_displayed = clienttranslate(' a joker');
+					$value_displayed = self::_(' a joker');
 					$color_displayed = '!';
 				} else {
-					$value_displayed = clienttranslate('the ') . clienttranslate($this->values_label[ $currentCard[ 'type_arg' ]]) . clienttranslate(' of ');
-					$color_displayed = clienttranslate($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
+					$value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
+					$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
 				}
 				self::notifyAllPlayers(
 					'playerWantsToBuy',
-					clienttranslate('${player_name} wants to buy ${value_displayed}${color_displayed}'),
+					self::_('${player_name} wants to buy ${value_displayed}${color_displayed}'),
 					array(
 						'player_id' => $player_id,
 						'activeTurnPlayer_id' => $activeTurnPlayer_id,
@@ -4548,7 +4575,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::notifyPlayer(
 			$player_id,
 			'wishListDisabled',
-			clienttranslate("Your wish list is now disabled"),
+			self::_("Your wish list is now disabled"),
 			array(
 				'player_id' => $player_id,
 			)
@@ -4592,7 +4619,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			self::notifyPlayer(
 				$player_id,
 				'itsYourTurn',
-				clienttranslate("It's your turn"),
+				self::_("It's your turn"),
 				array()
 			);
 		}

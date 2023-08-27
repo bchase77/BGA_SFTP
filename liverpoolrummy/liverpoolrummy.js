@@ -122,6 +122,20 @@ console.log("[bmc] Clear this.prepAreas2");
 //         Xsearch for showmessage
 //      Xlog: "It's your draw"
 // TODO: 8/13/2023: Chrissy NZ says she was not able to put 2 5s onto table 5s, no joker
+// TODO:
+// DEAL ME In
+// Woot! You went out! You want the most positive score.
+// THis Hand
+// total
+// Objectif de Main2de2 (Needs spaces)
+// GAME 411505245
+// ADD STAT: How many each player used in the game       
+
+// Remove wishlist and buttons for Spectator mode (Submit wish list) and clear wish list)
+// so i tried playing the 5, 6, 7 of clubs on my A-4 meld and that's what it told me was illegal 
+//  Vous devez discard or go down (must go down to play on other melds).
+  
+//
 // TODO: 8/5/2023:
 // When someone draws from deck the card animation doesn't   and should. but when they draw from discard pile it shows.
 // TODO: 101569962
@@ -2994,7 +3008,8 @@ console.log("[bmc] Card from prep A to hand");
 					cardUniqueId = card.type;
 					cardId = card.id;
 
-					this.playerHand.addToStockWithId( cardUniqueId, cardId, 'myhand'); // Pull back to hand
+//					this.playerHand.addToStockWithId( cardUniqueId, cardId, 'myhand'); // Pull back to hand
+					this.playerHand.addToStockWithId( cardUniqueId, cardId, $('myhand')); // Pull back to hand
 					// this.downArea_A_[ this.player_id ].removeFromStockById( card.id );
 					// this.downArea_A_[ this.player_id ].unselectAll();
 					this.myPrepA.removeFromStockById( card.id );
@@ -3235,53 +3250,6 @@ console.log(obj);
 
 			console.log("[bmc] EXIT onShowHideWishList");
 		},
-/////////
-/////////
-/////////
-
-		// updateCardsDisplay : function(){
-// console.log("[bmc] ENTER UPDATECARDSDISPLAY");
-
-		// element = document.getElementById("downArea")
-
-// console.log(element);
-// console.log(Object.getOwnPropertyNames(document));
-
-		// var obj = document;
-		
-		// getMethods = (obj) => Object.getOwnPropertyNames(obj).filter(item => typeof obj[item] === 'function')
-		
-		
-// console.log(getMethods);
-
-		//element.load(" downArea > *");
-		//element.reload();
-		//element.innerHTML = element.innerHTML;
-		//element.style.display = element.style.display;
-		
-		//setTimeout(function(){ 
-			//element.innerHTML = element.innerHTML;
-			//console.log("[bmc] Changed element");
-		//}, 10000);
-
-		
-		//$("downArea").load(" downArea > *");
-		//$("#downArea").load(" #downArea > *");
-
-		// setTimeout(function(){ 
-			// $("#downArea").load(" #downArea > *");
-		// }, 30000);
-
-//$("#divToReload").load(location.href+" #divToReload>*","");
-			// for ( player_id in this.gamedatas.players ) { 
-				// if ($("#playerDown_A_" + player_id) != null) {
-				//if ($("#playerDown_A_" + player_id).length) {
-					// console.log("[bmc] Loading the div");
-					// $("#playerDown_A_" + player_id).load(" #playerDown_A_" + player_id + " > *");
-				// }
-			// }
-// console.log("[bmc] EXIT UPDATECARDSDISPLAY");
-		// },		
 /////////
 /////////
 /////////
@@ -3971,11 +3939,13 @@ console.log("[bmc] Yikes!! Color or value is null! Need to fix this, this is fat
 			if ( drawingPlayer == this.player_id ) {
 				console.log("[bmc] player_id is me");
 				var addTo = 'myhand';
-// EXP 11/5
-//				let cardUniqueId = this.getCardUniqueId( color, value );
 				let cardUniqueId = this.getCardUniqueId( color, value );
-				
+console.log("BMC 082723: Trying to make it slide");	
+// It does make it slide but it also empties the deckOne of cards and removes the image of the card, which is not what I want			
+				//this.playerHand.addToStockWithId( cardUniqueId, $('myhand') ); // Add the card to my hand
+//				this.playerHand.addToStockWithId( cardUniqueId, card_id, $('myhand') ); // Add the card to my hand from the 
 				this.playerHand.addToStockWithId( cardUniqueId, card_id ); // Add the card to my hand from the board
+//				this.playerHand.addToStockWithId( cardUniqueId, $('deck'), ); // Add the card to my hand from the board
 
 console.log(this.drawCounter)
 				
@@ -3996,6 +3966,8 @@ console.log( '[bmc] addTo: ' + addTo );
 console.log( '[bmc] Deck' );
 // There is always only 1 card on the draw deck so just leave it there
 					// this.deckOne.removeFromStockById(card_id, addTo );
+console.log("BMC 082723: Trying to make it slide");				
+				//this.deckOne.removeFromStockById( card_id, addTo ); // Add the card to my hand from the board
 				}
 				if ( drawSource == 'discardPile' ) {
 console.log( '[bmc] DP' );
@@ -4218,6 +4190,7 @@ console.log("[bmc] cardIds: " + cardIds);
 
 				cardUniqueId = jcards[0].type;
 				cardId = jcards[0].id;
+				console.log("BMC 082723: Pulling Back");
 				this.playerHand.addToStockWithId( cardUniqueId, cardId, 'myhand'); // Pull back
 				this.myPrepJoker.removeFromStockById( cardId );
 
