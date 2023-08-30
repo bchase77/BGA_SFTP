@@ -2779,7 +2779,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////////
 ////////
 ////////
-	function checkIfReallyInHand ($cards, $player_id) {
+	function checkIfReallyInHand( $cards, $player_id ) {
 		$card_type = array();
 		$card_type_arg = array();
 		foreach( $cards as $card ) {
@@ -2794,6 +2794,41 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			}
 		}
 		return array($card_type, $card_type_arg);
+	}
+////////
+////////
+////////
+	function getColorValueFromId( $ids ) {
+		// self::dump("[bmc] ENTER getColorValue IDs: ", $ids);
+		// self::dump("[bmc] ENTER count: ", count( $ids ));
+		// self::dump("[bmc] ENTER [0]: ",   $ids[0]);
+		// self::dump("[bmc] ENTER count(reset): ", count( reset($ids)));
+		
+		if ( $ids[0] != 0 ){
+			// self::trace(" ids not empty " );
+
+			$cards = $this->cards->getCards( $ids );
+			// self::dump("[bmc] cards: ", $cards);
+			
+			$card_type = array();
+			$card_type_arg = array();
+			
+			foreach( $cards as $card ) {
+				// self::dump("[bmc] getColorValue: ", $card );
+				
+				$card = $this->cards->getCard( $card['id'] );
+				// self::dump("[bmc] card: ", $card['id']);
+				// self::dump("[bmc] type: ", $card['type']);
+				// self::dump("[bmc] type_arg: ", $card['type_arg']);
+				
+				array_push($card_type, $card['type']);
+				array_push($card_type_arg, $card['type_arg']);
+
+			}
+			return array($card_type, $card_type_arg);
+		} else {
+			// self::trace(" ids empty ");
+		}
 	}
 ////////
 ////////
@@ -3764,7 +3799,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$outMsg2_player = $players[ $activeTurnPlayer_id ][ 'player_name' ];
 			
 //082023
-			$outMsg2_raw = self::_( "Bummer! " );
+			$outMsg2_raw  = self::_( "Bummer! " );
 			$outMsg2a_raw = self::_( " went out. You want the most positive score." );
 
 			$outMsg2 = $outMsg2_raw . $outMsg2_player . $outMsg2a_raw;
@@ -3951,6 +3986,16 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		$updCurrentHandType = self::getGameStateValue( 'currentHandType' );
 		$updTotalHandCount = count( $this->handTypes );
+		
+		$msg1 = self::_('New hand! ');
+		$msg2 = self::_(' dealt the cards. New target is ');
+		$msg3 = self::_(' is in the discard pile.');
+		
+		
+		
+		
+		
+		
 
 		self::notifyAllPlayers( // Including spectators
 			'newHand',
@@ -4420,6 +4465,109 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 ////
+	function savePrep( $player_id, $area_A_Items, $area_B_Items, $area_C_Items, $area_J_Items ) {
+		self::trace("[bmc] ENTER savePrep");
+		self::dump("[bmc] player_id:", $player_id);
+		self::dump("[bmc] areaA:", $area_A_Items );
+		self::dump("[bmc] areaB:", $area_B_Items );
+		self::dump("[bmc] areaC:", $area_C_Items );
+		self::dump("[bmc] areaJ:", $area_J_Items );
+
+		$sql = "DELETE FROM prepAreas WHERE player_id = '";
+		$sql_command = $player_id . "'";
+		self::DbQuery( $sql . $sql_command );
+
+		$sql = "INSERT INTO prepAreas (player_id, areaA, areaB, areaC, areaJ) VALUES ";
+		$sql_command = "( " . $player_id . ", '" . 
+			implode( ",", $area_A_Items ) . "', '" . 
+			implode( ",", $area_B_Items ) . "', '" . 
+			implode( ",", $area_C_Items ) . "', '" . 
+			implode( ",", $area_J_Items ) . "' )";
+
+		self::dump( "[bmc] sql:", $sql . $sql_command );
+
+		self::DbQuery( $sql . $sql_command );
+
+		self::notifyPlayer(
+			$player_id,
+			'savePrepDone',
+			self::_("Your prep areas are saved."),
+			array(
+				'player_id' => $player_id,
+			)
+		);
+		self::trace("[bmc] EXIT savePrep");
+
+	}
+////
+////
+////
+	function loadPrep( $player_id ) {
+		self::trace("[bmc] ENTER loadPrep");
+		self::dump("[bmc] player_id:", $player_id);
+	
+		$sql = "SELECT areaA areaA, areaB areaB, areaC areaC, areaJ areaJ FROM prepAreas WHERE player_id = '";
+		$sql_command = $player_id . "'";
+		
+		self::dump( "[bmc] sql:", $sql . $sql_command );
+
+		$prepListAll = self::getCollectionFromDb( $sql . $sql_command );
+
+		self::dump( "[bmc] prepListAll:", $prepListAll );
+		self::dump( "[bmc] prepListFirst:", reset( $prepListAll ));
+		self::dump( "[bmc] prepListA:", reset( $prepListAll )[ 'areaA' ]);
+		self::dump( "[bmc] prepListB:", reset( $prepListAll )[ 'areaB' ]);
+		self::dump( "[bmc] prepListC:", reset( $prepListAll )[ 'areaC' ]);
+		self::dump( "[bmc] prepListJ:", reset( $prepListAll )[ 'areaJ' ]);
+
+		$prepAreaAItems = explode( ",", reset( $prepListAll )[ 'areaA' ]);
+		$prepAreaBItems = explode( ",", reset( $prepListAll )[ 'areaB' ]);
+		$prepAreaCItems = explode( ",", reset( $prepListAll )[ 'areaC' ]);
+		$prepAreaJItems = explode( ",", reset( $prepListAll )[ 'areaJ' ]);
+
+		self::dump( "[bmc] A:", $prepAreaAItems );
+		self::dump( "[bmc] B:", $prepAreaBItems );
+		self::dump( "[bmc] C:", $prepAreaCItems );
+		self::dump( "[bmc] J:", $prepAreaJItems );
+
+		list( $card_typeA, $card_type_argA ) = $this->getColorValueFromId( $prepAreaAItems );
+		list( $card_typeB, $card_type_argB ) = $this->getColorValueFromId( $prepAreaBItems );
+		list( $card_typeC, $card_type_argC ) = $this->getColorValueFromId( $prepAreaCItems );
+		list( $card_typeJ, $card_type_argJ ) = $this->getColorValueFromId( $prepAreaJItems );
+
+		self::dump( "[bmc] Atype:", $card_typeA );
+		self::dump( "[bmc] Atypearg:", $card_type_argA );
+		self::dump( "[bmc] Btype:", $card_typeB );
+		self::dump( "[bmc] Btypearg:", $card_type_argB );
+		self::dump( "[bmc] Ctype:", $card_typeC );
+		self::dump( "[bmc] Ctypearg:", $card_type_argC );
+		self::dump( "[bmc] Jtype:", $card_typeJ );
+		self::dump( "[bmc] Jtypearg:", $card_type_argJ );
+
+		self::notifyPlayer(
+			$player_id,
+			'loadPrepDone',
+			self::_("Your prep areas are loaded."),
+			array(
+				'player_id'     => $player_id,
+				'card_idsA'      => $prepAreaAItems,
+				'card_typeA'     => $card_typeA,
+				'card_type_argA' => $card_type_argA,
+				'card_idsB'      => $prepAreaBItems,
+				'card_typeB'     => $card_typeB,
+				'card_type_argB' => $card_type_argB,
+				'card_idsC'      => $prepAreaCItems,
+				'card_typeC'     => $card_typeC,
+				'card_type_argC' => $card_type_argC,
+				'card_idsJ'      => $prepAreaJItems,
+				'card_typeJ'     => $card_typeJ,
+				'card_type_argJ' => $card_type_argJ,
+			)
+		);
+		
+		self::trace("[bmc] EXIT loadPrep");
+	}
+	
 	function buyRequestFinish( $player_id ) {
 		self::trace("[bmc] ENTER buyRequestFinish");
 		self::dump("[bmc] player_id:", $player_id);
@@ -4427,12 +4575,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// If there aren't enough cards, don't allow it
 		$countDeck = self::getGameStateValue( 'countDeck' );
 		$countDiscardPile = self::getGameStateValue( 'countDiscardPile' );
-
-//		self::dump("[bmc] countDeckNEWWAY:", $countDeck );
-//		self::dump("[bmc] countDiscardPileNEWWAY:", $countDiscardPile );
-
-
-
 
 		$checkIfBuyingAllowed = $this->getGameStateValue( 'isBuyingAllowed' );
 		self::dump("[bmc] CHECKBUYINGALLOWED", $checkIfBuyingAllowed ); // 0 == false; 1 == true
@@ -4954,20 +5096,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$state = $this->gamestate->state();
 			//self::dump("[bmc] stNextPlayer state:", $state);
 
-			// Process the wish lists
-			// $wishLists = array(
-				// 0 => array(
-					// 'player_id' => 2333744,
-					// 'card_type' => '3', // Suit
-					// 'card_type_arg' => '1' // Value
-					// ),
-				// 1 => array(
-					// 'player_id' => 2333742,
-					// 'card_type' => '2', // Suit
-					// 'card_type_arg' => '2' // Value
-					// )
-				//}
-
 			$sql = "SELECT id id, player_id, card_type, card_type_arg FROM wishList ";
 		
 			$wishLists = self::getCollectionFromDb( $sql );
@@ -5343,6 +5471,20 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 //        }
 //        // Please add your future database scheme changes here
 //
-//
-    }    
+        if( $from_version <= 230827-2254 )
+        {
+            // ! important ! Use DBPREFIX_<table_name> for all tables
+
+            $sql = "CREATE TABLE DBPREFIX_prepAreas (
+				`player_id` int(10) unsigned NOT NULL,
+				`areaA` varchar(100),
+				`areaB` varchar(100),
+				`areaC` varchar(100),
+				`areaJ` varchar(100),
+				PRIMARY KEY (`player_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;";
+			
+			self::applyDbUpgradeToAllDB( $sql );
+        }
+	}
 }

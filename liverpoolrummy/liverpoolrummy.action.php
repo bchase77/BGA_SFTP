@@ -168,6 +168,26 @@
             $this->game->liverpool( $player_id ); 
             self::ajaxResponse();
 		}
+        public function loadPrep()
+        {
+            self::setAjaxMode();
+			self::trace( "[bmc] ajaxcall for loadPrep" );
+			$player_id = self::getArg( "player_id", AT_posint, true );
+			$this->game->loadPrep( $player_id ); 
+            self::ajaxResponse();
+        }
+        public function savePrep()
+        {
+            self::setAjaxMode();
+			self::trace( "[bmc] ajaxcall for savePrep" );
+			$player_id = self::getArg( "player_id", AT_posint, true );
+			$area_A_Items = self::parseNumberList(self::getArg( "area_A_Items", AT_numberlist, true ));
+			$area_B_Items = self::parseNumberList(self::getArg( "area_B_Items", AT_numberlist, true ));
+			$area_C_Items = self::parseNumberList(self::getArg( "area_C_Items", AT_numberlist, true ));
+			$area_J_Items = self::parseNumberList(self::getArg( "area_J_Items", AT_numberlist, true ));
+            $this->game->savePrep( $player_id, $area_A_Items, $area_B_Items, $area_C_Items, $area_J_Items ); 
+            self::ajaxResponse();
+        }
     /*
     
     Example:

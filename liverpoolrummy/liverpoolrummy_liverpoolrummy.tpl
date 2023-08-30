@@ -51,6 +51,8 @@
 					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="CARDFORJOKERTRANSLATED"></span></a>
 					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="GODOWNTRANSLATED"></span></a>
 					<a href="#" id="buttonShowHideWishList" class="bgabutton prepButton bgabutton_blue"><span id="SHOWHIDEWISHLIST"></span></a>
+					<a href="#" id="buttonSavePrep"  class="bgabutton bgabutton_blue spectatorMode"><span id="BUTSAVEPREPTRANSLATED"></span></a>
+					<a href="#" id="buttonLoadPrep"  class="bgabutton bgabutton_blue spectatorMode"><span id="BUTLOADPREPTRANSLATED"></span></a>
 					<input type="checkbox" id="voice" name="scales" checked><span id="VOICESTRANSLATED"></span></label>
 					
 					<div id="myhand" class="myhand"></div>

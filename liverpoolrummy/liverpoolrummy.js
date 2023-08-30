@@ -1064,6 +1064,9 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 			dojo.connect( $('buttonPrepAreaC'), 'onclick', this, 'onPlayerPrepArea_C_Button' );
 			dojo.connect( $('buttonPrepJoker'), 'onclick', this, 'onPlayerPrepJoker_Button' );
 			
+			dojo.connect( $('buttonSavePrep'), 'onclick', this, 'onPlayerSavePrep_Button' );
+			dojo.connect( $('buttonLoadPrep'), 'onclick', this, 'onPlayerLoadPrep_Button' );
+
 			dojo.connect( $('buttonGoDownStatic'), 'onclick', this, 'onPlayerGoDownButton' );
 
 			dojo.connect( $('buttonBuy'), 'onclick', this, 'onPlayerBuyButton' );
@@ -1242,6 +1245,8 @@ console.log("[bmc] Doing the window.onload");
 			$(BUTPREPATRANSLATED).innerHTML = _('Prep A');
 			$(BUTPREPBTRANSLATED).innerHTML = _('Prep B');
 			$(BUTPREPCTRANSLATED).innerHTML = _('Prep C');
+			$(BUTSAVEPREPTRANSLATED).innerHTML = _('Save Prep');
+			$(BUTLOADPREPTRANSLATED).innerHTML = _('Load Prep');
 			$(VOICESTRANSLATED).innerHTML = _('Voices');
 
             console.log( "[bmc] EXIT game setup" );
@@ -2270,6 +2275,7 @@ console.log( this.discardPileOne );
 			
 			// Add it to the pile and set the weight
 			let cardUniqueId = this.getCardUniqueId( color, value );
+			console.log( cardUniqueId );
 			
 			if ( player_id == this.player_id ) {
 //				this.discardPile.addToStockWithId( cardUniqueId, card_id, 'myhand' );
@@ -2331,6 +2337,85 @@ console.log("[bmc] ENTER notif_wishListSubmitted");
 			this.setWishListColor( true ); 
 			this.showClearWishListButton( true );
 console.log("[bmc] EXIT notif_wishListSubmitted");
+		},
+/////////
+/////////
+/////////
+		notif_loadPrepDone : function( notif ){
+console.log("[bmc] ENTER loadPrepDone");
+console.log(notif);
+
+			var ids = notif.args.card_idsA;
+			console.log(ids);
+			console.log(ids.length);
+
+			if ( ids[ 0 ] != '' ) {
+				dojo.addClass( 'myPrepA', "buyerLit" ); // Add red background
+				var colors = notif.args.card_typeA;
+				var values = notif.args.card_type_argA;
+				this.populatePrepArea( ids, colors, values, this.myPrepA );
+			}
+
+			var ids = notif.args.card_idsB;
+			console.log(ids);
+			console.log(ids.length);
+
+			if ( ids[ 0 ] != '' ) {
+				
+				dojo.addClass( 'myPrepB', "buyerLit" ); // Add red background
+				var colors = notif.args.card_typeB;
+				var values = notif.args.card_type_argB;
+				this.populatePrepArea( ids, colors, values, this.myPrepB );
+			}
+
+			var ids = notif.args.card_idsC;
+			console.log(ids);
+			console.log(ids.length);
+
+			if ( ids[ 0 ] != '' ) {
+				dojo.addClass( 'myPrepC', "buyerLit" ); // Add red background
+				var colors = notif.args.card_typeC;
+				var values = notif.args.card_type_argC;
+				this.populatePrepArea( ids, colors, values, this.myPrepC );
+			}
+
+			var ids = notif.args.card_idsJ;
+			console.log(ids);
+			console.log(ids.length);
+
+			if ( ids[ 0 ] != '' ) {
+				dojo.addClass( 'myPrepJoker', "buyerLit" ); // Add red background
+				var colors = notif.args.card_typeJ;
+				var values = notif.args.card_type_argJ;
+				this.populatePrepArea( ids, colors, values, this.myPrepJoker );
+			}
+			
+			this.prepAreas++;
+			console.log(this.prepAreas);
+			console.log("[bmc] INCREMENTED prepAreas");
+		},
+/////////
+/////////
+/////////
+		populatePrepArea : function( ids, colors, values, prepArea ){
+			for ( let id in ids ){
+				console.log( ids[id] );
+		
+//				var from = 'myhand_item_' + ids[ id ];
+				console.log( prepArea );
+				
+//				prepArea.addToStockWithId( this.getCardUniqueId( colors[id], values[id] ), ids[id], $('myhand'));
+				prepArea.addToStockWithId( this.getCardUniqueId( colors[id], values[id] ), ids[id]);
+				
+				this.playerHand.removeFromStockById ( ids[id] );
+			}
+		},
+/////////
+/////////
+/////////
+		notif_savePrepDone : function( notif ){
+console.log("[bmc] ENTER savePrepDone");
+console.log(notif);
 		},
 /////////
 /////////
@@ -2467,28 +2552,6 @@ console.log("[bmc] EXIT(nothing) startActionTimerStatic");
 			function remove because the project analyzer wouldn't pass
         },        
         */
-/////////
-/////////
-/////////
-
-
-
-//TODO: When several wishlist cards are selected and you click CLEAR, then deselect a little bit and should not.
-
-
-
-		// showSubmitWishListButton : function( onOff ) {
-// console.log("[bmc] ENTER showSubmitWishListButton");
-
-			// if ( onOff == true ) {
-				// dojo.replaceClass( 'buttonSubmitWishList', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
-				// dojo.replaceClass( 'buttonSubmitWishList', "textWhite", "textGray" ); // item, add, remove
-			// } else {
-				// dojo.replaceClass( 'buttonSubmitWishList', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-				// dojo.replaceClass( 'buttonSubmitWishList', "textGray", "textWhite" ); // item, add, remove
-			// }
-// console.log("[bmc] EXIT showSubmitWishListButton");
-		// },
 /////////
 /////////
 /////////
@@ -3538,7 +3601,7 @@ console.log("[bmc] Did ajaxcall.");
 console.log("[bmc] ENTER onPlayerSortByButton!");
 console.log(this.player_id);
 			
-			var thisPlayerHandIds = this.playerHand.getAllItems();
+//			var thisPlayerHandIds = this.playerHand.getAllItems();
 			// Just practicing the sortRun function
 			//this.sortRun( thisPlayerHandIds, 'playerDown_A' );
 			
@@ -4134,6 +4197,86 @@ console.log( this.player_id );
 /////////
 /////////
 /////////
+		onPlayerSavePrep_Button : function() {
+			console.log("[bmc] BUTTON onPlayerSavePrep");
+			// Get all cards in prep areas
+			// Send to server
+			var prepArea_A_Items = this.myPrepA.getAllItems();
+			var prepArea_B_Items = this.myPrepB.getAllItems();
+			var prepArea_C_Items = this.myPrepC.getAllItems();
+			var prepArea_J_Items = this.myPrepJoker.getAllItems();
+			console.log(prepArea_A_Items);
+			console.log(prepArea_B_Items);
+			console.log(prepArea_C_Items);
+			console.log(prepArea_J_Items);
+
+			var pA_A_ids = new Array();
+			var pA_B_ids = new Array();
+			var pA_C_ids = new Array();
+			var pA_J_ids = new Array();
+			
+			for ( let i in prepArea_A_Items ) {
+				pA_A_ids[i] = prepArea_A_Items[i].id;
+			}
+			for ( let i in prepArea_B_Items ) {
+				pA_B_ids[i] = prepArea_B_Items[i].id;
+			}
+			for ( let i in prepArea_C_Items ) {
+				pA_C_ids[i] = prepArea_C_Items[i].id;
+			}
+			for ( let i in prepArea_J_Items ) {
+				pA_J_ids[i] = prepArea_J_Items[i].id;
+			}
+
+			console.log(pA_A_ids);
+			console.log(pA_B_ids);
+			console.log(pA_C_ids);
+			console.log(pA_J_ids);
+
+			if (( pA_A_ids.length +
+				  pA_B_ids.length + 
+				  pA_C_ids.length + 
+				  pA_J_ids.length ) != 0 ){
+console.log( "[bmc] Saving prep areas." );
+				
+				var action = 'savePrep';
+				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+					player_id : this.player_id,
+					area_A_Items : this.toNumberList( pA_A_ids ),
+					area_B_Items : this.toNumberList( pA_B_ids ),
+					area_C_Items : this.toNumberList( pA_C_ids ),
+					area_J_Items : this.toNumberList( pA_J_ids ),
+					lock : true
+				}, this, function(result) {
+				}, function(is_error) {
+				});
+			}
+		},
+/////////
+/////////
+/////////
+		onPlayerLoadPrep_Button : function() {
+			console.log("[bmc] BUTTON onPlayerLoadPrep");
+			// Read list of cards from server for prep areas
+			// Move them from hand to prep areas
+
+			var action = 'loadPrep';
+			this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+				player_id : this.player_id,
+				// area_A_Items : this.toNumberList( pA_A_ids ),
+				// area_B_Items : this.toNumberList( pA_B_ids ),
+				// area_C_Items : this.toNumberList( pA_C_ids ),
+				// area_J_Items : this.toNumberList( pA_J_ids ),
+				lock : true
+			}, this, function(result) {
+			}, function(is_error) {
+			});
+
+			
+		},
+/////////
+/////////
+/////////
 		onPlayerPrepArea_A_Button : function () {
 			console.log("[bmc] BUTTON onPlayerPrepAreaAButton");
 			console.log(this.player_id);
@@ -4591,6 +4734,8 @@ console.log( '[bmc] ENTER notifications subscriptions setup' );
 			dojo.subscribe( 'wishListSubmitted',   this, "notif_wishListSubmitted");
 			dojo.subscribe( 'wishListDisabled',    this, "notif_wishListDisabled");
 			dojo.subscribe( 'liverpoolExists',     this, "notif_liverpoolExists");
+			dojo.subscribe( 'loadPrepDone',        this, "notif_loadPrepDone");
+			dojo.subscribe( 'savePrepDone',        this, "notif_savePrepDone");
 			//dojo.subscribe( 'wishListCleared',     this, "notif_wishListCleared");
 
             // TODO: here, associate your game notifications with local methods

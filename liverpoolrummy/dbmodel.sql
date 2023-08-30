@@ -44,5 +44,14 @@ CREATE TABLE IF NOT EXISTS `card` (
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+CREATE TABLE IF NOT EXISTS `prepAreas` (
+  `player_id` int(10) unsigned NOT NULL,
+  `areaA` varchar(100),
+  `areaB` varchar(100),
+  `areaC` varchar(100),
+  `areaJ` varchar(100),
+  PRIMARY KEY (`player_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
 -- Example 2: add a custom field to the standard "player" table
 ALTER TABLE `player` ADD `player_my_custom_field` INT UNSIGNED NOT NULL DEFAULT '0';
