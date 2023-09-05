@@ -109,65 +109,42 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 ////////
 ////////
-// TODO: 3 new bugs added (some translations)
-//    Translations:
-//      Xboard: "Voices"
-//      Xboard: "Target Hand..."
-//      Xboard: "Prep A, B C"
-//      Xlog: "the 3 of diamonds"
-//      Xlog: "a joker!"
-//         Xmight need: "$value_displayed = clienttranslate( ' joker ' );"
-//      Xlog: "remove exclamations. separate articles"
-//      Xlog: '<player_name> draws a card from the deck"
-//         Xsearch for showmessage
-//      Xlog: "It's your draw"
 // TODO: 8/13/2023: Chrissy NZ says she was not able to put 2 5s onto table 5s, no joker
-// TODO:
-// DEAL ME In
-// Woot! You went out! You want the most positive score.
-// THis Hand
-// total
-// Objectif de Main2de2 (Needs spaces)
-// GAME 411505245
-// ADD STAT: How many jokers each player used in the game       
 
 // Remove wishlist and buttons for Spectator mode (Submit wish list) and clear wish list)
 // so i tried playing the 5, 6, 7 of clubs on my A-4 meld and that's what it told me was illegal 
-//  Vous devez discard or go down (must go down to play on other melds).
-  
 //
 // TODO: 8/5/2023:
 // When someone draws from deck the card animation doesn't   and should. but when they draw from discard pile it shows.
 // TODO: 101569962
 // Add extra PREP area just for storing cards to get rid of later.
-// Add ability to SAVE PREP areas on the server.
 // Make it more playable on phone screens.
 // 9/28/2022: Trying to add 89 to *JQKA diamonds. but they don't go 2 at a time. Must do 8 and 9 1 card at a time. Error is "Not a run. It doesn't reach!'
-// Chipati draws a card from the discard pile.
-// jojo2k discards the 7 of clubs.
-// (binnok bought the 2 of spades)
-// binnok draws a card from the discard pile.
-// binnok draws a card from the deck.
-// 11:39 PM
-// jojo2k draws a card from the deck.
-// binnok wants to buy the 2 of spades.
-// mandj2000 discards the 2 of spades.
-// binnok tried but could not buy the discard.
-// binnok wants to buy the Ace of spades.
-// mandj2000 draws a card from the discard pile.
-// GoDodyGo discards the King of spades.
-// GoDodyGo draws a card from the deck.
-// You drew the 9 of hearts from the deck.
-// rikhav discards the Ace of spades.
-// 09/10/2022: Jo got in some state where it woulnd't let her go down with more
-// cards than the melds, with card-for-joker. Then she pulled the card out of card
-// for joker and put it back in, then the GODOWN button turned on. The GO DOWN buttonBuy
-// did not light up at all beforehand.
-
+//
+// Bad tables:
+//
+//  http://boardgamearena.com/4/liverpoolrummy?table=414565562
+//  http://boardgamearena.com/3/liverpoolrummy?table=412553237
+//  414037086
+//  414252088
+//  413982996
+//  414287148
+//  414535184
+//  414208610
+//  http://boardgamearena.com/6/liverpoolrummy?table=411427550
+//  414259903
+//  414558404
+//  414446774
+//  http://boardgamearena.com/9/liverpoolrummy?table=413307353
+//  414148571
+//  http://boardgamearena.com/10/liverpoolrummy?table=414284229
+//  http://boardgamearena.com/10/liverpoolrummy?table=413547967
+//  http://boardgamearena.com/10/liverpoolrummy?table=412006534
+//  
+//
 // Joker placement: it’s a two in a run from ace to 5, but it will show up like it was the 6
 // Turn off the wishlist after a player goes down.
 // Display "You bought X" from wishlist buy (not sure how to display it)
-// 09/10/2022: Mark and I both tried to buy a QD but someone picked it up and got a 3D instead, and we could not buy.
 // 09/10/2022: K could not go down with 9C replacing a joker, and 2 runs, and her 2 melds each needed a joker. She had to put only the right number of cards then go down, then play the rest.
 // 09/10/2022: Add "you" to the wish list logs
 // 09/10/2022: without wishlist option, notifcation "WISH LIST DISABLED" appeared in the log and should not have
@@ -182,7 +159,6 @@ console.log("[bmc] Clear this.prepAreas2");
 // 08/22/2022: Remove wishlist from spectator area
 // After the buy, take it off the list.
 // 08/13/2022: Don't allow zombie to buy (or draw).
-// X 08/13/2022: BUY and NOT BUY buttons don't light right.
 // 08/13/2022: I clicked BUY right when someone else drew... I think... "when i buy but same times a persone Draw the cards it s block for me"
 // 08/09/2022: Chat window doesn't launch auto after SORT buttons are pressed.
 // 08/08/2022: Spectator, the WANTS TO BUY lights up very quickly, then disappears.
@@ -226,10 +202,7 @@ console.log("[bmc] Clear this.prepAreas2");
 // 12/26: When drawing a card, if the same card is in player hand they both go to the right. Only the new card should move.
 //  1/16: Allow players to specify where each joker plays
 //  1/15: If discarded card is playable, allow players to call RUMMY, play it, and discard a card
-//  1/16: When I have enough melds prepped to go down and it becomes my turn, the GO DOWN button doesn't light up but should
-//  1/16: When someone clicks BUY IT and someone clicks the card there can be a race condition?
 //  1/3/2021: Why so many "Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first"? Seems coming from the history log.
-// 12/26/2020: Konni discarded at same time as I clicked BUY it. It was my turn. Game thought i wanted to buy Konni's discard. I drew, but now it won't let me discard: "You cannot buy any more this hand(decPlayerBuyCount)."
 //
 // 12/26: Show the options in the message log when the game starts.
 // 12/26 Marc's board did not light up when I went to buy, but it did after he drew a card. It should have lit up when I clicked the BUY, and not waited until he drew.
@@ -255,6 +228,26 @@ console.log("[bmc] Clear this.prepAreas2");
 //
 // Resolved Bugs:
 // --------------
+// X 1/16: When I have enough melds prepped to go down and it becomes my turn, the GO DOWN button doesn't light up but should
+// X 1/16: When someone clicks BUY IT and someone clicks the card there can be a race condition?
+// X 12/26/2020: Konni discarded at same time as I clicked BUY it. It was my turn. Game thought i wanted to buy Konni's discard. I drew, but now it won't let me discard: "You cannot buy any more this hand(decPlayerBuyCount)."
+// X 9/4/2023: 3 new bugs added (some translations)
+//    Translations:
+//      Xboard: "Voices"
+//      Xboard: "Target Hand..."
+//      Xboard: "Prep A, B C"
+//      Xlog: "the 3 of diamonds"
+//      Xlog: "a joker!"
+//         Xmight need: "$value_displayed = clienttranslate( ' joker ' );"
+//      Xlog: "remove exclamations. separate articles"
+//      Xlog: '<player_name> draws a card from the deck"
+//         Xsearch for showmessage
+//      Xlog: "It's your draw"
+// X 9/4/2023: Add joker count at stats end
+// X 9/4/2023: ADD STAT: How many jokers each player used in the game       
+// X 9/4/2023: Add ability to SAVE PREP areas on the server.
+// X 09/10/2022: Mark and I both tried to buy a QD but someone picked it up and got a 3D instead, and we could not buy.
+// X 08/13/2022: BUY and NOT BUY buttons don't light right.
 // X 07/16/2023: Cannot swap out a 2 Spade for a joker on a 14-card run.
 // X 09/05/2022: Flip WL closed or open. When I don't need it anymore, it could close.
 // X 09/06/2022: Ability to hide wishlist (especially for phone players)

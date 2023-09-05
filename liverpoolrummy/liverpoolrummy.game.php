@@ -1750,7 +1750,7 @@ class LiverpoolRummy extends Table
 				$connector = ' of ';
 			}
 			
-//			$player_name = self::getActivePlayerName();
+			$player_name = self::getActivePlayerName();
 
 			self::notifyAllPlayers(
 				'discardCard',
@@ -1920,6 +1920,8 @@ class LiverpoolRummy extends Table
 
 		$players = self::loadPlayersBasicInfos();
 
+		$player_name = $players[ $player_id ][ 'player_name' ];
+
 		self::notifyAllPlayers(
 			'playerWantsToNotBuy',
 			clienttranslate( '${player_name} no longer wants to buy' ),
@@ -1960,6 +1962,8 @@ class LiverpoolRummy extends Table
 				// $color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
 			// }
 			
+			$player_name = $players[ $player_id ][ 'player_name' ];
+
 			self::notifyAllPlayers(
 				'playerWantsToBuy',
 				clienttranslate( '${player_name} Wants to Buy: ${value_displayed} ${connector} ${color_displayed}'),
@@ -2018,6 +2022,8 @@ self::trace("[bmc] Deadlock:2179");
 					$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
 					$connector = ' of ';
 				}
+
+				$player_name = $players[ $player_id ][ 'player_name' ];
 
 				self::notifyAllPlayers(
 					'playerWantsToBuy',
@@ -2144,7 +2150,7 @@ self::trace("[bmc] Deadlock:2179");
 			}
 		}
 
-		// $player_name = $activePlayer;
+		$player_name = $activePlayer;
 
 //09/02/2023
 
@@ -2420,12 +2426,6 @@ self::trace("[bmc] Deadlock:2179");
 ////////
 ////////
 ////////
-
-
-//NEED TO ADD COUNTING JOKERS TO THE PLAY CARD ROUTINE
-//AND CHECK THAT IT COUNTS WHEN GO DOWN WITH A JOKER Swap
-//AND THE getColorValueFromId DOESN'T WORK RIGHT EITHER'
-
 	function playerGoDownFinish( $cardGroupA, $cardGroupB, $cardGroupC, $joker, $targetArea ) {
 		self::trace("[bmc] ENTER playerGoDownFinish");
 self::dump("[bmc] cardGroupA", $cardGroupA);
@@ -2589,6 +2589,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		);
 		
 		$cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
+		$player_name = self::getActivePlayerName();
 
 		// Notify all players about the cards played
 		self::notifyAllPlayers('playerGoDown',
@@ -2959,7 +2960,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					}
 				}
 			}
-		}
+		} // 05/09 07:17:17 [notice] [T502009]
 		
 		// If there is an ace, also create a '14' because ace can be high or low
 		
@@ -2993,35 +2994,42 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::dump("[bmc] Check Run aceLowCards",  $tryAceLow );
 		self::dump("[bmc] Check Run aceHighCards", $tryAceHigh );
 		
-		$aceCheckResult = $tryAceLow + $tryAceHigh ;
+		if (( $tryAceLow == 0 ) or ( $tryAceHigh == 0 )){
+			// This is good, one of them is a run, so just fall through with default==yes
+			self::trace("[bmc] One of the combinations with the ace is a run, allow it.");
+		} else {
+			// Maybe not, so check other conditions
+			$aceCheckResult = $tryAceLow + $tryAceHigh ;
 
-		self::dump("[bmc] Check Run aceHighCards", $aceCheckResult );
-		
-		switch ( $aceCheckResult ) {
-			case 0:
-			case 1:
-				break; // With ace high or low, one is a run and all the same suit
-			case 2:
-				$crReturnValue = false;
-				if ( !$silent ) {
-					throw new BgaUserException( self::_("Not a run. It doesn't reach!") );
-				}
-				break;
-			case 10:
-			case 11:
-			case 20:
-				$crReturnValue = false;
-				if ( !$silent ) {
-					throw new BgaUserException( self::_('Not a run. Run cards must all be the same suit.') );
-				}
-				break;
-			default :
-				$crReturnValue = false;
-				if ( !$silent ) {
-					throw new BgaUserException( self::_("Ace Check error (should never happen).") );
-				}
-				break;
+			self::dump("[bmc] Check Run aceHighCards", $aceCheckResult );
+			
+			switch ( $aceCheckResult ) {
+				case 0:
+				case 1:
+					break; // With ace high or low, one is a run and all the same suit; Use default 'true'
+				case 2:
+					$crReturnValue = false;
+					if ( !$silent ) {
+						throw new BgaUserException( self::_("Not a run. It doesn't reach!") );
+					}
+					break;
+				case 10:
+				case 11:
+				case 20:
+					$crReturnValue = false;
+					if ( !$silent ) {
+						throw new BgaUserException( self::_('Not a run. Run cards must all be the same suit.') );
+					}
+					break;
+				default :
+					$crReturnValue = false;
+					if ( !$silent ) {
+						throw new BgaUserException( self::_("Ace Check error (should never happen).") );
+					}
+					break;
+			}
 		}
+
 		// self::dump("[bmc] checkRun cards: ", $cards );
 		
 		self::trace("[bmc] EXIT checkRun. Might be true or false.");
@@ -3035,12 +3043,16 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$cardType = 0;
 		$cardValueMax = 0;  // Track the larget and smallest in the group
 		$cardValueMin = 20; // Track the larget and smallest in the group
-		$jokerCount = 0; // Count the jokers to know if the cards all reach
+		// $jokerCount = 0; // Count the jokers to know if the cards all reach
+		//
+		// Don't need to count jokers since we're looking at min, max and card count
+
+		// self::dump("[bmc] checkRunWithAce: cards", $cards );
 
 		foreach ( $cards as $card ) {
 			if ( $card['type'] == "5") {
 				// Ignore Joker (type == 5)
-				$jokerCount += 1;
+				// $jokerCount += 1;
 			} else {
 				if ($card['type_arg'] > $cardValueMax) { // Find the largest card value
 					$cardValueMax = $card['type_arg'];
@@ -3050,14 +3062,14 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					$cardValueMin = $card['type_arg'];
 				}
 
-//		self::dump("[bmc] Max", $cardValueMax);
-//		self::dump("[bmc] Min", $cardValueMin);
+		// self::dump("[bmc] Max", $cardValueMax);
+		// self::dump("[bmc] Min", $cardValueMin);
 				if ( $cardType == 0 ) {
 					// Get the suit of the first card which is not a joker
 					$cardType = $card['type'];
-//					self::dump("[bmc] cardType:", $cardType);
+					// self::dump("[bmc] cardType:", $cardType);
 				} else {
-//					self::dump("[bmc] card: ", $card);
+					// self::dump("[bmc] card: ", $card);
 					if ( $card['type'] != $cardType ) {
 						self::trace("[bmc] checkRun FALSE (different suits)");
 						//throw new BgaUserException( self::_('Run cards must all be the same suit.') );
@@ -3070,9 +3082,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// Made it through, so the cards are all the same suit
 		// Check if they are close enough together
 		$cardCount = count( $cards );
-		// self::dump("[bmc] cardCount:", $cardCount );
-		// self::dump("[bmc] Max:", $cardValueMax );
-		// self::dump("[bmc] Min:", $cardValueMin );
+		self::dump("[bmc] cardCount:", $cardCount );
+		self::dump("[bmc] Max:", $cardValueMax );
+		self::dump("[bmc] Min:", $cardValueMin );
 		// self::dump("[bmc] jokerCount:", $jokerCount );
 
 		if ( $cardValueMax - $cardValueMin + 1  <= $cardCount ) {
@@ -3225,6 +3237,10 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 	function playCardMultiple( $card_ids, $player_id, $boardArea, $boardPlayer ) {
 		self::trace( "[bmc] ENTER playCardMultiple (from ACTION from JS)" );
+		
+		// The problem is, even if it's determined that the whole thing is a run, it
+		// calls PLAYCARDFINISH which tries to play each card 1 at a time. So, it fails.
+		
 		// Validate the player has the card in hand
 		// validate the card can be played there
 		//   If the target card is a joker, take the joker & replace
@@ -3464,23 +3480,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					)
 				);
 
-				// self::notifyAllPlayers(
-					// 'cardPlayed',
-					// $outMsg,
-//					self::_('${player_name} plays ${value_displayed}${color_displayed}'),
-					// array (
-						// 'card_id' => $card_id,
-						// 'player_id' => $player_id,
-						// 'player_name' => self::getActivePlayerName(),
-						// 'value' => $currentCard ['type_arg'],
-						// 'value_displayed' => $value_displayed,
-						// 'color' => $currentCard ['type'],
-						// 'color_displayed' => $color_displayed,
-						// 'boardArea' => $boardArea,
-						// 'boardPlayer' => $boardPlayer,
-						// 'allHands' => $cardsByLocation
-					// )
-				// );
 			} else {
 				self::trace("[bmc] 3782 not same values for set.");
 				throw new BgaUserException( self::_('Cannot play that card on that set.') );
@@ -3600,6 +3599,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
 			$connector = ' of ';
 		}
+
+		$player_name = self::getActivePlayerName();
 
 		self::notifyAllPlayers(
 			'cardPlayed',
@@ -3741,14 +3742,14 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		if ( $currentHandType >= $countHandTypes ) {
 			self::debug("[bmc] Game Over!");
-			$scoreMessage = self::_( "Game Over!" );
+			$scoreMessage = "Game Over!";
 			$this->calcDisplayScoreDialog( $scoreMessage );
 			$this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
 			//$this->game->playerHasReviewedHand();
 			// $this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
 		} else {
 			self::debug("[bmc] On To The Next!");
-			$scoreMessage = self::_( "On to the next!") ;
+			$scoreMessage = "On to the next!";
 			$this->calcDisplayScoreDialog( $scoreMessage );
 			$this->gamestate->setAllPlayersMultiactive();
 		}
@@ -3868,26 +3869,33 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$outReason = self::getGameStateValue( 'outReason' );
 			
 		if( $outReason == 1 ) {
-			$outMsg1 = self::_( "Deck has been shuffled 5 times. Ending the hand." );
-			$outMsg2 = $outMsg1;
+			$outMsg1 = clienttranslate( "Deck has been shuffled 5 times. Ending the hand." );
+			$outMsg2 = clienttranslate( $outMsg1 );
 		} else if ($outReason == 2 ) {
-			$outMsg1 = self::_( "All playable cards have been played. Ending the hand." );
-			$outMsg2 = $outMsg1;
+			$outMsg1 = clienttranslate( "All playable cards have been played. Ending the hand." );
+			$outMsg2 = clienttranslate( $outMsg1 );
 		} else { // Someone went out normally
-			$outMsg1 = self::_( "Woot! You went out! You want the most positive score." );
+			$outMsg1 = clienttranslate( "Woot! You went out! You want the most positive score." );
 			$outMsg2_player = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+			$outMsg2_msg    = clienttranslate( " went out. You want the most positive score." );
+			
+			$outMsg2 = $outMsg2_player . $outMsg2_msg;
 			
 //082023
-			$outMsg2_raw  = self::_( "Bummer! " );
-			$outMsg2a_raw = self::_( " went out. You want the most positive score." );
+			// $outMsg2_raw  = self::_( "Bummer! " );
+			// $outMsg2a_raw = self::_( " went out. You want the most positive score." );
 
-			$outMsg2 = $outMsg2_raw . $outMsg2_player . $outMsg2a_raw;
+			// $outMsg2 = $outMsg2_raw . $outMsg2_player . $outMsg2a_raw;
 
 //			. $outMsg2_player . " went out! You want the most positive score:";
 //			$outMsg2 = self::_( $outMsg2_raw );
 		}
 
-		$otherMessage = $outMsg2;
+		$titleMessage = clienttranslate( $outMsg1 );
+
+
+		$playerOut = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+		// $otherMessage = $outMsg2;
 		
 		// Show a dialog of the scores for each player for this hand
         foreach ( $player_to_points as $player_id => $points ) {
@@ -3898,7 +3906,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 						"id" => 'handScoring',
 						"title" => $outMsg1,
 						"table" => $table,
-						"closing" => $scoreMessage
+						"closing" => clienttranslate( $scoreMessage )
 					)
 				); 
 			} else {
@@ -3906,9 +3914,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					$player_id,
 					"tableWindow", '', array(
 						"id" => 'handScoring',
-						"title" => $otherMessage,
+						"title" => $outMsg2,
 						"table" => $table,
-						"closing" => $scoreMessage
+						"closing" => clienttranslate( $scoreMessage )
 					)
 				); 
 			}
@@ -4526,7 +4534,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$this->notifyPlayer(
 				$player_id,
 				"wishListSubmitted",
-				self::_('Your wish list was received and is active.'),
+				clienttranslate( 'Your wish list was received and is active.' ),
 				array (
 					'player_id' => $player_id
 				)
@@ -4753,7 +4761,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
 					$connector = ' of ';
 				}
-
+				
+				$player_name = $players[ $player_id ][ 'player_name' ];
+						
 				self::notifyAllPlayers(
 					'playerWantsToBuy',
 					clienttranslate( '${player_name} Wants to Buy: ${value_displayed} ${connector} ${color_displayed}'),
@@ -5583,8 +5593,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 //            self::applyDbUpgradeToAllDB( $sql );
 //        }
 //        // Please add your future database scheme changes here
-//
-        if( $from_version <= 2309042301 )
+//        if( $from_version <= 2309042301 )
+	        if( $from_version <= 2308272254 )
         {
             // ! important ! Use DBPREFIX_<table_name> for all tables
 
