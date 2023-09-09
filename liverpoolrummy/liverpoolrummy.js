@@ -111,10 +111,29 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 // TODO: 8/13/2023: Chrissy NZ says she was not able to put 2 5s onto table 5s, no joker
 // 
+// Now:
+// Turn is kds1 (43); Discards playable. Good.
+// Turn is now ks3 (45). But ks3 (45) is interrupted by ks0 (42).
+// ks0 (42) picked it up. Good.
+// ks0 (42) discards. Good.
+// it should now be ks3(45)'s turn. Good.
+//
+// Correct order is:
+// ks1 (43)
+// ks3 (45)
+// ks0 (42)
+// ks2 (44)
+
 // Check for Liverpool on refresh and light up the button
 // Remove wishlist and buttons for Spectator mode (Submit wish list) and clear wish list)
 // so i tried playing the 5, 6, 7 of clubs on my A-4 meld and that's what it told me was illegal 
 //
+// 
+// There is a JS or PHP error where player 745 thinks its their turn (board goes green)
+// but the text shows that 744 is really the active player. The card play is proper.
+
+// Also when someone does liverpool their board does not light up green.
+
 // TODO: 8/5/2023:
 // Add TOOLTIPS for SAVE PREP and LOAD PREP
 // In JS: When some kind of joker swap happened the table showed 234578* when it SHOULD
@@ -657,7 +676,6 @@ console.log( "this.discardPileOne" );
 console.log( this.discardPileOne );
 			} else {
 console.log( "discardTopCard was null" );
-
 			}
 
 
@@ -1255,6 +1273,11 @@ console.log("[bmc] Doing the window.onload");
 
             console.log( "[bmc] EXIT game setup" );
         },
+		
+		
+		
+		
+		
 /////////
 /////////
 ////////////////////////////////////////////////////////////
@@ -1263,10 +1286,10 @@ console.log("[bmc] Doing the window.onload");
         //                  You can use this method to perform some user interface changes at this moment.
         //
         onEnteringState: function( stateName, args ) {
-            console.log( 'ENTER ENTERING state: ' + stateName );
+            console.log( 'ENTER onEnteringState: ' + stateName );
 			console.log( args );
 			console.log( this.player_id);
-			console.log( this.gamedatas.gamestate.active_player);
+			console.log( this.gamedatas.gamestate.active_player );
 			console.log( this.gamedatas.activeTurnPlayer_id );
 
 			console.log("[bmc] STATENAME:");
@@ -1358,8 +1381,9 @@ console.log("[bmc] Doing the window.onload");
 				case 'playerGoDown':
 					console.log("[bmc] FOUND playerGoDown");
 					break;
-				case 'liverpool':
-					console.log("[bmc] FOUND Liverpool found and being processed");
+				case 'liverpoolDraw':
+					console.log("[bmc] FOUND Liverpool and being processed");
+					this.displayItsYourTurn( args.active_player, 'liverpool' );
 					break;
 				default:
 					console.log("[bmc] OES DEFAULT");
@@ -2203,6 +2227,50 @@ console.log( "[bmc] EXIT sortRun2" );
 /////////
 /////////
 /////////
+		displayItsYourTurn : function ( player_id, soundtype ){
+			console.log( "[bmc] displayItsYourTurn" );
+			console.log( player_id );
+			console.log( this.player_id );
+			console.log( soundtype );
+			
+			if ( player_id == this.player_id ) {
+				dojo.addClass('myhand_wrap', "borderDrawer");
+				
+				if ( soundtype == 'liverpool' ) {
+					console.log("[bmc] SOUND: itsYourDraw");
+
+					this.showMessage( _("Liverpool!"), 'error' ); // 'info' or 'error'
+					if ( this.voices ) {
+						playSound( 'Liverpool_audio' );
+						this.disableNextMoveSound();
+					}
+				} else {
+					console.log("[bmc] SOUND: liverpool");
+
+					this.showMessage( _("It's Your Draw!"), 'error' ); // 'info' or 'error'
+					if ( this.voices ) {
+						playSound( 'tutorialrumone_itsyourdraw' );
+						this.disableNextMoveSound();
+					}
+				}
+
+				// Make it clear to the player they need to draw a card (border around card)
+				var deck_items = this.deckOne.getAllItems();
+				
+	console.log("[bmc] ALL deckOne:");
+	console.log( deck_items );
+	console.log("[bmc] The deck to be turned red:");
+	console.log( 'deckOne_item_' + deck_items[0]['id']);
+				
+				dojo.addClass('deckOne_item_' + deck_items[0]['id'], 'stockitem_selected');
+			
+			} else {
+				dojo.removeClass('myhand_wrap', "borderDrawer");	
+			}
+		},
+/////////
+/////////
+/////////
 	      discardCard : function( player_id, color, value, card_id, nextTurnPlayer, allHands, discardSize, drawDeckSize ) {
 //        discardCard : function( player_id, color, value, card_id, nextTurnPlayer, allHands, discardSize, drawDeckSize, buyers ) {
 		// (from PHP) Purpose is to show the played cards on the table, not really to play the card.
@@ -2218,10 +2286,8 @@ console.log( allHands );
 console.log( discardSize );
 console.log( drawDeckSize );
 console.log( "discardPile and playerhand:" );
-//console.log( this.discardPile );
 console.log( this.discardPileOne );
 console.log( this.playerHand );
-//console.log( buyers );
 
 			// Clear the buy status because a new card has been discarded
 			this.buyRequested = false;
@@ -2230,28 +2296,50 @@ console.log( this.playerHand );
 			this.resolvingBuyers = true;
 
 			// If it is us, play a special sound and show an alert
-			
-			if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
-				
-					this.showMessage( _("It's Your Draw!"), 'error' ); // 'info' or 'error'
-					dojo.addClass('myhand_wrap', "borderDrawer");
-					if ( this.voices ) {
-						playSound( 'tutorialrumone_itsyourdraw' );
-						this.disableNextMoveSound();
-					}
+//			this.displayItsYourTurn( this.gamedatas.playerOrderTrue[ player_id ], 'nextturn' );
+			this.displayItsYourTurn( nextTurnPlayer, 'nextturn' );
 
-					// Make it clear to the player they need to draw a card (border around card)
-					var deck_items = this.deckOne.getAllItems();
-console.log("[bmc] ALL deckOne:");
-console.log( deck_items );
-console.log("[bmc] The deck to be turned red:");
-console.log( 'deckOne_item_' + deck_items[0]['id']);
-					dojo.addClass('deckOne_item_' + deck_items[0]['id'], 'stockitem_selected');
+
+
+
+
+
+
+
+
+
+			
+			// if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
+				
+				// this.showMessage( _("It's Your Draw!"), 'error' ); // 'info' or 'error'
+				// dojo.addClass('myhand_wrap', "borderDrawer");
+				// if ( this.voices ) {
+					// playSound( 'tutorialrumone_itsyourdraw' );
+					// this.disableNextMoveSound();
+				// }
+
+				// Make it clear to the player they need to draw a card (border around card)
+				// var deck_items = this.deckOne.getAllItems();
+// console.log("[bmc] ALL deckOne:");
+// console.log( deck_items );
+// console.log("[bmc] The deck to be turned red:");
+// console.log( 'deckOne_item_' + deck_items[0]['id']);
+				// dojo.addClass('deckOne_item_' + deck_items[0]['id'], 'stockitem_selected');
 //ALSO THE BUY WASN'T ALLOWED TO HAPPEN.
 
-			} else {
-				dojo.removeClass('myhand_wrap', "borderDrawer");	
-			}
+			// } else {
+				// dojo.removeClass('myhand_wrap', "borderDrawer");	
+			// }
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			// Adjust all hand card-counts because of the discard
 			for ( var p_id in allHands ) {
@@ -3655,8 +3743,8 @@ console.log(selectedDiscards);
 			this.firstLoad = 'No'; // Since we're discarding, enable future timers
 			
 			if ( typeof card !== "undefined" ) {
-				console.log("[bmc] destroy button!");
-				dojo.destroy('currentPlayerPlayButton_id');
+				// console.log("[bmc] destroy button!");
+				// dojo.destroy('currentPlayerPlayButton_id');
 
 				var card_id = card.id;                    
 

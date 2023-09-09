@@ -63,7 +63,7 @@ class LiverpoolRummy extends Table
             //      ...
 		  // To track buyers realtime, instead of using the database which can lock, use a gamestate. Each player gets 1 variable.
 
-
+//			"activePlayer" => 2, // This is built in
             "currentHandType" => 10,
 //			"area_A_target" => 11,
 //			"area_B_target" => 12,
@@ -1811,8 +1811,20 @@ class LiverpoolRummy extends Table
 			
 			//self::dump("[bmc] cardsInDp:", $cardsInDp );
 
-			$nextTurnPlayer = $this->getPlayerAfter( $player_id );
-			
+			// Here check if liverpool was processed. If yes then send the correct 
+			// next player to JS.
+			//
+			// Set also activeTurnPlayer_id??
+
+			$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' );
+
+			if ( $liverpoolFoundYN ) { // If a liverpool was processed, go back to interrupted player
+				$nextTurnPlayer = self::getGameStateValue( 'playerInterrupted' );
+				$activeTurnPlayer_id = $nextTurnPlayer;
+			} else {
+				$nextTurnPlayer = $this->getPlayerAfter( $player_id );
+			}
+
 			self::dump("[bmc] nextTurnPlayer:", $nextTurnPlayer );
 
 			$cardsByLocationHand  = $this->cards->countCardsByLocationArgs( 'hand' );
@@ -1877,12 +1889,12 @@ class LiverpoolRummy extends Table
 				// 'color_displayed' => $this->colors [$currentCard ['type']] ['name']
 			// )
 		// );
-        // Next player
+        // Next player or back to player interrupted by Liverpool declare
 
-			self::trace( "[bmc] About to EXIT discardCard (via nextState'discardCard')." );
+		self::trace( "[bmc] About to EXIT discardCard (via nextState'discardCard')." );
 
-			// Discarded the card, move on
-			$this->gamestate->nextState( 'discardCard' );
+		// Discarded the card, move on
+		$this->gamestate->nextState( 'discardCard' );
 
 		} else {
 			throw new BgaUserException( self::_("You cannot discard, it's not your turn.") );
@@ -4345,7 +4357,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// 2 == Other sources (other conditions like playing a card for a joker)
 	
 		if ( $drawSourceValue == 0 ) {
-			self::trace( "[bmc] TurnPlayer Drawing from deck, so a buy will go through if it exists.");
+			self::trace( "[bmc] TurnPlayer drew from deck, so a buy will go through if it exists.");
 			
 			//self::dump("[bmc] Buyers Status(stResolveBuyers):", $buyers);
 			
@@ -4447,7 +4459,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 //			$this->gamestate->nextState("checkEmptyDeck");
 
 		} else if ( $drawSourceValue == 1 ) {
-			self::trace( "[bmc] TurnPlayer Drawing from discard, so buy will NOT go through.");
+			self::trace( "[bmc] TurnPlayer drew from discard, so buy will NOT go through.");
 			
 			// Set players buy status to NOT BUY
 			$players = self::loadPlayersBasicInfos();
@@ -4968,7 +4980,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$playerFindingLP = self::getGameStateValue( 'playerFindingLP' );
 
 		$this->gamestate->changeActivePlayer( $playerFindingLP );
-		
+
+//		self::setGameStateValue( setGameStateValue( 'activeTurnPlayer_id', $playerFindingLP ));
+
 		$this->gamestate->nextState( ); // Go to next state to draw the discarded card
 
 		self::trace("[bmc] EXIT stLiverpool");
@@ -5016,13 +5030,16 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::dump("[bmc] playerInterrupted:", $playerInterrupted);
 
 		$this->gamestate->changeActivePlayer( $playerInterrupted );
+		self::setGameStateValue( 'activeTurnPlayer_id', $playerInterrupted );
 
 		$state = $this->gamestate->state();
 		self::dump("[bmc] state(stLiverpoolReturn):", $state);
 
 		self::trace("[bmc] drawCard and play within stLiverpoolDraw is finished.");
 
-		$this->gamestate->nextState('playerTurnPlay' ); // Go back to interrupted player
+		$this->gamestate->nextState(); // Go back to interrupted player
+//		$this->gamestate->nextState('playerTurnDraw' ); // Go back to interrupted player
+		
 
 		self::trace("[bmc] EXIT stLiverpoolReturn");
 	}
@@ -5275,9 +5292,19 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			self::setGameStateValue( 'liverpoolFoundYN', 0 ); // 0 = false; 1 = true
 		
 			$playerInterrupted = self::getGameStateValue( 'playerInterrupted' );
+
+
+
+
+			// 09/08/2023: Not sure if the next liverpoolReturn is right:
+
+
+
+
+			// I'm not sure if this changeActivePlayer should be here:
 			$this->gamestate->changeActivePlayer( $playerInterrupted );
 
-			$this->gamestate->nextState( 'fullyResolved' );
+			$this->gamestate->nextState( 'liverpoolReturn' );
 
 			// Not sure if I need to notify JS that Liverpool play is over
 			// self::notifyAllPlayers(

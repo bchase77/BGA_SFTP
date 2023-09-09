@@ -146,7 +146,7 @@ $machinestates = array(
 		"args" => "argLiverpool",
         //"possibleactions" => array( "drawCard" ),
         "transitions"     => array( 51 ) // Draw the discard in the liverpool function; Put player in playcard state
-    ), 
+    ),
 	
     51 => array(
         "name" => "liverpoolDraw",
@@ -166,7 +166,7 @@ $machinestates = array(
 		"action" => "stLiverpoolReturn", // ACTION: Do this upon entering the state
 		//"args" => "argLiverpoolReturn",
 //        "possibleactions" => array( "drawCard" ),
-        "transitions"     => array( 35 ) // Draw the discard in the liverpool function; Put player in playcard state
+        "transitions"     => array( 30 ) // Interrupted player gets to draw
     ), 
 	// Someone is trying to buy a card
     // 60 => array(

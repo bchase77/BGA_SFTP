@@ -50,7 +50,7 @@
 					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="BUTPREPCTRANSLATED"></span></a>
 					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="CARDFORJOKERTRANSLATED"></span></a>
 					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="GODOWNTRANSLATED"></span></a>
-					<a href="#" id="buttonShowHideWishList" class="bgabutton prepButton bgabutton_blue"><span id="SHOWHIDEWISHLIST"></span></a>
+					<a href="#" id="buttonShowHideWishList" class="bgabutton prepButton bgabutton_blue spectatorMode"><span id="SHOWHIDEWISHLIST"></span></a>
 					<a href="#" id="buttonSavePrep"  class="bgabutton bgabutton_blue spectatorMode"><span id="BUTSAVEPREPTRANSLATED"></span></a>
 					<a href="#" id="buttonLoadPrep"  class="bgabutton bgabutton_blue spectatorMode"><span id="BUTLOADPREPTRANSLATED"></span></a>
 					<input type="checkbox" id="voice" name="scales" checked><span id="VOICESTRANSLATED"></span></label>
@@ -127,16 +127,19 @@
 	<div></div>
 </div>
 
-<audio id="audiosrc_tutorialrumone_itsyourdraw" src="{GAMETHEMEURL}img/tutorialrumone_itsyourdraw.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_tutorialrumone_itsyourdraw"   src="{GAMETHEMEURL}img/tutorialrumone_itsyourdraw.mp3" preload="none" autobuffer></audio>
 <audio id="audiosrc_o_tutorialrumone_itsyourdraw" src="{GAMETHEMEURL}img/tutorialrumone_itsyourdraw.ogg" preload="none" autobuffer></audio>
-<audio id="audiosrc_tutorialrumone_wentOutYeah" src="{GAMETHEMEURL}img/tutorialrumone_wentOutYeah.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_tutorialrumone_wentOutYeah"   src="{GAMETHEMEURL}img/tutorialrumone_wentOutYeah.mp3" preload="none" autobuffer></audio>
 <audio id="audiosrc_o_tutorialrumone_wentOutYeah" src="{GAMETHEMEURL}img/tutorialrumone_wentOutYeah.ogg" preload="none" autobuffer></audio>
-<audio id="audiosrc_tutorialrumone_GoingDown" src="{GAMETHEMEURL}img/tutorialrumone_GoingDown.mp3" preload="none" autobuffer></audio>
-<audio id="audiosrc_o_tutorialrumone_GoingDown" src="{GAMETHEMEURL}img/tutorialrumone_GoingDown.ogg" preload="none" autobuffer></audio>
-<audio id="audiosrc_tutorialrumone_IllBuyIt" src="{GAMETHEMEURL}img/tutorialrumone_IllBuyIt.mp3" preload="none" autobuffer></audio>
-<audio id="audiosrc_o_tutorialrumone_IllBuyIt" src="{GAMETHEMEURL}img/tutorialrumone_IllBuyIt.ogg" preload="none" autobuffer></audio>
-<audio id="audiosrc_tutorialrumone_ItsYourTurn" src="{GAMETHEMEURL}img/tutorialrumone_ItsYourTurn.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_tutorialrumone_GoingDown"     src="{GAMETHEMEURL}img/tutorialrumone_GoingDown.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_o_tutorialrumone_GoingDown"   src="{GAMETHEMEURL}img/tutorialrumone_GoingDown.ogg" preload="none" autobuffer></audio>
+<audio id="audiosrc_tutorialrumone_IllBuyIt"      src="{GAMETHEMEURL}img/tutorialrumone_IllBuyIt.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_o_tutorialrumone_IllBuyIt"    src="{GAMETHEMEURL}img/tutorialrumone_IllBuyIt.ogg" preload="none" autobuffer></audio>
+<audio id="audiosrc_tutorialrumone_ItsYourTurn"   src="{GAMETHEMEURL}img/tutorialrumone_ItsYourTurn.mp3" preload="none" autobuffer></audio>
 <audio id="audiosrc_o_tutorialrumone_ItsYourTurn" src="{GAMETHEMEURL}img/tutorialrumone_ItsYourTurn.ogg" preload="none" autobuffer></audio>
+<audio id="audiosrc_Liverpool_audio"              src="{GAMETHEMEURL}img/Liverpool_audio.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_o_Liverpool_audio"            src="{GAMETHEMEURL}img/Liverpool_audio.ogg" preload="none" autobuffer></audio>
+
 <script type="text/javascript">
 
 var jstpl_player_board = '\<div class="cp_board">\
