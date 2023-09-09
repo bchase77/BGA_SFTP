@@ -110,11 +110,15 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 ////////
 // TODO: 8/13/2023: Chrissy NZ says she was not able to put 2 5s onto table 5s, no joker
-
+// 
+// Check for Liverpool on refresh and light up the button
 // Remove wishlist and buttons for Spectator mode (Submit wish list) and clear wish list)
 // so i tried playing the 5, 6, 7 of clubs on my A-4 meld and that's what it told me was illegal 
 //
 // TODO: 8/5/2023:
+// Add TOOLTIPS for SAVE PREP and LOAD PREP
+// In JS: When some kind of joker swap happened the table showed 234578* when it SHOULD
+//    have shown: 2345*78. Once someone played a card, it moved to the correct position.
 // When someone draws from deck the card animation doesn't   and should. but when they draw from discard pile it shows.
 // TODO: 101569962
 // Add extra PREP area just for storing cards to get rid of later.
@@ -1354,6 +1358,9 @@ console.log("[bmc] Doing the window.onload");
 				case 'playerGoDown':
 					console.log("[bmc] FOUND playerGoDown");
 					break;
+				case 'liverpool':
+					console.log("[bmc] FOUND Liverpool found and being processed");
+					break;
 				default:
 					console.log("[bmc] OES DEFAULT");
 //					this.showHideButtons();
@@ -2482,6 +2489,15 @@ console.log("[bmc] EXIT Liverpool Exists");
 /////////
 /////////
 /////////
+		notif_liverpoolDeclared : function( notif ){
+console.log("[bmc] ENTER Liverpool Declared");
+console.log(notif);
+			dojo.replaceClass( 'buttonLiverpool', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+console.log("[bmc] EXIT Liverpool Declared");
+		},
+/////////
+/////////
+/////////
 //		notif_updateBuyers : function( player_id, nextTurnPlayer, buyers ){
 		notif_updateBuyers : function( notif ){
 console.log("[bmc] updateBuyers");
@@ -2861,12 +2877,12 @@ console.log("[bmc] ENTER onLiverpoolButton");
 				
 console.log( "[bmc] Trying for Liverpool! ");
 					
-				// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-						// player_id : this.player_id,
-						// lock : true
-					// }, this, function(result) {
-					// }, function(is_error) {
-				// });
+				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						player_id : this.player_id,
+						lock : true
+					}, this, function(result) {
+					}, function(is_error) {
+				});
 console.log("[bmc] EXIT onLiverpoolButton");
 		},
 /////////
@@ -4818,6 +4834,7 @@ console.log( '[bmc] ENTER notifications subscriptions setup' );
 			dojo.subscribe( 'wishListSubmitted',   this, "notif_wishListSubmitted");
 			dojo.subscribe( 'wishListDisabled',    this, "notif_wishListDisabled");
 			dojo.subscribe( 'liverpoolExists',     this, "notif_liverpoolExists");
+			dojo.subscribe( 'liverpoolDeclared',   this, "notif_liverpoolDeclared");
 			dojo.subscribe( 'loadPrepDone',        this, "notif_loadPrepDone");
 			dojo.subscribe( 'savePrepDone',        this, "notif_savePrepDone");
 			//dojo.subscribe( 'wishListCleared',     this, "notif_wishListCleared");
