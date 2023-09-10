@@ -716,7 +716,9 @@ class LiverpoolRummy extends Table
 		
 		$result[ 'wishList' ] = self::getCollectionFromDb( $sql . $sql_command );
 		// self::dump( "[bmc] wishListAll:", $wishListAll );
-		
+
+		$result[ 'liverpoolExists' ] = self::getGameStateValue( 'liverpoolExists' );
+
 		self::trace("[bmc] EXIT getAllDatas");
         return $result;
     }
@@ -4887,84 +4889,102 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 	function liverpool( $player_id ) { // From JS
 		self::trace("[bmc] ENTER liverpool");
 		self::dump("[bmc] player_id:", $player_id);
-				
-		// Check if there really is a liverpool or not
-		// If there is, then register the first player
-		// Block out other players
-		// Store the current player
-		// Draw the card to the player
-		// Go to a state where that card can be played by the player finding liverpool
-		// After it's played, let that player discard
-		// After discard, go back to whoever's turn it was before the liverpool
-		
-		$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' );
 
-		// Check the real stateInterrupted
+		$playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
 
-		// $stateInterrupted = $this->gamestate->state();
-		$playerInterrupted = self::getActivePlayerId(); 
-//		$playerFindingLP = $player_id;
-		$playerFindingLP = self::getCurrentPlayerId();
-		$liverpoolExists = self::getGameStateValue( 'liverpoolExists');
-		
-		self::dump("[bmc] liverpoolFoundYN:", $liverpoolFoundYN);
-		// self::dump("[bmc] stateInterrupted:", $stateInterrupted);
-		self::dump("[bmc] playerInterrupted:", $playerInterrupted);
-		self::dump("[bmc] playerFindingLP:", $playerFindingLP);
-		self::dump("[bmc] liverpoolExists:", $liverpoolExists);
+		if ( $playerGoneDown[ $player_id ] != 1 ) { // 0=not gone down; 1=gone down
+			throw new BgaUserException( self::_("You cannot declare Liverpool, you have not gone down.") );
+			
+		} else {
 
-		// Check for liverpoolexist
-		if ( $liverpoolExists == 1 ) { // 0 = Not exist; 1 = Exist
-			self::trace("[bmc] Liverpool Exists");
+			// Check if there really is a liverpool or not
+			// If there is, then register the first player
+			// Block out other players
+			// Store the current player
+			// Draw the card to the player
+			// Go to a state where that card can be played by the player finding liverpool
+			// After it's played, let that player discard
+			// After discard, go back to whoever's turn it was before the liverpool
+			
+			$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' );
 
-			// And it was found by this Player, so make them active player
-			self::setGameStateValue( 'activeTurnPlayer_id', $playerFindingLP );
+			// Check the real stateInterrupted
 
-			if ( $liverpoolFoundYN == 0 ) {
-				self::setGameStateValue( 'liverpoolFoundYN', 1 ); // 0 = false; 1 = true
-				self::setGameStateValue( 'playerFindingLP',   $playerFindingLP );
-				self::setGameStateValue( 'playerInterrupted', $playerInterrupted );
-//				self::setGameStateValue( 'stateInterrupted',  $stateInterrupted );
-			}
+			// $stateInterrupted = $this->gamestate->state();
+			$playerInterrupted = self::getActivePlayerId(); 
+	//		$playerFindingLP = $player_id;
+			$playerFindingLP = self::getCurrentPlayerId();
+			$liverpoolExists = self::getGameStateValue( 'liverpoolExists' );
+			
+			self::dump("[bmc] liverpoolFoundYN:", $liverpoolFoundYN);
+			// self::dump("[bmc] stateInterrupted:", $stateInterrupted);
+			self::dump("[bmc] playerInterrupted:", $playerInterrupted);
+			self::dump("[bmc] playerFindingLP:", $playerFindingLP);
+			self::dump("[bmc] liverpoolExists:", $liverpoolExists);
 
 			$players = self::loadPlayersBasicInfos();
-			
-			self::notifyAllPlayers(
-				'liverpoolDeclared',
-				clienttranslate( '${player_name} declared Liverpool! They draw the card and can play it.'),
-				array(
-					'player_id' => $player_id,
-					'player_name' => $players[ $player_id ][ 'player_name' ]
-				)
-			);
 
-			$dpCard = $this->cards->getCardsInLocation( 'discardPile' );
-			
-			if ( isset( reset( $dpCard )[ 'id' ])) {
-				self::dump("[bmc] dpCard:", reset( $dpCard )[ 'id' ]);
+			// Check for liverpoolexist
+			if ( $liverpoolExists == 1 ) { // 0 = Not exist; 1 = Exist
+				self::trace("[bmc] Liverpool Exists");
 
-				$currentCard = $this->cards->getCard( reset( $dpCard )[ 'id' ] );
+				// And it was found by this Player, so make them active player
+				self::setGameStateValue( 'activeTurnPlayer_id', $playerFindingLP );
 
-				self::dump("[bmc] currentCardInDP:", $currentCard );
+				if ( $liverpoolFoundYN == 0 ){
+					self::setGameStateValue( 'liverpoolFoundYN', 1 ); // 0 = false; 1 = true
+					self::setGameStateValue( 'playerFindingLP',   $playerFindingLP );
+					self::setGameStateValue( 'playerInterrupted', $playerInterrupted );
+	//				self::setGameStateValue( 'stateInterrupted',  $stateInterrupted );
+				}
 
-				// Cannot do drawcard here because it's not this players turn. Do it after active player draws.
-//				$this->drawCard( $currentCard, 'discardPile', $playerFindingLP );
+				self::notifyAllPlayers(
+					'liverpoolDeclared',
+					clienttranslate( '${player_name} declared Liverpool! They draw the card and can play it.'),
+					array(
+						'player_id' => $player_id,
+						'player_name' => $players[ $player_id ][ 'player_name' ]
+					)
+				);
 
-				// When drawCard finishes it goes to playCard.
-//				After that, check if was liverpool and change players accordingly.
+				$dpCard = $this->cards->getCardsInLocation( 'discardPile' );
+				
+				if ( isset( reset( $dpCard )[ 'id' ])) {
+					self::dump("[bmc] dpCard:", reset( $dpCard )[ 'id' ]);
 
-//				self::trace("[bmc] After LP playCard:" );
+					$currentCard = $this->cards->getCard( reset( $dpCard )[ 'id' ] );
 
-				$this->gamestate->nextState( 'liverpool' );
+					self::dump("[bmc] currentCardInDP:", $currentCard );
 
+					// Cannot do drawcard here because it's not this players turn. Do it after active player draws.
+	//				$this->drawCard( $currentCard, 'discardPile', $playerFindingLP );
+
+					// When drawCard finishes it goes to playCard.
+	//				After that, check if was liverpool and change players accordingly.
+
+	//				self::trace("[bmc] After LP playCard:" );
+
+					$this->gamestate->nextState( 'liverpool' );
+
+				} else {
+					self::trace("[bmc] liverpool Error. No discard?");
+					// Not supposed to happen, there's nothing in the discard!
+				}
 			} else {
-				self::trace("[bmc] liverpool Error. No discard?");
-				// Not supposed to happen, there's nothing in the discard!
+				self::notifyPlayer(
+					$player_id,
+					'liverpoolDeclared',
+					clienttranslate( 'That discarded card is not playable.'),
+					array(
+						// 'player_id' => $player_id,
+						// 'player_name' => $players[ $player_id ][ 'player_name' ]
+					)
+				);
+				
+				self::trace("[bmc] No liverpool exists, do nothing");
+				// Do nothing. They pushed the button but there is no liverpool condition
+				// I could add some penalty here...
 			}
-		} else {
-			self::trace("[bmc] No liverpool exists, do nothing");
-			// Do nothing. They pushed the button but there is no liverpool condition
-			// I could add some penalty here...
 		}
 		self::trace("[bmc] EXIT liverpool");
 	}

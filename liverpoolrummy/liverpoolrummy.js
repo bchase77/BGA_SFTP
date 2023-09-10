@@ -135,7 +135,7 @@ console.log("[bmc] Clear this.prepAreas2");
 // Also when someone does liverpool their board does not light up green.
 
 // TODO: 8/5/2023:
-// Add TOOLTIPS for SAVE PREP and LOAD PREP
+// Add TOOLTIPS for SAVE PREP and LOAD PREP and WISHLIST
 // In JS: When some kind of joker swap happened the table showed 234578* when it SHOULD
 //    have shown: 2345*78. Once someone played a card, it moved to the correct position.
 // When someone draws from deck the card animation doesn't   and should. but when they draw from discard pile it shows.
@@ -1011,13 +1011,18 @@ console.log( this.gamedatas.enableWishList );
             this.myPrepJoker.addItemType( 53, 53, g_gamethemeurl + 'img/4ColorCardsx5.png', 53) // Color 5 Value 2
             this.myPrepJoker.setOverlap( 10, 0 );			
 
-
 			this.goneDown = new Array();
 //			console.log(this.gamedatas);
 //			console.log(this.gamedatas.players);
+
+			console.log( this.gamedatas.liverpoolExists );
+
+			if ( this.gamedatas.liverpoolExists ){
+				dojo.replaceClass( 'buttonLiverpool', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+			}
 			
 			for (var player in this.gamedatas.players) {
-// console.log(player);
+ console.log(player);
 				this.goneDown[ player ] = parseInt( this.gamedatas.goneDown[ player ]);
 console.log("[bmc] this.gonedown[]:");
 console.log(this.goneDown[player]);
@@ -1273,11 +1278,6 @@ console.log("[bmc] Doing the window.onload");
 
             console.log( "[bmc] EXIT game setup" );
         },
-		
-		
-		
-		
-		
 /////////
 /////////
 ////////////////////////////////////////////////////////////
@@ -2299,7 +2299,8 @@ console.log( this.playerHand );
 //			this.displayItsYourTurn( this.gamedatas.playerOrderTrue[ player_id ], 'nextturn' );
 			this.displayItsYourTurn( nextTurnPlayer, 'nextturn' );
 
-
+			// Change the player in JS after the discard (gamedatas is not updated automatically)
+			this.gamedatas.activeTurnPlayer_id = nextTurnPlayer;
 
 
 
@@ -2572,6 +2573,7 @@ console.log(notif);
 console.log("[bmc] ENTER Liverpool Exists");
 console.log(notif);
 			dojo.replaceClass( 'buttonLiverpool', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+			this.gamedatas.liverpoolExists = true;
 console.log("[bmc] EXIT Liverpool Exists");
 		},
 /////////
@@ -2580,7 +2582,7 @@ console.log("[bmc] EXIT Liverpool Exists");
 		notif_liverpoolDeclared : function( notif ){
 console.log("[bmc] ENTER Liverpool Declared");
 console.log(notif);
-			dojo.replaceClass( 'buttonLiverpool', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+			dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
 console.log("[bmc] EXIT Liverpool Declared");
 		},
 /////////
@@ -2964,13 +2966,31 @@ console.log("[bmc] ENTER onLiverpoolButton");
 				var action = 'liverpool';
 				
 console.log( "[bmc] Trying for Liverpool! ");
+console.log( this.player_id );
+console.log( this.gamedatas.activeTurnPlayer_id );
+console.log( this.goneDown[ this.player_id ]);
+
+				// Player must have gone down in order for Liverpool button click to register
+				
+				// if( this.goneDown[ this.player_id ] == 1 ) {
 					
-				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-						player_id : this.player_id,
-						lock : true
-					}, this, function(result) {
-					}, function(is_error) {
-				});
+					// If it's already this player's turn then treat it like a normal pickup of discard
+					if ( this.player_id == this.gamedatas.activeTurnPlayer_id ){
+console.log( "Ajax discardpile" );
+						
+						this.onDiscardPileSelectionChanged();
+					
+					} else {
+console.log( "Ajax liverpool" );
+						this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+								player_id : this.player_id,
+								lock : true
+							}, this, function(result) {
+							}, function(is_error) {
+						});
+						
+					}
+				// }
 console.log("[bmc] EXIT onLiverpoolButton");
 		},
 /////////
@@ -4152,8 +4172,12 @@ console.log(dp_items);
 				dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 			}
 
-			// Unlight the Liverpool button if lit up
-			dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+			// Unlight the Liverpool button if lit up and if the discard was chosen
+			
+			if ( drawSource == 'discardPile' ) {
+				dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+				this.gamedatas.liverpoolExists = false;
+			}
 
 
 console.log(this.handCount);
@@ -4335,38 +4359,34 @@ console.log( "[bmc] GAMEDATAS and this.player_id" );
 console.log( this.gamedatas );
 console.log( this.player_id );
 
-
 			// If the gamestate is play, then treat it as a discard.
 
             var handCards = this.playerHand.getSelectedItems();
 
 			if (( this.gamedatas.gamestate.name == 'playerTurnPlay' ) &&
 				( handCards.length == 1)) {
+					
 				this.onPlayerDiscardButton();
 	
 			// If the gamestate is draw, then draw the top of discard pile (chosen in php).
 			} else if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ) {
-//console.log(card);
 
 				// Remove the borders from the deck and discard pile after the player draws
 				var deck_items = this.deckOne.getAllItems();
-//				var dp_items = this.discardPile.getAllItems();
 				var dp_items = this.discardPileOne.getAllItems();
 
 				for ( let i in deck_items ) {
 					dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 				}
 				for ( let i in dp_items ) {
-//					dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
 					dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 				}
-				// dojo.removeClass('deckOne_item_' + deck_items[0]['id'], 'stockitem_selected');
-				// dojo.removeClass('discardPile_item_' + dp_items[0]['id'], 'stockitem_selected');
 
 				var items = new Array();
 				
 				items[0] = {id: "0", type: 0 }; // "Fake" card just used for discarding (i.e. we need to send *something* but
 				// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
+
 				this.drawCard2nd( items, 'discardPile' );
 			}
 
