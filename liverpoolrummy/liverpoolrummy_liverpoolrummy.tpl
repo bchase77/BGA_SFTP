@@ -44,15 +44,16 @@
 					<a href="#" id="buttonNotBuy" class="bgabutton bgabutton_gray spectatorMode"> <span id="NOTBUYTRANSLATED"></span> </a>
 					<span style="margin-left:15px"></span>
 					<a href="#" id="buttonLiverpool" class="bgabutton bgabutton_gray spectatorMode"> <span id="LIVERPOOL"></span> </a>
-
+<!--
 					<a href="#" id="buttonPrepAreaA" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="BUTPREPATRANSLATED"></span></a>
 					<a href="#" id="buttonPrepAreaB" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="BUTPREPBTRANSLATED"></span></a>
 					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="BUTPREPCTRANSLATED"></span></a>
 					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="CARDFORJOKERTRANSLATED"></span></a>
-					<a href="#" id="buttonGoDownStatic" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="GODOWNTRANSLATED"></span></a>
-					<a href="#" id="buttonShowHideWishList" class="bgabutton prepButton bgabutton_blue spectatorMode"><span id="SHOWHIDEWISHLIST"></span></a>
-					<a href="#" id="buttonSavePrep"  class="bgabutton bgabutton_blue spectatorMode"><span id="BUTSAVEPREPTRANSLATED"></span></a>
-					<a href="#" id="buttonLoadPrep"  class="bgabutton bgabutton_blue spectatorMode"><span id="BUTLOADPREPTRANSLATED"></span></a>
+-->
+					<a href="#" id="buttonGoDownStatic" class="bgabutton bgabutton_gray spectatorMode"><span id="GODOWNTRANSLATED"></span></a>
+					<a href="#" id="buttonShowHideWishList" class="bgabutton bgabutton_blue wishListMode spectatorMode"><span id="SHOWHIDEWISHLIST"></span></a>
+					<a href="#" id="buttonSavePrep"  class="bgabutton saveload bgabutton_blue spectatorMode"><span id="BUTSAVEPREPTRANSLATED"></span></a>
+					<a href="#" id="buttonLoadPrep"  class="bgabutton saveload bgabutton_blue spectatorMode"><span id="BUTLOADPREPTRANSLATED"></span></a>
 					<input type="checkbox" id="voice" name="scales" checked><span id="VOICESTRANSLATED"></span></label>
 					
 					<div id="myhand" class="myhand"></div>

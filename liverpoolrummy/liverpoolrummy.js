@@ -124,15 +124,26 @@ console.log("[bmc] Clear this.prepAreas2");
 // ks0 (42)
 // ks2 (44)
 
-// Check for Liverpool on refresh and light up the button
+// CARDS ARE NOT MOVED OUT OF HAND AFTER LP PLAY.
+// X CANNOT BUY - this is expected behavior.
+// X After someone draws it makes them draw again
+// X Check for Liverpool on refresh and light up the button
 // Remove wishlist and buttons for Spectator mode (Submit wish list) and clear wish list)
 // so i tried playing the 5, 6, 7 of clubs on my A-4 meld and that's what it told me was illegal 
 //
-// 
-// There is a JS or PHP error where player 745 thinks its their turn (board goes green)
-// but the text shows that 744 is really the active player. The card play is proper.
+// Add option for penalty for Liverpool, or benefit.
 
-// Also when someone does liverpool their board does not light up green.
+// on board:
+// X 555, 888, 5*5, QQQ, JJJ, AAAAA, 22222, QQQ
+// X and then 4H and 10H were able to be picked up.
+// X AC and LK both clicked. it was LK's turn. LK got the discarded card BUT
+// X AC also got another card.
+// X Cards stay in hand after liverpool pickup.
+// 
+// X There is a JS or PHP error where player 745 thinks its their turn (board goes green)
+// X but the text shows that 744 is really the active player. The card play is proper.
+
+// X Also when someone does liverpool their board does not light up green.
 
 // TODO: 8/5/2023:
 // Add TOOLTIPS for SAVE PREP and LOAD PREP and WISHLIST
@@ -1017,7 +1028,7 @@ console.log( this.gamedatas.enableWishList );
 
 			console.log( this.gamedatas.liverpoolExists );
 
-			if ( this.gamedatas.liverpoolExists ){
+			if ( this.gamedatas.liverpoolExists == 1 ){ // 0=Not exist; 1=Exists
 				dojo.replaceClass( 'buttonLiverpool', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
 			}
 			
@@ -1086,10 +1097,10 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 			dojo.connect( $('buttonPlayerSortBySet'), 'onclick', this, 'onPlayerSortByButtonSet' );
 			dojo.connect( $('buttonPlayerSortByRun'), 'onclick', this, 'onPlayerSortByButtonRun' );
 
-			dojo.connect( $('buttonPrepAreaA'), 'onclick', this, 'onPlayerPrepArea_A_Button' );
-			dojo.connect( $('buttonPrepAreaB'), 'onclick', this, 'onPlayerPrepArea_B_Button' );
-			dojo.connect( $('buttonPrepAreaC'), 'onclick', this, 'onPlayerPrepArea_C_Button' );
-			dojo.connect( $('buttonPrepJoker'), 'onclick', this, 'onPlayerPrepJoker_Button' );
+			// dojo.connect( $('buttonPrepAreaA'), 'onclick', this, 'onPlayerPrepArea_A_Button' );
+			// dojo.connect( $('buttonPrepAreaB'), 'onclick', this, 'onPlayerPrepArea_B_Button' );
+			// dojo.connect( $('buttonPrepAreaC'), 'onclick', this, 'onPlayerPrepArea_C_Button' );
+			// dojo.connect( $('buttonPrepJoker'), 'onclick', this, 'onPlayerPrepJoker_Button' );
 			
 			dojo.connect( $('buttonSavePrep'), 'onclick', this, 'onPlayerSavePrep_Button' );
 			dojo.connect( $('buttonLoadPrep'), 'onclick', this, 'onPlayerLoadPrep_Button' );
@@ -1118,6 +1129,10 @@ console.log('overall_player_board_' + player, 'playerWentDown' );
 			let tooltip_myPrepA = _('To go down, select cards for one meld & click a meld button or meld area (1 meld per area). See the cards move. To take a joker while going down, prepare all melds and 1 partial meld. Select the board joker. Put an appropriate card to replace the joker in CARD FOR JOKER. Click GO DOWN.');
 
 			this.addTooltipHtmlToClass('prepButton', tooltip_myPrepA);
+
+			let tooltip_saveload = _('To save contents of the prep areas click SAVE PREP. To later reload them click LOAD PREP.');
+
+			this.addTooltipHtmlToClass('saveload', tooltip_saveload);
 
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -1253,7 +1268,7 @@ console.log("[bmc] Doing the window.onload");
 		
 			// Define table text variables which can be translated by each client. Each ID must be unique. The syntax for translation is underscore parentheses _('').
 			$(MYHANDTRANSLATED).innerHTML = _('My Hand'); 
-			$(CARDFORJOKERTRANSLATED).innerHTML = _('Card For Joker');
+			// $(CARDFORJOKERTRANSLATED).innerHTML = _('Card For Joker');
 			$(CARDFORJOKERTRANSLATED2).innerHTML = _('Card For Joker');
 			$(BUYTRANSLATED).innerHTML = _('Buy');
 			$(NOTBUYTRANSLATED).innerHTML = _('Not Buy');
@@ -1269,9 +1284,9 @@ console.log("[bmc] Doing the window.onload");
 			$(PREPATRANSLATED).innerHTML = _('Prep A');
 			$(PREPBTRANSLATED).innerHTML = _('Prep B');
 			$(PREPCTRANSLATED).innerHTML = _('Prep C');
-			$(BUTPREPATRANSLATED).innerHTML = _('Prep A');
-			$(BUTPREPBTRANSLATED).innerHTML = _('Prep B');
-			$(BUTPREPCTRANSLATED).innerHTML = _('Prep C');
+			// $(BUTPREPATRANSLATED).innerHTML = _('Prep A');
+			// $(BUTPREPBTRANSLATED).innerHTML = _('Prep B');
+			// $(BUTPREPCTRANSLATED).innerHTML = _('Prep C');
 			$(BUTSAVEPREPTRANSLATED).innerHTML = _('Save Prep');
 			$(BUTLOADPREPTRANSLATED).innerHTML = _('Load Prep');
 			$(VOICESTRANSLATED).innerHTML = _('Voices');
@@ -4708,17 +4723,17 @@ console.log("[bmc] cardIds: " + cardIds);
 				var items = this.playerHand.getSelectedItems();
 				if ( items.length > 0 ) {
 	// console.log("[bmc] prepbuttons ON");
-					dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
-					dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_blue", "bgabutton_gray" );
-					dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_blue", "bgabutton_gray" );
-					dojo.replaceClass( 'buttonPrepJoker', "bgabutton_blue", "bgabutton_gray" );
+					// dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
+					// dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_blue", "bgabutton_gray" );
+					// dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_blue", "bgabutton_gray" );
+					// dojo.replaceClass( 'buttonPrepJoker', "bgabutton_blue", "bgabutton_gray" );
 					
 				} else {
 	// console.log("[bmc] prepbuttons OFF");
-					dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
-					dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_gray", "bgabutton_blue" );
-					dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_gray", "bgabutton_blue" );
-					dojo.replaceClass( 'buttonPrepJoker', "bgabutton_gray", "bgabutton_blue" );
+					// dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
+					// dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_gray", "bgabutton_blue" );
+					// dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_gray", "bgabutton_blue" );
+					// dojo.replaceClass( 'buttonPrepJoker', "bgabutton_gray", "bgabutton_blue" );
 				}
 			}
 			
@@ -4886,17 +4901,16 @@ console.log( items.length );
 	console.log("[bmc] Store the first");
 	console.log("[bmc] prepbuttons ON");
 					this.playerHand.firstSelected = items[ 0 ].type;
-					dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
-					dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_blue", "bgabutton_gray" );
-					dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_blue", "bgabutton_gray" );
-					dojo.replaceClass( 'buttonPrepJoker', "bgabutton_blue", "bgabutton_gray" );
+					// dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_blue", "bgabutton_gray" ); // item, add, remove
+					// dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_blue", "bgabutton_gray" );
+					// dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_blue", "bgabutton_gray" );
+					// dojo.replaceClass( 'buttonPrepJoker', "bgabutton_blue", "bgabutton_gray" );
 				} else if ( items.length == 0 ) {
 	console.log("[bmc] prepbuttons OFF");
-					dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_gray", "bgabutton_blue" );
-					dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_gray", "bgabutton_blue" );
-					dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_gray", "bgabutton_blue" );
-					dojo.replaceClass( 'buttonPrepJoker', "bgabutton_gray", "bgabutton_blue" );
-					
+					// dojo.replaceClass( 'buttonPrepAreaA', "bgabutton_gray", "bgabutton_blue" );
+					// dojo.replaceClass( 'buttonPrepAreaB', "bgabutton_gray", "bgabutton_blue" );
+					// dojo.replaceClass( 'buttonPrepAreaC', "bgabutton_gray", "bgabutton_blue" );
+					// dojo.replaceClass( 'buttonPrepJoker', "bgabutton_gray", "bgabutton_blue" );
 				}
 			}
 			this.showHideButtons();			
@@ -5334,6 +5348,9 @@ console.log( notif );
 			if ( notif.args.drawsource == 'discardPile' ) {
 				this.clearButtons();
 			}
+
+			// Clear out the Liverpool condition (unlight the button)
+			dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
 
 			// Steadily increment every time a card is drawn to set the weight properly
 			this.drawCounter++;

@@ -166,7 +166,8 @@ $machinestates = array(
 		"action" => "stLiverpoolReturn", // ACTION: Do this upon entering the state
 		//"args" => "argLiverpoolReturn",
 //        "possibleactions" => array( "drawCard" ),
-        "transitions"     => array( 30 ) // Interrupted player gets to draw
+//        "transitions"     => array( 30 ) // Interrupted player gets to draw
+        "transitions"     => array( 37 ) // Check end conditions, otherwise interrupted player gets to draw
     ), 
 	// Someone is trying to buy a card
     // 60 => array(
