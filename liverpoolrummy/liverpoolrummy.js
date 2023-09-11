@@ -124,6 +124,8 @@ console.log("[bmc] Clear this.prepAreas2");
 // ks0 (42)
 // ks2 (44)
 
+// Liverpool penalty method seems to work. However, someone was able to draw a deep discard.
+//
 // CARDS ARE NOT MOVED OUT OF HAND AFTER LP PLAY.
 // X CANNOT BUY - this is expected behavior.
 // X After someone draws it makes them draw again
@@ -2989,11 +2991,9 @@ console.log( this.goneDown[ this.player_id ]);
 				
 				// if( this.goneDown[ this.player_id ] == 1 ) {
 					
-					// If it's already this player's turn then treat it like a normal pickup of discard
+					// If it's already this player's turn then do nothing
 					if ( this.player_id == this.gamedatas.activeTurnPlayer_id ){
-console.log( "Ajax discardpile" );
-						
-						this.onDiscardPileSelectionChanged();
+					//	this.onDiscardPileSelectionChanged();
 					
 					} else {
 console.log( "Ajax liverpool" );

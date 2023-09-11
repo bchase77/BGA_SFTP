@@ -71,7 +71,7 @@ $game_options = array(
 	103 => array(
 		'name' => totranslate( 'Liverpool consequence' ),
 		'values' => array(
-			0  => array ( 'name' => totranslate( 'Bonus to caller' )	),
+			0  => array ( 'name' => totranslate( 'Bonus to caller' ) ),
 			1  => array ( 'name' => totranslate( 'Penalty to discarder' ) )
 		),
 		'default' => 0

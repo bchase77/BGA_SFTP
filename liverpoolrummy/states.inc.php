@@ -85,9 +85,9 @@ $machinestates = array(
         "type" => "activeplayer",
         "action" => "stShowBUYButtons", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnDraw", // Set the handtarget and who can play
-        "possibleactions" => array( "drawCard", "buyRequest", "notBuyRequest", "zombiePass", "liverpool" ),
+        "possibleactions" => array( "drawCard", "buyRequest", "notBuyRequest", "zombiePass", "liverpool", "liverpoolPenalty" ),
         // "possibleactions" => array( "drawCard", "buyRequest", "notBuyRequest", "zombiePass", "liverpool" ),
-        "transitions" => array( "drawCard" => 35, "zombiePass" => 37, "liverpool" => 50 )
+        "transitions" => array( "drawCard" => 35, "zombiePass" => 37, "liverpool" => 50, "liverpoolPenalty" => 60 )
         // "transitions" => array( "drawCard" => 35, "zombiePass" => 37 )
     ),
     35 => array(
@@ -98,7 +98,8 @@ $machinestates = array(
 		"action" => "stPlayerTurnPlay", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnPlay",
         "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple', "zombiePass", "buyRequest", "notBuyRequest", "liverpool" ),
-        "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35, "zombiePass" => 37, "liverpool" => 50 )
+        "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35,
+			"zombiePass" => 37, "liverpool" => 50 )
         // "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35, "buyRequest" => 60, "notBuyRequest" => 61, "zombiePass" => 37 )
     ), 
 	36 => array(
@@ -107,7 +108,7 @@ $machinestates = array(
         "type" => "game",
         "action" => "stWaitForAll", // ACTION: Do this upon entering the state
         "possibleactions" => array( "zombiePass" ),
-		"transitions" => array( "fullyResolved" => 37, "liverpoolReturn" => 52 )
+		"transitions" => array( "fullyResolved" => 37, "liverpoolReturn" => 53, "liverpoolReturnPenalty" => 63  )
     ), 
     37 => array(
         "name" => "nextPlayer",
@@ -147,7 +148,6 @@ $machinestates = array(
         //"possibleactions" => array( "drawCard" ),
         "transitions"     => array( 51 ) // Draw the discard in the liverpool function; Put player in playcard state
     ),
-	
     51 => array(
         "name" => "liverpoolDraw",
 		"description" => clienttranslate('${playerFindingLP} draws the discard and can play it [ST51]'),
@@ -158,17 +158,60 @@ $machinestates = array(
         "possibleactions" => array( "drawCard" ), // Only action is to draw the discard (automatic)
         "transitions"     => array( 35 ) // Then go to playcard
     ), 
-    52 => array(
+    53 => array(
         "name" => "liverpoolReturn",
-		"description" => clienttranslate('[ST52]'),
-		"descriptionmyturn" => clienttranslate('[ST52]'),
+		"description" => clienttranslate('[ST53]'),
+		"descriptionmyturn" => clienttranslate('[ST53]'),
         "type" => "game",
 		"action" => "stLiverpoolReturn", // ACTION: Do this upon entering the state
 		//"args" => "argLiverpoolReturn",
 //        "possibleactions" => array( "drawCard" ),
 //        "transitions"     => array( 30 ) // Interrupted player gets to draw
         "transitions"     => array( 37 ) // Check end conditions, otherwise interrupted player gets to draw
+    ),
+    60 => array( // Equivalent to 50
+        "name" => "liverpoolPenalty",
+		"description" => clienttranslate('${playerFindingLP} declared Liverpool! [ST60]'),
+		"descriptionmyturn" => clienttranslate('${you} declared Liverpool! [ST60]'),
+        "type" => "game",
+		"action" => "stLiverpoolPenalty", // ACTION: Do this upon entering the state
+		"args"  => "argLiverpool",
+        //"possibleactions" => array( "drawCard" ),
+        "transitions"     => array( "penalizeDiscarder" => 61, "penalizeCaller" => 62 )
+    ),
+    61 => array(
+        "name" => "liverpoolDrawPenaltyDiscarder",
+		"description" => clienttranslate('${playerDiscarding} got their discard back and drew a penalty card [ST61]'),
+		"descriptionmyturn" => clienttranslate('${you} got your discard back and drew a penalty card [ST61]'),
+        "type" => "activeplayer",
+		"action" => "stLiverpoolDrawPenaltyDiscarder", // ACTION: Do this upon entering the state
+		"args"  => "argLiverpoolDrawPenaltyDiscarder",
+        "transitions"     => array( 63 ) // Then go to drawCard for regular player
     ), 
+    62 => array(
+        "name" => "liverpoolDrawPenaltyCaller",
+		"description" => clienttranslate('${playerFindingLP} drew a penalty card [ST62]'),
+		"descriptionmyturn" => clienttranslate('${you} drew a penalty card [ST62]'),
+        "type" => "activeplayer",
+		"action" => "stLiverpoolDrawPenaltyCaller", // ACTION: Do this upon entering the state
+		"args"  => "argLiverpool",
+        "transitions"     => array( 63 ) // Then go to drawCard for regular player
+    ), 
+    63 => array(
+        "name" => "liverpoolReturnPenalty",
+		"description" => clienttranslate('[ST63]'),
+		"descriptionmyturn" => clienttranslate('[ST63]'),
+        "type" => "game",
+		"action" => "stLiverpoolReturnPenalty", // ACTION: Do this upon entering the state
+		//"args" => "argLiverpoolReturn",
+//        "possibleactions" => array( "drawCard" ),
+//        "transitions"     => array( 30 ) // Interrupted player gets to draw
+        "transitions"     => array( 37 ) // Check end conditions, otherwise interrupted player gets to draw
+    ),
+
+
+
+
 	// Someone is trying to buy a card
     // 60 => array(
         // "name" => "buyTryFromPTP",
