@@ -125,8 +125,8 @@ $machinestates = array(
         "type" => "multipleactiveplayer",
         "action" => "stWentOut", // ACTION: Do this upon entering the state
 		"args" => "argWentOut",
-		"possibleactions" => array( "playerHasReviewedHand", 'endgame' ),
-        "transitions" => array( "playerHasReviewedHand" => 45, 'endgame' => 99 )
+		"possibleactions" => array( "playerHasReviewedHand", 'endGame' ),
+        "transitions" => array( "playerHasReviewedHand" => 45, 'endGame' => 99 )
     ),
     45 => array(
         "name" => "endHand",

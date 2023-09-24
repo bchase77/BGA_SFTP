@@ -109,6 +109,9 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 ////////
 ////////
+// 
+// kriskeith tried to buy but it didn't go through (filed bug)
+//
 // TODO: 8/13/2023: Chrissy NZ says she was not able to put 2 5s onto table 5s, no joker
 // 
 // Now:
@@ -124,59 +127,74 @@ console.log("[bmc] Clear this.prepAreas2");
 // ks0 (42)
 // ks2 (44)
 
+// Condition of invalid draw:
+// 1) Cards exist in discard PILE
+// 2) someone discards a playable CARD
+// 3) someone declares liverpool
+// 4) the card gets picked up
+// 5) someone tries to buy the next card but should not
+
 // Liverpool penalty method seems to work. However, someone was able to draw a deep discard.
-//
+
+// Order:
+// 1. Player 1: Discard a card
+//    a. Check action is OK and player is ALLOWED
+//    b. ResolveBuyers()
+//       i.   Check empty deck
+//       ii.  getPlayerBuying()
+//       iii. findthebuyer and increment buy count
+//       iv.  clearplayersbuying()
+//       v.   move a deck card to buyer's hand
+//       vi.  notifyPlayers
+//       vii. move a discarded card to buyer's hand
+//       viii.notifyplayers
+//       ix.  disable the buyer's wishlist
+//    c. ClearPlayersBuying & notify cleared buyers
+//    d. Put card on discard pile
+//    e. If Liverpool Found then set players for Liverpool processing; Else normal
+//    f. Check empty deck
+//    g. Notify of discard
+//    h. nextState discardCard
+//       i. stWaitForAll
+//      
+// 2. Player 3: I'll buy it
+// 3. Player 2: Draw deck
+// 4. Player 2: discard
+// 5. Player 3: Execute buy
+
+// GTSchemer — 09/19/2023 7:31 AM
+// That might be tough then.  Best I can think of would be:
+
+// Add the $this->bSelectGlobalsForUpdate = true; code to your PHP constructor, which should cause a lock before an AJAX transaction runs.
+
+// In your transaction handler, check if the card still exists.  If it was taken, throw an exception which will give the player a red bar error at the top ("Another player took that card first" or similar).
+
+
+
+
+
+
+// Don't allow the discarder to get their own discard
+// If it's that player's turn, let them play liverpool
+// RED LIVERPOOL 
+// 	
 // CARDS ARE NOT MOVED OUT OF HAND AFTER LP PLAY.
 // X CANNOT BUY - this is expected behavior.
 // X After someone draws it makes them draw again
-// X Check for Liverpool on refresh and light up the button
+// X Check for Liverpool on refresh and light up the but9iton
 // Remove wishlist and buttons for Spectator mode (Submit wish list) and clear wish list)
 // so i tried playing the 5, 6, 7 of clubs on my A-4 meld and that's what it told me was illegal 
 //
 // Add option for penalty for Liverpool, or benefit.
-
-// on board:
-// X 555, 888, 5*5, QQQ, JJJ, AAAAA, 22222, QQQ
-// X and then 4H and 10H were able to be picked up.
-// X AC and LK both clicked. it was LK's turn. LK got the discarded card BUT
-// X AC also got another card.
-// X Cards stay in hand after liverpool pickup.
-// 
-// X There is a JS or PHP error where player 745 thinks its their turn (board goes green)
-// X but the text shows that 744 is really the active player. The card play is proper.
-
-// X Also when someone does liverpool their board does not light up green.
-
 // TODO: 8/5/2023:
 // Add TOOLTIPS for SAVE PREP and LOAD PREP and WISHLIST
 // In JS: When some kind of joker swap happened the table showed 234578* when it SHOULD
 //    have shown: 2345*78. Once someone played a card, it moved to the correct position.
 // When someone draws from deck the card animation doesn't   and should. but when they draw from discard pile it shows.
 // TODO: 101569962
-// Add extra PREP area just for storing cards to get rid of later.
+// X Add extra PREP area just for storing cards to get rid of later.
 // Make it more playable on phone screens.
 // 9/28/2022: Trying to add 89 to *JQKA diamonds. but they don't go 2 at a time. Must do 8 and 9 1 card at a time. Error is "Not a run. It doesn't reach!'
-//
-// Bad tables:
-//
-//  http://boardgamearena.com/4/liverpoolrummy?table=414565562
-//  http://boardgamearena.com/3/liverpoolrummy?table=412553237
-//  414037086
-//  414252088
-//  413982996
-//  414287148
-//  414535184
-//  414208610
-//  http://boardgamearena.com/6/liverpoolrummy?table=411427550
-//  414259903
-//  414558404
-//  414446774
-//  http://boardgamearena.com/9/liverpoolrummy?table=413307353
-//  414148571
-//  http://boardgamearena.com/10/liverpoolrummy?table=414284229
-//  http://boardgamearena.com/10/liverpoolrummy?table=413547967
-//  http://boardgamearena.com/10/liverpoolrummy?table=412006534
-//  
 //
 // Joker placement: it’s a two in a run from ace to 5, but it will show up like it was the 6
 // Turn off the wishlist after a player goes down.
@@ -186,7 +204,7 @@ console.log("[bmc] Clear this.prepAreas2");
 // 09/10/2022: without wishlist option, notifcation "WISH LIST DISABLED" appeared in the log and should not have
 // 09/10/2022: Add a sound "It fits right there!" when your buy goes through.
 // 09/10/2022: Konni had gone down. had a card in her wishist and the person before discarded it. Her browser froze with MOVE RECORDED. She could not pick up the discard. She refreshed her browser. Then she clicked on NOT BUY, she might have clicked on CLEAR WISHLIST. Then che clicked on the discard to pick it up and it recorded it as a buy.
-// 09/10/2022: 789 onto 10*QK gives "NOT A RUN DOESNT READCH" but it should reach.
+// 09/10/2022: 789 onto 10*QK gives "NOT A RUN DOESNT REACH" but it should reach.
 // 09/10/2022: Konni's WL still tried to buy after she went down and disable swishlist.
 // 09/05/2022: Cannot play on low end of run with joker. 567* won't allow 3 to play.
 // 09/05/2022: I usually wait until someone draws their card to try to buy something, so that I don't influence them
@@ -264,6 +282,14 @@ console.log("[bmc] Clear this.prepAreas2");
 //
 // Resolved Bugs:
 // --------------
+// X 555, 888, 5*5, QQQ, JJJ, AAAAA, 22222, QQQ
+// X and then 4H and 10H were able to be picked up.
+// X AC and LK both clicked. it was LK's turn. LK got the discarded card BUT
+// X AC also got another card.
+// X Cards stay in hand after liverpool pickup.
+// X There is a JS or PHP error where player 745 thinks its their turn (board goes green)
+// X but the text shows that 744 is really the active player. The card play is proper.
+// X Also when someone does liverpool their board does not light up green.
 // X 1/16: When I have enough melds prepped to go down and it becomes my turn, the GO DOWN button doesn't light up but should
 // X 1/16: When someone clicks BUY IT and someone clicks the card there can be a race condition?
 // X 12/26/2020: Konni discarded at same time as I clicked BUY it. It was my turn. Game thought i wanted to buy Konni's discard. I drew, but now it won't let me discard: "You cannot buy any more this hand(decPlayerBuyCount)."
@@ -2989,13 +3015,13 @@ console.log( this.goneDown[ this.player_id ]);
 
 				// Player must have gone down in order for Liverpool button click to register
 				
-				// if( this.goneDown[ this.player_id ] == 1 ) {
+				if( this.goneDown[ this.player_id ] == 1 ) {
 					
 					// If it's already this player's turn then do nothing
-					if ( this.player_id == this.gamedatas.activeTurnPlayer_id ){
-					//	this.onDiscardPileSelectionChanged();
+					// if ( this.player_id == this.gamedatas.activeTurnPlayer_id ){
+						//this.onDiscardPileSelectionChanged();
 					
-					} else {
+					// } else {
 console.log( "Ajax liverpool" );
 						this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
 								player_id : this.player_id,
@@ -3004,8 +3030,8 @@ console.log( "Ajax liverpool" );
 							}, function(is_error) {
 						});
 						
-					}
-				// }
+					// }
+				}
 console.log("[bmc] EXIT onLiverpoolButton");
 		},
 /////////
