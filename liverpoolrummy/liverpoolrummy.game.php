@@ -661,7 +661,7 @@ class LiverpoolRummy extends Table
 		$cardsInBb = $this->cards->getCardsInLocation( 'playerDown_B' );
 		$cardsInBc = $this->cards->getCardsInLocation( 'playerDown_C' );
 
-		//self::dump("[bmc] cardsInHd:", $cardsInHd);
+		self::dump("[bmc] cardsInHd:", $cardsInHd);
 		// self::dump("[bmc] cardsInDk:", $cardsInDk);
 		// self::dump("[bmc] cardsInDp:", $cardsInDp);
 		// self::dump("[bmc] cardsInBa:", $cardsInBa);
@@ -3023,8 +3023,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			self::dump("[bmc] ENTER GET A CARD: ", $this->cards->getCard( $id ));
 		}
 		
-		if ( $ids[0] != 0 ){
-			// self::trace(" ids not empty " );
+		if ( count( $ids ) > 0 ){
+			self::trace(" ids not empty " );
 
 			$cards = $this->cards->getCards( $ids );
 			self::dump("[bmc] cards: ", $cards);
@@ -4256,6 +4256,11 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				if ( $this->getGameStateValue( 'enableWishList' ) == 1 ) { // 0 == No. 1 == Yes.
 					$this->disableWishList( $player_id );
 				}
+				// Clear out the prep areas in the database
+				
+				$sql = "DELETE FROM prepAreas WHERE player_id = '";
+				$sql_command = $player_id . "'";
+				self::DbQuery( $sql . $sql_command );
 			}
 		}
 		
@@ -4845,6 +4850,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::dump( "[bmc] prepListAll:", $prepListAll );
 		self::dump( "[bmc] prepListFirst:", reset( $prepListAll ));
 		
+		$allLoaded = true; // Start with true. Set false if one is skipped
+			
 		if ( reset( $prepListAll )) { // If there is something in the prep areas process it
 			
 			self::dump( "[bmc] prepListA:", reset( $prepListAll )[ 'areaA' ]);
@@ -4861,28 +4868,106 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			self::dump( "[bmc] B:", $prepAreaBItems );
 			self::dump( "[bmc] C:", $prepAreaCItems );
 			self::dump( "[bmc] J:", $prepAreaJItems );
+			
+			$cardsInHandNow = $this->cards->getCardsInLocation( 'hand', $player_id );
+			
+			$IDsInHandNow = array();
+			
+			self::dump( "[bmc] cardsInHandNow:", $cardsInHandNow );
+			
+			$prepAreaAItemsReal = array();
+			$prepAreaBItemsReal = array();
+			$prepAreaCItemsReal = array();
+			$prepAreaJItemsReal = array();
+			
+			foreach ( $cardsInHandNow as $card ){
+				$IDsInHandNow[] = $card[ 'id' ];
+			}
+			
+			self::dump( "[bmc] IDsInHandNow:", $IDsInHandNow );
+			
+			foreach ( $prepAreaAItems as $id ){
+				self::dump( "[bmc] Aid:", $id );
+				
+				if ( strlen( $id ) > 0) {
+					if ( in_array( $id, $IDsInHandNow )){
+						self::dump( "[bmc] FoundidinA:", $id );
+						$prepAreaAItemsReal[] = $id;
+						
+					} else {
+						$allLoaded = false;
+					}
+				}
+			}
+			
+			foreach ( $prepAreaBItems as $id ){
+				self::dump( "[bmc] Bid:", $id );
+				
+				if ( strlen( $id ) > 0) {
+					if ( in_array( $id, $IDsInHandNow )){
+						self::dump( "[bmc] FoundidinB:", $id );
+						$prepAreaBItemsReal[] = $id;
+						
+					} else {
+						$allLoaded = false;
+					}
+				}
+			}
+			
+			foreach ( $prepAreaCItems as $id ){
+				self::dump( "[bmc] Cid:", $id );
+				
+				if ( strlen( $id ) > 0) {
+					if ( in_array( $id, $IDsInHandNow )){
+						self::dump( "[bmc] FoundidinC:", $id );
+						$prepAreaCItemsReal[] = $id;
+						
+					} else {
+						$allLoaded = false;
+					}
+				}
+			}
+			
+			foreach ( $prepAreaJItems as $id ){
+				self::dump( "[bmc] Jid:", $id );
+				
+				if ( strlen( $id ) > 0) {
+					if ( in_array( $id, $IDsInHandNow )){
+						self::dump( "[bmc] FoundidinJ:", $id );
+						$prepAreaJItemsReal[] = $id;
+						
+					} else {
+						$allLoaded = false;
+					}
+				}
+			}
 
+			self::dump( "[bmc] RealA:", $prepAreaAItemsReal );
+			self::dump( "[bmc] RealB:", $prepAreaBItemsReal );
+			self::dump( "[bmc] RealC:", $prepAreaCItemsReal );
+			self::dump( "[bmc] RealJ:", $prepAreaJItemsReal );
+			
 			// getColorValueFromId doesn't get the right colors and values:
 			
-			list( $card_idsA, $card_typeA, $card_type_argA ) = $this->getColorValueFromId( $prepAreaAItems );
-			list( $card_idsB, $card_typeB, $card_type_argB ) = $this->getColorValueFromId( $prepAreaBItems );
-			list( $card_idsC, $card_typeC, $card_type_argC ) = $this->getColorValueFromId( $prepAreaCItems );
-			list( $card_idsJ, $card_typeJ, $card_type_argJ ) = $this->getColorValueFromId( $prepAreaJItems );
+			list( $card_idsA, $card_typeA, $card_type_argA ) = $this->getColorValueFromId( $prepAreaAItemsReal );
+			list( $card_idsB, $card_typeB, $card_type_argB ) = $this->getColorValueFromId( $prepAreaBItemsReal );
+			list( $card_idsC, $card_typeC, $card_type_argC ) = $this->getColorValueFromId( $prepAreaCItemsReal );
+			list( $card_idsJ, $card_typeJ, $card_type_argJ ) = $this->getColorValueFromId( $prepAreaJItemsReal );
 
-			self::dump( "[bmc] Aids:", $card_idsA );
-			self::dump( "[bmc] Atype:", $card_typeA );
+			self::dump( "[bmc] Aids:",          $card_idsA );
+			self::dump( "[bmc] Atype:",        $card_typeA );
 			self::dump( "[bmc] Atypearg:", $card_type_argA );
 
-			self::dump( "[bmc] Bids:", $card_idsB );
-			self::dump( "[bmc] Btype:", $card_typeB );
+			self::dump( "[bmc] Bids:",          $card_idsB );
+			self::dump( "[bmc] Btype:",        $card_typeB );
 			self::dump( "[bmc] Btypearg:", $card_type_argB );
 
-			self::dump( "[bmc] Cids:", $card_idsC );
-			self::dump( "[bmc] Ctype:", $card_typeC );
+			self::dump( "[bmc] Cids:",          $card_idsC );
+			self::dump( "[bmc] Ctype:",        $card_typeC );
 			self::dump( "[bmc] Ctypearg:", $card_type_argC );
 
-			self::dump( "[bmc] Jids:", $card_idsJ );
-			self::dump( "[bmc] Jtype:", $card_typeJ );
+			self::dump( "[bmc] Jids:",          $card_idsJ );
+			self::dump( "[bmc] Jtype:",        $card_typeJ );
 			self::dump( "[bmc] Jtypearg:", $card_type_argJ );
 		} else {
 			$card_idsA	     = '';
@@ -4916,9 +5001,20 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				'card_type_argC' => $card_type_argC,
 				'card_idsJ'      => $card_idsJ,
 				'card_typeJ'     => $card_typeJ,
-				'card_type_argJ' => $card_type_argJ,
+				'card_type_argJ' => $card_type_argJ
 			)
 		);
+
+		self::dump("[bmc] allLoaded:", $allLoaded );
+
+		if ( $allLoaded != true ) {
+			self::notifyPlayer(
+				$player_id,
+				'loadPrepInfo',
+				clienttranslate("Not all cards were loaded because they are no longer in your hand."),
+				array()
+			);
+		}
 		self::trace("[bmc] EXIT loadPrep");
 	}
 	
@@ -5041,13 +5137,17 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 	function liverpool( $player_id ) { // From JS
 		self::trace("[bmc] ENTER liverpool");
 		self::dump("[bmc] player_id:", $player_id);
+		
+		// Maybe add these 2 lines here:
+		// $this->gamestate->checkPossibleAction('actionUnpass');
+		// $this->gamestate->setPlayersMultiactive(array ($this->getCurrentPlayerId() ), 'error', false);
 
 		// Game Option: Liverpool button plays as a penalty to the caller or discarder
 		
 		$LiverpoolConsequence =  self::getGameStateValue( 'LiverpoolConsequence' );
 		
-		//if ( $LiverpoolConsequence == 1 ){ // 0=bonus; 1=penalty
-		if ( 0 == 1 ){ // Disable this option for now
+		if ( $LiverpoolConsequence == 1 ){ // 0=bonus; 1=penalty
+		//if ( 0 == 1 ){ // Disable this option for now
 			self::trace("[bmc] Found liverpool(penalty)");
 			
 			$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' );

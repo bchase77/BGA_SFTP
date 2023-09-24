@@ -178,7 +178,29 @@ console.log("[bmc] Clear this.prepAreas2");
 // I meant to add a card to Prep A and ended up discarding it instead... 
 //yeah, I should be more precise, but... a little distance would be nice
 
+// DrKarotte 9/23/2023 regading Solo:
+// I think it had to be on PHP side; normally at the beginning of an PHP action function there is a line like "self::checkAction("drawCard");"
+//For solo in the play card action function I have replaced it by the following: $this->gamestate->checkPossibleAction( "playCard" );
+// Probably this reduces the procedure to the bare check if an action is allowed, without further built-in checks (is it the player's turn?)
+// hope that helps
+// Side note: There seems to be a rare bug in Solo which I could never fix that might be related to this change, so it is probably not without risk; on the other side the site founders had given their ok to that    
+// End message from DrKarotte
+// 
+// Studio doc on checkPossibleAction:
+// $this->gamestate->checkPossibleAction( $action )
+// (rarely used)
+// This works exactly like "checkAction" (above), except that it does NOT check if the current player is active.
+// Note: This does NOT check either spectator or eliminated status, so those checks must be done manually.
+// This is used specifically in certain game states when you want to authorize additional actions for players that are not active at the moment.
+// Example: in Libertalia, you want to authorize players to change their mind about the card played. They are of course not active at the time they change their mind, so you cannot use "checkAction"; use "checkPossibleAction" instead.
+// This is how PHP action looks that returns player to active state (only for multiplayeractive states). To be able to execute this on client do not call checkAction on js side for this specific action.
 
+  // function actionUnpass() {
+       // $this->gamestate->checkPossibleAction('actionUnpass'); // player changed mind about passing while others were thinking
+       // $this->gamestate->setPlayersMultiactive(array ($this->getCurrentPlayerId() ), 'error', false);
+   // }
+   
+//
 // Don't allow the discarder to get their own discard
 // If it's that player's turn, let them play liverpool
 // RED LIVERPOOL 
@@ -2481,6 +2503,15 @@ console.log("[bmc] ENTER notif_wishListSubmitted");
 			this.setWishListColor( true ); 
 			this.showClearWishListButton( true );
 console.log("[bmc] EXIT notif_wishListSubmitted");
+		},
+/////////
+/////////
+/////////
+		notif_loadPrepInfo : function( notif ){
+console.log("[bmc] ENTER loadPrepInfo");
+console.log(notif);
+		// Take no action just let the message be in the game log
+console.log("[bmc] EXIT loadPrepInfo");
 		},
 /////////
 /////////
