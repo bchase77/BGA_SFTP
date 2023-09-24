@@ -110,6 +110,9 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 ////////
 // 
+// 24/09 01:48:43 [error] [T421028219] [173.94.184.233] [88197647/LisaKRich] Error (1213) while processing SQL request: Deadlock found when trying to get lock; try restarting transaction - Request: SELECT player_id, player_is_multiactive FROM player 
+
+// Wrong player designated "WENT OUT" after liverpool go out
 // kriskeith tried to buy but it didn't go through (filed bug)
 //
 // TODO: 8/13/2023: Chrissy NZ says she was not able to put 2 5s onto table 5s, no joker
@@ -165,11 +168,11 @@ console.log("[bmc] Clear this.prepAreas2");
 // GTSchemer — 09/19/2023 7:31 AM
 // That might be tough then.  Best I can think of would be:
 
-// Add the $this->bSelectGlobalsForUpdate = true; code to your PHP constructor, which should cause a lock before an AJAX transaction runs.
+// X Add the $this->bSelectGlobalsForUpdate = true; code to your PHP constructor, which should cause a lock before an AJAX transaction runs.
 
 // In your transaction handler, check if the card still exists.  If it was taken, throw an exception which will give the player a red bar error at the top ("Another player took that card first" or similar).
 
-
+// Liverpool stays turned on (at least visually) when someone goes out with a card. If you click, it assumes you want to buy at the start of next round.
 
 
 
@@ -728,7 +731,7 @@ console.log( this.gamedatas.enableWishList );
 			// Show the wishlist stuff if they set the game up this way
 			if ( this.gamedatas.enableWishList == true ) {
 				dojo.query( '.wishListMode' ).removeClass( 'wishListMode' );
-			}
+			// }
 //			dojo.query( '.wishListMode' ).removeClass( 'wishListMode' );
 
 			this.wishListClubs = new ebg.stock();
@@ -825,7 +828,7 @@ console.log( this.gamedatas.enableWishList );
 					}
 				}
 			}
-
+}
 			// Create the variables which show how many cards in each pile (deck, hand, discard)
 			this.drawDeckSize = new ebg.counter();
 			this.drawDeckSize.create( 'drawDeckSize' );
@@ -5193,6 +5196,7 @@ console.log("[bmc] Updating buys and cards");
 console.log("[bmc] ENTER notif_newHand");
 console.log(notif);
 			
+			this.gamedatas.liverpoolExists = false;
 			this.dealMeInClicked = false;
 			if ( notif.args.hand == undefined ) {
 console.log("Hand is undefined");

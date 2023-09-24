@@ -63,7 +63,8 @@
     display: none;
 }
 
-.wishListMode #TLeftBox2 {
+/*.wishListMode #TLeftBox2 {*/
+.wishListMode {
     display: none;
 }
 

@@ -505,6 +505,8 @@ class LiverpoolRummy extends Table
 		$result['currentPlayerId'] = $current_player_id;
 		$result['discardingPlayer_id'] = $this->getPlayerBefore( self::getActivePlayerId() );
 		
+		self::dump( "[bmc] enableWishList:", $this->getGameStateValue( 'enableWishList' ) );
+		
 		if ( $this->getGameStateValue( 'enableWishList' ) == 1 ) {
 			$result['enableWishList'] = true;
 		} else {
@@ -1516,14 +1518,17 @@ class LiverpoolRummy extends Table
 ////////
 	function argWentOut() {
 		self::trace("[bmc] ENTER argWentOut");
-		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
+		// $activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 		$players = self::loadPlayersBasicInfos();
-		$activePlayer = $players[ $activeTurnPlayer_id ][ 'player_name' ];
-		self::trace("[bmc] EXIT argWentOut");
-        return array(
-			'player_name' => $activePlayer,
-			'player_id' => $activeTurnPlayer_id
+//		$activePlayer = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+		$currentPlayer_id = $this->getCurrentPlayerId();
+		$currentPlayer = $players[ $currentPlayer_id ][ 'player_name' ];
+        
+		return array(
+			'player_name' => $currentPlayer,
+			'player_id' => $currentPlayer_id
 		);
+		self::trace("[bmc] EXIT argWentOut");
 	}
 ////////
 ////////
@@ -3938,14 +3943,22 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		// Notify players to review their hands and click to continue
 		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
+		$currentPlayer_id = $this->getCurrentPlayerId();
+		
 		$players = self::loadPlayersBasicInfos();
-		$player_name = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+//		$player_name = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+		$player_name = $players[ $currentPlayer_id ][ 'player_name' ];
+
+		self::dump( "[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
+		self::dump( "[bmc] currentPlayer_id:", $currentPlayer_id );
+		self::dump( "[bmc] player_name:", $player_name );
 
         self::notifyAllPlayers(
 			'wentOut',
 			clienttranslate( '${player_name} went out' ),
 			array(
-				'player_id'   => $activeTurnPlayer_id,
+//				'player_id'   => $activeTurnPlayer_id,
+				'player_id'   => $currentPlayer_id,
 				'player_name' => $player_name
 			)
 		); 
@@ -4003,24 +4016,24 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		foreach ( $cards as $card ) {
 			$player_id = $card[ 'location_arg' ];
-			self::dump("[bmc] Scoring: ", $card );
+			// self::dump("[bmc] Scoring: ", $card );
 			if ( $card[ 'type' ] >= 1 and $card[ 'type' ] <= 4) { // If non-Joker
 				switch ( true ) {
 					case ( $card[ 'type_arg' ] >= 2 and $card[ 'type_arg' ] <= 9 ): // 5 points
-						self::trace("[bmc] 2-9");
+						// self::trace("[bmc] 2-9");
 						$player_to_points[ $player_id ] += 5;
 						break;
 					case ( $card[ 'type_arg' ] >= 10 and $card[ 'type_arg' ] <= 13 ): // 10 points
-						self::trace("[bmc] 10,J,Q,K");
+						// self::trace("[bmc] 10,J,Q,K");
 						$player_to_points[ $player_id ] += 10;
 						break;
 					case ( $card[ 'type_arg' ] == 1 ): // 15 points	
-						self::trace("[bmc] Ace");
+						// self::trace("[bmc] Ace");
 						$player_to_points[ $player_id ] += 15;
 						break;
 				}
 			} else { // It must be a joker, 20 points
-				self::trace("[bmc] Joker");
+				// self::trace("[bmc] Joker");
 				$player_to_points [$player_id] += 20;
 			}
 		}
@@ -4103,7 +4116,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$outMsg2 = clienttranslate( $outMsg1 );
 		} else { // Someone went out normally
 			$outMsg1 = clienttranslate( "Woot! You went out! You want the most positive score." );
-			$outMsg2_player = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+			// $outMsg2_player = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+			$outMsg2_player = $players[ $player_id ][ 'player_name' ];
 			$outMsg2_msg    = clienttranslate( " went out. You want the most positive score." );
 			
 			$outMsg2 = $outMsg2_player . $outMsg2_msg;
@@ -4121,12 +4135,16 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$titleMessage = clienttranslate( $outMsg1 );
 
 
-		$playerOut = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+//		$playerOut = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+		$playerOut = $players[ $player_id ][ 'player_name' ];
 		// $otherMessage = $outMsg2;
+		
+		$currentPid = $this->getCurrentPlayerId();
 		
 		// Show a dialog of the scores for each player for this hand
         foreach ( $player_to_points as $player_id => $points ) {
-			if ( $player_id == $activeTurnPlayer_id ) {
+			// if ( $player_id == $activeTurnPlayer_id ) {
+			if ( $player_id == $currentPid ) {
 				$this->notifyPlayer(
 					$player_id,
 					"tableWindow", '', array(
@@ -5689,9 +5707,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// $countCCBLDeck = count($this->cards->countCardsByLocationArgs( 'deck' ));
 		//$countCCBLDiscardPile = count($this->cards->countCardsByLocationArgs( 'discardPile' ));
 		
-		//self::dump("[bmc] CCBL (hands):", $countCardsByLocation );
-		//self::dump("[bmc] CCCBL:", $countCCBL );
-		//self::dump("[bmc] PN:", $playersNumber );
+		self::dump("[bmc] CCBL (hands):", $countCardsByLocation );
+		self::dump("[bmc] CCCBL:", $countCCBL );
+		self::dump("[bmc] PN:", $playersNumber );
 		//self::dump("[bmc] CCBLDeck:", $countCCBLDeck );
 		//self::dump("[bmc] CCBLDiscardPile:", $countCCBLDiscardPile );
 
@@ -5717,21 +5735,24 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		$shuffleCount = self::getGameStateValue( 'shuffleCount' ); // Reset the shuffle count every hand
 		
-		// $outReason = 'SomeoneWentOut'; // 0
+		// $outReason = 'SomeoneWentOut';   // 0
 		// $outReason = 'DeckOverShuffled'; // 1
-		// $outReason = 'AllCardsPlayed'; // 2
+		// $outReason = 'AllCardsPlayed';   // 2
 
 		if ( $countCCBL != $playersNumber ) {  		// Someone has gone out
+			self::dump("[bmc] stNextPlayer SomeoneWentOut(countCCBL):", $countCCBL);
 			//$outReason = "SomeoneWentOut" ;
-			self::setGameStateValue( "outReason" , 0 ); // Someone went out
+			self::setGameStateValue( "outReason" , 0 );  // Someone went out
 			$this->gamestate->nextState( "endHand" );
 		} else if ( $shuffleCount > 5 ) {	// The deck has been shuffled too much
+			self::dump("[bmc] stNextPlayer shuffleCount:", $shuffleCount);
 			//$outReason = "DeckOverShuffled" ;
 			self::setGameStateValue( "outReason" , 1 ); // Shuffled more than 5 times
 			$this->gamestate->nextState( "endHand" );
-		} else if ( $this->checkPlayable() != true ) {	    // All playable cards have been played
+		} else if ( $this->checkPlayable() != true ) {	// All playable cards have been played
+			self::dump("[bmc] stNextPlayer checkPlayable not true:", 0);
 			//$outReason = "AllCardsPlayed";			
-			self:setGameStateValue( "outReason", 2 ); // All playable cards have been played
+			self:setGameStateValue( "outReason", 2 );   // All playable cards have been played
 			$this->gamestate->nextState( "endHand" );
 		} else {
 
