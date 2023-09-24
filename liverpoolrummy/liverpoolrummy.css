@@ -131,6 +131,13 @@
 	width: 13%;
 	height: 140px;
 }
+.tim183spacer {
+	float: Left;
+	position: relative;
+	width: 4%;
+	height: 140px;
+	text-align: center;
+}
 .prepbox {
 	float: Left;
 	position: relative;
@@ -145,7 +152,7 @@
 .prepjoker {
 	float: Left;
 	position: relative;
-	width: 12%;
+	width: 8%;
 	height: 140px;
 	text-align: center;
 	color: gray;

@@ -98,6 +98,8 @@
 			<h3><span id="DISCARDPILETRANSLATED"></span> (<span id="discardSize"></span>)</h3>
 			<div id="discardPileOne"></div>
 		</div>
+		<div class="tim183spacer">
+		</div>
 		<div id="myPrepA" class="prepbox">
 			<h3><span id="PREPATRANSLATED"></span></h3>
 			<div id="PrepA"></div>

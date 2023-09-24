@@ -174,7 +174,9 @@ console.log("[bmc] Clear this.prepAreas2");
 
 // Liverpool stays turned on (at least visually) when someone goes out with a card. If you click, it assumes you want to buy at the start of next round.
 
-
+// 9/23/2023: tim183: The discard pile and Prep A are really close together...
+// I meant to add a card to Prep A and ended up discarding it instead... 
+//yeah, I should be more precise, but... a little distance would be nice
 
 
 // Don't allow the discarder to get their own discard
