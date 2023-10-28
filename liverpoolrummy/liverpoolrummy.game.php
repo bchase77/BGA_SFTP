@@ -695,7 +695,7 @@ class LiverpoolRummy extends Table
 
 		$result[ 'liverpoolExists' ] = self::getGameStateValue( 'liverpoolExists' );
 
-		self::trace("[bmc] EXIT getAllDatas");
+		self::trace("[bmc] EXIT GETALLDATAS");
         return $result;
     }
 ////////
@@ -711,22 +711,34 @@ class LiverpoolRummy extends Table
 				'type_arg' => '5' // Value
 				),
 			1 => array(
-				'type' => '2', // Suit
-				'type_arg' => '5' // Value
+				'type' => '1', // Suit
+				'type_arg' => '6' // Value
 				),
 			2 => array(
-				'type' => '3', // Suit
-				'type_arg' => '5' // Value
+				'type' => '1', // Suit
+				'type_arg' => '7' // Value
 				),
-			12 => array(
+			3 => array(
 				'type' => '1', // Suit
 				'type_arg' => '8' // Value
 				),
-			13 => array(
+			4 => array(
 				'type' => '2', // Suit
-				'type_arg' => '8' // Value
+				'type_arg' => '9' // Value
 				),
-			14 => array(
+			5 => array(
+				'type' => '2', // Suit
+				'type_arg' => '10' // Value
+				),
+			6 => array(
+				'type' => '2', // Suit
+				'type_arg' => '11' // Value
+				),
+			7 => array(
+				'type' => '2', // Suit
+				'type_arg' => '12' // Value
+				),
+			8 => array(
 				'type' => '3', // Suit
 				'type_arg' => '8' // Value
 				)
@@ -741,36 +753,36 @@ class LiverpoolRummy extends Table
 				'type_arg' => '1' // Value
 				),
 			2 => array(
-				'type' => '3', // Suit
-				'type_arg' => '5' // Value
+				'type' => '1', // Suit
+				'type_arg' => '7' // Value
 				),
 			3 => array(
 				'type' => '1', // Suit
-				'type_arg' => '12' // Value
+				'type_arg' => '6' // Value
 				),
 			4 => array(
-				'type' => '4', // Suit
-				'type_arg' => '12' // Value
+				'type' => '1', // Suit
+				'type_arg' => '8' // Value
 				),
 			5 => array(
-				'type' => '3', // Suit
-				'type_arg' => '12' // Value
+				'type' => '1', // Suit
+				'type_arg' => '9' // Value
 				),
 			6 => array(
-				'type' => '1', // Suit
-				'type_arg' => '11' // Value
+				'type' => '3', // Suit
+				'type_arg' => '4' // Value
 				),
 			7 => array(
-				'type' => '4', // Suit
-				'type_arg' => '11' // Value
+				'type' => '3', // Suit
+				'type_arg' => '5' // Value
 				),
 			8 => array(
 				'type' => '3', // Suit
-				'type_arg' => '11' // Value
+				'type_arg' => '6' // Value
 				),
 			9 => array(
 				'type' => '3', // Suit
-				'type_arg' => '5' // Value
+				'type_arg' => '7' // Value
 				),
 			10 => array(
 				'type' => '3', // Suit
@@ -783,24 +795,7 @@ class LiverpoolRummy extends Table
 			12 => array(
 				'type' => '2', // Suit
 				'type_arg' => '13' // Value
-				),
-			13 => array(
-				'type' => '2', // Suit
-				'type_arg' => '1' // Value
-				),
-			14 => array(
-				'type' => '5', // Suit
-				'type_arg' => '2' // Value
-				),
-			15 => array(
-				'type' => '1', // Suit
-				'type_arg' => '4' // Value
-				),
-			16 => array(
-				'type' => '1', // Suit
-				'type_arg' => '3' // Value
-				),
-
+				)
 			);
 		$testPlayerHandArray[2] = array(
 			0 => array(
@@ -840,35 +835,35 @@ class LiverpoolRummy extends Table
 				'type_arg' => '10' // Value
 				),
 			9 => array(
-				'type' => '3', // Suit
-				'type_arg' => '10' // Value
+				'type' => '2', // Suit
+				'type_arg' => '11' // Value
 				),
 			10 => array(
-				'type' => '1', // Suit
-				'type_arg' => '10' // Value
+				'type' => '2', // Suit
+				'type_arg' => '12' // Value
 				),
 			11 => array(
 				'type' => '2', // Suit
-				'type_arg' => '4' // Value
+				'type_arg' => '9' // Value
 				),
 			12 => array(
 				'type' => '2', // Suit
-				'type_arg' => '13' // Value
+				'type_arg' => '8' // Value
 				),
 			13 => array(
 				'type' => '2', // Suit
-				'type_arg' => '1' // Value
+				'type_arg' => '7' // Value
 				),
 			14 => array(
-				'type' => '4', // Suit
-				'type_arg' => '11' // Value
+				'type' => '2', // Suit
+				'type_arg' => '6' // Value
 				)
 			);
 
 		$testPlayerHandArray[0] = array(
 			0 => array(
-				'type' => '1', // Suit
-				'type_arg' => '2' // Value
+				'type' => '5', // Suit
+				'type_arg' => '1' // Value
 				),
 			1 => array(
 				'type' => '2', // Suit
@@ -895,20 +890,20 @@ class LiverpoolRummy extends Table
 				'type_arg' => '12' // Value
 				),
 			7 => array(
-				'type' => '3', // Suit
-				'type_arg' => '12' // Value
+				'type' => '2', // Suit
+				'type_arg' => '3' // Value
 				),
 			8 => array(
 				'type' => '2', // Suit
 				'type_arg' => '4' // Value
 				),
 			9 => array(
-				'type' => '1', // Suit
-				'type_arg' => '4' // Value
+				'type' => '2', // Suit
+				'type_arg' => '5' // Value
 				),
 			10 => array(
 				'type' => '2', // Suit
-				'type_arg' => '9' // Value
+				'type_arg' => '6' // Value
 				),
 /*
 ,
@@ -1539,6 +1534,7 @@ class LiverpoolRummy extends Table
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 
 		$playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
+		self::dump("[bmc] playerGoneDown(argPTP):", $playerGoneDown );
 
 		$gtActivePlayerId = $this->getActivePlayerId();
 		self::dump("[bmc] GAME THINKS ACTIVE PLAYER:", $gtActivePlayerId );
@@ -2783,8 +2779,11 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		self::trace("[bmc] GO DOWN DONE!");
 
+		self::dump( "[bmc] gonedown / active_player_id: ", $active_player_id );
 		self::setPlayerGoneDown( $active_player_id, 1 /* 0 (not gone down) or 1 (gone down) */ );
 		self::trace("[bmc] EXIT playerGoDownFinish");
+		
+		$this->gamestate->nextState( 'playerGoDown' );
 
 	}
 ////////
@@ -2816,7 +2815,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				$highestCard = 1;
 				
 				foreach( $cardGroup as $card ){
-					self::dump("[bmc] card: ", $card);
+					// self::dump("[bmc] card: ", $card);
 					
 					// If a joker then keep track of how many jokers
 					// If not a joker then track it as a 'hard' card value
@@ -3068,10 +3067,10 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		//   is silently finds it's not a run, return false.
 		$crReturnValue = true;
 		
-//		self::trace("[bmc] ENTER checkRun");
+		self::trace("[bmc] ENTER checkRun");
 		// self::dump("[bmc] ENTER checkRun: ", $silent);
 		
-		// self::dump("[bmc] checkRun cards: ", $cards);
+		self::dump("[bmc] checkRun cards: ", $cards);
 		
 		$cardCount = count( $cards );
 		// self::dump("[bmc] cardCount: ", $cardCount);
@@ -3132,37 +3131,89 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		// If there is an ace, also create a '14' because ace can be high or low
 		
-		$aceLowCards = $cards; // PHP makes a completely new copy of an array
-		$aceHighCards = $cards; // PHP makes a completely new copy of an array
+		$aceLowCards  = $this->array_clone( $cards );
+		$aceHighCards = $this->array_clone( $cards );
+		
+		
+		// $aceLowCards = $cards; // PHP makes a completely new copy of an array, but it changes the indices
+		// $aceHighCards = $cards; // PHP makes a completely new copy of an array, but it changes the indices
+		
+		
+		
+		
+		
+		// $keys = array('foo', 5, 10, 'bar');
+		// $a = array_fill_keys($keys, 'banana');
+		// print_r($a);
+		
+		
+		
+// This getArrayCopy() throws an error:
+
+// My goal is to copy the original card array and include the indices. As it is,
+// PHP copies the array but the indices all change to be in order, 0,1,2,3,4...
+		
+		// $cardsArrayObject = new ArrayObject($aceHighCards);
+		// $aceHighCardsGAC = $cardsArrayObject->getArracyCopy();
+
+		//self::dump("[bmc] New cards (aceHighCards):", $aceHighCards);
+		self::dump("[bmc] New cards before (aceHighCards):", $aceHighCards);
+		
+
+
+
+
+
+
+
+		$index = 0;
 		
 		foreach ( $cards as $card ) {
-//			self::dump("[bmc] card: ", $card );
+			// self::dump("[bmc] card: ", $card );
 			
-			if ( $card[ 'type_arg' ] == 1 ) {
-				$aceKey = $card[ 'id' ];
-//				self::dump("[bmc] aceKey: ", $aceKey);
+//			if ( $card[ 'type_arg' ] == 1 ) {
+			if (( $card[ 'type_arg' ] == 1 ) &&
+			    ( $card[ 'type' ] != 5 )) { // If there is an one (aka Ace) and it's not a joker
 				
-				$aceHighCards[ $card[ 'id' ]] = [
-					'id' => $card['id'],
-					'type' => $card['type'],
-					'type_arg' => "14", // Ace is considered 14
-					'location' => $card['location'],
+				// Get the index of the ace
+				
+				$aceKey = $card[ 'id' ];
+				self::dump("[bmc] aceKey: ", $aceKey);
+				self::dump("[bmc] index: ", $index);
+				// self::dump("[bmc] aceHighCards[index]: ", $aceHighCards[$index]);
+				self::dump("[bmc] aceHighCards[index]: ", $aceHighCards[$aceKey]);
+
+//				Here need to set index [3] to change the ace to high, not low. Now it adds a card.
+
+//				Server syntax error:
+//Parse error: syntax error, unexpected '{' in /var/tournoi/release/games/liverpoolrummy/999999-9999/liverpoolrummy.game.php on line 3147
+				
+				
+				// $aceHighCards[ $index ] = {
+
+				// $aceHighCards[ $index ] = [
+				$aceHighCards[ $aceKey ] = [
+					'id'           => $card['id'],
+					'type'         => $card['type'],
+					'type_arg'     => "14", // Ace is considered 14
+					'location'     => $card['location'],
 					'location_arg' => $card['location_arg']
 				];
 			}
+			$index++;
 		}
 		
 		// self::dump("[bmc] New cards (cards):", $cards);
-		// self::dump("[bmc] New cards (aceLowCards):", $aceLowCards);
-		// self::dump("[bmc] New cards (aceHighCards):", $aceHighCards);
+		//self::dump("[bmc] New cards (aceLowCards):", $aceLowCards);
+		self::dump("[bmc] New cards (aceHighCards):", $aceHighCards);
 
 		$tryAceLow  = $this->checkRunWithAce( $aceLowCards );
 		$tryAceHigh = $this->checkRunWithAce( $aceHighCards );
 		
-		// self::dump("[bmc] Check Run aceLowCards",  $tryAceLow );
-		// self::dump("[bmc] Check Run aceHighCards", $tryAceHigh );
+		self::dump("[bmc] Check Run 0/1 aceLowCards",  $tryAceLow );
+		self::dump("[bmc] Check Run 0/1 aceHighCards", $tryAceHigh );
 		
-		if (( $tryAceLow == 0 ) or ( $tryAceHigh == 0 )){
+		if (( $tryAceLow == 0 ) or ( $tryAceHigh == 0 )){ // 0 == true
 			// This is good, one of them is a run, so just fall through with default==yes
 			self::trace("[bmc] One of the combinations with the ace is a run, allow it.");
 		} else {
@@ -3215,7 +3266,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		//
 		// Don't need to count jokers since we're looking at min, max and card count
 
-		// self::dump("[bmc] checkRunWithAce: cards", $cards );
+		self::dump("[bmc] checkRunWithAce: cards", $cards );
 
 		foreach ( $cards as $card ) {
 			if ( $card['type'] == "5") {
@@ -3257,13 +3308,27 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		if ( $cardValueMax - $cardValueMin + 1  <= $cardCount ) {
 			self::trace("[bmc] checkRun TRUE");
-			return 0;
+			return 0; // 0 == true, because later we add them together
 
 		} else {
 			self::trace("[bmc] checkRun FALSE (Doesn't reach)");
 
-			return 1;
+			return 1; // 1 = false, because later we add them together
 		}
+	}
+////
+////
+////
+	function array_clone($array) {
+		return array_map(function($element) {
+			return ((is_array($element))
+				? $this->array_clone($element)
+				: ((is_object($element))
+					? clone $element
+					: $element
+				)
+			);
+		}, $array);
 	}
 ////
 ////
@@ -3448,9 +3513,17 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$handCards = $this->cards->getCards( $card_ids );
 			self::dump("[bmc] handCards:", $handCards );
 			
-			$boardPlusHandCards = array_merge( $boardCards, $handCards );
+//			$boardPlusHandCards = array_merge( $boardCards, $handCards );
 			
+			$boardPlusHandCards = $boardCards + $handCards ;
+
 			self::dump("[bmc] boardPlusHandCards After:", $boardPlusHandCards );
+			
+			$boardIsRun = $this->checkRun( $boardCards, true ); // cards, silent
+			$boardIsSet = $this->checkSet( $boardCards );
+			
+			$bothIsRun = $this->checkRun( $boardPlusHandCards, true ); // cards, silent
+			$bothIsSet = $this->checkSet( $boardPlusHandCards );
 			
 			// If all the cards are a run then keep trying to play them until it works
 			
@@ -3461,11 +3534,21 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 	// Start change for playing multiple Nov 2022.
 			if ( $this->checkRun( $boardPlusHandCards, true ) == true ) {
+				self::dump("[bmc] checkRun passed as true:", $boardPlusHandCards );
+				
+				if ( count( $boardPlusHandCards ) > 14 ) { // Could have A234 up to JQKA, so 14 cards is OK
+					throw new BgaUserException( self::_('Cannot play there. That board area is full.') );
+				}
+
 				self::trace( "[bmc] Playing multiple on run." );
 				foreach( $handCards as $card ) {
 					self::dump("[bmc] PlayMultiple:", $card );
 					self::dump("[bmc] PlayMultiple:", $card['id'] );
-					$this->playCardFinish( $card['id'], $player_id, $boardArea, $boardPlayer, false );
+					// Together all cards are a run so put the hand cards each down
+					$playWeight = $this->cards->countCardInLocation($boardArea) + 100;
+					
+					$this->playOnRunAndNotify( $card['id'], $boardArea, $boardPlayer, $playWeight, $player_id, $card );
+
 				}
 			} else if ( $this->checkSet( $boardPlusHandCards ) == true ) {
 				self::trace( "[bmc] Playing multiple on set." );
@@ -4242,7 +4325,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		// If testing, use cards specifically for testing purposes
 		$presetSetupHands = false;
-		//$presetSetupHands = true;
+		// $presetSetupHands = true;
 		
 		if ( $presetSetupHands ) { //
 			self::presetHands( $players, false ); // debug true or false
@@ -5747,11 +5830,14 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			self::setGameStateValue( 'liverpoolExists', 1 ); // 0=not exist; 1=exist
 			self::trace( "[bmc] Stored liverpoolExists=1" );
 			
-			self::notifyAllPlayers(
-				'liverpoolExists',
-				'Liverpool!', // Put it in the log
-				array ()
-			);
+			// Players requested to hide the notification of Liverpool! in the log.
+			// Uncomment this notifyAllPlayers command if you want that.
+			//
+			// self::notifyAllPlayers(
+				// 'liverpoolExists',
+				// 'Liverpool!', // Put it in the log
+				// array ()
+			// );
 		} else {
 			self::setGameStateValue( 'liverpoolExists', 0 ); // 0=not exist; 1=exists
 			self::trace( "[bmc] Stored liverpoolExists=0" );

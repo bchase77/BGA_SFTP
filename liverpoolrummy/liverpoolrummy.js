@@ -110,6 +110,7 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 ////////
 // 
+// 10/22/2023: Should not be able to declare LIVERPOOL on yourself, thus emptying out with 6 playable cards while it's not your turn.
 // 24/09 01:48:43 [error] [T421028219] [173.94.184.233] [88197647/LisaKRich] Error (1213) while processing SQL request: Deadlock found when trying to get lock; try restarting transaction - Request: SELECT player_id, player_is_multiactive FROM player 
 
 // Wrong player designated "WENT OUT" after liverpool go out
@@ -1083,9 +1084,12 @@ console.log( this.gamedatas.enableWishList );
 
 			console.log( this.gamedatas.liverpoolExists );
 
-			if ( this.gamedatas.liverpoolExists == 1 ){ // 0=Not exist; 1=Exists
-				dojo.replaceClass( 'buttonLiverpool', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
-			}
+			// Players asked to hide LIVERPOOL condition. If you don't want it hidden, uncomment this IF:
+			// if ( this.gamedatas.liverpoolExists == 1 ){ // 0=Not exist; 1=Exists
+				// dojo.replaceClass( 'buttonLiverpool', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+			// }
+
+			
 			
 			for (var player in this.gamedatas.players) {
  console.log(player);
@@ -2651,7 +2655,10 @@ console.log(notif);
 		notif_liverpoolExists : function( notif ){
 console.log("[bmc] ENTER Liverpool Exists");
 console.log(notif);
-			dojo.replaceClass( 'buttonLiverpool', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+
+			// Players asked to hide LIVERPOOL condition. If you don't want it hidden, uncomment this dojo:
+//			dojo.replaceClass( 'buttonLiverpool', "bgabutton_red", "bgabutton_gray" ); // item, add, remove
+
 			this.gamedatas.liverpoolExists = true;
 console.log("[bmc] EXIT Liverpool Exists");
 		},
@@ -2661,7 +2668,9 @@ console.log("[bmc] EXIT Liverpool Exists");
 		notif_liverpoolDeclared : function( notif ){
 console.log("[bmc] ENTER Liverpool Declared");
 console.log(notif);
-			dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+//			dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove			
+			dojo.replaceClass( 'buttonLiverpool', "bgabutton_blue", "bgabutton_red" ); // item, add, remove
+
 console.log("[bmc] EXIT Liverpool Declared");
 		},
 /////////
@@ -4252,7 +4261,8 @@ console.log(dp_items);
 			// Unlight the Liverpool button if lit up and if the discard was chosen
 			
 			if ( drawSource == 'discardPile' ) {
-				dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+//				dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+				dojo.replaceClass( 'buttonLiverpool', "bgabutton_blue", "bgabutton_red" ); // item, add, remove
 				this.gamedatas.liverpoolExists = false;
 			}
 
@@ -5413,7 +5423,8 @@ console.log( notif );
 			}
 
 			// Clear out the Liverpool condition (unlight the button)
-			dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+//			dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
+			dojo.replaceClass( 'buttonLiverpool', "bgabutton_blue", "bgabutton_red" ); // item, add, remove
 
 			// Steadily increment every time a card is drawn to set the weight properly
 			this.drawCounter++;
