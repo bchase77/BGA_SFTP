@@ -110,14 +110,22 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 ////////
 // 
+// 11/11/2023: Run sorted wrong. Ajoker3456joker89 but displayed as A3456joker89joker.
 // 10/22/2023: Should not be able to declare LIVERPOOL on yourself, thus emptying out with 6 playable cards while it's not your turn.
 // 24/09 01:48:43 [error] [T421028219] [173.94.184.233] [88197647/LisaKRich] Error (1213) while processing SQL request: Deadlock found when trying to get lock; try restarting transaction - Request: SELECT player_id, player_is_multiactive FROM player 
 
-// Wrong player designated "WENT OUT" after liverpool go out
+// X 10/28/2023 Wrong player designated "WENT OUT" after liverpool go out
 // kriskeith tried to buy but it didn't go through (filed bug)
 //
+// Person went down, discarded and went out and handcount reports as NAN
 // TODO: 8/13/2023: Chrissy NZ says she was not able to put 2 5s onto table 5s, no joker
 // 
+// 10/28/2023: if you refresh before selecting deal me in, it shows the previous round person going out.    
+
+// 10/28/2023: On a phone: When on the phone and it's more than 2 rows and someone else goes down it covers a row. But refresh fixes it.
+//
+// 10/28/2023: Unexpected error: Error while processing database request (reference: VO 29/10 02:17:07)
+
 // Now:
 // Turn is kds1 (43); Discards playable. Good.
 // Turn is now ks3 (45). But ks3 (45) is interrupted by ks0 (42).
@@ -1783,8 +1791,8 @@ console.log( "[bmc] buyrequested: " + this.buyRequested);
 		sortBoard : function( ) {
 console.log( "[bmc] ENTER sortBoard" );
 			for ( var player in this.gamedatas.players ) {
-// console.log("SORTBOARD player");
-// console.log(player);
+console.log("SORTBOARD player");
+console.log(player);
 				cards = this.downArea_A_[ player ].getAllItems();
 // console.log(cards);
 //				if ( cards != null ) {
@@ -1835,41 +1843,25 @@ console.log( "[bmc] EXIT sortBoard" );
 console.log("[bmc] Enter addJokerBorder");
 console.log( jokers );
 
-			for ( joker of jokers ) {
+			// for ( joker of jokers ) {
 
-console.log("[bmc] REALLY Add GREEN BORDER1");
-console.log(joker);
-console.log($(joker));
+// console.log("[bmc] REALLY Add GREEN BORDER1");
+// console.log(joker);
+// console.log($(joker));
 
-			return;
+			// return;
 
-
-
-
-
-
-
-				if ( $(joker) != null ) {
-					dojo.addClass( joker, 'stockitem_extraJoker' );
-					if ( $(joker).classList.contains( "stockitem_selected" )) {
-						if ( $(joker).classList.contains( "blink" )) {
-							dojo.removeClass( joker, "blink" );
-						} else {
-							dojo.addClass( joker, "blink" );
-						}
-					}
-				}
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-			}
+				// if ( $(joker) != null ) {
+					// dojo.addClass( joker, 'stockitem_extraJoker' );
+					// if ( $(joker).classList.contains( "stockitem_selected" )) {
+						// if ( $(joker).classList.contains( "blink" )) {
+							// dojo.removeClass( joker, "blink" );
+						// } else {
+							// dojo.addClass( joker, "blink" );
+						// }
+					// }
+				// }
+			// }
 
 		console.log("[bmc] Exit addJokerBorder");
 		},
@@ -1896,16 +1888,32 @@ console.log($(joker));
 /////////
 /////////
 /////////
-		sortRun : function( boardCards, downArea, boardPlayer ) {
-console.log( "[bmc] ENTER sortRun2" );
-console.log( boardPlayer );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		sortRun : function( boardCards ) {
+console.log( "[bmc] ENTER sortRunNew" );
 console.log( boardCards );
 
-			let weightChange = {};
-					
 			if ( boardCards.length != 0 ) {
 				var cards = new Array();
 
+				var foundAnAce = false;
+				
 				// Reconstruct the card values from the type
 				for ( cidx in boardCards ) {
 console.log("[bmc] In The Loop");
@@ -1913,36 +1921,536 @@ console.log(cidx);
 console.log(boardCards[ cidx ]);
 					cards[ cidx ] = {};
 					
-console.log(boardCards[ cidx ][ 'type' ] );
+// console.log(boardCards[ cidx ][ 'type' ] );
 					if (( boardCards[ cidx ][ 'type' ] == 52 ) || 
 					    ( boardCards[ cidx ][ 'type' ] == 53 )) {
-console.log("[bmc] Yes card is a Joker");
+// console.log("[bmc] Yes card is a Joker");
 						cards[ cidx ][ 'value' ] = 0; // Arbitrarily choosing value 0 for joker
-						cards[ cidx ][ 'type' ] = 0;
+						cards[ cidx ][ 'type' ]  = 0;
+					} else if ((boardCards[ cidx ][ 'type' ] % 13 ) == 0 ) {
+						if ( foundAnAce == false ){
+							foundAnAce = true;
+console.log("Found first ace");
+							cards[ cidx ][ 'value' ] = 1; // Set ace to low for first one found, it still might be high
+							cards[ cidx ][ 'type' ]  = 1;
+						} else {
+console.log("Found second ace");
+							cards[ cidx ][ 'value' ] = 14; // Set ace to high for second one found
+							cards[ cidx ][ 'type' ]  = 14;
+						}
 					} else {
-console.log("[bmc] Card is not a Joker");
+// console.log("[bmc] Card is not a Joker");
 						cards[ cidx ][ 'value' ] = (boardCards[ cidx ][ 'type' ] % 13 ) + 1;
-						cards[ cidx ][ 'type' ] = (boardCards[ cidx ][ 'type' ] % 13 ) + 1;
+						cards[ cidx ][ 'type' ]  = (boardCards[ cidx ][ 'type' ] % 13 ) + 1;
 					}
 					cards[ cidx ][ 'id' ] = boardCards[ cidx ][ 'id' ];
 				}
 	
 				cards.sort( this.compareValue );
 
-console.log("[bmc] cards:");
+console.log("[bmc] Sorted boardcards:");
 console.log(cards);
-console.log(downArea);
-				
-//console.log("[bmc] UPDATING DISPLAY FOR THAT BOARDPLAYER1");
-//console.log( boardPlayer );
-				this.updatingBoardPlayer = boardPlayer;
-				
-//SHOULDNT SORT IF ITS A JOKER
-				// Count number of jokers and track their IDs to set weights later
+				// Count number of jokers and aces and track their IDs to set weights later
 				
 				var jokerCount = 0;
 				var jokers = new Array();
 				var thereIsAnAce = false;
+				var aceCount = 0;
+				
+				for ( let i in cards ) {
+					if ( cards[ i ][ 'type' ] == 0 ) {
+							jokers[ jokerCount ] = {
+								"id" : cards[ i ][ 'id' ],
+								"type" : 0 };	 // Start jokers at value 0
+							jokerCount++;
+					}
+					if (( cards[ i ][ 'type' ] == 1 ) ||
+					    ( cards[ i ][ 'type' ] == 14 )) {
+						thereIsAnAce = true;
+						aceCount++;
+					}
+				}
+console.log("[bmc] jokers:");
+console.log(jokers);
+console.log(jokerCount);
+console.log(thereIsAnAce);
+console.log(aceCount);
+				var cardValuesHard = new Array();
+				
+				for ( let i in cards ) {
+					if (( cards[ i ][ 'type' ] != 0 ) &&  // Jokers here are type 0
+					    ( cards[ i ][ 'type' ] != 1 )){   // Ignore aces for now
+						cardValuesHard[ cards[ i ][ 'type' ]] = cards[ i ][ 'type' ];
+					}
+				}
+console.log("[bmc] cardValuesHard");
+console.log(cardValuesHard);
+				var usedPositions = new Array(); // Temporary variable to track positions in the run while assigning jokers
+				
+				var jokerIndex = 0;
+				var foundFirst = false;
+				
+				// Reindex cards with the IDs as the indices
+				
+				// Go through positions 1 through King and track 'real' cards if they exist
+				for ( let i = 2; i < 14 ; i++) {
+console.log( i );
+// console.log(cardValuesHard[ i ]);
+// console.log(foundFirst);
+					if ( cardValuesHard[ i ] != null ) {
+console.log("Location notNull:  (cards)");
+// console.log( i );
+console.log( cards );
+						foundFirst = true;
+						index = cards.map( function(e) { return e.type; }).indexOf( i );
+console.log("FOUND THE FIRST HARD CARD (index, value)");
+console.log(index);
+console.log(i);
+						cards[ index ][ 'boardLieIndex' ] = i;
+						usedPositions.push(i);
+					} else {
+console.log("card location is Null");
+console.log( i );
+						if ( foundFirst ) {
+console.log("foundFirst");
+console.log(cardValuesHard.length);
+console.log("Nov2023cards");
+console.log(cards);
+
+
+
+							// if this is the last of the hard cards then ignore
+							// Deal with the aces later
+							// This presumes the cards which are down are indeed a valid run
+							
+console.log("[bmc] Assigning Joker!");
+console.log(i);
+							// if ( i < cardValuesHard.length + 1 ) {
+							if ( i < cardValuesHard.length ) {
+console.log(jokerIndex);
+console.log(jokerCount);
+								if ( jokerIndex < jokerCount ) {
+
+									index = cards.map( function(e) { return e.id; }).indexOf( jokers[ jokerIndex ][ 'id' ]);
+console.log("[bmc] Assigning joker index");
+console.log(index);
+									jokerIndex++;
+
+									cards[ index ][ 'boardLieIndex' ] = i;
+//									cards[ jokerIndex ][ 'boardLieIndex' ] = i;
+									usedPositions.push(i);
+console.log(usedPositions);
+								} else {
+console.log("[bmc] ERROR Not enough Jokers!");
+//  Presume the other function did it's job and allowed only true runs.
+								}
+							} else {
+console.log("[bmc] FINISHED HARD CARDS do not put high ace, yet");
+							}
+console.log("[bmc] FINISHED HARD CARDS");
+						}
+					}
+// console.log("[bmc] Spot near end of first loop");
+				}
+
+// All holes have been filled with jokers. Now figure out where to put the jokers (depends on ace and distance).
+
+				leftOverJokers = jokerCount - jokerIndex;
+				
+console.log("[bmc] Assess remaining jokers");
+console.log( jokerCount);
+console.log( jokerIndex );
+console.log( leftOverJokers );
+console.log( jokers );
+console.log( cards );
+console.log( usedPositions );
+console.log( aceCount );
+				
+// Put an ace as index 1 if any of these is true:
+  // There are 2 aces
+  // There are 14 cards
+  // There are 13 cards and no joker
+  // 12 cards and index 13 is empty
+  // N cards and N+1 is empty
+// else ace is index high
+    
+// If only 1 ace, determine if it's high or low, then assign remaining jokers
+
+				var minUsed = Math.min.apply( Math, usedPositions );
+				var maxUsed = Math.max.apply( Math, usedPositions );
+console.log( minUsed );
+console.log( maxUsed );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				switch( aceCount ) {
+					case 0 : // No need to assign aces, just place the jokers properly
+console.log("[bmc] No aces.");
+						if ( leftOverJokers > 0 ) { // Start by assigning some below the lowest hard number
+							for ( let i = minUsed - 1; i > 0; i-- ){
+								if ( jokerIndex < jokerCount ) {
+									index = cards.map( function(e) { return e.id; }).indexOf( jokers[ jokerIndex ][ 'id' ]);
+console.log( index );
+									cards[ index ][ 'boardLieIndex' ] = i;
+									usedPositions.push(i);
+									jokerIndex++;
+								}
+							}
+							leftOverJokers = jokerCount - jokerIndex;
+							
+							if ( leftOverJokers > 0 ) { // If there are still some jokers then put them high
+								// Put extra jokers on the right unless there is a High Ace
+								for ( let i = jokerIndex; i < jokerCount; i++ ) {
+									cards[ i ][ 'boardLieIndex' ] = 15;
+									usedPositions.push(i);
+								}
+							}
+						}
+						break;
+					case 1 : // There is 1 ace. Put the ace low if min is closer to 1 and high if max is closer to 14
+console.log("[bmc] One ace.");
+						if (( minUsed - 1) < ( 14 - maxUsed )){
+							// Put ace low
+							index = cards.map( function(e) {return e.type; }).indexOf(1);
+console.log( index );
+							if ( index > -1 ) {
+								cards[ index ][ 'boardLieIndex' ] = 1;
+								usedPositions.push( 1 );
+							} else {
+								console.log("[bmc] ASSERT DID NOT FIND LOW ACE");
+							}
+						 
+							// Now assign jokers below the lowest hard number
+						 
+							if ( leftOverJokers > 0 ) {
+	console.log( minUsed );
+								for ( let i = minUsed - 1; i > 1; i-- ){ // Don't assign to ace
+									if ( jokerIndex < jokerCount ) {
+										index = cards.map( function(e) { return e.id; }).indexOf( jokers[ jokerIndex ][ 'id' ]);
+	console.log( index );
+										cards[ index ][ 'boardLieIndex' ] = i;
+										usedPositions.push(i);
+										jokerIndex++;
+									}
+								}
+								
+								leftOverJokers = jokerCount - jokerIndex;
+								// If there are still some jokers then put them high
+								 
+								if ( leftOverJokers > 0 ) {
+									// Put extra jokers on the right but less than the ace
+									for ( let i = jokerIndex; i < jokerCount; i++ ) {
+										cards[ i ][ 'boardLieIndex' ] = 13.5;
+										usedPositions.push(i);
+									}
+								}
+							}
+						} else {
+							// Put ace high
+							index = cards.map( function(e) {return e.type; }).indexOf(1);
+console.log( index );
+							if ( index > -1 ) {
+								cards[ index ][ 'boardLieIndex' ] = 14;
+								usedPositions.push( 14 );
+							} else {
+								console.log("[bmc] ASSERT DID NOT FIND HIGH ACE");
+							}
+							// Now assign jokers above the highest hard number
+						 
+							if ( leftOverJokers > 0 ) {
+	console.log( minUsed );
+								for ( let i = maxUsed + 1; i < 14; i++ ){ // Don't assign to ace
+									if ( jokerIndex < jokerCount ) {
+										index = cards.map( function(e) { return e.id; }).indexOf( jokers[ jokerIndex ][ 'id' ]);
+	console.log( index );
+										cards[ index ][ 'boardLieIndex' ] = i;
+										usedPositions.push(i);
+										jokerIndex++;
+									}
+								}
+								
+								leftOverJokers = jokerCount - jokerIndex;
+								// If there are still some jokers then put them low
+								 
+								if ( leftOverJokers > 0 ) {
+									// Put extra jokers on the left but above the ace
+									for ( let i = jokerIndex; i < jokerCount; i++ ) {
+										cards[ i ][ 'boardLieIndex' ] = 1.5;
+										usedPositions.push(i);
+									}
+								}
+							}
+						
+						
+						
+						
+						
+						}
+
+						
+						
+
+						break;
+					case 2 : // There are 2 aces. Assign 1 low and 1 high
+console.log("[bmc] Two aces.");
+
+						// Find the index of the ace (type == 1); Set to 1 if present
+						index = cards.map( function(e) {return e.type; }).indexOf(1);
+console.log( index );
+						if ( index > -1 ) {
+							cards[ index ][ 'boardLieIndex' ] = 1;
+							usedPositions.push( 1 );
+						} else {
+							console.log("[bmc] ASSERT DID NOT FIND LOW ACE");
+						}
+
+						// Set the 'other' ace to be lieIndex 14
+						// Find the index of the ace (type == 14). It was set to 14 previously:
+						index = cards.map( function(e) {return e.type; }).indexOf(14);
+console.log( index );
+						if ( index > -1 ) {
+							cards[ index ][ 'boardLieIndex' ] = 14;
+							usedPositions.push( 14 );
+						} else {
+							console.log("[bmc] ASSERT DID NOT FIND HIGH ACE");
+						}
+						break;
+				}
+
+console.log( cards );
+console.log( usedPositions );
+				
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+				switch( aceCount ) {
+					case '0' :
+						console.log('myWishListClubs_item_'    + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+						dojo.addClass('myWishListClubs_item_'    + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+						break;
+					case '1' :
+						console.log('myWishListSpades_item_'    + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+						dojo.addClass('myWishListSpades_item_'   + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+						break;
+					case '2' :
+						console.log('myWishListHearts_item_'    + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+						dojo.addClass('myWishListHearts_item_'   + this.wishListAll[ item ][ 'card_type_arg' ], 'wishListItem_selected');
+						break;
+				}
+
+				// If low reaches to ace then assign some jokers low and ace if it exists
+				let minUsed = Math.min.apply( Math, usedPositions );
+console.log( minUsed);
+
+				if ( minUsed - leftOverJokers < 2 ) {
+					for ( let i = minUsed; i > 1 ; i-- ) {
+						index = cards.map( function(e) { return e.id; }).indexOf( jokers[ jokerIndex ][ 'id' ]);
+console.log( index );
+
+//						index = cards.map( function(e) { return e.type; }).indexOf(i);
+						cards[ index ][ 'boardLieIndex' ] = i;
+						jokerIndex++;
+					}
+				}
+
+				} else { // Else assign jokers high
+				
+				}
+
+34567890J   *A == Low == Min - leftOverJokers > 1
+34567890J   **A == Low or High == Min - leftOverJokers > 1
+ 4567890JQ  *A == High
+ 4567890J   **A == Low or High
+  567890J   **A == High
+  
+3 1 == >1 => Min - LOJ < 3
+4 1 == >2 => Min - 
+5 1 == >3
+
+
+
+				if (( aceCount > 1 ) ||
+				    (  boardCards.length == 14 ) ||
+					(( boardCards.length == 13 ) && ( jokerCount < 1 )) ||
+					( cardValuesHard[ boardCards.length + 1 ] == null )) {
+console.log("[bmc] Ace must be low");					
+					
+					// Find the index of the ace (type == 1); Set to 1 if present
+					index = cards.map( function(e) {return e.type; }).indexOf(1);
+console.log( index );
+					if ( index > -1 ) {
+						cards[ index ][ 'boardLieIndex' ] = 1;
+						usedPositions.push( 1 );
+					}
+				} else {
+					if ( aceCount > 0 ) {
+						// If there is one ace and all that stuff is false then make it high
+						index = cards.map( function(e) {return e.type; }).indexOf(1);
+console.log( index );
+						cards[ index ][ 'boardLieIndex' ] = 14;
+						usedPositions.push( 14 );
+					}
+				}
+				
+				if ( aceCount > 1 ) {
+					// Set the 'other' ace to be index 14
+					// Find the index of the ace (type == 14). It was set to 14 previously:
+					index = cards.map( function(e) {return e.type; }).indexOf(14);
+console.log( index );
+					cards[ index ][ 'boardLieIndex' ] = 14;
+					usedPositions.push( 14 );
+				}					
+
+
+// try this not sure if it's right, closing computer on plane
+console.log("[bmc] EXTRA ON RIGHT");
+				// Put extra jokers on the right unless there is a High Ace
+				for ( let i = jokerIndex; i < jokerCount; i++ ) {
+					cards[ i ][ 'boardLieIndex' ] = 15;
+				}
+*/				
+				// Sort the boardcards by boardLieIndex
+				cards.sort( this.compareBoardLieIndex );
+console.log("[bmc] ALL SORTED cards:" );
+console.log( cards );
+
+				var newRunItems = new Array();
+				
+				for ( let i in cards ) {
+					index = boardCards.map( function(e) {return e.id; }).indexOf(cards[ i ][ 'id' ]);
+console.log("[bmc] i, cards[], index, boardCards[]:");
+console.log(i);
+console.log(cards[ i ][ 'id' ]);
+console.log(index);
+console.log(boardCards[ index ][ 'type' ]);
+					newRunItems[ i ] = {
+						id: cards[ i ][ 'id' ],
+						type: boardCards[ index ][ 'type' ]
+					};
+console.log(newRunItems);
+				}
+console.log("[bmc] FINAL newRunItems");
+console.log(newRunItems);
+
+console.log( "[bmc] EXIT sortRun2" );
+				return newRunItems;
+
+			}
+		},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////
+/////////
+/////////
+		sortRunOld : function( boardCards, downArea, boardPlayer ) {
+console.log( "[bmc] ENTER sortRun2" );
+// console.log( boardPlayer );
+console.log( boardCards );
+
+			// let weightChange = {};
+					
+			if ( boardCards.length != 0 ) {
+				var cards = new Array();
+
+				// Reconstruct the card values from the type
+				for ( cidx in boardCards ) {
+// console.log("[bmc] In The Loop");
+// console.log(cidx);
+// console.log(boardCards[ cidx ]);
+					cards[ cidx ] = {};
+					
+// console.log(boardCards[ cidx ][ 'type' ] );
+					if (( boardCards[ cidx ][ 'type' ] == 52 ) || 
+					    ( boardCards[ cidx ][ 'type' ] == 53 )) {
+// console.log("[bmc] Yes card is a Joker");
+						cards[ cidx ][ 'value' ] = 0; // Arbitrarily choosing value 0 for joker
+						cards[ cidx ][ 'type' ] = 0;
+					} else {
+// console.log("[bmc] Card is not a Joker");
+						cards[ cidx ][ 'value' ] = (boardCards[ cidx ][ 'type' ] % 13 ) + 1;
+						cards[ cidx ][ 'type' ]  = (boardCards[ cidx ][ 'type' ] % 13 ) + 1;
+					}
+					cards[ cidx ][ 'id' ] = boardCards[ cidx ][ 'id' ];
+				}
+	
+				cards.sort( this.compareValue );
+
+console.log("[bmc] Sorted cards:");
+console.log(cards);
+// console.log(downArea);
+				
+//console.log("[bmc] UPDATING DISPLAY FOR THAT BOARDPLAYER1");
+//console.log( boardPlayer );
+				// this.updatingBoardPlayer = boardPlayer;
+				
+//SHOULDNT SORT IF ITS A JOKER
+				// Count number of jokers and aces and track their IDs to set weights later
+				
+				var jokerCount = 0;
+				var jokers = new Array();
+				var thereIsAnAce = false;
+				var aceCount = 0;
 				
 				for ( let i in cards ) {
 					if ( cards[ i ][ 'type' ] == 0 ) {
@@ -1953,12 +2461,14 @@ console.log(downArea);
 					}
 					if ( cards[ i ][ 'type' ] == 1 ) {
 						thereIsAnAce = true;
+						aceCount++;
 					}
 				}
 console.log("[bmc] jokers:");
 console.log(jokers);
 console.log(jokerCount);
-console.log(thereIsAnAce);				
+console.log(thereIsAnAce);
+console.log(aceCount);
 				var cardValuesHard = new Array();
 				
 				for ( let i in cards ) {
@@ -1970,7 +2480,7 @@ console.log(thereIsAnAce);
 console.log("[bmc] cardValuesHard");
 console.log(cardValuesHard);
 				
-				var usedPositions = new Array();
+				var usedPositions = new Array(); // Temporary variable to track positions in the run while assigning jokers
 				
 				var jokerIndex = 0;
 console.log("Looping over hard cards");				
@@ -2057,6 +2567,29 @@ console.log("[bmc] FINISHED HARD CARDS");
 					}
 console.log("[bmc] Spot near end of loop");
 				}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 console.log("[bmc] DEBUG]");
 console.log(cards);
@@ -2195,27 +2728,27 @@ console.log("[bmc] EXTRA ON LEFT");
 				}
 				
 				
-console.log("[bmc] ABOUT TO ADD JOKER TOOLTIPS");
-				var extraJokerArray = new Array();
+// console.log("[bmc] ABOUT TO ADD JOKER TOOLTIPS");
+				// var extraJokerArray = new Array();
 				
-				for ( let i = jokerIndex; i < jokerCount; i++ ) {
-console.log(i);
-					var jokerExtraAddGreen = downArea + '_' + boardPlayer + '_item_' + cards[i]['id'];
-console.log("[bmc] ADDING GREEN BORDER1");
-console.log(jokerExtraAddGreen);
-console.log($(jokerExtraAddGreen));
+				// for ( let i = jokerIndex; i < jokerCount; i++ ) {
+// console.log(i);
+					// var jokerExtraAddGreen = downArea + '_' + boardPlayer + '_item_' + cards[i]['id'];
+// console.log("[bmc] ADDING GREEN BORDER1");
+// console.log(jokerExtraAddGreen);
+// console.log($(jokerExtraAddGreen));
 
 					// Only make it green if there is not an ace
-					if ( !thereIsAnAce ) {
-						extraJokerArray.push( jokerExtraAddGreen );
-					}
-				}
-console.log("[bmc] extraJokerArray");				
-console.log(extraJokerArray);				
+					// if ( !thereIsAnAce ) {
+						// extraJokerArray.push( jokerExtraAddGreen );
+					// }
+				// }
+// console.log("[bmc] extraJokerArray");				
+// console.log(extraJokerArray);				
 
-				setTimeout(
-					this.addJokerBorder( extraJokerArray ), 5000
-				);
+				// setTimeout(
+					// this.addJokerBorder( extraJokerArray ), 5000
+				// );
 				
 				
 console.log("[bmc] usedPositions:");
@@ -2227,13 +2760,13 @@ console.log(usedPositions);
 console.log("[bmc] cards:");
 console.log( cards );
 
-				for ( let i = 0; i < 15 ; i++ ) {
-					if ( cards[ i ] != null ) {
-						weightChange[ i ] = cards[ i ][ 'boardLieIndex' ];
-					}
-				}
-console.log("[bmc] weightChange" );
-console.log( weightChange );
+				// for ( let i = 0; i < 15 ; i++ ) {
+					// if ( cards[ i ] != null ) {
+						// weightChange[ i ] = cards[ i ][ 'boardLieIndex' ];
+					// }
+				// }
+// console.log("[bmc] weightChange" );
+// console.log( weightChange );
 
 				// Sort the boardcards by boardLieIndex
 				cards.sort( this.compareBoardLieIndex );
@@ -3207,7 +3740,7 @@ console.log("[bmc] EXIT onSubmitWishList");
 /////////
 		onDownAreaSelect : function() {
 console.log("[bmc] ENTER onDownAreaSelect");
-// console.log(this.player_id);
+console.log(this.player_id);
 
 			var isReadOnly = this.isReadOnly();
 			if ( isReadOnly ) { // Spectators are read only
@@ -3532,7 +4065,7 @@ console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById( card_id );
 				this.myPrepJoker.removeFromStockById( card_id );
 				dojo.removeClass('myPrepJoker', "buyerLit");
-console.log("[bmc] Removed.");
+console.log("[bmc 4017] Removed.");
 				// this.sortArea_A( boardPlayer );
 			}
 			
@@ -3548,7 +4081,7 @@ console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById( card_id );
 				this.myPrepJoker.removeFromStockById( card_id );
 				dojo.removeClass('myPrepJoker', "buyerLit");
-console.log("[bmc] Removed.");
+console.log("[bmc 4033] Removed.");
 				// this.sortArea_B( boardPlayer );
 			}
 			if ( boardArea === 'playerDown_C' ) {
@@ -3562,9 +4095,11 @@ console.log("[bmc] Added.");
 				this.playerHand.removeFromStockById(card_id);
 				this.myPrepJoker.removeFromStockById( card_id );
 				dojo.removeClass('myPrepJoker', "buyerLit");
-console.log("[bmc] Removed.");
+console.log("[bmc 4047] Removed.");
 				//this.sortArea_C( boardPlayer );
 			}
+
+console.log("[bmc] Joker moved, now sort the board cards.");
 			this.sortBoard();
 			//this.updateCardsDisplay();
 			
@@ -3727,6 +4262,13 @@ console.log(dp_items);
 					
 					var card_id = items[0].id;
 console.log(card_id);
+
+					if ( isNaN( card_id )){
+						card_id = 0; // Not really 0, trying to avoid PHP error for missing ID
+						//  "Unexpected exception: Failed to get mandatory argument: id"
+					}
+console.log(card_id);
+
 					this.ajaxcall( "/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
 						id : card_id,
 						drawSource : drawSource,
@@ -4320,30 +4862,37 @@ console.log(weightChange);
 				
 console.log( '[bmc] addTo: ' + addTo );
 				
-				if ( drawSource == 'deck' ) {
+			if ( drawSource == 'deck' ) {
 console.log( '[bmc] Deck' );
 // There is always only 1 card on the draw deck so just leave it there
-					// this.deckOne.removeFromStockById(card_id, addTo );
+				// this.deckOne.removeFromStockById(card_id, addTo );
 console.log("BMC 082723: Trying to make it slide");				
-				//this.deckOne.removeFromStockById( card_id, addTo ); // Add the card to my hand from the board
-				}
-				if ( drawSource == 'discardPile' ) {
-console.log( '[bmc] DP' );
+			//this.deckOne.removeFromStockById( card_id, addTo ); // Add the card to my hand from the board
+			}
+			if ( drawSource == 'discardPile' ) {
+console.log( '[bmc] from DP' );
 //					this.discardPile.removeFromStockById( card_id, addTo );
-					this.discardPileOne.removeFromStockById( card_id, addTo );
-				}
-				if ( drawSource == 'playerDown_A' ) {
-console.log( '[bmc] A' );
-					this.downArea_A_[ drawPlayer ].removeFromStockById( card_id, addTo );
-				}
-				if ( drawSource == 'playerDown_B' ) {
-console.log( '[bmc] B' );
-					this.downArea_B_[ drawPlayer ].removeFromStockById( card_id, addTo );
-				}
-				if ( drawSource == 'playerDown_C' ) {
-console.log( '[bmc] C' );
-					this.downArea_C_[ drawPlayer ].removeFromStockById( card_id, addTo );
-				}
+				this.discardPileOne.removeFromStockById( card_id, addTo );
+			}
+			if ( drawSource == 'playerDown_A' ) {
+console.log( '[bmc] from A' );
+				this.downArea_A_[ drawPlayer ].removeFromStockById( card_id, addTo );
+			}
+			if ( drawSource == 'playerDown_B' ) {
+console.log( '[bmc] from B' );
+				this.downArea_B_[ drawPlayer ].removeFromStockById( card_id, addTo );
+			}
+			if ( drawSource == 'playerDown_C' ) {
+console.log( '[bmc] from C' );
+				this.downArea_C_[ drawPlayer ].removeFromStockById( card_id, addTo );
+			}
+			
+console.log( '[bmc] this.downAreas:' );
+console.log( this.downArea_A_[ drawPlayer ] );
+console.log( this.downArea_B_[ drawPlayer ] );
+console.log( this.downArea_C_[ drawPlayer ] );
+
+		this.sortBoard();
 		console.log("[bmc] EXIT drawCard");
 		},
 /////////
