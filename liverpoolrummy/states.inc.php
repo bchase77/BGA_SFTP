@@ -158,7 +158,7 @@ $machinestates = array(
 		"action" => "stLiverpoolDraw", // ACTION: Do this upon entering the state
 		"args" => "argLiverpoolDraw",
         "possibleactions" => array( "drawCard" ), // Only action is to draw the discard (automatic)
-        "transitions"     => array( 35 ) // Then go to playcard
+        "transitions"     => array( "drawCard" => 35 ) // Then go to playcard
     ), 
     53 => array(
         "name" => "liverpoolReturn",

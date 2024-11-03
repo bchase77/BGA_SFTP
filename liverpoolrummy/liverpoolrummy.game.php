@@ -4394,8 +4394,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::dump( "[bmc] qtyToDeal:", $qtyToDeal );
 
 		// If testing, use cards specifically for testing purposes
-		//$presetSetupHands = false;
-		$presetSetupHands = true;
+		$presetSetupHands = false;
+		//$presetSetupHands = true;
 		
 		if ( $presetSetupHands ) { //
 			self::presetHands( $players, false ); // debug true or false
