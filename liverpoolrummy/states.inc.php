@@ -97,6 +97,7 @@ $machinestates = array(
         "type" => "activeplayer", //multipleactiveplayer
 		"action" => "stPlayerTurnPlay", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnPlay",
+		// TODO: I think I need to add LIVERPOOL PENALTY => 60 here, like state 30 above (and also the transitions line)
         "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple', "zombiePass", "buyRequest", "notBuyRequest", "liverpool" ),
         "transitions" => array( "playerGoDown" => 35, "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35,
 			"zombiePass" => 37, "liverpool" => 50 )
@@ -125,6 +126,7 @@ $machinestates = array(
         "type" => "multipleactiveplayer",
         "action" => "stWentOut", // ACTION: Do this upon entering the state
 		"args" => "argWentOut",
+		// TODO: Need to disallows clicking LIVERPOOL if the game has ended.
 		"possibleactions" => array( "playerHasReviewedHand", 'endGame' ),
         "transitions" => array( "playerHasReviewedHand" => 45, 'endGame' => 99 )
     ),

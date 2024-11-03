@@ -703,7 +703,7 @@ class LiverpoolRummy extends Table
 ////////
 ////////
 	function presetHands( $players, $debug ) {
-		self::trace("[bmc] ENTER presetHands");
+		self::trace("[bmc] ENTER presetHands"); // Colors 1,2,3,4 = CSHD
 		$testPlayerHandArray = [];
 
 		$testPlayerHandArray[3] = array(
@@ -713,35 +713,51 @@ class LiverpoolRummy extends Table
 				),
 			1 => array(
 				'type' => '1', // Suit
-				'type_arg' => '6' // Value
+				'type_arg' => '4' // Value
 				),
 			2 => array(
 				'type' => '1', // Suit
-				'type_arg' => '7' // Value
+				'type_arg' => '3' // Value
 				),
 			3 => array(
 				'type' => '1', // Suit
-				'type_arg' => '8' // Value
+				'type_arg' => '2' // Value
 				),
 			4 => array(
-				'type' => '2', // Suit
-				'type_arg' => '9' // Value
-				),
-			5 => array(
-				'type' => '2', // Suit
+				'type' => '1', // Suit
 				'type_arg' => '10' // Value
 				),
+			5 => array(
+				'type' => '1', // Suit
+				'type_arg' => '12' // Value
+				),
 			6 => array(
-				'type' => '2', // Suit
-				'type_arg' => '11' // Value
+				'type' => '1', // Suit
+				'type_arg' => '13' // Value
 				),
 			7 => array(
 				'type' => '2', // Suit
-				'type_arg' => '12' // Value
+				'type_arg' => '10' // Value
 				),
 			8 => array(
 				'type' => '3', // Suit
-				'type_arg' => '8' // Value
+				'type_arg' => '10' // Value
+				),
+			9 => array(
+				'type' => '1', // Suit
+				'type_arg' => '10' // Value
+				),
+			10 => array(
+				'type' => '5', // Suit
+				'type_arg' => '1' // Value
+				),
+			11 => array(
+				'type' => '2', // Suit
+				'type_arg' => '6' // Value
+				),
+			12 => array(
+				'type' => '2', // Suit
+				'type_arg' => '7' // Value
 				)
 			);
 		$testPlayerHandArray[1] = array(
@@ -1427,8 +1443,8 @@ class LiverpoolRummy extends Table
 
 			$tpn = '<span style="color:#' . $players[ $playerFindingLP ]["player_color"] . ';">' . $players[ $playerFindingLP ]["player_name"] . '</span>';
 
-			$message = " has found Liverpool! They can play that card and discard another.";
-			$thingsCanDo = 'play or discard.';
+			$message = clienttranslate( " has found Liverpool! They can play that card and discard another." );
+			$thingsCanDo = clienttranslate( 'play or discard.' );
 			
 			$this->gamestate->nextState( 'liverpool' );
 			
@@ -1437,13 +1453,13 @@ class LiverpoolRummy extends Table
 			self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
 
 			if ( $playerGoneDown[ $activeTurnPlayer_id ] == 1 ) {
-				$thingsCanDo = 'play or discard.';
+				$thingsCanDo = clienttranslate( 'play or discard.' );
 			} else {
-				$thingsCanDo = 'play, discard or go down.';
+				$thingsCanDo = clienttranslate( 'play, discard or go down.' );
 			}
 			$tpn = '<span style="color:#' . $players[ $activeTurnPlayer_id ]["player_color"] . ';">' . $players[ $activeTurnPlayer_id ]["player_name"] . '</span>';
 			
-			$message = " must draw from deck or discard pile. Others might buy.";
+			$message = clienttranslate( " must draw from deck or discard pile. Others might buy." );
 			
 		}
 		$buyers = self::getPlayerBuying();
@@ -4378,8 +4394,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::dump( "[bmc] qtyToDeal:", $qtyToDeal );
 
 		// If testing, use cards specifically for testing purposes
-		$presetSetupHands = false;
-		//$presetSetupHands = true;
+		//$presetSetupHands = false;
+		$presetSetupHands = true;
 		
 		if ( $presetSetupHands ) { //
 			self::presetHands( $players, false ); // debug true or false

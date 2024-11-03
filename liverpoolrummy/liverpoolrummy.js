@@ -109,6 +109,72 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 ////////
 ////////
+// Bugs / TODO:
+//
+// 2024-10-27: Reports wrong person went out at top, not in log(?). See Screenshot. https://boardgamearena.com/bug?id=101319
+// 2024-10-27: Could not LIVERPOOL on the Q diamonds. https://boardgamearena.com/bug?id=133855
+// 2024-10-27: Unable to play https://boardgamearena.com/bug?id=106295
+
+// 2024-10-14: is it possible to add a "i'm here" or "i'm ready" button that
+//  everyonbe has to click when they've arrived at the actual play screen? several
+//  times the game doesn't load right away or takes you to the "click here to start" 
+//  screen and other people have already played.  
+// 
+//
+// 112624: 2024-04-14: https://boardgamearena.com/table?table=467776865
+//       HANG. Pegs the CPU to high %.
+
+//       endacot drew a card but then could not discard.
+//       Options for the game 3 decks, no jokers, unlimited buys
+//       endacot hand: Spades: AA24. Clubs: 210J Hearts: 510 Diamonds: 2. Drew the AH
+//
+// 115666: 2024-04-14: https://boardgamearena.com/table?table=479420597
+//       HANG. Pegs the CPU to high %.
+//
+//       2nd hand of 7. Someone went down and the whole game hung.
+//
+// 2024-04-14: https://boardgamearena.com/table?table=480704288
+//       HANG. 
+//       Derusian tried to go down with 3J and 3Jokers and the game just hung.
+// 
+// 118484: 2024-04-14: https://boardgamearena.com/table?table=490903234
+//       HANG after go down
+//
+// 118145: 2024-04-214: https://boardgamearena.com/table?table=489669547
+//       HANG: Shortest replay of a hang. After starshinep went down.
+//       
+// Clubs(9): 233451010QK
+// Spades(3): 710J
+// Hearts(3): 79K
+// Diamonds(1): 10
+// Joker(1): Red Text
+// 2 Runs and 1 set: 2345, 10QKJ, 10c,10s,10D
+// Extra: 3c, 7s, js, 7h, 9h, kh
+// 
+// 12/9/2023:
+// Transition from LIVERPOOLPENATLY in 2 states.
+// [06-Dec-2023 23:28:07 Europe/London] PHP Warning:  array_count_values(): Can only count STRING and INTEGER values! in
+// /var/tournoi/release/games/liverpoolrummy/231204-0045/liverpoolrummy.game.php on line 3122
+// 
+// 12/9/2023:
+// Something to do with discard card:
+//
+// 08/12 00:01:41 [error] [T447579387] [47.133.208.13] [94915480/Hope5539] Unexpected exception: BGA main website do not respond
+// #0 /var/tournoi/release/tournoi-231110-1001-gs/www/game/module/table/gamestate.game.php(649): APP_DbObject->masterNodeRequest()
+// #1 /var/tournoi/release/tournoi-231110-1001-gs/www/game/module/table/table.game.php(3607): Gamestate->sendAsyncTableMove()
+// #2 /var/tournoi/release/tournoi-231110-1001-gs/www/include/APP_GameAction.inc.php(251): Table->checkActivePlayersChange()
+// #3 /var/tournoi/release/tournoi-231110-1001-gs/www/include/APP_GameAction.inc.php(245): APP_GameAction->ajaxResponseWithResult()
+// #4 /var/tournoi/release/games/liverpoolrummy/231204-0045/liverpoolrummy.action.php(72): APP_GameAction->ajaxResponse()
+// #5 /var/tournoi/release/tournoi-231110-1001-gs/www/include/webActionCore.inc.php(189): action_liverpoolrummy->discardCard()
+// #6 /var/tournoi/release/tournoi-231110-1001-gs/www/index.php(315): launchWebAction()
+// #7 {main}
+// http://boardgamearena.com/6/liverpoolrummy/liverpoolrummy/discardCard.html?id=77&player_id=94915480&lock=7db4e2cc-2002-4626-86ab-6bd624285d65&table=447579387&noerrortracking=true&dojo.preventCache=1701990092994
+
+// 12/9/2023: Table hung and players must quit. https://boardgamearena.com/archive/replay/231110-1001/?table=446864256&player=94605816&comments=86675870;#
+// katten Mjau  went down 3 sets: *66, 888, 10101010
+// discard 5S
+// bouledogue1957 drew the discarded 5S
+// clicking NEXT causes the game to hang!
 // 
 // 11/11/2023: Run sorted wrong. Ajoker3456joker89 but displayed as A3456joker89joker.
 // 10/22/2023: Should not be able to declare LIVERPOOL on yourself, thus emptying out with 6 playable cards while it's not your turn.
@@ -4263,7 +4329,8 @@ console.log(dp_items);
 					var card_id = items[0].id;
 console.log(card_id);
 
-					if ( isNaN( card_id )){
+					if ( isNaN( card_id ) ||   // Check for NAN
+						 ( card_id == null )){ // Also check for null
 						card_id = 0; // Not really 0, trying to avoid PHP error for missing ID
 						//  "Unexpected exception: Failed to get mandatory argument: id"
 					}
