@@ -21,6 +21,8 @@
 ALTER TABLE `player` ADD `gone_down` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 ALTER TABLE `player` ADD `buying` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 ALTER TABLE `player` ADD `buy_count` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
+-- I might need to add a DB field to track players who already took a penatly this turn:
+--ALTER TABLE `player` ADD `tookLPPenalty` int(1) UNSIGNED NOT NULL DEFAULT '0';
 --ALTER TABLE `player` ADD `meldAType` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 --ALTER TABLE `player` ADD `meldBType` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 --ALTER TABLE `player` ADD `meldCType` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';

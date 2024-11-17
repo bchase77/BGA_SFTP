@@ -85,9 +85,9 @@ $machinestates = array(
         "type" => "activeplayer",
         "action" => "stShowBUYButtons", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnDraw", // Set the handtarget and who can play
-        "possibleactions" => array( "drawCard", "buyRequest", "notBuyRequest", "zombiePass", "liverpool", "liverpoolPenalty" ),
+        "possibleactions" => array( "drawCard", "buyRequest", "notBuyRequest", "zombiePass", "liverpoolBonus", "liverpoolPenalty" ),
         // "possibleactions" => array( "drawCard", "buyRequest", "notBuyRequest", "zombiePass", "liverpool" ),
-        "transitions" => array( "drawCard" => 35, "zombiePass" => 37, "liverpool" => 50, "liverpoolPenalty" => 60 )
+        "transitions" => array( "drawCard" => 35, "zombiePass" => 37, "liverpoolBonus" => 50, "liverpoolPenalty" => 60 )
         // "transitions" => array( "drawCard" => 35, "zombiePass" => 37 )
     ),
     35 => array(
@@ -97,10 +97,9 @@ $machinestates = array(
         "type" => "activeplayer", //multipleactiveplayer
 		"action" => "stPlayerTurnPlay", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnPlay",
-		// TODO: I think I need to add LIVERPOOL PENALTY => 60 here, like state 30 above (and also the transitions line)
-        "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple', "zombiePass", "buyRequest", "notBuyRequest", "liverpool" ),
+        "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple', "zombiePass", "buyRequest", "notBuyRequest", "liverpoolBonus", "liverpoolPenalty" ),
         "transitions" => array( "playerGoDown" => 35, "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35,
-			"zombiePass" => 37, "liverpool" => 50 )
+			"zombiePass" => 37, "liverpoolBonus" => 50, "liverpoolPenalty" => 60 )
         // "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35, "buyRequest" => 60, "notBuyRequest" => 61, "zombiePass" => 37 )
     ), 
 	36 => array(
@@ -109,7 +108,7 @@ $machinestates = array(
         "type" => "game",
         "action" => "stWaitForAll", // ACTION: Do this upon entering the state
         "possibleactions" => array( "zombiePass" ),
-		"transitions" => array( "fullyResolved" => 37, "liverpoolReturn" => 53, "liverpoolReturnPenalty" => 63  )
+		"transitions" => array( "fullyResolved" => 37, "LPReturn" => 53, "LPReturnPenalty" => 63  )
     ), 
     37 => array(
         "name" => "nextPlayer",
@@ -141,11 +140,11 @@ $machinestates = array(
 	// A separate state much be used for Liverpool processing because the active player cannot be changed
 	// when the 'type' is 'activeplayer'.
     50 => array(
-        "name" => "liverpool",
+        "name" => "liverpoolBonus",
 		"description" => clienttranslate('${playerFindingLP} declared Liverpool! [ST50]'),
 		"descriptionmyturn" => clienttranslate('${you} declared Liverpool! [ST50]'),
         "type" => "game",
-		"action" => "stLiverpool", // ACTION: Do this upon entering the state
+		"action" => "stLiverpoolBonus", // ACTION: Do this upon entering the state
 		"args" => "argLiverpool",
         //"possibleactions" => array( "drawCard" ),
         "transitions"     => array( 51 ) // Draw the discard in the liverpool function; Put player in playcard state
@@ -157,6 +156,7 @@ $machinestates = array(
         "type" => "activeplayer",
 		"action" => "stLiverpoolDraw", // ACTION: Do this upon entering the state
 		"args" => "argLiverpoolDraw",
+		// The transition is from state drawNotify to playCard
         "possibleactions" => array( "drawCard" ), // Only action is to draw the discard (automatic)
         "transitions"     => array( "drawCard" => 35 ) // Then go to playcard
     ), 
@@ -177,7 +177,7 @@ $machinestates = array(
 		"descriptionmyturn" => clienttranslate('${you} declared Liverpool! [ST60]'),
         "type" => "game",
 		"action" => "stLiverpoolPenalty", // ACTION: Do this upon entering the state
-		"args"  => "argLiverpool",
+		"args"  => "argLiverpool", // TODO: Is this correct or add Penalty
         //"possibleactions" => array( "drawCard" ),
         "transitions"     => array( "penalizeDiscarder" => 61, "penalizeCaller" => 62 )
     ),
@@ -185,7 +185,7 @@ $machinestates = array(
         "name" => "liverpoolDrawPenaltyDiscarder",
 		"description" => clienttranslate('${playerDiscarding} got their discard back and drew a penalty card [ST61]'),
 		"descriptionmyturn" => clienttranslate('${you} got your discard back and drew a penalty card [ST61]'),
-        "type" => "activeplayer",
+        "type" => "game",
 		"action" => "stLiverpoolDrawPenaltyDiscarder", // ACTION: Do this upon entering the state
 		"args"  => "argLiverpoolDrawPenaltyDiscarder",
         "transitions"     => array( 63 ) // Then go to drawCard for regular player
@@ -194,9 +194,9 @@ $machinestates = array(
         "name" => "liverpoolDrawPenaltyCaller",
 		"description" => clienttranslate('${playerFindingLP} drew a penalty card [ST62]'),
 		"descriptionmyturn" => clienttranslate('${you} drew a penalty card [ST62]'),
-        "type" => "activeplayer",
+        "type" => "game",
 		"action" => "stLiverpoolDrawPenaltyCaller", // ACTION: Do this upon entering the state
-		"args"  => "argLiverpool",
+		"args"  => "argLiverpoolDrawPenaltyCaller",
         "transitions"     => array( 63 ) // Then go to drawCard for regular player
     ), 
     63 => array(
@@ -208,7 +208,7 @@ $machinestates = array(
 		//"args" => "argLiverpoolReturn",
 //        "possibleactions" => array( "drawCard" ),
 //        "transitions"     => array( 30 ) // Interrupted player gets to draw
-        "transitions"     => array( 37 ) // Check end conditions, otherwise interrupted player gets to draw
+        "transitions"     => array( 37 ) // Go back to the regular next player
     ),
 
 

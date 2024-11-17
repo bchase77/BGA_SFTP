@@ -110,6 +110,20 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 ////////
 // Bugs / TODO:
+// 2024-11-05: Table https://boardgamearena.com/8/liverpoolrummy?table=585081665
+//     Slinkster went Down
+//     Slinkster discard 8 of Hearts
+//     Slinkster went out
+//     [In upper middle bar] "${player_name} went out!!" without the quotes
+//     [Slinkster cards show as NaN]
+
+// From the browser F12: Invalid or missing substitution argument for log message: ${player_name} went out!!: Cannot read properties of null (reading 'toString')
+
+
+
+
+
+
 //
 // 2024-10-27: Reports wrong person went out at top, not in log(?). See Screenshot. https://boardgamearena.com/bug?id=101319
 // 2024-10-27: Could not LIVERPOOL on the Q diamonds. https://boardgamearena.com/bug?id=133855
@@ -770,7 +784,7 @@ console.log(this.gamedatas.deckIDs);
 console.log( "this.deckOne" );
 console.log( this.deckOne );
 
-			// Create a single card to represent the card back
+			// Create the images for the fronts of all the cards
 			this.discardPileOne = new ebg.stock(); // New stock for the top of the discard pile
             this.discardPileOne.create( this, $('discardPileOne'), this.cardwidth, this.cardheight );
 			this.discardPileOne.image_items_per_row = 13;
@@ -1386,7 +1400,11 @@ console.log("[bmc] Doing the window.onload");
 				console.log("Voices UNCHECKED");
 				this.voices = false;
 			}
-			
+
+			// Keep track every card if someone declared LP or not
+			this.someoneLP = false;
+			console.log( "Setting someoneLP false");
+
 			// Get status of the wishList box
 			// if ( $('wishListEnabled').checked ) {
 				// console.log("WishList CHECKED");
@@ -2906,39 +2924,40 @@ console.log( "[bmc] EXIT sortRun2" );
 			console.log( this.player_id );
 			console.log( soundtype );
 			
+			if ( soundtype == 'liverpool' ) {
+				console.log("[bmc] SOUND: liverpool");
+				
+				// Track it so players cannot easily abuse it
+				
+				this.someoneLP = true;
+				console.log( "Setting someoneLP true");
+
+				this.showMessage( _("Liverpool!"), 'error' ); // 'info' or 'error'
+				if ( this.voices ) {
+					playSound( 'Liverpool_audio' );
+					this.disableNextMoveSound();
+				}
+			}
 			if ( player_id == this.player_id ) {
 				dojo.addClass('myhand_wrap', "borderDrawer");
-				
-				if ( soundtype == 'liverpool' ) {
-					console.log("[bmc] SOUND: itsYourDraw");
+				console.log("[bmc] SOUND: itsYourDraw");
 
-					this.showMessage( _("Liverpool!"), 'error' ); // 'info' or 'error'
-					if ( this.voices ) {
-						playSound( 'Liverpool_audio' );
-						this.disableNextMoveSound();
-					}
-				} else {
-					console.log("[bmc] SOUND: liverpool");
-
-					this.showMessage( _("It's Your Draw!"), 'error' ); // 'info' or 'error'
-					if ( this.voices ) {
-						playSound( 'tutorialrumone_itsyourdraw' );
-						this.disableNextMoveSound();
-					}
+				this.showMessage( _( "It's Your Draw!" ), 'error' ); // 'info' or 'error'
+				if ( this.voices ) {
+					playSound( 'tutorialrumone_itsyourdraw' );
+					this.disableNextMoveSound();
 				}
-
 				// Make it clear to the player they need to draw a card (border around card)
 				var deck_items = this.deckOne.getAllItems();
-				
-	console.log("[bmc] ALL deckOne:");
-	console.log( deck_items );
-	console.log("[bmc] The deck to be turned red:");
-	console.log( 'deckOne_item_' + deck_items[0]['id']);
+
+console.log("[bmc] ALL deckOne:");
+console.log( deck_items );
+console.log("[bmc] The deck to be turned red:");
+console.log( 'deckOne_item_' + deck_items[0]['id']);
 				
 				dojo.addClass('deckOne_item_' + deck_items[0]['id'], 'stockitem_selected');
-			
 			} else {
-				dojo.removeClass('myhand_wrap', "borderDrawer");	
+				dojo.removeClass('myhand_wrap', "borderDrawer");				
 			}
 		},
 /////////
@@ -2975,46 +2994,6 @@ console.log( this.playerHand );
 			// Change the player in JS after the discard (gamedatas is not updated automatically)
 			this.gamedatas.activeTurnPlayer_id = nextTurnPlayer;
 
-
-
-
-
-
-
-
-			
-			// if ( this.gamedatas.playerOrderTrue[ player_id ] == this.player_id ) {
-				
-				// this.showMessage( _("It's Your Draw!"), 'error' ); // 'info' or 'error'
-				// dojo.addClass('myhand_wrap', "borderDrawer");
-				// if ( this.voices ) {
-					// playSound( 'tutorialrumone_itsyourdraw' );
-					// this.disableNextMoveSound();
-				// }
-
-				// Make it clear to the player they need to draw a card (border around card)
-				// var deck_items = this.deckOne.getAllItems();
-// console.log("[bmc] ALL deckOne:");
-// console.log( deck_items );
-// console.log("[bmc] The deck to be turned red:");
-// console.log( 'deckOne_item_' + deck_items[0]['id']);
-				// dojo.addClass('deckOne_item_' + deck_items[0]['id'], 'stockitem_selected');
-//ALSO THE BUY WASN'T ALLOWED TO HAPPEN.
-
-			// } else {
-				// dojo.removeClass('myhand_wrap', "borderDrawer");	
-			// }
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
 			// Adjust all hand card-counts because of the discard
 			for ( var p_id in allHands ) {
 				this.handCount[ p_id ].setValue( allHands[ p_id ] );
@@ -3093,6 +3072,10 @@ console.log("[bmc] Was in hand");
 				// Then we are the next player, who gets to draw it for free; No need for BUY buttons
 				console.log( "[bmc] I am the 'Next Player' who can draw the discard for free" );
 			}
+			
+			// Clear out if anyone declared LP
+			this.someoneLP = false;
+			console.log( "Setting someoneLP false");
 			
 console.log("[bmc] EXIT discardCard");
         },
@@ -3270,12 +3253,19 @@ console.log(notif);
 //			dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove			
 			dojo.replaceClass( 'buttonLiverpool', "bgabutton_blue", "bgabutton_red" ); // item, add, remove
 
+			console.log( "Setting someoneLP true");
+			this.someoneLP = true;
+			
+			if ( this.voices ) {
+				playSound( 'Liverpool_audio' );
+				this.disableNextMoveSound();
+			}
+
 console.log("[bmc] EXIT Liverpool Declared");
 		},
 /////////
 /////////
 /////////
-//		notif_updateBuyers : function( player_id, nextTurnPlayer, buyers ){
 		notif_updateBuyers : function( notif ){
 console.log("[bmc] updateBuyers");
 console.log(notif.args.player_id);
@@ -3299,55 +3289,6 @@ console.log("[bmc] Card played not by me");
 				// this.enableDBStatic = 'Yes';
 				// this.enableDBTimer = 'Yes';
 				this.enDisStaticBuyButtons('Yes');
-				
-				
-				// THIS IS THE ORIGINAL WISHLIST WAY, ONLY IN THE CLIENT. Move it to server.
-				// If the wishlist is active and it matches then try to buy
-/*
-				var wlClubs    = this.wishListClubs.getSelectedItems();
-				var wlSpades   = this.wishListSpades.getSelectedItems();
-				var wlHearts   = this.wishListHearts.getSelectedItems();
-				var wlDiamonds = this.wishListDiamonds.getSelectedItems();
-
-console.log( this.discardPileOne.items[0].id );
-console.log( color );
-console.log( value );
-
-				var wishListAll = wlClubs.concat( wlSpades ).concat( wlHearts ).concat( wlDiamonds );
-console.log( wishListAll );
-
-
-				// if (this.wishListEnabled == true ) {
-					
-				for ( wLItem of wishListAll ) {
-console.log( wLItem );
-console.log( this.getColorValue( wLItem.type + 1 ));
-					
-					var [ dCColor, dCValue ] = this.getColorValue( wLItem.type );
-console.log("[bmc] match check");
-console.log( color );
-console.log( value );
-console.log( dCColor );
-console.log( dCValue );
-					if (( color == dCColor ) && ( value == dCValue )) {
-						console.log( "[bmc] WishListMatch!" );
-						
-						// Try to buy it. Insert some random amount of time from 1 to 10 seconds to avoid database deadlock
-						
-						// Make the delay depend on the last digit(s) of the player ID
-						// buyDelay = 5000 + (1000 * this.player_id.toString().slice(-1));
-						
-//						buyDelay = parseInt(500 + Math.random() * 5000 ); // 0.5 to 5.5 seconds
-// console.log("[bmc] buyDelay before: ", buyDelay);
-						
-						// This setTimeout does not delay at all. Zero seconds. I don't know why.
-						
-						//setTimeout( this.onPlayerBuyButton(), 5000 );
-						this.onPlayerBuyButton();
-// console.log("[bmc] buyDelay after: ", buyDelay);
-					}
-				}
-*/
 			}
 		},
 //function( mobile_obj, target_obj, duration, delay )
@@ -3650,31 +3591,38 @@ console.log("[bmc] EXIT disableWishList");
 /////////
 		onLiverpoolButton : function() {
 console.log("[bmc] ENTER onLiverpoolButton");
-				var action = 'liverpool';
+			var action = 'liverpoolButton';
 				
 console.log( "[bmc] Trying for Liverpool! ");
 console.log( this.player_id );
 console.log( this.gamedatas.activeTurnPlayer_id );
 console.log( this.goneDown[ this.player_id ]);
+console.log( this.someoneLP );
 
 				// Player must have gone down in order for Liverpool button click to register
 				
-				if( this.goneDown[ this.player_id ] == 1 ) {
+				if ( this.someoneLP == false) { // If no one has declared it this card, try it
+					this.someoneLP = true;
 					
-					// If it's already this player's turn then do nothing
-					// if ( this.player_id == this.gamedatas.activeTurnPlayer_id ){
-						//this.onDiscardPileSelectionChanged();
-					
-					// } else {
-console.log( "Ajax liverpool" );
-						this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-								player_id : this.player_id,
-								lock : true
-							}, this, function(result) {
-							}, function(is_error) {
-						});
+					console.log( "Setting someoneLP true");
+
+					if ( this.goneDown[ this.player_id ] == 1 ) { // 1 = they have gone down
 						
-					// }
+						// If it's already this player's turn then do nothing
+						// if ( this.player_id == this.gamedatas.activeTurnPlayer_id ){
+							//this.onDiscardPileSelectionChanged();
+						
+						// } else {
+	console.log( "Ajax liverpool" );
+							this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+									player_id : this.player_id,
+									lock : true
+								}, this, function(result) {
+								}, function(is_error) {
+							});
+							
+						// }
+					}
 				}
 console.log("[bmc] EXIT onLiverpoolButton");
 		},
@@ -4294,12 +4242,8 @@ console.log(dp_items);
 			for ( let i in deck_items ) {
 				dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 			}
+
 			for ( let i in dp_items ) {
-
-
-// 7/5/2021 Not sure if this should be discardPileOne or discardPile
-
-//				dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
 				dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 			}
 			
@@ -4347,13 +4291,11 @@ console.log(card_id);
 				} else {
 					console.log("[bmc] Cannot Draw. Action false");
 				}
-//				this.discardPile.unselectAll();
 				this.discardPileOne.unselectAll();
 				this.deckOne.unselectAll();
 				
 				// Remove the borders from the deck and discard pile after the player draws
 				var deck_items = this.deckOne.getAllItems();
-//				var dp_items = this.discardPile.getAllItems();
 				var dp_items = this.discardPileOne.getAllItems();
 	console.log("[bmc] ALL deckOne:");
 	console.log(deck_items);
@@ -4363,14 +4305,8 @@ console.log(card_id);
 	console.log(i);
 					dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 				}
+
 				for ( let i in dp_items ) {
-					
-					
-					
-					
-					
-// 7/5/2021 Not sure if this should be discardPileOne or discardPile
-//					dojo.removeClass('discardPile_item_' + dp_items[i]['id'], 'stockitem_selected');
 					dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 				}
 								
@@ -4842,6 +4778,7 @@ console.log(card_id);
 console.log(color);
 console.log(value);
 console.log(drawSource);
+console.log("[bmc] drawPlayer is next:");
 console.log(drawPlayer);
 console.log(allHands);
 console.log(discardSize);
@@ -4851,10 +4788,8 @@ console.log(drawDeckSize);
 				this.handCount[ p_id ].setValue( allHands[ p_id ] );
 			}
 
-
 			// Remove the borders from the deck and discard pile after the player draws
 			var deck_items = this.deckOne.getAllItems();
-//			var dp_items = this.discardPile.getAllItems();
 			var dp_items = this.discardPileOne.getAllItems();
 console.log("[bmc] ALL deckOne:");
 console.log(deck_items);
@@ -4863,6 +4798,7 @@ console.log(dp_items);
 			for ( let i in deck_items ) {
 				dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 			}
+
 			for ( let i in dp_items ) {
 				dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 			}
@@ -4905,13 +4841,15 @@ console.log("[bmc] Yikes!! Color or value is null! Need to fix this, this is fat
 //			if ( player_id == this.player_id ) {
 			if ( drawingPlayer == this.player_id ) {
 				console.log("[bmc] player_id is me");
+				//var addTo = $('myhand');
 				var addTo = 'myhand';
 				let cardUniqueId = this.getCardUniqueId( color, value );
 console.log("BMC 082723: Trying to make it slide");	
 // It does make it slide but it also empties the deckOne of cards and removes the image of the card, which is not what I want			
 				//this.playerHand.addToStockWithId( cardUniqueId, $('myhand') ); // Add the card to my hand
 //				this.playerHand.addToStockWithId( cardUniqueId, card_id, $('myhand') ); // Add the card to my hand from the 
-				this.playerHand.addToStockWithId( cardUniqueId, card_id ); // Add the card to my hand from the board
+				this.playerHand.addToStockWithId( cardUniqueId, card_id, 'myhand' ); // Add the card to my hand from the board
+				//this.deckOne.removeFromStockById( cardUniqueId, addTo );
 //				this.playerHand.addToStockWithId( cardUniqueId, $('deck'), ); // Add the card to my hand from the board
 
 console.log(this.drawCounter)
@@ -4930,11 +4868,48 @@ console.log(weightChange);
 console.log( '[bmc] addTo: ' + addTo );
 				
 			if ( drawSource == 'deck' ) {
+				
+				
+				
+				
+				
+//TODO: This sliding still doesn't work. Now it slides *TO* the deck instead of away. Also there is only 1 card in the Deck so it dissapears when it's drawn.
+				
+				
+				
 console.log( '[bmc] Deck' );
 // There is always only 1 card on the draw deck so just leave it there
 				// this.deckOne.removeFromStockById(card_id, addTo );
-console.log("BMC 082723: Trying to make it slide");				
+				
+console.log("BMC 082723: Trying to make it slide");
+			this.deckOne.addToStockWithId(1, this.gamedatas.deckTopCard );
+			
+			// This makes a new card slide onto the deck, which is interesting but doesn't make sense:
+			//this.deckOne.addToStockWithId(1, this.gamedatas.deckTopCard, 'myhand' );
 			//this.deckOne.removeFromStockById( card_id, addTo ); // Add the card to my hand from the board
+			// TODO Nov 10 2024: Add this after the slide away to draw another card???
+			//this.deckOne.slideToObject(
+			this.deckOne.unselectAll();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			}
 			if ( drawSource == 'discardPile' ) {
 console.log( '[bmc] from DP' );
@@ -5061,6 +5036,7 @@ console.log( "[bmc] GAMEDATAS and this.player_id" );
 //console.log(card);
 console.log( this.gamedatas );
 console.log( this.player_id );
+console.log( this.someoneLP );
 
 			// If the gamestate is play, then treat it as a discard.
 
@@ -5073,24 +5049,28 @@ console.log( this.player_id );
 	
 			// If the gamestate is draw, then draw the top of discard pile (chosen in php).
 			} else if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ) {
-
-				// Remove the borders from the deck and discard pile after the player draws
-				var deck_items = this.deckOne.getAllItems();
-				var dp_items = this.discardPileOne.getAllItems();
-
-				for ( let i in deck_items ) {
-					dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
-				}
-				for ( let i in dp_items ) {
-					dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
-				}
-
-				var items = new Array();
 				
-				items[0] = {id: "0", type: 0 }; // "Fake" card just used for discarding (i.e. we need to send *something* but
-				// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
+				// If there was a LP event just prior then ignore clicking of the discard PILE
+				
+				if ( this.someoneLP == false ){
+					// Remove the borders from the deck and discard pile after the player draws
+					var deck_items = this.deckOne.getAllItems();
+					var dp_items = this.discardPileOne.getAllItems();
 
-				this.drawCard2nd( items, 'discardPile' );
+					for ( let i in deck_items ) {
+						dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+					}
+					for ( let i in dp_items ) {
+						dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
+					}
+
+					var items = new Array();
+					
+					items[0] = {id: "0", type: 0 }; // "Fake" card just used for discarding (i.e. we need to send *something* but
+					// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
+
+					this.drawCard2nd( items, 'discardPile' );
+				}
 			}
 
 			// Click the BUY button if it's not our turn and it's DRAW state
@@ -6023,17 +6003,6 @@ console.log("[bmc] EXIT notif_discardCard");
 console.log("[bmc] ENTER notif_drawcard");
 console.log( notif );
 
-/*			for ( player_id in this.gamedatas.players ) { 
-				dojo.removeClass( 'overall_player_board_' + player_id, 'playerBoardBuyer' );
-			}
-*/
-			// If we drew or someone else drew the discard, then stop any timers.
-			// if (( this.gamedatas.gamestate.active_player == notif.player_id ) ||
-				// ( notif.args.drawSource == 'discardPile' )) {
-				// this.clearButtons();
-				// this.stopActionTimer2();
-			// }
-			
 			if ( notif.args.drawsource == 'discardPile' ) {
 				this.clearButtons();
 			}
