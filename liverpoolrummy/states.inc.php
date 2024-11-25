@@ -120,8 +120,8 @@ $machinestates = array(
     // End of the hand. Let players look at their hand and the board
     40 => array(
         "name" => "wentOut",
-        "description" => clienttranslate('${player_name} went out!!'),
-		"descriptionmyturn" => clienttranslate('${player_name} went out!!!'),
+        "description" => clienttranslate('The hand is over!'),
+		"descriptionmyturn" => clienttranslate('The hand is over!'),
         "type" => "multipleactiveplayer",
         "action" => "stWentOut", // ACTION: Do this upon entering the state
 		"args" => "argWentOut",

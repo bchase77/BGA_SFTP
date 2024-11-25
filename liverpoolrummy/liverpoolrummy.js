@@ -119,7 +119,7 @@ console.log("[bmc] Clear this.prepAreas2");
 
 // From the browser F12: Invalid or missing substitution argument for log message: ${player_name} went out!!: Cannot read properties of null (reading 'toString')
 
-
+//2024-11-23: Player discarded, next player tried to buy that discard. But it didn't say "IT'S YOUR TURN" it gave MOVE RECORDED and seems stuck after argPlayerTurnDraw in stPlayerTurnDraw
 
 
 
@@ -3266,6 +3266,20 @@ console.log("[bmc] EXIT Liverpool Declared");
 /////////
 /////////
 /////////
+		notif_liverpoolMissed : function( notif ){
+console.log("[bmc] ENTER Liverpool Missed");
+console.log(notif);
+
+			if ( this.voices ) {
+				playSound( 'MissedIt' );
+				this.disableNextMoveSound();
+			}
+
+console.log("[bmc] EXIT Liverpool Declared");
+		},
+/////////
+/////////
+/////////
 		notif_updateBuyers : function( notif ){
 console.log("[bmc] updateBuyers");
 console.log(notif.args.player_id);
@@ -3541,6 +3555,7 @@ console.log("[bmc] FOUND C");
 		onMyHandAreaClick : function() {
 console.log("[bmc] ENTER onMyHandAreaClick");
 			this.playerHand.unselectAll();
+			this.someoneLP = false;
 console.log("[bmc] EXIT onMyHandAreaClick");
 		},
 /////////
@@ -3623,6 +3638,9 @@ console.log( this.someoneLP );
 							
 						// }
 					}
+				} else { // Someone else beat you to it
+					this.showMessage( _("Someone beat you to Liverpool!" ));
+					playSound( 'LiverpoolTooSlow_audio' );
 				}
 console.log("[bmc] EXIT onLiverpoolButton");
 		},
@@ -5625,6 +5643,7 @@ console.log( '[bmc] ENTER notifications subscriptions setup' );
 			dojo.subscribe( 'wishListDisabled',    this, "notif_wishListDisabled");
 			dojo.subscribe( 'liverpoolExists',     this, "notif_liverpoolExists");
 			dojo.subscribe( 'liverpoolDeclared',   this, "notif_liverpoolDeclared");
+			dojo.subscribe( 'liverpoolMissed',     this, "notif_liverpoolMissed");
 			dojo.subscribe( 'loadPrepDone',        this, "notif_loadPrepDone");
 			dojo.subscribe( 'savePrepDone',        this, "notif_savePrepDone");
 			//dojo.subscribe( 'wishListCleared',     this, "notif_wishListCleared");

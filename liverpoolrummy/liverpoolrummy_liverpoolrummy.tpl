@@ -64,23 +64,23 @@
 	</div>
 </div>
 
-<div id="wishListAreaWrap" class="wishListAreaWrapClass spectatorMode wishListMode">
+<div id="wishListAreaWrap" class="wishListAreaWrapClass wishListMode spectatorMode">
 	<div>
-		<div id="TLeftBox2" class="leftboxHandArea spectatorMode wishListMode">
-			<div id="wishListAreaC" class="wishListAreaClass spectatorMode wishListMode">
+		<div id="TLeftBox2" class="leftboxHandArea wishListMode spectatorMode">
+			<div id="wishListAreaC" class="wishListAreaClass wishListMode spectatorMode">
 				<div id="myWishListClubs" ></div>
 			</div>
-			<div id="wishListAreaS" class="wishListAreaClass spectatorMode wishListMode">
+			<div id="wishListAreaS" class="wishListAreaClass wishListMode spectatorMode">
 				<div id="myWishListSpades" ></div>
 			</div>
-			<div id="wishListAreaH" class="wishListAreaClass spectatorMode wishListMode">
+			<div id="wishListAreaH" class="wishListAreaClass wishListMode spectatorMode">
 				<div id="myWishListHearts" ></div>
 			</div>
-			<div id="wishListAreaD" class="wishListAreaClass spectatorMode wishListMode">
+			<div id="wishListAreaD" class="wishListAreaClass wishListMode spectatorMode">
 				<div id="myWishListDiamonds" ></div>
 			</div>
-			<a href="#" id="buttonSubmitWishList" class="bgabutton bgabutton_blue spectatorMode wishListMode"> <span id="WISHLISTTRANSLATED"></span>! </a>
-			<a href="#" id="buttonClearWishList" class="bgabutton bgabutton_gray spectatorMode wishListMode"> <span id="CLEARWISHLISTTRANSLATED"></span>! </a>
+			<a href="#" id="buttonSubmitWishList" class="bgabutton bgabutton_blue wishListMode spectatorMode"> <span id="WISHLISTTRANSLATED"></span>! </a>
+			<a href="#" id="buttonClearWishList" class="bgabutton bgabutton_gray wishListMode spectatorMode"> <span id="CLEARWISHLISTTRANSLATED"></span>! </a>
 		</div>
 	</div>
 </div>
