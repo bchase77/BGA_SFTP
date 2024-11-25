@@ -3640,7 +3640,7 @@ console.log( this.someoneLP );
 					}
 				} else { // Someone else beat you to it
 					this.showMessage( _("Someone beat you to Liverpool!" ));
-					playSound( 'LiverpoolTooSlow_audio' );
+					playSound( 'TooSlow' );
 				}
 console.log("[bmc] EXIT onLiverpoolButton");
 		},
