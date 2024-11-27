@@ -680,11 +680,11 @@ class LiverpoolRummy extends Table
 		$result[ 'options' ][ 'numberOfDecks' ] = $numberOfDecks;
 
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
-		self::dump( "[bmc] 711 currentHandType:", $currentHandType);
 		
 		// self::dump( "[bmc} count of handtypes:", count( $this->handTypes ));
 		
 		if ( $currentHandType != null ) {
+			self::dump( "[bmc] 711 currentHandType:", $currentHandType );
 			$result[ 'handTarget' ] = $this->handTypes[ $currentHandType ]["Target"];
 		}
 		

@@ -3629,13 +3629,15 @@ console.log( this.someoneLP );
 						
 						// } else {
 	console.log( "Ajax liverpool" );
-							this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-									player_id : this.player_id,
-									lock : true
-								}, this, function(result) {
-								}, function(is_error) {
-							});
-							
+						
+						
+						this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+								player_id : this.player_id,
+								lock : true
+							}, this, function(result) {
+							}, function(is_error) {
+								console.error( "Error Reported by LP Ajax:", is_error );
+							});	
 						// }
 					}
 				} else { // Someone else beat you to it
@@ -4305,6 +4307,7 @@ console.log(card_id);
 						lock : true
 					}, this, function(result) {
 					}, function(is_error) {
+						console.error( "Error Reported by DRAWCARD Ajax:", is_error );
 					});
 				} else {
 					console.log("[bmc] Cannot Draw. Action false");

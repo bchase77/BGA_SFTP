@@ -59,7 +59,12 @@
 	width: 740px;
 }
 */
+/*
 .spectatorMode #myhand_wrap {
+    display: none;
+}
+*/
+.spectatorMode {
     display: none;
 }
 

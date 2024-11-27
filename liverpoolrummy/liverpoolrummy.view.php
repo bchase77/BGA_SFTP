@@ -105,6 +105,8 @@ $this->handTypes = array( // Hand targets associate with the down areas:
 		$htNumber = $this->game->getGameStateValue( 'currentHandType' );
 		
 		//self::dump("[bmc] handTypes(view83):", $this->handTypes);
+
+		if ( $htNumber != null ) {
 		
 //		$handTarget = $this->handTypes[$htNumber]["Target"];  // TODO Aug03: Throws undefined offset
 		$handTarget = $this->handTypes[$htNumber][$target_translated];  // TODO Aug03: Throws undefined offset
@@ -117,6 +119,8 @@ $this->handTypes = array( // Hand targets associate with the down areas:
 
 //        $this->tpl['HANDTARGET'] = $this->handTypes[ $htNumber ][ 'Target' ];// TODO Aug03: Throws undefined offset
         $this->tpl['HANDTARGET'] = $this->handTypes[ $htNumber ][ $target_translated ];// TODO Aug03: Throws undefined offset
+
+		}
 
 		// $discardSize = $this->game->getGameStateValue( 'discardSize' );
 		// self::dump( "[bmc] (View) PLURAL:", $discardSize );
