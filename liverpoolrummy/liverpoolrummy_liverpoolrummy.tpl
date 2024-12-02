@@ -23,7 +23,7 @@
     See your "view" PHP file to check how to set variables and control blocks
     
     Please REMOVE this comment before publishing your game on BGA
-<div id="myhand_wrap" class="myhand whiteblock">
+<div id="myhand_wrap" class="myhandClass whiteblock">
 -->
 
 <h3>
@@ -35,52 +35,58 @@
 <div id="myhand_wrap" class="myHandWrap whiteblock">
 	<div id="topBoxes">
 		<div id="TLeftBox" class="leftboxHandArea">
-				<span id="myHandArea" class="spectatorMode" style="font-weight: bold">     <span id="MYHANDTRANSLATED"></span> (<span id="myHandSize"></span>):
-					<a href="#" id="buttonPlayerSortBySet" class="bgabutton bgabutton_blue spectatorMode"><span id="SORTSETSTRANSLATED"></span></a>
-					<a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue spectatorMode"><span id="SORTRUNSTRANSLATED"></span></a>
+				<span id="myHandArea" style="font-weight: bold">
+				<span id="MYHANDTRANSLATED"></span> (
+				<span id="myHandSize"></span>):
+					<a href="#" id="buttonPlayerSortBySet" class="bgabutton bgabutton_blue">
+						<span id="SORTSETSTRANSLATED"></span></a>
+					<a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue">
+						<span id="SORTRUNSTRANSLATED"></span></a>
 					<span style="margin-left:15px"></span>
 					
-					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray spectatorMode"> <span id="BUYTRANSLATED"></span> </a>
-					<a href="#" id="buttonNotBuy" class="bgabutton bgabutton_gray spectatorMode"> <span id="NOTBUYTRANSLATED"></span> </a>
+					<a href="#" id="buttonBuy" class="bgabutton bgabutton_gray"> 
+						<span id="BUYTRANSLATED"></span> </a>
+					<a href="#" id="buttonNotBuy" class="bgabutton bgabutton_gray">
+						<span id="NOTBUYTRANSLATED"></span> </a>
 					<span style="margin-left:15px"></span>
-					<a href="#" id="buttonLiverpool" class="bgabutton bgabutton_blue spectatorMode"> <span id="LIVERPOOL"></span> </a>
-<!--
-					<a href="#" id="buttonPrepAreaA" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="BUTPREPATRANSLATED"></span></a>
-					<a href="#" id="buttonPrepAreaB" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="BUTPREPBTRANSLATED"></span></a>
-					<a href="#" id="buttonPrepAreaC" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="BUTPREPCTRANSLATED"></span></a>
-					<a href="#" id="buttonPrepJoker" class="bgabutton prepButton bgabutton_gray spectatorMode"><span id="CARDFORJOKERTRANSLATED"></span></a>
--->
-					<a href="#" id="buttonGoDownStatic" class="bgabutton bgabutton_gray spectatorMode"><span id="GODOWNTRANSLATED"></span></a>
-					<a href="#" id="buttonShowHideWishList" class="bgabutton bgabutton_blue wishListMode spectatorMode"><span id="SHOWHIDEWISHLIST"></span></a>
-					<a href="#" id="buttonSavePrep"  class="bgabutton saveload bgabutton_blue spectatorMode"><span id="BUTSAVEPREPTRANSLATED"></span></a>
-					<a href="#" id="buttonLoadPrep"  class="bgabutton saveload bgabutton_blue spectatorMode"><span id="BUTLOADPREPTRANSLATED"></span></a>
-					<input type="checkbox" id="voice" name="scales" checked><span id="VOICESTRANSLATED"></span></label>
+					<a href="#" id="buttonLiverpool" class="bgabutton bgabutton_blue">
+						<span id="LIVERPOOL"></span> </a>
+						
+					<a href="#" id="buttonGoDownStatic" class="bgabutton bgabutton_gray">
+						<span id="GODOWNTRANSLATED"></span></a>
+					<a href="#" id="buttonShowHideWishList" class="bgabutton bgabutton_blue wishListMode">
+						<span id="SHOWHIDEWISHLIST"></span></a>
+					<a href="#" id="buttonSavePrep"  class="bgabutton saveload bgabutton_blue">
+						<span id="BUTSAVEPREPTRANSLATED"></span></a>
+					<a href="#" id="buttonLoadPrep"  class="bgabutton saveload bgabutton_blue">
+						<span id="BUTLOADPREPTRANSLATED"></span></a>
+					<input type="checkbox" id="voice" name="scales" checked>
+						<span id="VOICESTRANSLATED"></span></label>
 					
-					<div id="myhand" class="myhand"></div>
-
+					<div id="myhand" class="myhandClass"></div>
 
 				</span>
 		</div>
 	</div>
 </div>
 
-<div id="wishListAreaWrap" class="wishListAreaWrapClass wishListMode spectatorMode">
+<div id="wishListAreaWrap" class="wishListAreaWrapClass wishListMode">
 	<div>
-		<div id="TLeftBox2" class="leftboxHandArea wishListMode spectatorMode">
-			<div id="wishListAreaC" class="wishListAreaClass wishListMode spectatorMode">
+		<div id="TLeftBox2" class="leftboxHandArea">
+			<div id="wishListAreaC" class="wishListAreaClass">
 				<div id="myWishListClubs" ></div>
 			</div>
-			<div id="wishListAreaS" class="wishListAreaClass wishListMode spectatorMode">
+			<div id="wishListAreaS" class="wishListAreaClass">
 				<div id="myWishListSpades" ></div>
 			</div>
-			<div id="wishListAreaH" class="wishListAreaClass wishListMode spectatorMode">
+			<div id="wishListAreaH" class="wishListAreaClass">
 				<div id="myWishListHearts" ></div>
 			</div>
-			<div id="wishListAreaD" class="wishListAreaClass wishListMode spectatorMode">
+			<div id="wishListAreaD" class="wishListAreaClass">
 				<div id="myWishListDiamonds" ></div>
 			</div>
-			<a href="#" id="buttonSubmitWishList" class="bgabutton bgabutton_blue wishListMode spectatorMode"> <span id="WISHLISTTRANSLATED"></span>! </a>
-			<a href="#" id="buttonClearWishList" class="bgabutton bgabutton_gray wishListMode spectatorMode"> <span id="CLEARWISHLISTTRANSLATED"></span>! </a>
+			<a href="#" id="buttonSubmitWishList" class="bgabutton bgabutton_blue"> <span id="WISHLISTTRANSLATED"></span>! </a>
+			<a href="#" id="buttonClearWishList" class="bgabutton bgabutton_gray"> <span id="CLEARWISHLISTTRANSLATED"></span>! </a>
 		</div>
 	</div>
 </div>
@@ -142,6 +148,10 @@
 <audio id="audiosrc_o_tutorialrumone_ItsYourTurn" src="{GAMETHEMEURL}img/tutorialrumone_ItsYourTurn.ogg" preload="none" autobuffer></audio>
 <audio id="audiosrc_Liverpool_audio"              src="{GAMETHEMEURL}img/Liverpool_audio.mp3" preload="none" autobuffer></audio>
 <audio id="audiosrc_o_Liverpool_audio"            src="{GAMETHEMEURL}img/Liverpool_audio.ogg" preload="none" autobuffer></audio>
+<audio id="audiosrc_MissedIt"                     src="{GAMETHEMEURL}img/MissedIt.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_o_MissedIt"                   src="{GAMETHEMEURL}img/MissedIt.ogg" preload="none" autobuffer></audio>
+<audio id="audiosrc_TooSlow"                      src="{GAMETHEMEURL}img/TooSlow.mp3" preload="none" autobuffer></audio>
+<audio id="audiosrc_o_TooSlow"                      src="{GAMETHEMEURL}img/TooSlow.ogg" preload="none" autobuffer></audio>
 
 <script type="text/javascript">
 
