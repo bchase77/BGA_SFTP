@@ -1735,13 +1735,17 @@ console.log("[bmc] ENTER onVoiceCheckbox");
 		onPlayerBuyButton : function() {
 console.log("[bmc] ENTER onPlayerBuyButton");
 console.log(this.discardPileOne);
-			var dpCard = this.discardPileOne.getAllItems();
-console.log(dpCard);
-			if (dpCard.length > 0) {
-				console.log("discardpile has a card");
-				this.reallyBuy();
+console.log(this.isSpectator);
+
+			if ( !this.isSpectator ){
+				var dpCard = this.discardPileOne.getAllItems();
+	console.log(dpCard);
+				if (dpCard.length > 0) {
+					console.log("discardpile has a card");
+					this.reallyBuy();
+				}
 			}
-        return; // nothing should be called or done after calling this, all action must be done in the handler  
+			return; // nothing should be called or done after calling this, all action must be done in the handler  
 		},
 /////////
 /////////
