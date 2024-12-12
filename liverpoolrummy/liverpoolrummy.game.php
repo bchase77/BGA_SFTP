@@ -712,58 +712,66 @@ class LiverpoolRummy extends Table
 		self::trace("[bmc] ENTER presetHands"); // Colors 1,2,3,4 = CSHD
 		$testPlayerHandArray = [];
 
-		$testPlayerHandArray[3] = array(
+		$testPlayerHandArray[0] = array(
 			0 => array(
-				'type' => '1', // Suit
-				'type_arg' => '5' // Value
-				),
-			1 => array(
-				'type' => '1', // Suit
-				'type_arg' => '4' // Value
-				),
-			2 => array(
-				'type' => '1', // Suit
-				'type_arg' => '3' // Value
-				),
-			3 => array(
-				'type' => '1', // Suit
-				'type_arg' => '2' // Value
-				),
-			4 => array(
-				'type' => '1', // Suit
-				'type_arg' => '10' // Value
-				),
-			5 => array(
 				'type' => '1', // Suit
 				'type_arg' => '12' // Value
 				),
-			6 => array(
+			1 => array(
 				'type' => '1', // Suit
-				'type_arg' => '13' // Value
+				'type_arg' => '12' // Value
+				),
+			2 => array(
+				'type' => '2', // Suit
+				'type_arg' => '12' // Value
+				),
+			3 => array(
+				'type' => '3', // Suit
+				'type_arg' => '1' // Value
+				),
+			4 => array(
+				'type' => '3', // Suit
+				'type_arg' => '3' // Value
+				),
+			5 => array(
+				'type' => '3', // Suit
+				'type_arg' => '4' // Value
+				),
+			6 => array(
+				'type' => '3', // Suit
+				'type_arg' => '5' // Value
 				),
 			7 => array(
-				'type' => '2', // Suit
-				'type_arg' => '10' // Value
+				'type' => '3', // Suit
+				'type_arg' => '6' // Value
 				),
 			8 => array(
 				'type' => '3', // Suit
-				'type_arg' => '10' // Value
+				'type_arg' => '7' // Value
 				),
 			9 => array(
-				'type' => '1', // Suit
-				'type_arg' => '10' // Value
+				'type' => '3', // Suit
+				'type_arg' => '8' // Value
 				),
 			10 => array(
-				'type' => '5', // Suit
-				'type_arg' => '1' // Value
+				'type' => '4', // Suit
+				'type_arg' => '3' // Value
 				),
 			11 => array(
-				'type' => '2', // Suit
-				'type_arg' => '6' // Value
+				'type' => '4', // Suit
+				'type_arg' => '4' // Value
 				),
 			12 => array(
-				'type' => '2', // Suit
-				'type_arg' => '7' // Value
+				'type' => '4', // Suit
+				'type_arg' => '6' // Value
+				),
+			13 => array(
+				'type' => '4', // Suit
+				'type_arg' => '12' // Value
+				),
+			14 => array(
+				'type' => '5', // Suit
+				'type_arg' => '1' // Value
 				)
 			);
 		$testPlayerHandArray[1] = array(
@@ -820,6 +828,7 @@ class LiverpoolRummy extends Table
 				'type_arg' => '13' // Value
 				)
 			);
+/*
 		$testPlayerHandArray[2] = array(
 			0 => array(
 				'type' => '5', // Suit
@@ -928,6 +937,7 @@ class LiverpoolRummy extends Table
 				'type' => '2', // Suit
 				'type_arg' => '6' // Value
 				),
+*/
 /*
 ,
 			14 => array(
@@ -973,7 +983,6 @@ class LiverpoolRummy extends Table
 				'type_arg' => '7' // Value
 				)
 */
-			);
 /*
 			0 => array(
 				'type' => '3', // Suit
@@ -4498,6 +4507,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
         $this->cards->shuffle( 'deck' );
 		
 		self::setGameStateValue( 'shuffleCount', 0 ); // Reset the shuffle count every hand
+
+		self::setGameStateValue( 'liverpoolFoundYN', 0 ); // Reset the liverpool status
+		self::setGameStateValue( 'liverpoolExists', 0 ); // Reset the liverpool status
 
         // Deal some cards to each players
         $players = self::loadPlayersBasicInfos();

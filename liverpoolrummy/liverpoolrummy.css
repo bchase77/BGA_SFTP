@@ -64,6 +64,10 @@
     display: none;
 }
 */
+/*
+Calling out each one below doesn't seem to do anything. Instead in the JS code I
+individually display or hide the element.
+*/
 .spectatorMode
  #myhand_wrap
  #wishListAreaWrap

@@ -96,13 +96,13 @@
 
 <div id="goDownArea_wrap" class="goDownWrap whiteblock">
 	<div id="boxes">
-		<div id = "deckbox" class="deckbox">
-			<h3><span id="DRAWDECKTRANSLATED"></span> (<span id="drawDeckSize"></span>)</h3>
-			<div id="deckOne"></div>
-		</div>
 		<div id = "discardbox" class="discardbox">
 			<h3><span id="DISCARDPILETRANSLATED"></span> (<span id="discardSize"></span>)</h3>
 			<div id="discardPileOne"></div>
+		</div>
+		<div id = "deckbox" class="deckbox">
+			<h3><span id="DRAWDECKTRANSLATED"></span> (<span id="drawDeckSize"></span>)</h3>
+			<div id="deckOne"></div>
 		</div>
 		<div class="tim183spacer">
 		</div>

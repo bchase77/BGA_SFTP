@@ -119,6 +119,91 @@ console.log("[bmc] Clear this.prepAreas2");
 
 //2024-11-23: Player discarded, next player tried to buy that discard. But it didn't say "IT'S YOUR TURN" it gave MOVE RECORDED and seems stuck after argPlayerTurnDraw in stPlayerTurnDraw
 
+// 2024-12-07: Momma_BearLike make sure you don't have in the prep area all the cards that could go down       04:01 PM
+// And just to be clear, you clicked GO DOWN and then it also discarded a card into the discard pile, right?       04:01 PM
+// Momma_BearIt can't be playable for when you hit go down       04:01 PM
+// It didn't go down, it just discarded my card because my cards were not complete without it       04:02 PM
+// Without the joker       04:02 PM
+// I was trying to add it to my prep but it didn't go, so it was highlighted in my hand       04:02 PM
+// Then hit go down and it discarded        04:02 PM
+// Oh it didn't go down? I see. And you clicked GO DOWN but it discarded instead?       04:02 PM
+// Momma_BearYes       04:02 PM
+
+// In MB's hand is:
+// Clubs: QQ
+// Spades: Q
+// Hearts: A345678
+// Diamonds: 346Q
+// Jokers: 1
+
+
+/* 2024-12-07: Complaints from the BGA checker-inner thing:
+
+Deprecated images have been detected on the project, can you remove them? They should be in the Game Metadata Manager now
+game_icon.png,
+// game_icon.webp,
+// game_icon.png.worksgomoku,
+// game_display1.jpg,
+// game_boxWithText.png,
+// game_display2.jpg,
+// game_icon, game_icon.jpg,
+// game_display3.jpg,
+// game_box75.png,
+// game_box.jpg,
+// game_box180.png,
+// game_icon.png.webp,
+// game_boxWOText.png,
+// game_banner.jpg,
+// game_box.png,
+// publisher.png,
+// game_display0.jpg,
+// game_icon - Copy.png
+More than 20 image files. Did you think about using CSS sprites, Dave?
+More than 10 MB of images (did you try https://tinypng.com?) Please try to optimize your images to stay below 10Mo.
+
+Actions detected on .action.php file. You can now use Auto-wired actions to avoid pass-through functions in .action.php file.
+If you transform your project to use only auto-wired actions, you can then delete the .action.php file.
+
+The ajaxcall function is deprecated, check the bgaPerformAction function.
+liverpoolrummy/liverpoolrummy.js:1710 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+liverpoolrummy/liverpoolrummy.js:1801 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+liverpoolrummy/liverpoolrummy.js:1834 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+liverpoolrummy/liverpoolrummy.js:3470 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+liverpoolrummy/liverpoolrummy.js:3509 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+liverpoolrummy/liverpoolrummy.js:3578 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+liverpoolrummy/liverpoolrummy.js:3749 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+liverpoolrummy/liverpoolrummy.js:3869 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+liverpoolrummy/liverpoolrummy.js:4178 => this.ajaxcall( "/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+liverpoolrummy/liverpoolrummy.js:4293 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+liverpoolrummy/liverpoolrummy.js:4300 => console.log("[bmc] Did ajaxcall.");
+liverpoolrummy/liverpoolrummy.js:4644 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" +action+'.html', params, this, function (result) { });
+liverpoolrummy/liverpoolrummy.js:5020 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+liverpoolrummy/liverpoolrummy.js:5043 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+
+@import should not be used in CSS files. If it's the line @import url(../../../css/csslayer.css);, you can delete it.
+liverpoolrummy/liverpoolrummy.css:46 => /* Note: you must not use any @import directive */
+
+
+
+
+
+
+// 12/8/2024: It doesn't pudate teh score until after everyone click ontothenext
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4717,6 +4802,17 @@ console.log("[bmc] Yikes!! Color or value is null! Need to fix this, this is fat
 				var addTo = 'myhand';
 				let cardUniqueId = this.getCardUniqueId( color, value );
 console.log("BMC 082723: Trying to make it slide");	
+
+				let slideDestination = 'overall_player_board_' + drawingPlayer;
+				
+console.log( slideDestination );
+				
+				// this.slideTemporaryObject( '<div id="deckbox"></div>', 'deckOne', 'myhand', slideDestination );
+
+
+
+
+
 // It does make it slide but it also empties the deckOne of cards and removes the image of the card, which is not what I want			
 				//this.playerHand.addToStockWithId( cardUniqueId, $('myhand') ); // Add the card to my hand
 //				this.playerHand.addToStockWithId( cardUniqueId, card_id, $('myhand') ); // Add the card to my hand from the 
@@ -4740,7 +4836,32 @@ console.log(weightChange);
 console.log( '[bmc] addTo: ' + addTo );
 				
 			if ( drawSource == 'deck' ) {
+			
+
+
+
+				var deck_items = this.deckOne.getAllItems();
+
+console.log("[bmc] ALL deckOne:");
+console.log( deck_items );
+console.log("[bmc] The deck to be turned red:");
+				let deckTopCardImage = 'deckOne_item_' + deck_items[0]['id'];
+console.log( deckTopCardImage );
+
+				let thingToSlide = '<div id="' + deckTopCardImage + '"></div>';
+console.log( thingToSlide );
+
+
+
+
+
+				let slideDestination = 'overall_player_board_' + drawingPlayer;
 				
+console.log( slideDestination );
+				
+//				this.slideTemporaryObject( '<div id="deckOne"></div>', 'deckOne', 'myhand', slideDestination );
+//				this.slideTemporaryObject( thingToSlide, 'deckOne', 'myhand', slideDestination );
+			
 				
 				
 				
