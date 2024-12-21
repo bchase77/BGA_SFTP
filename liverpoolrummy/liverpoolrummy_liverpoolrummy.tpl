@@ -102,7 +102,6 @@
 		</div>
 		<div id = "deckbox" class="deckbox">
 			<h3><span id="DRAWDECKTRANSLATED"></span> (<span id="drawDeckSize"></span>)</h3>
- 			<div id="deckOne"></div>
 			<div id="deckAll"></div>
 		</div>
 		<div class="tim183spacer">

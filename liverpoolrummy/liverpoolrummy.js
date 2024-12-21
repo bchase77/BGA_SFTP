@@ -841,17 +841,17 @@ console.log(this.gamedatas.hand);
 			// this.deck.addItemType( 2, 2, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
 //EXP Start 11/8			
 			// Create a single card to represent the card back
-			this.deckOne = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
-            this.deckOne.create( this, $('deckOne'), this.cardwidth, this.cardheight );            
-			this.deckOne.image_items_per_row = 13;
+			// this.deckOne = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
+            // this.deckOne.create( this, $('deckOne'), this.cardwidth, this.cardheight );            
+			// this.deckOne.image_items_per_row = 13;
 
 			// Item 54, color 5, value 3 is red back of the card
-			this.deckOne.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
-			this.deckOne.addToStockWithId(1, this.gamedatas.deckTopCard );
+			// this.deckOne.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
+			// this.deckOne.addToStockWithId(1, this.gamedatas.deckTopCard );
 //EXP End 11/8
 
-console.log( "this.deckOne" );
-console.log( this.deckOne );
+// console.log( "this.deckOne" );
+// console.log( this.deckOne );
 
 
 
@@ -1464,7 +1464,7 @@ console.log("[bmc] DOJO CONNECT Stuff:");
 			dojo.connect( $('myhand'), 'ondblclick', this, 'onPlayerHandDoubleClick' );
 
             dojo.connect( this.playerHand,   'onChangeSelection', this, 'onPlayerHandSelectionChanged' );
-            dojo.connect( this.deckOne,      'onChangeSelection', this, 'onDeckSelectionChanged' );
+            // dojo.connect( this.deckOne,      'onChangeSelection', this, 'onDeckSelectionChanged' );
             dojo.connect( this.deckAll,      'onChangeSelection', this, 'onDeckSelectionChanged' );
             //dojo.connect( this.discardPile,  'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
             dojo.connect( this.discardPileOne,  'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
@@ -1742,14 +1742,14 @@ console.log("[bmc] Doing the window.onload");
 
 					// Make it clear to the player they need to draw a card (border around card)
 					if ( args.active_player == this.player_id ) {
-						var deck_items = this.deckOne.getAllItems();
+						// var deck_items = this.deckOne.getAllItems();
 	// console.log("[bmc] ALL deckOne:");
 	// console.log(deck_items);
-						for ( let i in deck_items ) {
+						// for ( let i in deck_items ) {
 //	console.log( 'deckOne_item_' + deck_items[i]['id'] );
 //	console.log( $('deckOne_item_' + deck_items[i]['id'] ));
-							dojo.addClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
-						}
+							// dojo.addClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+						// }
 
 
 
@@ -1771,9 +1771,9 @@ console.log("[bmc] Doing the window.onload");
 							dojo.addClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 						}
 					} else {
-						for ( let i in deck_items ) {
-							dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
-						}
+						// for ( let i in deck_items ) {
+							// dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+						// }
 
 
 
@@ -3038,14 +3038,14 @@ console.log( "[bmc] EXIT sortRun2" );
 					this.disableNextMoveSound();
 				}
 				// Make it clear to the player they need to draw a card (border around card)
-				var deck_items = this.deckOne.getAllItems();
+				// var deck_items = this.deckOne.getAllItems();
 
-console.log("[bmc] ALL deckOne:");
-console.log( deck_items );
-console.log("[bmc] The deck to be turned red:");
-console.log( 'deckOne_item_' + deck_items[0]['id']);
+// console.log("[bmc] ALL deckOne:");
+// console.log( deck_items );
+// console.log("[bmc] The deck to be turned red:");
+// console.log( 'deckOne_item_' + deck_items[0]['id']);
 				
-				dojo.addClass('deckOne_item_' + deck_items[0]['id'], 'stockitem_selected');
+				// dojo.addClass('deckOne_item_' + deck_items[0]['id'], 'stockitem_selected');
 
 
 
@@ -4356,36 +4356,32 @@ console.log("[bmc] Clear this.prepAreas4");
 		onDeckSelectionChanged : function() {
 			console.log("[bmc] ENTER OnDeckSelectionChanged.");
 //			var items = this.deck.getSelectedItems();
-			var items = this.deckOne.getSelectedItems();
-			this.deckOne.unselectAll();
+			// var items = this.deckOne.getSelectedItems();
+			// this.deckOne.unselectAll();
 
 			// Remove the borders from the deck and discard pile after the player draws
-			var deck_items = this.deckOne.getAllItems();
+			// var deck_items = this.deckOne.getAllItems();
 			
 //			var dp_items = this.discardPile.getAllItems();
 			var dp_items = this.discardPileOne.getAllItems();
-console.log("[bmc] ALL deckOne:");
-console.log(deck_items);
+// console.log("[bmc] ALL deckOne:");
+// console.log(deck_items);
 console.log(dp_items);
 
-			for ( let i in deck_items ) {
-				dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
-			}
+			// for ( let i in deck_items ) {
+				// dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+			// }
 
 			for ( let i in dp_items ) {
 				dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 			}
 			
-			console.log( items );
+			// console.log( items );
 			console.log("[bmc] GAMEDATAS and this.player_id.");
 			console.log(this.gamedatas);
 			console.log(this.player_id);
 //			this.drawCard2nd(items, 0 ); // 0 == 'deck', 1 == 'discardPile'
 //			this.drawCard2nd(items, 'deck' ); // THIS WAS UNCOMMENTED ORIGINALLY
-
-
-
-
 
 			var itemsAll = this.deckAll.getSelectedItems();
 			this.deckAll.unselectAll();
@@ -4403,10 +4399,6 @@ console.log( deckAllItems );
 			console.log( itemsAll );
 			console.log("[bmc] GAMEDATAS and this.player_id.");
 			this.drawCard2nd(itemsAll, 'deck' ); // Should this be just 1 card selected???
-
-
-
-
 
 			console.log("[bmc] EXIT OnDeckSelectionChanged.");
 		},
@@ -4450,19 +4442,19 @@ console.log(card_id);
 				this.discardPileOne.unselectAll();
 
 
-				this.deckOne.unselectAll();
+				// this.deckOne.unselectAll();
 				
 				// Remove the borders from the deck and discard pile after the player draws
-				var deck_items = this.deckOne.getAllItems();
+				// var deck_items = this.deckOne.getAllItems();
 				var dp_items = this.discardPileOne.getAllItems();
 	// console.log("[bmc] ALL deckOne:");
 	// console.log(deck_items);
 	// console.log(dp_items);
 
-				for ( let i in deck_items ) {
+				// for ( let i in deck_items ) {
 	// console.log(i);
-					dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
-				}
+					// dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+				// }
 
 
 
@@ -4976,15 +4968,15 @@ console.log(drawDeckSize);
 			}
 
 			// Remove the borders from the deck and discard pile after the player draws
-			var deck_items = this.deckOne.getAllItems();
+			// var deck_items = this.deckOne.getAllItems();
 			var dp_items = this.discardPileOne.getAllItems();
-console.log("[bmc] ALL deckOne:");
-console.log(deck_items);
+// console.log("[bmc] ALL deckOne:");
+// console.log(deck_items);
 console.log(dp_items);
 
-			for ( let i in deck_items ) {
-				dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
-			}
+			// for ( let i in deck_items ) {
+				// dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+			// }
 
 
 
@@ -5147,7 +5139,7 @@ console.log( '[bmc] addTo: ' + addTo );
 			//this.deckOne.removeFromStockById( card_id, addTo ); // Add the card to my hand from the board
 			// TODO Nov 10 2024: Add this after the slide away to draw another card???
 			//this.deckOne.slideToObject(
-			this.deckOne.unselectAll();
+			// this.deckOne.unselectAll();
 
 
 // TODO FIX TO HERE
@@ -5296,30 +5288,22 @@ console.log( this.someoneLP );
 				
 				if ( this.someoneLP == false ){
 					// Remove the borders from the deck and discard pile after the player draws
-					var deck_items = this.deckOne.getAllItems();
+					// var deck_items = this.deckOne.getAllItems();
 					var dp_items = this.discardPileOne.getAllItems();
 
-					for ( let i in deck_items ) {
-						dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
-					}
+					// for ( let i in deck_items ) {
+						// dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
+					// }
+
 					for ( let i in dp_items ) {
 						dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
 					}
-
-
-
-
-
 
 					var deckAllItems = this.deckAll.getAllItems();
 
 					for ( let i in deckAllItems ) {
 						dojo.removeClass('deckAll_item_' + deckAllItems[i]['id'], 'stockitem_selected');
 					}
-
-
-
-
 
 					var items = new Array();
 					
