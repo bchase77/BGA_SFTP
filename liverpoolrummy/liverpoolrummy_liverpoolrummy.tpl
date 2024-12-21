@@ -36,8 +36,8 @@
 	<div id="topBoxes">
 		<div id="TLeftBox" class="leftboxHandArea">
 				<span id="myHandArea" style="font-weight: bold">
-				<span id="MYHANDTRANSLATED"></span> (
-				<span id="myHandSize"></span>):
+				<span id="MYHANDTRANSLATED"></span>(
+				<span id="myHandSize"></span> ):
 					<a href="#" id="buttonPlayerSortBySet" class="bgabutton bgabutton_blue">
 						<span id="SORTSETSTRANSLATED"></span></a>
 					<a href="#" id="buttonPlayerSortByRun" class="bgabutton bgabutton_blue">
@@ -102,7 +102,8 @@
 		</div>
 		<div id = "deckbox" class="deckbox">
 			<h3><span id="DRAWDECKTRANSLATED"></span> (<span id="drawDeckSize"></span>)</h3>
-			<div id="deckOne"></div>
+ 			<div id="deckOne"></div>
+			<div id="deckAll"></div>
 		</div>
 		<div class="tim183spacer">
 		</div>

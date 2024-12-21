@@ -355,9 +355,16 @@ class LiverpoolRummy extends Table
 
         $this->cards->createCards( $cards, 'deck' );
 
-		$allCardsDebug = $this->cards->getCardsInLocation( 'deck' );
-		
-		self::dump( "[bmc] AllCardsDebug: ", $allCardsDebug );
+//		$allCardsDebug = $this->cards->getCardsInLocation( 'deck' );
+
+//		self::dump( "[bmc] AllCardsDebug: ", $allCardsDebug );
+
+        // Shuffle deck
+//        $this->cards->shuffle( 'deck' );
+
+//		$allCardsDebug = $this->cards->getCardsInLocation( 'deck' );
+
+//		self::dump( "[bmc] afterShuffle: ", $allCardsDebug );
 
         self::setGameStateInitialValue( 'countDiscardPile', 1 );
         //self::setGameStateInitialValue( 'countDeck', $allCardsDebug );
@@ -531,10 +538,57 @@ class LiverpoolRummy extends Table
         $result['hand'] = $playersHand;
 
 		$result['deckIDs'] = array_keys($this->cards->getCardsInLocation( 'deck' ));
+		
+		$bob = $this->cards->getCardsInLocation( 'deck' );
+
+//		self::dump( "[bmc] deckIDsak:", array_keys($this->cards->getCardsInLocation( 'deck' )));
+//		self::dump( "[bmc] deckIDs:", $this->cards->getCardsInLocation( 'deck' ));
+
+//		self::dump( "[bmc] bob:", $bob);
+
+		$cardIDsInDeck = array();
+		$cardLAsInDeck = array();
+		
+		foreach ( $bob as $card ) {
+			//self::dump("[bmc] deckIDcard: ", $card );
+			//self::dump("[bmc] deckIDcard: ", $card[ 'location_arg' ]);
+			array_push( $cardIDsInDeck, $card[ 'id' ]);
+			array_push( $cardLAsInDeck, $card[ 'location_arg' ]);
+		}
+
+		self::dump( "[bmc] cardIDsInDeck:", $cardIDsInDeck );
+		self::dump( "[bmc] cardLAsInDeck:", $cardLAsInDeck );
+
+		// $ar = array(
+			   // array("10", 11, 100, 100, "a"),
+			   // array(   1,  2, "2",   3,   1)
+			  // );
+			  
+//		array_multisort( $cardLAsInDeck, SORT_DESC, $cardIDsInDeck );
+		array_multisort( $cardLAsInDeck, SORT_ASC, $cardIDsInDeck );
+
+		self::dump( "[bmc] cardsIDsInDeck AfterSort:", $cardIDsInDeck );
+		self::dump( "[bmc] cardsLAsInDeck AfterSort:", $cardLAsInDeck );
+
+		$result['cardIDsInDeck'] = $cardIDsInDeck ;
+
+
+
+
+
+        // Shuffle deck
+        // $this->cards->shuffle( 'deck' );
+
+		// $allCardsDebug = $this->cards->getCardsInLocation( 'deck' );
+
+		// self::dump( "[bmc] afterShuffle: ", $allCardsDebug );
+
 
 		$deckTopCard = $this->cards->getCardOnTop( 'deck' );
 		$result['deckTopCard'] = $this->cards->getCardOnTop( 'deck' )[ 'id' ];
 		
+		self::dump( "[bmc] deckTopCard: ", $result[ 'deckTopCard' ]);
+
 		$result['allHands'] = $cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
 		
 		self::dump( "[bmc] allHands:", $cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' ));
