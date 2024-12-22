@@ -18,44 +18,43 @@
  * are available everywhere in your game logic code.
  *
  */
-
 $this->colors = array(
-    1 => array( 'name' => clienttranslate('club'),
-                'nametr' => self::_('club') ),
-    2 => array( 'name' => clienttranslate('spade'),
-                'nametr' => self::_('spade') ),
-    3 => array( 'name' => clienttranslate('heart'),
-                'nametr' => self::_('heart') ),
-    4 => array( 'name' => clienttranslate('diamond'),
-                'nametr' => self::_('diamond') ),
-	5 => array( 'name' => clienttranslate('joker'),
-                'nametr' => self::_('wild') )
+    1 => array( 'name'   => clienttranslate('clubs'),
+                'nametr' => clienttranslate('clubs') ),
+    2 => array( 'name'   => clienttranslate('spades'),
+                'nametr' => clienttranslate('spades') ),
+    3 => array( 'name'   => clienttranslate('hearts'),
+                'nametr' => clienttranslate('hearts') ),
+    4 => array( 'name'   => clienttranslate('diamonds'),
+                'nametr' => clienttranslate('diamonds') ),
+	5 => array( 'name'   => clienttranslate('joker'),
+                'nametr' => clienttranslate('wild') )
 );
 
 $this->values_label = array(
-    1 => clienttranslate('Ace'),
-    2 => '2',
-    3 => '3',
-    4 => '4',
-    5 => '5',
-    6 => '6',
-    7 => '7',
-    8 => '8',
-    9 => '9',
+    1  => clienttranslate('Ace'),
+    2  => '2',
+    3  => '3',
+    4  => '4',
+    5  => '5',
+    6  => '6',
+    7  => '7',
+    8  => '8',
+    9  => '9',
     10 => '10',
     11 => clienttranslate('Jack'),
     12 => clienttranslate('Queen'),
     13 => clienttranslate('King')
 );
 
-$target_translated  = self::_("Target"); 
-$hand0MI_translated = self::_("2 Sets; No more no less (Set is 3 any suit of same value)"); 
-$hand1MI_translated = self::_("1 Set and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)");
-$hand2MI_translated = self::_("2 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)"); 
-$hand3MI_translated = self::_("3 Sets; No more no less (Set is 3 any suit of same value)"); 
-$hand4MI_translated = self::_("2 Sets and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"); 
-$hand5MI_translated = self::_("1 Set and 2 Runs; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"); 
-$hand6MI_translated = self::_("3 Runs; In a 2-player game you must buy your own discard! (Run is 4 in sequence of same suit. Ace is high or low.)"); 
+$target_translated  = clienttranslate("Target"); 
+$hand0MI_translated = clienttranslate("2 Sets; No more no less (Set is 3 any suit of same value)"); 
+$hand1MI_translated = clienttranslate("1 Set and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)");
+$hand2MI_translated = clienttranslate("2 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)"); 
+$hand3MI_translated = clienttranslate("3 Sets; No more no less (Set is 3 any suit of same value)"); 
+$hand4MI_translated = clienttranslate("2 Sets and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"); 
+$hand5MI_translated = clienttranslate("1 Set and 2 Runs; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"); 
+$hand6MI_translated = clienttranslate("3 Runs; In a 2-player game you must buy your own discard! (Run is 4 in sequence of same suit. Ace is high or low.)"); 
 
 $this->handTypesMayI = array( // Hand targets associate with the down areas:
   0 => array( $target_translated => $hand0MI_translated, "QtySets" => 2, "QtyRuns" => 0, "deal" => 7 ),
@@ -67,39 +66,20 @@ $this->handTypesMayI = array( // Hand targets associate with the down areas:
   6 => array( $target_translated => $hand6MI_translated, "QtySets" => 0, "QtyRuns" => 3, "deal" => 13 )
 );
 
-/*
-$this->handTypesMayI = array( // Hand targets associate with the down areas:
-  0 => array( "Target" => "2 Sets; No more no less (Set is 3 any suit of same value)",
-	"QtySets" => 2, "QtyRuns" => 0, "deal" => 7 ),
-  1 => array( "Target" => "1 Set and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)",
-	"QtySets" => 1, "QtyRuns" => 1, "deal" => 8 ),
-  2 => array( "Target" => "2 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)",
-	"QtySets" => 0, "QtyRuns" => 2, "deal" => 9 ),
-  3 => array( "Target" => "3 Sets; No more no less (Set is 3 any suit of same value)",
-	"QtySets" => 3, "QtyRuns" => 0, "deal" => 10 ),
-  4 => array( "Target" => "2 Sets and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)",
-	"QtySets" => 2, "QtyRuns" => 1, "deal" => 11 ),
-  5 => array( "Target" => "1 Set and 2 Runs; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)",
-	"QtySets" => 1, "QtyRuns" => 2, "deal" => 12 ),
-  6 => array( "Target" => "3 Runs; In a 2-player game you must buy your own discard! (Run is 4 in sequence of same suit. Ace is high or low.)",
-	"QtySets" => 0, "QtyRuns" => 3, "deal" => 13 )
-);
-*/
-
 $this->handTypesFull = array( // Hand targets associate with the down areas:
-  0 => array( "Target" => self::_( "2 Sets; No more no less (Set is 3 any suit of same value)"),
+  0 => array( "Target" => clienttranslate( "2 Sets; No more no less (Set is 3 any suit of same value)"),
 	"QtySets" => 2, "QtyRuns" => 0, "deal" => 10 ),
-  1 => array( "Target" => self::_( "1 Set and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"),
+  1 => array( "Target" => clienttranslate( "1 Set and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"),
     "QtySets" => 1, "QtyRuns" => 1, "deal" => 11 ),
-  2 => array( "Target" => self::_( "2 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)"),
+  2 => array( "Target" => clienttranslate( "2 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)"),
 	"QtySets" => 0, "QtyRuns" => 2, "deal" => 11 ),
-  3 => array( "Target" => self::_( "3 Sets; No more no less (Set is 3 any suit of same value)"),
+  3 => array( "Target" => clienttranslate( "3 Sets; No more no less (Set is 3 any suit of same value)"),
 	"QtySets" => 3, "QtyRuns" => 0, "deal" => 12 ),
-  4 => array( "Target" => self::_( "2 Sets and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"),
+  4 => array( "Target" => clienttranslate( "2 Sets and 1 Run; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"),
 	"QtySets" => 2, "QtyRuns" => 1, "deal" => 12 ),
-  5 => array( "Target" => self::_( "1 Set and 2 Runs; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"),
+  5 => array( "Target" => clienttranslate( "1 Set and 2 Runs; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.)"),
 	"QtySets" => 1, "QtyRuns" => 2, "deal" => 12 ),
-  6 => array( "Target" => self::_( "3 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)"),
+  6 => array( "Target" => clienttranslate( "3 Runs; No more no less (Run is 4 in sequence of same suit. Ace can play as high or low.)"),
 	"QtySets" => 0, "QtyRuns" => 3, "deal" => 12 )
 );
 
@@ -158,28 +138,4 @@ $this->card_types = array(
               )
 );
 
-*/
-
-
-/*
-$bob = array(2) {
-	[0]=> array(7) {
-		["Target"]=>string(83) "2 Sets; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)"
-		["QtySets"]=>int(2)
-		["QtyRuns"]=>int(0)
-		["deal"]=>int(10)
-		["Area_A"]=>string(3) "Set"
-		["Area_B"]=>string(3) "Set"
-		["Area_C"]=>string(5) "Empty"
-	}
-	[1]=>array(7) {
-		["Target"]=>string(83) "2 Runs; No more no less (Set is 3 of same value; Run is 4 in sequence of same suit)"
-		["QtySets"]=>int(0)
-		["QtyRuns"]=>int(2)
-		["deal"]=>int(10)
-		["Area_A"]=>string(3) "Run"
-		["Area_B"]=>string(3) "Run"
-		["Area_C"]=>string(5) "Empty"
-	}
-}
 */

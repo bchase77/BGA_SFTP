@@ -59,11 +59,48 @@
 	width: 740px;
 }
 */
+/*
 .spectatorMode #myhand_wrap {
     display: none;
 }
+*/
+/*
+Calling out each one below doesn't seem to do anything. Instead in the JS code I
+individually display or hide the element.
+*/
+.spectatorMode
+ #myhand_wrap
+ #wishListAreaWrap
+ #TLeftBox
+ #myHandArea
+ #MYHANDTRANSLATED
+ #myHandSize
+ #buttonPlayerSortBySet
+ #SORTSETSTRANSLATED
+ #buttonPlayerSortByRun
+ #SORTRUNSTRANSLATED
+ #buttonBuy
+ #BUYTRANSLATED
+ #buttonNotBuy
+ #NOTBUYTRANSLATED
+ #buttonLiverpool
+ #buttonGoDownStatic
+ #buttonShowHideWishList
+ #buttonSavePrep
+ #buttonLoadPrep
+ #voice
+ #LIVERPOOL
+ #myhand
+ #myPrepA
+ #myPrepB
+ #myPrepC
+ #myPrepJoker
+{
+    display: none;
+}
 
-.wishListMode #TLeftBox2 {
+/*.wishListMode #TLeftBox2 {*/
+.wishListMode {
     display: none;
 }
 
@@ -130,10 +167,17 @@
 	width: 13%;
 	height: 140px;
 }
+.tim183spacer {
+	float: Left;
+	position: relative;
+	width: 4%;
+	height: 140px;
+	text-align: center;
+}
 .prepbox {
 	float: Left;
 	position: relative;
-	width: 20%;
+	width: 19%;
 	height: 140px;
 	text-align: center;
 	color: gray;
@@ -144,7 +188,7 @@
 .prepjoker {
 	float: Left;
 	position: relative;
-	width: 12%;
+	width: 8%;
 	height: 140px;
 	text-align: center;
 	color: gray;
@@ -162,7 +206,7 @@
 	height: 180px;
 */
 }
-.myhand {
+.myhandClass {
 	float: Left;
 /*	left: 2px; */
 /*	width: 740px;*/

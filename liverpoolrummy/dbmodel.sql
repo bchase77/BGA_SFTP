@@ -21,6 +21,8 @@
 ALTER TABLE `player` ADD `gone_down` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 ALTER TABLE `player` ADD `buying` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 ALTER TABLE `player` ADD `buy_count` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
+-- I might need to add a DB field to track players who already took a penatly this turn:
+--ALTER TABLE `player` ADD `tookLPPenalty` int(1) UNSIGNED NOT NULL DEFAULT '0';
 --ALTER TABLE `player` ADD `meldAType` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 --ALTER TABLE `player` ADD `meldBType` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
 --ALTER TABLE `player` ADD `meldCType` tinyint(1) UNSIGNED NOT NULL DEFAULT '0';
@@ -42,6 +44,15 @@ CREATE TABLE IF NOT EXISTS `card` (
   `card_location` varchar(16) NOT NULL,
   `card_location_arg` int(11) NOT NULL,
   PRIMARY KEY (`card_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `prepAreas` (
+  `player_id` int(10) unsigned NOT NULL,
+  `areaA` varchar(100),
+  `areaB` varchar(100),
+  `areaC` varchar(100),
+  `areaJ` varchar(100),
+  PRIMARY KEY (`player_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- Example 2: add a custom field to the standard "player" table

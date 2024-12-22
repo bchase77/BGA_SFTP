@@ -80,30 +80,16 @@ $machinestates = array(
     ),    
     30 => array(
         "name" => "playerTurnDraw",
-		"description" => clienttranslate('${buyMessage}${turnPlayerName} must draw from deck or discard pile. Others might buy.'),
-		"descriptionmyturn" => clienttranslate('${turnPlayerName} must draw from deck or discard pile. Others might buy.'),
+		"description" => clienttranslate('${turnPlayerName} ${message}'),
+		"descriptionmyturn" => clienttranslate('${you} ${message}.'),
         "type" => "activeplayer",
         "action" => "stShowBUYButtons", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnDraw", // Set the handtarget and who can play
-        "possibleactions" => array( "drawCard", "buyRequest", "notBuyRequest", "zombiePass" ),
-        "transitions" => array( "drawCard" => 35, "zombiePass" => 37 )
-    ), 
-    // 32 => array(
-        // "name" => "checkEmptyDeck",
-        // "description" => '<span style:"color:gray"></span>',
-        // "type" => "game",
-        // "action" => "stCheckEmptyDeck", // ACTION: Do this upon entering the state
-        // "transitions" => array( "drawAndLetPlayerPlay" => 35, "letPlayerDrawAfterBuy" => 57 )
-    // ), 
-
-    // 33 => array(
-        // "name" => "drawDiscard",
-        // "description" => "[ST33]",
-        // "type" => "game",
-        // "action" => "stDrawDiscard", // ACTION: Do this upon entering the state
-        // "transitions" => array( "" => 35 ) 
-    // ),
-
+        "possibleactions" => array( "drawCard", "buyRequest", "notBuyRequest", "zombiePass", "liverpoolBonus", "liverpoolPenalty" ),
+        // "possibleactions" => array( "drawCard", "buyRequest", "notBuyRequest", "zombiePass", "liverpool" ),
+        "transitions" => array( "drawCard" => 35, "zombiePass" => 37, "liverpoolBonus" => 50, "liverpoolPenalty" => 60 )
+        // "transitions" => array( "drawCard" => 35, "zombiePass" => 37 )
+    ),
     35 => array(
         "name" => "playerTurnPlay",
 		"description" => clienttranslate('${turnPlayerName} must ${thingsCanDo}'),
@@ -111,8 +97,10 @@ $machinestates = array(
         "type" => "activeplayer", //multipleactiveplayer
 		"action" => "stPlayerTurnPlay", // ACTION: Do this upon entering the state
 		"args" => "argPlayerTurnPlay",
-        "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple', "zombiePass", "buyRequest", "notBuyRequest"),
-        "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35, "buyRequest" => 60, "notBuyRequest" => 61, "zombiePass" => 37 )
+        "possibleactions" => array( "playerGoDown", "discardCard", 'playCard', 'playCardMultiple', "zombiePass", "buyRequest", "notBuyRequest", "liverpoolBonus", "liverpoolPenalty" ),
+        "transitions" => array( "playerGoDown" => 35, "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35,
+			"zombiePass" => 37, "liverpoolBonus" => 50, "liverpoolPenalty" => 60 )
+        // "transitions" => array( "discardCard" => 36, "playCard" => 35, "playCardMultiple" => 35, "buyRequest" => 60, "notBuyRequest" => 61, "zombiePass" => 37 )
     ), 
 	36 => array(
 		"name" => "afterDiscard",
@@ -120,7 +108,7 @@ $machinestates = array(
         "type" => "game",
         "action" => "stWaitForAll", // ACTION: Do this upon entering the state
         "possibleactions" => array( "zombiePass" ),
-		"transitions" => array( "fullyResolved" => 37 )
+		"transitions" => array( "fullyResolved" => 37, "LPReturn" => 53, "LPReturnPenalty" => 63  )
     ), 
     37 => array(
         "name" => "nextPlayer",
@@ -132,15 +120,14 @@ $machinestates = array(
     // End of the hand. Let players look at their hand and the board
     40 => array(
         "name" => "wentOut",
-        "description" => clienttranslate('${player_name} went out!'),
-		"descriptionmyturn" => clienttranslate('${player_name} went out!'),
+        "description" => clienttranslate('The hand is over!'),
+		"descriptionmyturn" => clienttranslate('The hand is over!'),
         "type" => "multipleactiveplayer",
-        //"type" => "activeplayer", //multipleactiveplayer
-        //"type" => "game", // GAME doesn't work "invalid end game state" or something
         "action" => "stWentOut", // ACTION: Do this upon entering the state
 		"args" => "argWentOut",
-		"possibleactions" => array( "playerHasReviewedHand", 'endgame' ),
-        "transitions" => array( "playerHasReviewedHand" => 45, 'endgame' => 99 )
+		// TODO: Need to disallows clicking LIVERPOOL if the game has ended.
+		"possibleactions" => array( "playerHasReviewedHand", 'endGame' ),
+        "transitions" => array( "playerHasReviewedHand" => 45, 'endGame' => 99 )
     ),
     45 => array(
         "name" => "endHand",
@@ -149,57 +136,117 @@ $machinestates = array(
         "action" => "stEndHand", // ACTION: Do this upon entering the state
         "transitions" => array( "newHand" => 20, "endGame" => 99 )
     ),
-    // 50 => array(    // Resolve the potential buyers of the discard card
-        // "name" => "resolveBuyers",
-        // "description" => clienttranslate('Resolve discard buyers.'),
-        // "descriptionmyturn" => clienttranslate('Resolve discard buyers.'),
-        // "type" => "game",
-        // "action" => "stResolveBuyers", // ACTION: Do this upon entering the state
-////        "transitions" => array( "checkEmptyDeck" => 32, "drawDiscard" => 33, "other" => 35 )
-        // "transitions" => array( "checkEmptyDeck" => 32, "buyNotAllowed" => 37, "other" => 35 )
-    // ),
-    // 57 => array(    // The turn-player is drawing a card from the deck
-        // "name" => "turnPlayerDrawFromDeck",
-        // "description" => clienttranslate('${actplayer} is drawing from the deck.'),
-        // "descriptionmyturn" => clienttranslate('${you} are drawing from the deck.'),
-        // "type" => "game",
-        // "action" => "stDrawDeck", // ACTION: Do this upon entering the state
-        // "transitions" => array( "" => 35 )
-    // ),   
-	
-	// Someone is trying to buy a card
-    60 => array(
-        "name" => "buyTryFromPTP",
-        "description" => clienttranslate("Someone is trying to buy the discard during PlayerTurnPlay."),
-        "descriptionmyturn" => clienttranslate('${you} are trying to buy the discard during PlayerTurnPlay.'),
+
+	// A separate state much be used for Liverpool processing because the active player cannot be changed
+	// when the 'type' is 'activeplayer'.
+    50 => array(
+        "name" => "liverpoolBonus",
+		"description" => clienttranslate('${playerFindingLP} declared Liverpool! [ST50]'),
+		"descriptionmyturn" => clienttranslate('${you} declared Liverpool! [ST50]'),
+        "type" => "game",
+		"action" => "stLiverpoolBonus", // ACTION: Do this upon entering the state
+		"args" => "argLiverpool",
+        //"possibleactions" => array( "drawCard" ),
+        "transitions"     => array( 51 ) // Draw the discard in the liverpool function; Put player in playcard state
+    ),
+    51 => array(
+        "name" => "liverpoolDraw",
+		"description" => clienttranslate('${playerFindingLP} draws the discard and can play it [ST51]'),
+		"descriptionmyturn" => clienttranslate('${you} get the discard and can play it[ST51]'),
         "type" => "activeplayer",
-        "action" => "stBuyTry", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 35 )
-    ),     
+		"action" => "stLiverpoolDraw", // ACTION: Do this upon entering the state
+		"args" => "argLiverpoolDraw",
+		// The transition is from state drawNotify to playCard
+        "possibleactions" => array( "drawCard" ), // Only action is to draw the discard (automatic)
+        "transitions"     => array( "drawCard" => 35 ) // Then go to playcard
+    ), 
+    53 => array(
+        "name" => "liverpoolReturn",
+		"description" => clienttranslate('[ST53]'),
+		"descriptionmyturn" => clienttranslate('[ST53]'),
+        "type" => "game",
+		"action" => "stLiverpoolReturn", // ACTION: Do this upon entering the state
+		//"args" => "argLiverpoolReturn",
+//        "possibleactions" => array( "drawCard" ),
+//        "transitions"     => array( 30 ) // Interrupted player gets to draw
+        "transitions"     => array( 37 ) // Check end conditions, otherwise interrupted player gets to draw
+    ),
+    60 => array( // Equivalent to 50
+        "name" => "liverpoolPenalty",
+		"description" => clienttranslate('${playerFindingLP} declared Liverpool! [ST60]'),
+		"descriptionmyturn" => clienttranslate('${you} declared Liverpool! [ST60]'),
+        "type" => "game",
+		"action" => "stLiverpoolPenalty", // ACTION: Do this upon entering the state
+		"args"  => "argLiverpool", // TODO: Is this correct or add Penalty
+        //"possibleactions" => array( "drawCard" ),
+        "transitions"     => array( "penalizeDiscarder" => 61, "penalizeCaller" => 62 )
+    ),
     61 => array(
-        "name" => "notBuyTryFromPTP",
-        "description" => clienttranslate("Someone is trying to NOT buy the discard during PlayerTurnPlay."),
-        "descriptionmyturn" => clienttranslate('${you} are trying to NOT buy the discard during PlayerTurnPlay.'),
-        "type" => "activeplayer",
-        "action" => "stNotBuyTry", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 35 )
-    ),     
-    65 => array(
-        "name" => "buyTryFromPTD",
-        "description" => clienttranslate("Someone is trying to buy the discard during PlayerTurnDraw."),
-        "descriptionmyturn" => clienttranslate('${you} are trying to buy the discard during PlayerTurnDraw.'),
-        "type" => "activeplayer",
-        "action" => "stBuyTry", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 30 )
-    ),     
-    66 => array(
-        "name" => "notBuyTryFromPTD",
-        "description" => clienttranslate("Someone is trying to NOT buy the discard during PlayerTurnDraw."),
-        "descriptionmyturn" => clienttranslate('${you} are trying to NOT buy the discard during PlayerTurnDraw.'),
-        "type" => "activeplayer",
-        "action" => "stNotBuyTry", // ACTION: Do this upon entering the state
-        "transitions" => array( "" => 30 )
-    ),     
+        "name" => "liverpoolDrawPenaltyDiscarder",
+		"description" => clienttranslate('${playerDiscarding} got their discard back and drew a penalty card [ST61]'),
+		"descriptionmyturn" => clienttranslate('${you} got your discard back and drew a penalty card [ST61]'),
+        "type" => "game",
+		"action" => "stLiverpoolDrawPenaltyDiscarder", // ACTION: Do this upon entering the state
+		"args"  => "argLiverpoolDrawPenaltyDiscarder",
+        "transitions"     => array( 63 ) // Then go to drawCard for regular player
+    ), 
+    62 => array(
+        "name" => "liverpoolDrawPenaltyCaller",
+		"description" => clienttranslate('${playerFindingLP} drew a penalty card [ST62]'),
+		"descriptionmyturn" => clienttranslate('${you} drew a penalty card [ST62]'),
+        "type" => "game",
+		"action" => "stLiverpoolDrawPenaltyCaller", // ACTION: Do this upon entering the state
+		"args"  => "argLiverpoolDrawPenaltyCaller",
+        "transitions"     => array( 63 ) // Then go to drawCard for regular player
+    ), 
+    63 => array(
+        "name" => "liverpoolReturnPenalty",
+		"description" => clienttranslate('[ST63]'),
+		"descriptionmyturn" => clienttranslate('[ST63]'),
+        "type" => "game",
+		"action" => "stLiverpoolReturnPenalty", // ACTION: Do this upon entering the state
+		//"args" => "argLiverpoolReturn",
+//        "possibleactions" => array( "drawCard" ),
+//        "transitions"     => array( 30 ) // Interrupted player gets to draw
+        "transitions"     => array( 37 ) // Go back to the regular next player
+    ),
+
+
+
+
+	// Someone is trying to buy a card
+    // 60 => array(
+        // "name" => "buyTryFromPTP",
+        // "description" => clienttranslate("Someone is trying to buy the discard during PlayerTurnPlay."),
+        // "descriptionmyturn" => clienttranslate('${you} are trying to buy the discard during PlayerTurnPlay.'),
+        // "type" => "activeplayer",
+        // "action" => "stBuyTry", // ACTION: Do this upon entering the state
+        // "transitions" => array( "" => 35 )
+    // ),     
+    // 61 => array(
+        // "name" => "notBuyTryFromPTP",
+        // "description" => clienttranslate("Someone is trying to NOT buy the discard during PlayerTurnPlay."),
+        // "descriptionmyturn" => clienttranslate('${you} are trying to NOT buy the discard during PlayerTurnPlay.'),
+        // "type" => "activeplayer",
+        // "action" => "stNotBuyTry", // ACTION: Do this upon entering the state
+        // "transitions" => array( "" => 35 )
+    // ),     
+    // 65 => array(
+        // "name" => "buyTryFromPTD",
+        // "description" => clienttranslate("Someone is trying to buy the discard during PlayerTurnDraw."),
+        // "descriptionmyturn" => clienttranslate('${you} are trying to buy the discard during PlayerTurnDraw.'),
+        // "type" => "activeplayer",
+        // "action" => "stBuyTry", // ACTION: Do this upon entering the state
+        // "transitions" => array( "" => 30 )
+    // ),     
+    // 66 => array(
+        // "name" => "notBuyTryFromPTD",
+        // "description" => clienttranslate("Someone is trying to NOT buy the discard during PlayerTurnDraw."),
+        // "descriptionmyturn" => clienttranslate('${you} are trying to NOT buy the discard during PlayerTurnDraw.'),
+        // "type" => "activeplayer",
+        // "action" => "stNotBuyTry", // ACTION: Do this upon entering the state
+        // "transitions" => array( "" => 30 )
+    // ),     
 
 /*
     Examples:

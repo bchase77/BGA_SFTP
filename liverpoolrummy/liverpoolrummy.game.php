@@ -63,7 +63,7 @@ class LiverpoolRummy extends Table
             //      ...
 		  // To track buyers realtime, instead of using the database which can lock, use a gamestate. Each player gets 1 variable.
 
-
+//			"activePlayer" => 2, // This is built in
             "currentHandType" => 10,
 //			"area_A_target" => 11,
 //			"area_B_target" => 12,
@@ -84,45 +84,22 @@ class LiverpoolRummy extends Table
 			"findBuyerFailsafe" => 33,
 			"numberOfDecks" => 100,
 			"gameLengthOption" => 102,
+			"LiverpoolConsequence" => 103,
 			"numberOfJokers" => 104,
 			"numberOfBuys" => 105,
 			"alwaysDeal11" => 106,
 			"outReason" => 107,
 			"enableWishList" => 108,
 			"allowJokerSwapping" => 109,
-			"buyer0WantsGS" => 110,
-			"buyer1WantsGS" => 111,
-			"buyer2WantsGS" => 112,
-			"buyer3WantsGS" => 113,
-			"buyer4WantsGS" => 114,
-			"buyer5WantsGS" => 115,
-			"buyer6WantsGS" => 116,
-			"buyer7WantsGS" => 117,
-			"buyer8WantsGS" => 118,
-			"buyer9WantsGS" => 119,
-			"buyer10WantsGS" => 120,
-			"buyer11WantsGS" => 121,
-			"buyer12WantsGS" => 122,
-			"buyer13WantsGS" => 123,
-			"buyer14WantsGS" => 124,
-			"buyer15WantsGS" => 125,
-//
-			"buyer0CountGS" => 130,
-			"buyer1CountGS" => 131,
-			"buyer2CountGS" => 132,
-			"buyer3CountGS" => 133,
-			"buyer4CountGS" => 134,
-			"buyer5CountGS" => 135,
-			"buyer6CountGS" => 136,
-			"buyer7CountGS" => 137,
-			"buyer8CountGS" => 138,
-			"buyer9CountGS" => 139,
-			"buyer10CountGS" => 140,
-			"buyer11CountGS" => 141,
-			"buyer12CountGS" => 142,
-			"buyer13CountGS" => 143,
-			"buyer14CountGS" => 144,
-			"buyer15CountGS" => 145,
+
+			"LPMissed" => 125,
+			"liverpoolExists" => 126,
+			"playerFindingLP" => 127,
+			"playerInterrupted" => 128,
+			"liverpoolFoundYN" => 129,
+			"LPcardsPlayed" => 130,
+			"discardingPlayer" => 131,
+			
 			"countDeck" => 146,
 			"countDiscardPile" => 147,
 			"theBuyer" => 148,
@@ -132,6 +109,9 @@ class LiverpoolRummy extends Table
 	
         $this->cards = self::getNew( "module.common.deck" );
         $this->cards->init( "card" );
+		
+		// This next is recommended by GTSchemer to avoid deadlocks:
+		$this->bSelectGlobalsForUpdate = true;
 	}
 	
     protected function getGameName( )
@@ -170,13 +150,21 @@ class LiverpoolRummy extends Table
             $color = array_shift( $default_colors );
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player[ 'player_name' ] )."','".addslashes( $player['player_avatar'] )."')";
         }
-        $sql .= implode( $values, ',' );
+//        $sql .= implode( $values, ',' ); // PHP8 requires inverted implode parameters
+        $sql .= implode( ',', $values );
         self::DbQuery( $sql );
 
         self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
         self::reloadPlayersBasicInfos();
 
         self::setGameStateInitialValue( 'currentHandType', 0 );
+
+        self::setGameStateInitialValue( 'liverpoolFoundYN', 0 ); // 0 = false; 1 = true
+
+        self::setGameStateInitialValue( 'LPMissed', 0 ); // 0 = false; 1 = true
+
+		self::setGameStateInitialValue( 'LPcardsPlayed', 0 );
+
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		
 		//self::dump("[bmc] handTypes(line145):", $this->handTypes[$currentHandType]);
@@ -209,25 +197,6 @@ class LiverpoolRummy extends Table
 
 		// Clear out the BUY counters for all players
 		self::clearPlayersBuyCount();
-		// self::clearPlayersBuyCountGS();
-		//self::clearPlayersBuyCountGS2();
-		
-		// self::setGameStateInitialValue( 'buyer0WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer1WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer2WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer3WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer4WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer5WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer6WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer7WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer8WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer9WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer10WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer11WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer12WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer13WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer14WantsGS', 0 ); // No buyers to start
-		// self::setGameStateInitialValue( 'buyer15WantsGS', 0 ); // No buyers to start
 
 		self::setGameStateInitialValue( 'discardWeightHistory', 300 ); // Start higher than any game will have qty of cards
 
@@ -243,6 +212,9 @@ class LiverpoolRummy extends Table
 		
 		// all players to select BUY / NOT BUY before a player discards a 2nd time.
 
+		self::setGameStateInitialValue( 'liverpoolExists', 0 ); // 0 = not exist; 1 = exist
+		self::setGameStateInitialValue( 'playerFindingLP', 0 ); // 0 = no player
+
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
@@ -255,8 +227,6 @@ class LiverpoolRummy extends Table
         self::initStat( 'table',  'turns_number', 0 );
         self::initStat( 'player', 'buys_number', 0 );
         self::initStat( 'player', 'jokers_number', 0 );
-      
-
 
         /************ End of the game initialization *****/
     }
@@ -343,9 +313,11 @@ class LiverpoolRummy extends Table
 		
 		// Create cards
         $cards = array ();
-		
+
 		$numberOfDecks = self::getGameStateValue( 'numberOfDecks' );
 		//self::dump( "[bmc] numberOfDecks", $numberOfDecks );
+
+// 'type' means 1=C; 2=S; 3=H;4=D
 
 //        foreach ( $this->colors as $color_id => $color ) {
 		for ($colors = 1; $colors <=4; $colors ++) {
@@ -383,9 +355,16 @@ class LiverpoolRummy extends Table
 
         $this->cards->createCards( $cards, 'deck' );
 
-		$allCardsDebug = $this->cards->getCardsInLocation( 'deck' );
-		
-		self::dump( "[bmc] AllCardsDebug: ", $allCardsDebug );
+//		$allCardsDebug = $this->cards->getCardsInLocation( 'deck' );
+
+//		self::dump( "[bmc] AllCardsDebug: ", $allCardsDebug );
+
+        // Shuffle deck
+//        $this->cards->shuffle( 'deck' );
+
+//		$allCardsDebug = $this->cards->getCardsInLocation( 'deck' );
+
+//		self::dump( "[bmc] afterShuffle: ", $allCardsDebug );
 
         self::setGameStateInitialValue( 'countDiscardPile', 1 );
         //self::setGameStateInitialValue( 'countDeck', $allCardsDebug );
@@ -504,14 +483,23 @@ class LiverpoolRummy extends Table
 			$currentCard = $this->cards->getCard( reset( $dpCard )[ 'id' ] );
 
 			self::dump("[bmc] currentCardInDP:", $currentCard);
-				
+
 			if ( $currentCard[ 'type' ] == 5 ) {
-				$value_displayed = self::_(' joker');
+				$value_displayed = 'Joker';
 				$color_displayed = '';
 			} else {
-				$value_displayed = self::_('The ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
-				$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
+				$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
+				$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
 			}
+
+
+			// if ( $currentCard[ 'type' ] == 5 ) {
+				// $value_displayed = self::_(' joker');
+				// $color_displayed = '';
+			// } else {
+				// $value_displayed = self::_('The ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
+				// $color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
+			// }
 
 			self::dump("[bmc] vd:", $value_displayed);
 			self::dump("[bmc] cd:", $color_displayed);
@@ -528,6 +516,9 @@ class LiverpoolRummy extends Table
 		
 		$result['currentPlayerId'] = $current_player_id;
 		$result['discardingPlayer_id'] = $this->getPlayerBefore( self::getActivePlayerId() );
+		
+		self::dump( "[bmc] enableWishList:", $this->getGameStateValue( 'enableWishList' ) );
+		
 		if ( $this->getGameStateValue( 'enableWishList' ) == 1 ) {
 			$result['enableWishList'] = true;
 		} else {
@@ -536,17 +527,68 @@ class LiverpoolRummy extends Table
 		
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
+		
         $sql = "SELECT player_id id, player_score score FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
 
-        // Cards in player hand
-        $result['hand'] = $this->cards->getCardsInLocation( 'hand', $current_player_id );
+		$playersHand = $this->cards->getCardsInLocation( 'hand', $current_player_id );
+		//self::dump( "[bmc] playersHand:", $playersHand );
+
+        // Return cards in player hand
+        $result['hand'] = $playersHand;
 
 		$result['deckIDs'] = array_keys($this->cards->getCardsInLocation( 'deck' ));
+		
+		$bob = $this->cards->getCardsInLocation( 'deck' );
+
+//		self::dump( "[bmc] deckIDsak:", array_keys($this->cards->getCardsInLocation( 'deck' )));
+//		self::dump( "[bmc] deckIDs:", $this->cards->getCardsInLocation( 'deck' ));
+
+//		self::dump( "[bmc] bob:", $bob);
+
+		$cardIDsInDeck = array();
+		$cardLAsInDeck = array();
+		
+		foreach ( $bob as $card ) {
+			//self::dump("[bmc] deckIDcard: ", $card );
+			//self::dump("[bmc] deckIDcard: ", $card[ 'location_arg' ]);
+			array_push( $cardIDsInDeck, $card[ 'id' ]);
+			array_push( $cardLAsInDeck, $card[ 'location_arg' ]);
+		}
+
+		self::dump( "[bmc] cardIDsInDeck:", $cardIDsInDeck );
+		self::dump( "[bmc] cardLAsInDeck:", $cardLAsInDeck );
+
+		// $ar = array(
+			   // array("10", 11, 100, 100, "a"),
+			   // array(   1,  2, "2",   3,   1)
+			  // );
+			  
+//		array_multisort( $cardLAsInDeck, SORT_DESC, $cardIDsInDeck );
+		array_multisort( $cardLAsInDeck, SORT_ASC, $cardIDsInDeck );
+
+		self::dump( "[bmc] cardsIDsInDeck AfterSort:", $cardIDsInDeck );
+		self::dump( "[bmc] cardsLAsInDeck AfterSort:", $cardLAsInDeck );
+
+		$result['cardIDsInDeck'] = $cardIDsInDeck ;
+
+
+
+
+
+        // Shuffle deck
+        // $this->cards->shuffle( 'deck' );
+
+		// $allCardsDebug = $this->cards->getCardsInLocation( 'deck' );
+
+		// self::dump( "[bmc] afterShuffle: ", $allCardsDebug );
+
 
 		$deckTopCard = $this->cards->getCardOnTop( 'deck' );
 		$result['deckTopCard'] = $this->cards->getCardOnTop( 'deck' )[ 'id' ];
 		
+		self::dump( "[bmc] deckTopCard: ", $result[ 'deckTopCard' ]);
+
 		$result['allHands'] = $cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
 		
 		self::dump( "[bmc] allHands:", $cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' ));
@@ -568,13 +610,7 @@ class LiverpoolRummy extends Table
 
 		$players = self::loadPlayersBasicInfos();
 		
-		self::dump( "[bmc] players:", $players );
-
-		//$buyersGS = self::getPlayerBuyingGS();
-		
-		// self::dump( "[bmc] buyersGS:", $buyersGS );
-
-		//$buyers = $buyersGS; // Use the new function which doesn't access the database (to avoid deadlock)
+		// self::dump( "[bmc] players:", $players );
 
         $playerIDList = [];
 
@@ -582,15 +618,13 @@ class LiverpoolRummy extends Table
 			$playerIDList[] = $playerIDOnly[ "player_id" ];
 		}
 		
-		self::dump( "[bmc] playerIDList:", $playerIDList );
+		// self::dump( "[bmc] playerIDList:", $playerIDList );
 
         $playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
 		
 		$buyCount = self::getPlayersBuyCount();
 		
 		self::dump("[bmc] gamedatas buyCount:",   $buyCount);
-		// self::dump("[bmc] gamedatas buyCountGS:", $buyCountGS);
-		//self::dump("[bmc] gamedatas buyCountGS2:", $buyCountGS2);
 
 		$discardSize = count( $this->cards->countCardsByLocationArgs( 'discardPile' ));
 		
@@ -609,7 +643,6 @@ class LiverpoolRummy extends Table
 			$result[ 'buyers' ][ $player_id ] = $buyers[ $player_id ];
 			$result[ 'buyCount'][ $player_id ] = $buyCount[ $player_id ];
 		}
-
 
 		// Put the jokers on the top of the deck
 		$cardsForDeck = array(
@@ -635,7 +668,7 @@ class LiverpoolRummy extends Table
 		
 		foreach ( $cardsForDeck as $cardToAdd ) {
 			$cardsInDeck = $this->cards->getCardsInLocation( 'deck' );
-			//self::dump("[bmc] cardToAdd:", $cardToAdd );
+
 			$presetHandCard = self::searchForCard( $cardsInDeck, $cardToAdd );
 			//self::dump("[bmc] findJoker:", $presetHandCard );
 			
@@ -687,88 +720,80 @@ class LiverpoolRummy extends Table
 		$cardsInBb = $this->cards->getCardsInLocation( 'playerDown_B' );
 		$cardsInBc = $this->cards->getCardsInLocation( 'playerDown_C' );
 
-//		self::dump("[bmc] cardsInHd:", $cardsInHd);
-//		self::dump("[bmc] cardsInDk:", $cardsInDk);
-//		self::dump("[bmc] cardsInDp:", $cardsInDp);
-//		self::dump("[bmc] cardsInBa:", $cardsInBa);
-//		self::dump("[bmc] cardsInBb:", $cardsInBb);
-//		self::dump("[bmc] cardsInBc:", $cardsInBc);
+		// self::dump("[bmc] cardsInHd:", $cardsInHd);
+		// self::dump("[bmc] cardsInDk:", $cardsInDk);
+		// self::dump("[bmc] cardsInDp:", $cardsInDp);
+		// self::dump("[bmc] cardsInBa:", $cardsInBa);
+		// self::dump("[bmc] cardsInBb:", $cardsInBb);
+		// self::dump("[bmc] cardsInBc:", $cardsInBc);
 
-		// $result[ 'options' ][ 'buyTimeInSeconds' ] = self::getGameStateValue( 'buyTimeInSeconds' );
-		
 		$numberOfDecks = self::getGameStateValue( 'numberOfDecks' );
 		
-		self::dump( "[bmc] numberOfDecks", $numberOfDecks );
+		// self::dump( "[bmc] numberOfDecks", $numberOfDecks );
 		
 		$result[ 'options' ][ 'numberOfDecks' ] = $numberOfDecks;
 
-		// $result[ 'options' ][ 'buyMethod' ] = self::getGameStateValue( 'buyMethod' );
-
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
-		self::dump( "[bmc] 703 currentHandType:", $currentHandType);
 		
-		self::dump( "[bmc} count of handtypes:", count( $this->handTypes ));
+		// self::dump( "[bmc} count of handtypes:", count( $this->handTypes ));
 		
-		$result[ 'handTarget' ] = $this->handTypes[ $currentHandType ]["Target"];
+		if ( $currentHandType != null ) {
+			self::dump( "[bmc] 711 currentHandType:", $currentHandType );
+			$result[ 'handTarget' ] = $this->handTypes[ $currentHandType ]["Target"];
+		}
 		
-//	    $sql = "DELETE FROM wishList WHERE player_id = '";
-//		$sql_command = $player_id . "'";
-
 		$sql = "SELECT id id, card_type, card_type_arg FROM wishList WHERE player_id = '";
 		$sql_command = $current_player_id . "'";
 		
-		self::dump( "[bmc] sql:", $sql . $sql_command );
+		// self::dump( "[bmc] sql:", $sql . $sql_command );
 
 		$wishListAll = self::getCollectionFromDb( $sql . $sql_command );
 		
-//		foreach ( $wishListAll as $wlEntry ){
 		$result[ 'wishList' ] = self::getCollectionFromDb( $sql . $sql_command );
-		self::dump( "[bmc] wishListAll:", $wishListAll );
-		
-//		self::trace("[bmc] EXIT getAllDatas");
+		// self::dump( "[bmc] wishListAll:", $wishListAll );
+
+		$result[ 'liverpoolExists' ] = self::getGameStateValue( 'liverpoolExists' );
+
+//		self::trace("[bmc] EXIT GETALLDATAS");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT GETALLDATAS</b></span>'");
+
         return $result;
     }
 ////////
 ////////
 ////////
 	function presetHands( $players, $debug ) {
-		self::trace("[bmc] ENTER presetHands");
+		self::trace("[bmc] ENTER presetHands"); // Colors 1,2,3,4 = CSHD
 		$testPlayerHandArray = [];
 
-		$testPlayerHandArray[3] = array(
-			14 => array(
-				'type' => '3', // Suit
-				'type_arg' => '13' // Value
-				)
-			);
-		$testPlayerHandArray[1] = array(
+		$testPlayerHandArray[0] = array(
 			0 => array(
 				'type' => '1', // Suit
-				'type_arg' => '1' // Value
+				'type_arg' => '12' // Value
 				),
 			1 => array(
 				'type' => '1', // Suit
-				'type_arg' => '2' // Value
+				'type_arg' => '12' // Value
 				),
 			2 => array(
-				'type' => '1', // Suit
-				'type_arg' => '3' // Value
+				'type' => '2', // Suit
+				'type_arg' => '12' // Value
 				),
 			3 => array(
-				'type' => '1', // Suit
-				'type_arg' => '4' // Value
+				'type' => '3', // Suit
+				'type_arg' => '1' // Value
 				),
 			4 => array(
-				'type' => '1', // Suit
-				'type_arg' => '5' // Value
+				'type' => '3', // Suit
+				'type_arg' => '3' // Value
 				),
 			5 => array(
-				'type' => '5', // Suit
-				'type_arg' => '2' // Value
+				'type' => '3', // Suit
+				'type_arg' => '4' // Value
 				),
 			6 => array(
-				'type' => '5', // Suit
-				'type_arg' => '1' // Value
+				'type' => '3', // Suit
+				'type_arg' => '5' // Value
 				),
 			7 => array(
 				'type' => '3', // Suit
@@ -783,8 +808,70 @@ class LiverpoolRummy extends Table
 				'type_arg' => '8' // Value
 				),
 			10 => array(
-				'type' => '3', // Suit
+				'type' => '4', // Suit
+				'type_arg' => '3' // Value
+				),
+			11 => array(
+				'type' => '4', // Suit
+				'type_arg' => '4' // Value
+				),
+			12 => array(
+				'type' => '4', // Suit
+				'type_arg' => '6' // Value
+				),
+			13 => array(
+				'type' => '4', // Suit
+				'type_arg' => '12' // Value
+				),
+			14 => array(
+				'type' => '5', // Suit
+				'type_arg' => '1' // Value
+				)
+			);
+		$testPlayerHandArray[1] = array(
+			0 => array(
+				'type' => '1', // Suit
+				'type_arg' => '5' // Value
+				),
+			1 => array(
+				'type' => '5', // Suit
+				'type_arg' => '1' // Value
+				),
+			2 => array(
+				'type' => '1', // Suit
+				'type_arg' => '7' // Value
+				),
+			3 => array(
+				'type' => '1', // Suit
+				'type_arg' => '6' // Value
+				),
+			4 => array(
+				'type' => '1', // Suit
+				'type_arg' => '8' // Value
+				),
+			5 => array(
+				'type' => '1', // Suit
 				'type_arg' => '9' // Value
+				),
+			6 => array(
+				'type' => '3', // Suit
+				'type_arg' => '4' // Value
+				),
+			7 => array(
+				'type' => '3', // Suit
+				'type_arg' => '5' // Value
+				),
+			8 => array(
+				'type' => '3', // Suit
+				'type_arg' => '6' // Value
+				),
+			9 => array(
+				'type' => '3', // Suit
+				'type_arg' => '7' // Value
+				),
+			10 => array(
+				'type' => '3', // Suit
+				'type_arg' => '8' // Value
 				),
 			11 => array(
 				'type' => '2', // Suit
@@ -793,77 +880,118 @@ class LiverpoolRummy extends Table
 			12 => array(
 				'type' => '2', // Suit
 				'type_arg' => '13' // Value
+				)
+			);
+/*
+		$testPlayerHandArray[2] = array(
+			0 => array(
+				'type' => '5', // Suit
+				'type_arg' => '1' // Value
 				),
-			13 => array(
+			1 => array(
+				'type' => '5', // Suit
+				'type_arg' => '1' // Value
+				),
+			2 => array(
+				'type' => '3', // Suit
+				'type_arg' => '11' // Value
+				),
+			3 => array(
+				'type' => '3', // Suit
+				'type_arg' => '12' // Value
+				),
+			4 => array(
+				'type' => '3', // Suit
+				'type_arg' => '13' // Value
+				),
+			5 => array(
+				'type' => '3', // Suit
+				'type_arg' => '1' // Value
+				),
+			6 => array(
+				'type' => '4', // Suit
+				'type_arg' => '6' // Value
+				),
+			7 => array(
+				'type' => '3', // Suit
+				'type_arg' => '6' // Value
+				),
+			8 => array(
 				'type' => '2', // Suit
 				'type_arg' => '1' // Value
 				),
-			14 => array(
-				'type' => '5', // Suit
-				'type_arg' => '2' // Value
+			9 => array(
+				'type' => '2', // Suit
+				'type_arg' => '9' // Value
 				),
-			15 => array(
-				'type' => '1', // Suit
-				'type_arg' => '4' // Value
+			10 => array(
+				'type' => '2', // Suit
+				'type_arg' => '8' // Value
 				),
-			16 => array(
-				'type' => '1', // Suit
+			11 => array(
+				'type' => '2', // Suit
 				'type_arg' => '3' // Value
 				),
-
-			);
-		$testPlayerHandArray[2] = array(
+			12 => array(
+				'type' => '2', // Suit
+				'type_arg' => '4' // Value
+				),
+			13 => array(
+				'type' => '2', // Suit
+				'type_arg' => '5' // Value
+				),
 			14 => array(
-				'type' => '4', // Suit
-				'type_arg' => '11' // Value
+				'type' => '2', // Suit
+				'type_arg' => '6' // Value
 				)
 			);
 
 		$testPlayerHandArray[0] = array(
 			0 => array(
-				'type' => '4', // Suit
+				'type' => '5', // Suit
 				'type_arg' => '1' // Value
 				),
 			1 => array(
-				'type' => '4', // Suit
-				'type_arg' => '13' // Value
+				'type' => '2', // Suit
+				'type_arg' => '2' // Value
 				),
 			2 => array(
 				'type' => '4', // Suit
-				'type_arg' => '12' // Value
+				'type_arg' => '2' // Value
 				),
 			3 => array(
 				'type' => '3', // Suit
-				'type_arg' => '7' // Value
+				'type_arg' => '2' // Value
 				),
 			4 => array(
-				'type' => '3', // Suit
-				'type_arg' => '8' // Value
+				'type' => '1', // Suit
+				'type_arg' => '2' // Value
 				),
 			5 => array(
 				'type' => '3', // Suit
-				'type_arg' => '9' // Value
+				'type_arg' => '12' // Value
 				),
 			6 => array(
 				'type' => '3', // Suit
-				'type_arg' => '10' // Value
+				'type_arg' => '12' // Value
 				),
 			7 => array(
-				'type' => '3', // Suit
-				'type_arg' => '11' // Value
+				'type' => '2', // Suit
+				'type_arg' => '3' // Value
 				),
 			8 => array(
 				'type' => '2', // Suit
-				'type_arg' => '7' // Value
+				'type_arg' => '4' // Value
 				),
 			9 => array(
 				'type' => '2', // Suit
-				'type_arg' => '8' // Value
+				'type_arg' => '5' // Value
 				),
 			10 => array(
 				'type' => '2', // Suit
-				'type_arg' => '9' // Value
+				'type_arg' => '6' // Value
 				),
+*/
 /*
 ,
 			14 => array(
@@ -909,7 +1037,6 @@ class LiverpoolRummy extends Table
 				'type_arg' => '7' // Value
 				)
 */
-			);
 /*
 			0 => array(
 				'type' => '3', // Suit
@@ -1351,80 +1478,235 @@ class LiverpoolRummy extends Table
 		//self::dump("[bmc] allCardsInDeck:", $allCardsDebug );
 		//$allCardsDebug = $this->cards->getCardsInLocation( 'jokerPile' );
 		//self::dump("[bmc] allCardsInJokerPile:", $allCardsDebug );
-		self::trace("[bmc] EXIT presetHands");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT presetHands</b></span>'");
+		//self::trace("[bmc] EXIT presetHands");
 	}
 ////////
 ////////
 ////////
 	function argPlayerTurnDraw() {
-		self::trace("[bmc] ENTER argPlayerTurnDraw");
+		
+		self::trace("'<span style='color:red'>[bmc] ENTER argPlayerTurnDraw</span>'");
+
+		// Someone might click LIVERPOOL button, causing this state to fire
+		// This function might fire at any time; Cannot use getCurrentPlayerId() or it will fail
+		//   with Unexpected error: Propagating error from GS 1 (method: createGame): Fatal error during yourgame setup: Not logged
+		
+		// If the current player is the active player then do all this stuff.
+		// If not, then someone clicked LIVERPOOL button. Then process LP according to mode.
 		
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		
-		$playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
-		
-		self::dump("[bmc] playerGoneDown:", $playerGoneDown );
+		if ( $currentHandType != null ) { // argPlayerTurnDraw is called before anything, so ensure a hand is active
 
-		$gtActivePlayerId = $this->getActivePlayerId();
-		self::dump("[bmc] GAME THINKS ACTIVE PLAYER:", $gtActivePlayerId );
-		
-		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
-		
-		$players = self::loadPlayersBasicInfos();
-		$activePlayer = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+			$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' ); // 0 = false; 1 = true
 
-		$activePlayerFull = $players[ $activeTurnPlayer_id ];
+			if ( $liverpoolFoundYN == 1 ) { // We are here because someone clicked Liverpool
+			
+				$gtActivePlayerId = $this->getActivePlayerId();
+				self::dump("[bmc] GAME THINKS ACTIVE PLAYER:", $gtActivePlayerId );
+				
+				$currentPlayerId = $this->getCurrentPlayerId();
+				self::dump("[bmc] GAME THINKS CURRENT PLAYER:", $currentPlayerId );
+				
+				if ( $gtActivePlayerId != $currentPlayerId ) { // It's not this player's turn, someone click LP or they just reloaded into this state; How to tell someone clicked LP???
+				
+					self::trace("[bmc] Someone declared LP during draw");
+					$LiverpoolConsequence =  self::getGameStateValue( 'LiverpoolConsequence' );
+					
+					if ( $LiverpoolConsequence == 1 ){ // 0=bonus; 1=penalty
+						$this->gamestate->nextState( 'liverpoolPenalty' );
+					} else {
+						$this->gamestate->nextState( 'liverpoolBonus' );
+					}
+				}
+			} else { // Nobody clicked LP; it is this player's turn so process it normally
+				self::trace("[bmc] Normal argPlayerTurndraw");
+				
+				$playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
+				
+				self::dump("[bmc] playerGoneDown:", $playerGoneDown );
 
-		//self::dump("[bmc] activePlayerFull:", $activePlayerFull );
+				$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
+				
+				$players = self::loadPlayersBasicInfos();
+				$activePlayer = $players[ $activeTurnPlayer_id ][ 'player_name' ];
 
-		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
+				// Check for liverpoolexist
+				$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' ); // 0 = false; 1 = true
+				$liverpoolExists  = self::getGameStateValue( 'liverpoolExists'); // 0 = false; 1 = true
 
-		$buyers = self::getPlayerBuying();
-		// $buyers = self::getPlayerBuyingGS();
-		self::dump("[bmc] argPlayerTurnDraw buyers (PTD):", $buyers);
+				self::dump("[bmc] argPTD: liverpoolExists", $liverpoolExists );
+				self::dump("[bmc] argPTD: liverpoolFoundYN", $liverpoolFoundYN );
+				self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
 
-		if ( $playerGoneDown[ $activeTurnPlayer_id ] == 1 ) {
-			$thingsCanDo = 'play or discard!!.';
-		} else {
-			$thingsCanDo = 'play, discard or go down!!.';
+				if (( $liverpoolExists == 1 ) && ( $liverpoolFoundYN == 1 )) { // It's present and someone found it
+
+					$playerFindingLP = self::getGameStateValue( 'playerFindingLP' );
+
+					$tpn = '<span style="color:#' . $players[ $playerFindingLP ]["player_color"] . ';">' . $players[ $playerFindingLP ]["player_name"] . '</span>';
+
+					$message = clienttranslate( " has found Liverpool! They can play that card and discard another." );
+					$thingsCanDo = clienttranslate( 'play or discard.' );
+					
+					$this->gamestate->nextState( 'liverpool' );
+					
+				} else if (( $liverpoolExists == 0 ) && ( $liverpoolFoundYN == 1 )) { // No LP but someone clicked
+		// bmc new Nov 2024
+					$playerFindingLP = self::getGameStateValue( 'playerFindingLP' );
+
+					$tpn = '<span style="color:#' . $players[ $playerFindingLP ]["player_color"] . ';">' . $players[ $playerFindingLP ]["player_name"] . '</span>';
+
+					$message = clienttranslate( " declared Liverpool but none exists! That's a penalty." );
+					$thingsCanDo = clienttranslate( 'draw a penalty card.' );
+
+					$this->gamestate->nextState( 'liverpoolPenaltyCaller' );
+					
+				} else if (( $liverpoolExists == 1 ) && ( $liverpoolFoundYN == 0 )) { // LP exists but no one found It
+
+					// The notification of missed LP might not belong here. Players still have opportunity to see and catch it.
+					
+					self::setGameStateValue( 'LPMissed', 1 ); // 0=false; 1=true
+					self::trace("[bmc] Setting LPMissed = 1");
+					
+					// self::notifyAllPlayers( 'liverpoolMissed',
+						// 'Everyone missed a Liverpool!', // Put it in the log
+						// array (
+						// )
+					// );
+
+					self::trace("[bmc] LP Exists, need to wait for someone to see it, or not");
+
+					if ( $playerGoneDown[ $activeTurnPlayer_id ] == 1 ) {
+						$thingsCanDo = clienttranslate( 'play or discard.' );
+					} else {
+						$thingsCanDo = clienttranslate( 'play, discard or go down.' );
+					}
+					$tpn = '<span style="color:#' . $players[ $activeTurnPlayer_id ]["player_color"] . ';">' . $players[ $activeTurnPlayer_id ]["player_name"] . '</span>';
+					
+					$message = clienttranslate( " must draw from deck or discard pile. Others might buy." );
+				
+				} else { // No liverpool and no one clicked the button so proceed normally
+					self::trace("[bmc] No LP so proceed normally");
+				
+					if ( $playerGoneDown[ $activeTurnPlayer_id ] == 1 ) {
+						$thingsCanDo = clienttranslate( 'play or discard.' );
+					} else {
+						$thingsCanDo = clienttranslate( 'play, discard or go down.' );
+					}
+					$tpn = '<span style="color:#' . $players[ $activeTurnPlayer_id ]["player_color"] . ';">' . $players[ $activeTurnPlayer_id ]["player_name"] . '</span>';
+					
+					$message = clienttranslate( " must draw from deck or discard pile. Others might buy." );
+
+				}
+				$buyers = self::getPlayerBuying();
+
+				self::dump("[bmc] argPlayerTurnDraw buyers (PTD):", $buyers);
+					
+				self::setGameLength(); // This is here or else $this->handTypes is unknown
+				
+				self::dump("[bmc] tpn: ", $tpn );
+			
+				$currentHandType = $this->getGameStateValue( 'currentHandType' );
+
+//				self::trace("[bmc] EXIT argPlayerTurnDraw");
+				self::trace("'<span style='color:green'><b>[bmc] EXIT argPlayerTurnDraw</b></span>'");
+
+				return array(
+					'handTarget' => $this->handTypes[ $currentHandType ][ "Target" ], // Pull the description
+					'thingsCanDo' => $thingsCanDo,
+					'turnPlayerName' => $tpn,
+					'message' => $message,
+					'buyers' => $buyers,
+		//			'where' => 'PTD'
+				);
+			}
 		}
-		
-		$buyMessage = '';
-		
-		self::setGameLength();
-
-		//self::dump("[bmc] currentHandType argPlayerTurnDraw:", $this->handTypes[$currentHandType]["Target"] );
-		//self::dump("[bmc] thingsCanDo:", $thingsCanDo );
-		//self::dump("[bmc] activePlayer(PTD):", $activePlayer );
-		
-		$tpn = '<span style="color:#' . $players[ $activeTurnPlayer_id ]["player_color"] . ';">' . $players[ $activeTurnPlayer_id ]["player_name"] . '</span>';
-		
-		self::dump("[bmc] tpn: ", $tpn );
-	
-		self::trace("[bmc] abouttoEXIT argPlayerTurnDraw");
-        return array(
-			'handTarget' => $this->handTypes[ $currentHandType ][ "Target" ], // Pull the description
-			'thingsCanDo' => $thingsCanDo,
-			'turnPlayerName' => $tpn,
-			'buyMessage' => $buyMessage,
-			'buyers' => $buyers,
-			'where' => 'PTD'
-        );
-		self::trace("[bmc] EXIT argPlayerTurnDraw");
     }
+////////
+////////
+////////
+	function argLiverpoolDrawPenaltyDiscarder() {
+		self::trace("[bmc] ENTER argLiverpoolDrawPenaltyDiscarder");
+		$players = self::loadPlayersBasicInfos();
+
+		$playerDiscarding = $players[ $this->getGameStateValue( 'activeTurnPlayer_id' )][ 'player_name' ];
+
+//		self::trace("[bmc] EXIT argLiverpoolDrawPenaltyDiscarder");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT argLiverpoolDrawPenaltyDiscarder</b></span>'");
+
+        return array(
+			'playerDiscarding' => $playerDiscarding
+		);
+	}
+////////
+////////
+////////
+	function argLiverpoolDrawPenaltyCaller() {
+		self::trace("[bmc] ENTER argLiverpoolDrawPenaltyCaller");
+		$players = self::loadPlayersBasicInfos();
+
+		$playerFindingLP = self::getGameStateValue( 'playerFindingLP' );
+//		$playerDiscarding = $players[ $this->getGameStateValue( 'activeTurnPlayer_id' )][ 'player_name' ];
+
+		// self::trace("[bmc] EXIT argLiverpoolDrawPenaltyCaller");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT argLiverpoolDrawPenaltyCaller</b></span>'");
+
+        return array(
+			'playerFindingLP' => $playerFindingLP
+		);
+	}
+////////
+////////
+////////
+	function argLiverpool() {
+		self::trace("[bmc] ENTER argLiverpool");
+//		$players = self::loadPlayersBasicInfos();
+
+		$playerFindingLP = $this->getGameStateValue( 'playerFindingLP' );
+
+//		self::setGameStateValue( 'isBuyingAllowed', 0 ); // 0 == false; 1 == true
+
+		// self::trace("[bmc] EXIT argLiverpool");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT argLiverpool</b></span>'");
+
+        return array(
+			'playerFindingLP' => $playerFindingLP
+		);
+	}
+////////
+////////
+////////
+	function argLiverpoolDraw() {
+		self::trace("[bmc] ENTER argLiverpoolDraw");
+		$players = self::loadPlayersBasicInfos();
+
+		$playerFindingLP = $players[ $this->getGameStateValue( 'playerFindingLP' )][ 'player_name' ];
+
+		// self::trace("[bmc] EXIT argLiverpoolDraw");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT argLiverpoolDraw</b></span>'");
+
+        return array(
+			'playerFindingLP' => $playerFindingLP
+		);
+	}
 ////////
 ////////
 ////////
 	function argWentOut() {
 		self::trace("[bmc] ENTER argWentOut");
-		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
+		// $activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 		$players = self::loadPlayersBasicInfos();
-		$activePlayer = $players[ $activeTurnPlayer_id ][ 'player_name' ];
-		self::trace("[bmc] EXIT argWentOut");
-        return array(
-			'player_name' => $activePlayer,
-			'player_id' => $activeTurnPlayer_id
+		// $currentPlayerId = $this->getCurrentPlayerId();
+		// $currentPlayer = $players[ $currentPlayerId ][ 'player_name' ];
+		$currentPlayer = $players[ $this->getCurrentPlayerId() ][ 'player_name' ];
+        
+		return array(
+			'player_name' => $currentPlayer,
+			// 'player_id' => $currentPlayerId
 		);
+		// self::trace("[bmc] EXIT argWentOut");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT argWentOut</b></span>'");
 	}
 ////////
 ////////
@@ -1435,6 +1717,7 @@ class LiverpoolRummy extends Table
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 
 		$playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
+		self::dump("[bmc] playerGoneDown(argPTP):", $playerGoneDown );
 
 		$gtActivePlayerId = $this->getActivePlayerId();
 		self::dump("[bmc] GAME THINKS ACTIVE PLAYER:", $gtActivePlayerId );
@@ -1444,15 +1727,28 @@ class LiverpoolRummy extends Table
 		$players = self::loadPlayersBasicInfos();
 		$activePlayer = $players[ $activeTurnPlayer_id ][ 'player_name' ];
 
-		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
+		self::dump("[bmc] activeTurnPlayer_id(argPTP):", $activeTurnPlayer_id );
 
 //		$buyers = self::getPlayerBuying();
 		//self::dump("[bmc] argPlayerTurnPlay buyers(PTP):", $buyers);
 
 		if ( $playerGoneDown[ $activeTurnPlayer_id ] == 1 ) {
-			$thingsCanDo = self::_( 'play or discard.');
+			if ( self::getGameStateValue( 'LPcardsPlayed' ) > 0 ) {
+				$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' ); // 0 = false; 1 = true
+				self::dump("[bmc] liverpoolFoundYN:", $liverpoolFoundYN );
+
+				if ( $liverpoolFoundYN == 1 ){ // Only allow multiple if not during liverpoolFound
+
+				// If already played 1 card after Liverpool declare, then can only discard
+					$thingsCanDo = clienttranslate( 'discard');
+				} else {
+				$thingsCanDo = clienttranslate( 'play or discard');
+				}
+			} else {
+				$thingsCanDo = clienttranslate( 'play or discard');
+			}
 		} else {
-			$thingsCanDo = self::_( 'discard or go down (must go down to play on other melds).');
+			$thingsCanDo = clienttranslate( 'discard or go down (must go down to play on other melds)');
 		}
 		
 		//self::dump("[bmc] currentHandType argPlayerTurnPlay:", $this->handTypes[$currentHandType]["Target"] );
@@ -1474,7 +1770,8 @@ class LiverpoolRummy extends Table
 			'where' => 'PTP'
 
         );
-		self::trace("[bmc] EXIT argPlayerTurnPlay");
+		// self::trace("[bmc] EXIT argPlayerTurnPlay");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT argPlayerTurnPlay</b></span>'");
 	}
 	
     /*
@@ -1504,7 +1801,8 @@ class LiverpoolRummy extends Table
         if( $ret > 99 ) {
             $ret = 99;
         }
-		self::trace("bmc] EXIT getGameProgression");
+		// self::trace("bmc] EXIT getGameProgression");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT getGameProgression</b></span>'");
 		return $ret;
     }
 
@@ -1544,7 +1842,9 @@ class LiverpoolRummy extends Table
 			$this->handTypes = $this->handTypesFull;
 		}
 	}
-	
+/////
+/////
+/////
     function argMyArgumentMethod() {
 		self::trace("bmc] ENTER argMyArgumentMethod");
 
@@ -1564,14 +1864,13 @@ class LiverpoolRummy extends Table
         $sql = "SELECT player_id, gone_down FROM player ";
         return self::getCollectionFromDB($sql, true);
 	}
-	function setPlayerGoneDown($player_id, $goneDown /* 0 or 1 */) {
+/////
+/////
+/////
+	function setPlayerGoneDown( $player_id, $goneDown /* 0 or 1 */) {
         $sql = "UPDATE player SET gone_down = $goneDown WHERE player_id = $player_id ";
         self::DbQuery( $sql );
 	}
-    // function clearPlayersGoneDown() {
-        // $sql = "UPDATE player SET gone_down = 0 ";
-        // self::DbQuery( $sql );
-    // }
 /////
 /////
 /////
@@ -1579,15 +1878,20 @@ class LiverpoolRummy extends Table
        $sql = "SELECT player_id, buying FROM player ";
        return self::getCollectionFromDB($sql, true);
 	}
+/////
+/////
+/////
 	function setPlayerBuying( $player_id, $buying ) { // (0==unknown, 1==Not buying 2==Buying)
        $sql = "UPDATE player SET buying = $buying WHERE player_id = $player_id ";
        self::DbQuery( $sql );
 	}
+/////
+/////
+/////
 	function clearPlayersBuying() {
        $sql = "UPDATE player SET buying = 0 ";
        self::DbQuery( $sql );
 	}
-
 /////
 /////
 /////
@@ -1615,7 +1919,6 @@ class LiverpoolRummy extends Table
 			return $buy_countDB;
 		}
     }
-
 /////
 /////
 /////
@@ -1680,26 +1983,66 @@ class LiverpoolRummy extends Table
 
 		self::dump("[bmc] Discard attempt by player id:", $player_id );
 		self::dump("[bmc] Trying to discard card_id:", $card_id );
-		self::dump("[bmc] getActivePlayerName:", self::getActivePlayerName() );
 		
+		
+		// It's looking 1 deeper in the discard pile which it showuld not do 
+		
+		$LPMissed = self::getGameStateValue( 'LPMissed' );
+		self::dump("[bmc] LPMissed:", $LPMissed );
+		
+		if( $LPMissed == 1 ){ // 0 = false; 1 = true
+			self::setGameStateValue( 'liverpoolExists', 1 ); // 0=not exist; 1=exist
+		} else {
+			self::setGameStateValue( 'liverpoolExists', 0 ); // 0=not exist; 1=exist
+		}
+		
+		$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' ); // 0 = false; 1 = true
+		$liverpoolExists  = self::getGameStateValue( 'liverpoolExists');   // 0 = false; 1 = true
+
+		self::dump("[bmc] LPFound:", $liverpoolFoundYN );
+		self::dump("[bmc] LPExists:", $liverpoolExists );
+
 		if ( $activeTurnPlayer_id == $player_id ) { // Allow discard if it's that player's turn
+			// Clear LPMissed if it's a real discard
+			self::setGameStateValue( 'LPMissed', 0 ); // 0=false; 1=true
+			self::trace( "[bmc] Clearing LPMissed" );
 
-		// Allow buying again (trying to resolve bug where someone buys after discard picked up
-		self::setGameStateValue( 'isBuyingAllowed', 1 ); // 0 == false; 1 == true
+			if (( $liverpoolExists == 1 ) && ( $liverpoolFoundYN == 0 )) { // LP exists but no one found It
 
-		self::trace("[bmc] YESBUYINGALLOWEDYES" );
+				// The notification of missed LP might not belong here. Players still have opportunity to see and catch it.
 
-		// These next 2 active lines were previously outside the IF. However, if the player
-		//    is not allowed to buy, then the game state should not change.
-		// First resolve the buyers, then process the discard
-			$this->resolveBuyers();
-		
-			self::clearPlayersBuying();
-			//self::clearPlayersBuyingGS();
+				self::trace("[bmc] LPExists and was missed" );
+
+
+				self::notifyAllPlayers( 'liverpoolMissed',
+					'There was a Liverpool!', // Put it in the log
+					array (
+					)
+				);
+			}
+
+			// Clear this flag for checking later
+			self::setGameStateValue( 'liverpoolExists', 0 ); // 0=not exist; 1=exist
+
+			// Allow buying again (trying to resolve bug where someone buys after discard picked up
+			self::setGameStateValue( 'isBuyingAllowed', 1 ); // 0 == false; 1 == true
+
+			self::trace("[bmc] YESBUYINGALLOWEDYES" );
+
+			// First resolve the buyers, then process the discard
+			// If someone is going out then don't process the buy
+			
+			$countCCBL = count($this->cards->countCardsByLocationArgs( 'hand' ));
+			$playersNumber = self::getPlayersNumber();
+
+			if ( $countCCBL == $playersNumber ) { // If not equal then someone has gone out, don't process the buy
+				$this->resolveBuyers();
+			}
+
+			$this->clearBuyers();
 
 			// Notifying players potentially buying the previous one that they were too slow!
-			self::notifyAllPlayers(
-				'clearBuyers',
+			self::notifyAllPlayers( 'clearBuyers',
 				'',
 				array (
 //					'discardWeight' => $discardWeight
@@ -1715,14 +2058,38 @@ class LiverpoolRummy extends Table
 			// Put the card on top of the discard pile
 			$bOnTop = true;
 			
-			$this->cards->insertCardOnExtremePosition( $card_id, 'discardPile', $bOnTop );
-	
+			// 9/17/2023 Idea:
+			// How about to remove all cards except the discarded card from the discard pile?
+			// Then add it.
 			//$cardsInDp = $this->cards->getCardsInLocation( 'discardPile' );
 			
 			//self::dump("[bmc] cardsInDp:", $cardsInDp );
 
-			$nextTurnPlayer = $this->getPlayerAfter( $player_id );
+			$dp = $this->cards->getCardsInLocation( 'discardPile' );
+			// self::dump("[bmc] dp:", $dp );
+
+			// foreach( $dp as $card ) {     //$buyers as $p_id => $buyChoice ) {
+				// self::dump("[bmc] card:", $card );
+				
+				// $this->cards->moveCards($card, 'exile');
+			// }
 			
+			$this->cards->insertCardOnExtremePosition( $card_id, 'discardPile', $bOnTop );
+
+			// Here check if liverpool was processed. If yes then send the correct 
+			// next player to JS.
+			//
+			// Set also activeTurnPlayer_id??
+
+			// $liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' ); // 0 = false; 1 = true
+
+			if ( $liverpoolFoundYN == 1 ) { // If a liverpool was processed, go back to interrupted player
+				$nextTurnPlayer = self::getGameStateValue( 'playerInterrupted' );
+				$activeTurnPlayer_id = $nextTurnPlayer;
+			} else {
+				$nextTurnPlayer = $this->getPlayerAfter( $player_id );
+			}
+
 			self::dump("[bmc] nextTurnPlayer:", $nextTurnPlayer );
 
 			$cardsByLocationHand  = $this->cards->countCardsByLocationArgs( 'hand' );
@@ -1731,30 +2098,32 @@ class LiverpoolRummy extends Table
 			
 			self::dump("[bmc] discardSize(DP):", $discardSize );
 
-			$currentCard = $this->cards->getCard( $card_id );
-			
-			if ( $currentCard[ 'type' ] == 5 ) {
-				$value_displayed = self::_(' joker');
-				$color_displayed = '';
-			} else {
-				$value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
-				$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
-			}
-
 			$this->checkEmptyDeck(); // Make sure the deck has cards
 			$drawDeckSize = count( $this->cards->countCardsByLocationArgs( 'deck' ));
 
-//082023
-			$player_name = self::getActivePlayerName();
-			$outMsg1 = self::_( " discards ");
-			$outMsg = $player_name . $outMsg1 . $value_displayed . $color_displayed;
+			$currentCard = $this->cards->getCard( $card_id );
 
-			// And notify
-			self::notifyAllPlayers(
-				'discardCard',
-				$outMsg,
+			// <Player> Discard: <jack> of <clubs>
+			// <Player> Discard: <joker>
+			
+			if ( $currentCard[ 'type' ] == 5 ) {
+				$value_displayed = 'Joker';
+				$color_displayed = '';
+				$connector = '';
+			} else {
+				$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
+				$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
+				$connector = ' of ';
+			}
+			
+			$player_name = self::getActivePlayerName();
+
+			self::notifyAllPlayers(	'discardCard',
+				clienttranslate( '${player_name} Discarded ${value_displayed} ${connector} ${color_displayed}' ),
 				array (
-					'player_id' => $activeTurnPlayer_id,
+					'i18n' => array( 'color_displayed', 'value_displayed', 'connector' ),
+					// 'player_id' => $activeTurnPlayer_id,
+					'player_id' => $player_id,
 					'player_name' => self::getActivePlayerName(),
 					'color' => $currentCard [ 'type' ],
 					'color_displayed' => $color_displayed,
@@ -1764,31 +2133,60 @@ class LiverpoolRummy extends Table
 					'nextTurnPlayer' => $nextTurnPlayer,
 					'allHands' => $cardsByLocationHand,
 					'discardSize' => $discardSize,
-					'drawDeckSize' => $drawDeckSize//,
-//					'buyers' => $buyerCount
+					'drawDeckSize' => $drawDeckSize,
+					'connector' => $connector
 				)
 			);
 
-			self::trace( "[bmc] About to EXIT discardCard (via nextState'discardCard')." );
+// Example from BGA website
+// https://en.doc.boardgamearena.com/Tutorial_hearts
+        // self::notifyAllPlayers(
+			// 'playCard',
+			// clienttranslate('${player_name} plays ${value_displayed} ${color_displayed}'),
+			// array (
+				// 'i18n' => array ('color_displayed','value_displayed' ),
+				// 'card_id' => $card_id,
+				// 'player_id' => $player_id,
+				// 'player_name' => self::getActivePlayerName(),
+				// 'value' => $currentCard ['type_arg'],
+				// 'value_displayed' => $this->values_label [$currentCard ['type_arg']],
+				// 'color' => $currentCard ['type'],
+				// 'color_displayed' => $this->colors [$currentCard ['type']] ['name']
+			// )
+		// );
+        // Next player or back to player interrupted by Liverpool declare
 
-			// Discarded the card, move on
-			$this->gamestate->nextState( 'discardCard' );
+		self::setGameStateValue( 'LPcardsPlayed', 0 ); // Clear the tracking of played cards
+		self::trace( "[bmc] Set LPcardsPlayed to 0." );
+
+		self::trace( "[bmc] About to EXIT discardCard (via nextState'discardCard')." );
+
+		self::setGameStateValue( 'discardingPlayer', $player_id ); // Track discarder for LP reasons
+
+		// Discarded the card, move on
+		$this->gamestate->nextState( 'discardCard' );
 
 		} else {
 			throw new BgaUserException( self::_("You cannot discard, it's not your turn.") );
 		}
 		
-		self::trace("[bmc] EXIT discardCard (from JS)");
+		// self::trace("[bmc] EXIT discardCard (from JS)");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT discardCard (from JS)</b></span>'");
     }
 ////////
 ////////
 ////////
-    function drawCard( $card_id, $drawSource, $player_id ) {
-		self::trace("[bmc] ENTER Draw Card (from JS)"); // Just see that we got here from the Javascript.
+    function drawCard( $card_id, $drawSource, $player_id ) { // from JS or PHP liverpool penalty
+		self::trace("'<span style='color:red'><b>[bmc] ENTER Draw Card (from JS or liverpool penalty)</b></span>'");
+
+//		self::trace("[bmc] ENTER Draw Card (from JS or liverpool penalty)");
 		self::dump("card id:", $card_id ); // Probably no longer need to send in card_id from JS
 		self::dump("drawSource:", $drawSource );
 		self::dump("Drawing player id:", $player_id );
-        self::checkAction("drawCard");
+        //self::checkAction("drawCard");
+
+		$liverpoolExists  = self::getGameStateValue( 'liverpoolExists'); // 0 = false; 1 = true
+		self::dump("[bmc] 2123 drawCard: liverpoolExists", $liverpoolExists );
 		
 		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
 		
@@ -1823,7 +2221,7 @@ class LiverpoolRummy extends Table
 
 			// If the player whose turn it is draws the discard then don't allow buying
 			self::setGameStateValue( 'isBuyingAllowed', 0 ); // 0 == false; 1 == true
-			self::trace("[bmc] NOLONGERBUYINGALLOWEDNOLONGER" );
+			self::trace("[bmc] BUYINGALLOWEDNOLONGER" );
 
 			$topDiscard = $this->cards->getCardOnTop( 'discardPile' );
 			self::dump( "[bmc] topDiscard: ", $topDiscard );
@@ -1879,9 +2277,19 @@ class LiverpoolRummy extends Table
 
         $currentCard = $this->cards->getCard( $card_id );
 		
+		if (( $currentCard[ 'type' ] == 5 ) &&     // If joker is drawn
+			 !( $drawSource == 'discardPile' ) &&  // not from discard
+			 !( $drawSource == 'deck' )) {         // not from deck then it came from board, so subtract 1.
+			self::trace("[bmc] Drew a joker.");
+			self::incStat( -1, 'jokers_number', $player_id ); // Track joker play for stats
+		}
+
 		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
+		
 		$this->drawNotify( $currentCard, $player_id, $drawSource, $player_id, $activeTurnPlayer_id );
-		self::trace("bmc] EXIT drawCard");
+		
+//		self::trace("[bmc] EXIT drawCard");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT Draw Card (from JS or liverpool penalty)</b></span>'");
 
 	}
 ////////
@@ -1894,15 +2302,17 @@ class LiverpoolRummy extends Table
 
 		$players = self::loadPlayersBasicInfos();
 
-		self::notifyAllPlayers(
-			'playerWantsToNotBuy',
-			self::_('${player_name} no longer wants to buy.'),
+		$player_name = $players[ $player_id ][ 'player_name' ];
+
+		self::notifyAllPlayers( 'playerWantsToNotBuy',
+			clienttranslate( '${player_name} no longer wants to buy' ),
 			array(
 				'player_id' => $player_id,
 				'player_name' => $players[ $player_id ][ 'player_name' ]
 			)
 		);
-		self::trace("[bmc] EXIT notifyPlayerWantsToNotBuy");
+		// self::trace("[bmc] EXIT notifyPlayerWantsToNotBuy");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT notifyPlayerWantsToNotBuy</b></span>'");
 	}
 ////////
 ////////
@@ -1917,22 +2327,37 @@ class LiverpoolRummy extends Table
 		
 		if ( $currentCard != null ) {
 			if ( $currentCard[ 'type' ] == 5 ) {
-				$value_displayed = self::_(' joker');
+				$value_displayed = 'Joker';
 				$color_displayed = '';
+				$connector = '';
 			} else {
-				$value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
-				$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
+				$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
+				$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
+				$connector = ' of ';
 			}
+
+			// if ( $currentCard[ 'type' ] == 5 ) {
+				// $value_displayed = self::_(' joker');
+				// $color_displayed = '';
+			// } else {
+				// $value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
+				// $color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
+			// }
+			
+			$player_name = $players[ $player_id ][ 'player_name' ];
+
 			self::notifyAllPlayers(
 				'playerWantsToBuy',
-				self::_('${player_name} wants to buy ${value_displayed}${color_displayed}'),
+				clienttranslate( '${player_name} Wants to Buy: ${value_displayed} ${connector} ${color_displayed}'),
 				array(
+					'i18n' => array( 'color_displayed', 'value_displayed', 'connector' ),
 					'player_id' => $player_id,
 					'activeTurnPlayer_id' => $activeTurnPlayer_id,
 					'player_name' => $players[ $player_id ][ 'player_name' ],
 					'cardToBeBought' => $currentCard,
 					'value_displayed' => $value_displayed,
-					'color_displayed' => $color_displayed
+					'color_displayed' => $color_displayed,
+					'connector' => $connector
 				)
 			);
 		} else {
@@ -1943,7 +2368,7 @@ class LiverpoolRummy extends Table
 ////////
 ////////
 ////////
-	function notifyPlayerWantsToBuy_orig( $player_id ) {
+/*	function notifyPlayerWantsToBuy_orig( $player_id ) {
 		self::trace("[bmc] ENTER notifyPlayerBuy-WANT");
 		self::dump("[bmc] player_id:",  $player_id);
 
@@ -1968,29 +2393,29 @@ self::trace("[bmc] Deadlock:2179");
 			
 			if ( $currentCard != null ) {
 				
-		//		self::dump( "[bmc] buyMessage:",  $buyMessage );
-
 				if ( $currentCard[ 'type' ] == 5 ) {
-self::trace("[bmc] Deadlock:2192");
-					$value_displayed = self::_(' joker');
+					$value_displayed = 'Joker';
 					$color_displayed = '';
+					$connector = '';
 				} else {
-self::trace("[bmc] Deadlock:2196");
-					$value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
-					$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
+					$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
+					$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
+					$connector = ' of ';
 				}
-self::trace("[bmc] Deadlock:2200");
 
-				self::notifyAllPlayers(
-					'playerWantsToBuy',
-					self::_('${player_name} wants to buy ${value_displayed}${color_displayed}'),
+				$player_name = $players[ $player_id ][ 'player_name' ];
+
+				self::notifyAllPlayers( 'playerWantsToBuy',
+					clienttranslate('${player_name} Wants to Buy: ${value_displayed} ${connector} ${color_displayed}'),
 					array(
+					'i18n' => array( 'color_displayed', 'value_displayed', 'connector' ),
 						'player_id' => $player_id,
 						'activeTurnPlayer_id' => $activeTurnPlayer_id,
 						'player_name' => $players[ $player_id ][ 'player_name' ],
 						'cardToBeBought' => $currentCard,
 						'value_displayed' => $value_displayed,
-						'color_displayed' => $color_displayed
+						'color_displayed' => $color_displayed,
+						'connector' => $connector
 					)
 				);
 			} else {
@@ -1999,11 +2424,13 @@ self::trace("[bmc] Deadlock:2200");
 //		}
 		self::trace("[bmc] EXIT notifyPlayerBuy-WANT");
 	}
+*/
 ////////
 ////////
 ////////
 	function drawNotify( $currentCard, $playingPlayer_id, $drawSource, $drawPlayer, $activeTurnPlayer_id ) {
-		self::trace("[bmc] ENTER drawNotify");
+		self::trace("'<span style='color:red'><b>[bmc] ENTER drawNotify</b></span>'");
+//		self::trace("[bmc] ENTER drawNotify");
 
 		self::dump("[bmc] currentCard    :",  $currentCard);
 		
@@ -2044,33 +2471,24 @@ self::trace("[bmc] Deadlock:2200");
 		// Show text differently to players for a joker.
 		
 		if ( $currentCard[ 'type' ] == 5 ) {
-			$value_displayed = self::_(' joker');
+			$value_displayed = 'Joker';
 			$color_displayed = '';
+			$connector = '';
 		} else {
-			self::dump("[bmc] APPARENTLY sometimes get undefined index here", $currentCard);
-			$value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]] . ' of ');
-
-			$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
+			$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
+			$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
+			$connector = ' of ';
 		}
-		
+
 		foreach ( $players as $player_id => $player ) {
-//			self::dump('[bmc] player_id :',  $player_id );
-//			self::dump('[bmc] activeTurnPlayer_id :',  $activeTurnPlayer_id );
-			
-//082023
-			$outMsg1 = 'You drew ';
-			$outMsg2 = ' from the ';
-			$outMsg = $outMsg1 . $value_displayed . $color_displayed . $outMsg2 . $drawSourceText;
-			
-			self::dump('[bmc] MESSAGE:',  $outMsg );
 			
 			if ( $player_id == $activeTurnPlayer_id ) {
 				self::notifyPlayer(
 					$player_id,
 					'drawCard',
-					$outMsg,
-//					self::_('You drew ${value_displayed}${color_displayed} from the ${drawSourceText}.'),
+					clienttranslate( 'You drew from the ${drawSourceText}: ${value_displayed} ${connector} ${color_displayed}' ),
 					array(
+						'i18n' => array( 'value_displayed', 'color_displayed', 'drawSourceText', 'connector' ),
 						'player_id' => $player_id,
 						'player_name' => $activePlayer,
 						'card_id' => $card_id,
@@ -2083,7 +2501,8 @@ self::trace("[bmc] Deadlock:2200");
 						'drawPlayer' => $drawPlayer,
 						'allHands' => $cardsByLocation,
 						'discardSize' => $discardSize,
-						'drawDeckSize' => $drawDeckSize
+						'drawDeckSize' => $drawDeckSize,
+						'connector' => $connector
 					)
 				);
 			} else {
@@ -2112,21 +2531,16 @@ self::trace("[bmc] Deadlock:2200");
 			}
 		}
 
-//082023
 		$player_name = $activePlayer;
 
-		$outMsg1 = self::_( ' draws a card from the ');
-		$outMsg = $player_name . $outMsg1 . $drawSourceText;
+//09/02/2023
 
-		// Notify spectators of the draw too
-		self::notifyAllPlayers(
-			'drawCardSpect',
-			// 08/16/2021 TODO: WHY IS NEXT LINE COMMENTED OUT?!??
+		self::notifyAllPlayers( 'drawCardSpect',
+			// WHY IS NEXT LINE COMMENTED OUT???
 			// It was commented out because 2 entries appear in the log if it's not blank. Now I commented out the per-player one above.
-			$outMsg,
-//			self::_( '${player_name} draws a card from the ${drawSourceText}.'),
-//			'',
+			clienttranslate( '${player_name} drew a card from the ${drawSourceText}' ),
 			array(
+				'i18n' => array( 'drawSourceText' ),
 				'player_id' => $activeTurnPlayer_id,
 				'player_name' => $activePlayer,
 				'card_id' => $card_id,
@@ -2138,36 +2552,42 @@ self::trace("[bmc] Deadlock:2200");
 				'discardSize' => $discardSize,
 				'drawSourceText' => $drawSourceText,
 				'drawDeckSize' => $drawDeckSize
-//				'value_displayed' => '',
-//				'color_displayed' => '',
 			)
 		);
-		
-		self::trace("[bmc] EXIT (almost) drawNotify");
+
+//		self::trace("[bmc] EXIT (almost) drawNotify");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT (almost) drawNotify</b></span>'");
+
 		// Next State
 		$state = $this->gamestate->state();
-//		self::dump("[bmc] state:", $state);
+		self::dump("[bmc] state:", $state);
 
 		if ( $state['name'] == 'playerTurnPlay' ) { // Got the joker from a board play, so keep playing.
 			$this->gamestate->nextState( 'playCard' );
 
-		} else if ( $state['name'] == 'resolveBuyers' ) {
-			// If notifying of a buy then don't change state
-			return;
+		} else if (( $state['name'] == 'resolveBuyers' ) ||
+				   ( $state['name'] == 'liverpoolDrawPenaltyCaller' ) ||
+				   ( $state['name'] == 'liverpoolDrawPenaltyDiscarder' )){
+					   
+		   self::trace("[bmc] resolveBuyers or LPDrawPenalty(C or D)");
+			
+			// If notifying of a buy or drawing for penalty then don't change state
+			//return;
+			
 		} else {
 			// Else got card from a true draw (deck or discard), so let the player play.
 			
 			self::trace("[bmc] MAYBE ERROR AREA IN DRAWNOTIFY");
-//			$this->gamestate->nextState( 'resolveBuyers' );
 			$this->gamestate->nextState( 'drawCard' );
 		}
-		self::trace("[bmc] EXIT drawNotify");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT drawNotify</b></span>'");
 	}
 ////////
 ////////
 ////////
 	function playerGoDown( $cardIDGroupA, $cardIDGroupB, $cardIDGroupC, $boardCardId, $boardArea, $boardPlayer, $handItemIds ) {
-		self::trace("[bmc] ENTER playerGoDown");
+		self::trace("'<span style='color:red'>[bmc] ENTER playerGoDown</span>'");
+		//self::trace("[bmc] ENTER playerGoDown");
 		
 		$active_player_id = self::getActivePlayerId();
 		self::dump("[bmc] playerGoDown: ", $active_player_id);
@@ -2307,7 +2727,6 @@ self::trace("[bmc] Deadlock:2200");
 				// TODO: Not sure why this isn't needed for a run (or is it???) or it's done in playcardfinish
 				$this->cards->moveCard( $joker['id'], 'hand', $active_player_id);
 				
-				
 				switch ( $targetArea ) {
 					case "playerDown_A":
 						$cardGroupA[ $joker[ 'id' ]] = $joker;
@@ -2335,7 +2754,9 @@ self::trace("[bmc] Deadlock:2200");
 		self::dump("[bmc] targetArea:", $targetArea );
 
 		$this->playerGoDownFinish( $cardGroupA, $cardGroupB, $cardGroupC, $joker, $targetArea );
-		self::trace("[bmc] EXIT playerGoDown");
+		// self::trace("[bmc] EXIT playerGoDown");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT playerGoDown</b></span>'");
+
 	}
 
 ////////
@@ -2419,7 +2840,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		$groups = array ($cardGroupA, $cardGroupB, $cardGroupC);
 		
-		//self::dump("[bmc] groups:", $groups);
+		self::dump("[bmc] GODOWNFINISH: groups:", $groups);
 
 		foreach ( $groups as $group ) {
 //			self::dump("[bmc] group:", $group );
@@ -2459,23 +2880,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		self::dump("[bmc] joker before checkifreallyinhand:", $joker);
 
-		// Keep track of how many jokers the player is using
-		// Count number of jokers in cards about to go down
-		// For each joker, increment the counter for that PLAYER
-		// 08/26/2023
-		// self::incStat( 1, 'jokers_number', $player_id );
-
-
-
-
-
-
-
-
-
-
-
-
 		// $cardGroupAMJoker = $cardGroupA;
 		// $cardGroupBMJoker = $cardGroupB;
 		// $cardGroupCMJoker = $cardGroupC;
@@ -2514,6 +2918,28 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$this->cards->moveCards( $cardIDGroupC, 'playerDown_C', $active_player_id );
 		//$this->cards->moveCard( $joker[ 'id' ], $targetArea, $active_player_id );
 		
+		// Keep track of how many jokers the player is using
+		// Count number of jokers in cards about to go down
+		// For each joker, increment the counter for that PLAYER
+		// 08/26/2023
+		// self::incStat( 1, 'jokers_number', $player_id );
+
+		$maybeJokersInA = $this->cards->getCards( $cardIDGroupA );
+		$maybeJokersInB = $this->cards->getCards( $cardIDGroupB );
+		$maybeJokersInC = $this->cards->getCards( $cardIDGroupC );
+
+		$countJokersInA = $this->countJokers( $maybeJokersInA );
+		$countJokersInB = $this->countJokers( $maybeJokersInB );
+		$countJokersInC = $this->countJokers( $maybeJokersInC );
+
+		self::dump("[bmc] countJokersInA:", $countJokersInA);
+		self::dump("[bmc] countJokersInB:", $countJokersInB);
+		self::dump("[bmc] countJokersInC:", $countJokersInC);
+
+		self::incStat( $countJokersInA, 'jokers_number', $active_player_id );
+		self::incStat( $countJokersInB, 'jokers_number', $active_player_id );
+		self::incStat( $countJokersInC, 'jokers_number', $active_player_id );
+
 		// Notify all players about the cards played Area A
 		self::notifyAllPlayers('playerGoDown',
 			'',
@@ -2552,10 +2978,11 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		);
 		
 		$cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
+		$player_name = self::getActivePlayerName();
 
 		// Notify all players about the cards played
 		self::notifyAllPlayers('playerGoDown',
-			self::_('${player_name} went down.'),
+			clienttranslate('${player_name} went down'),
 			array(
 				'player_name' => self::getActivePlayerName(),
 				'player_id' => $active_player_id,
@@ -2565,13 +2992,25 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			)
 		);
 		
+		// Clear out the prep areas in the database
+		
+		$player_id = $active_player_id;
+
+		$sql = "DELETE FROM prepAreas WHERE player_id = '";
+		$sql_command = $player_id . "'";
+		self::DbQuery( $sql . $sql_command );
+
 		$cpn = self::getActivePlayerName();		
 		self::dump( "[bmc] colored player_name", $cpn );
 
 		self::trace("[bmc] GO DOWN DONE!");
 
+		self::dump( "[bmc] gonedown / active_player_id: ", $active_player_id );
 		self::setPlayerGoneDown( $active_player_id, 1 /* 0 (not gone down) or 1 (gone down) */ );
-		self::trace("[bmc] EXIT playerGoDownFinish");
+		// self::trace("[bmc] EXIT playerGoDownFinish");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT playerGoDownFinish</b></span>'");
+		
+		$this->gamestate->nextState( 'playerGoDown' );
 
 	}
 ////////
@@ -2603,7 +3042,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				$highestCard = 1;
 				
 				foreach( $cardGroup as $card ){
-					self::dump("[bmc] card: ", $card);
+					// self::dump("[bmc] card: ", $card);
 					
 					// If a joker then keep track of how many jokers
 					// If not a joker then track it as a 'hard' card value
@@ -2692,15 +3131,15 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 	function tryJokerSwap ( $card_id, $player_id, $boardArea, $boardPlayer) {
 		self::trace("[bmc] ENTER tryJokerSwap");
 
-		if ($this->checkSet($this->cards->getCardsInLocation( $boardArea, $boardPlayer ))) {
-			// TODO: Might need try / catch here, i'm not sure how BgaUserException works
+		if ( $this->checkSet( $this->cards->getCardsInLocation( $boardArea, $boardPlayer ))){
+
 			self::trace("[bmc] Swapping joker in SET while going down - verify it!");
-			
+
 			// Try to play the card for the joker as part of going down
 			$mightBeJoker = $this->playCardFinish( $card_id, $player_id, $boardArea, $boardPlayer, true );
-			
+
 			// PLAYCARDFINISH PUTS THE JOKER IN THE HAND. So, have playCardFinish return the pulled joker.
-			
+
 			self::trace("[bmc] Pulled the joker off the table(set)");
 
 			self::trace("[bmc] Replace with the card.");
@@ -2713,7 +3152,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			//$this->cards->moveCard($mightBeJoker['id'], 'hand', $player_id);
 
 			// Now finish going down
-			self::trace("[bmc] EXIT tryJokerSwap(1)");
+			// self::trace("[bmc] EXIT tryJokerSwap(1)");
+			self::trace("'<span style='color:green'><b>[bmc] EXIT tryJokerSwap(1)</b></span>'");
+
 			return $mightBeJoker;
 			
 		} else { // Check if run
@@ -2772,14 +3213,15 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			self::trace("[bmc] Pulled the joker off the table (run)");
 
 			// Now finish going down
-			self::trace("[bmc] EXIT tryJokerSwap(2)");
+			// self::trace("[bmc] EXIT tryJokerSwap(2)");
+			self::trace("'<span style='color:green'><b>[bmc] EXIT tryJokerSwap(2)</b></span>'");
 			return $mightBeJoker;
 		}
 	}
 ////////
 ////////
 ////////
-	function checkIfReallyInHand ($cards, $player_id) {
+	function checkIfReallyInHand( $cards, $player_id ) {
 		$card_type = array();
 		$card_type_arg = array();
 		foreach( $cards as $card ) {
@@ -2798,6 +3240,72 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////////
 ////////
 ////////
+	function getColorValueFromId( $ids ) {
+		self::dump("[bmc] ENTER getColorValue IDs: ", $ids);
+		// self::dump("[bmc] ENTER count: ", count( $ids ));
+		// self::dump("[bmc] ENTER [0]: ",   $ids[0]);
+		// self::dump("[bmc] ENTER count(reset): ", count( reset($ids)));
+		
+		
+		foreach ( $ids as $id ){
+			self::dump("[bmc] ENTER GET A CARDw/ID: ", $id);
+			self::dump("[bmc] ENTER GET A CARD: ", $this->cards->getCard( $id ));
+		}
+		
+		if ( count( $ids ) > 0 ){
+			self::trace(" ids not empty " );
+
+			$cards = $this->cards->getCards( $ids );
+			self::dump("[bmc] cards: ", $cards);
+			
+			$card_type = array();
+			$card_type_arg = array();
+			$card_id = array();
+			
+			foreach( $cards as $key => $card ) {
+				self::dump("[bmc] getColorValue: ", $card );
+				self::dump("[bmc] key: ", $key );
+				
+				$card = $this->cards->getCard( $card['id'] );
+				self::dump("[bmc] card: ", $card['id']);
+				self::dump("[bmc] type: ", $card['type']);
+				self::dump("[bmc] type_arg: ", $card['type_arg']);
+				
+				array_push( $card_type,     $card[ 'type' ]);
+				array_push( $card_type_arg, $card[ 'type_arg' ]);
+				array_push( $card_id, 	   $key ); // Track the IDs also since these seem to get out of order
+
+			}
+			return array( $card_id, $card_type, $card_type_arg );
+		} else {
+			// self::trace(" ids empty ");
+		}
+	}
+////////
+////////
+////////
+	function checkContains( $needle, $cards ) {
+		$areaCardValues = array();
+
+		foreach( $cards as $card ) {
+//			self::dump("[bmc] cardInCards :", $card );
+			if ( count( $card ) != 0 ) {
+				if ( $card[ 'type' ] == 5 ) { // If joker then ignore it
+				} else { // If not joker then add the value to the array
+					$areaCardValues[] = $card[ 'type_arg' ];
+				}
+			}
+		}
+		self::dump("[bmc] areaCardValues: ", $areaCardValues );
+		
+		$cardPresent = in_array( $needle[ 'type_arg' ], $areaCardValues );
+		self::dump("[bmc] cardPresent: ", $cardPresent );
+		
+		return $cardPresent;
+	}
+////////
+////////
+////////
 	function checkRun( $cards, $silent ) {
 		// A run is 4 or more cards of the same suit with sequential values or
 		//   3 cards plus 1 joker. A234 and JQKA are both valid.
@@ -2806,15 +3314,16 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		//   It has <3 cards
 		//   The non-jokers have non-unique values
 		//   The non-jokers have >1 suit
+		//   Values are not consecutive when considering jokers
 		
 		// Set return value to true so if it makes it out, it returns true. But if 
 		//   is silently finds it's not a run, return false.
 		$crReturnValue = true;
 		
-//		self::trace("[bmc] ENTER checkRun");
-		self::dump("[bmc] ENTER checkRun: ", $silent);
+		self::trace("[bmc] ENTER checkRun");
+		// self::dump("[bmc] ENTER checkRun: ", $silent);
 		
-		self::dump("[bmc] checkRun cards: ", $cards);
+		// self::dump("[bmc] checkRun cards: ", $cards);
 		
 		$cardCount = count( $cards );
 		self::dump("[bmc] cardCount: ", $cardCount);
@@ -2835,24 +3344,12 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			}
 		}
 		self::dump("[bmc] nonJokers: ", $nonJokers );
-		self::dump("[bmc] Jokers: ", $jokerCount );
+		// self::dump("[bmc] Jokers: ", $jokerCount );
 		
-		$valueCount = $this->countNonJokerValues( $cards ) + $jokerCount;
-
-		self::dump("[bmc] valueCount: ", $valueCount );
-		if ( $cardCount != $valueCount ) {
-			self::dump("[bmc] ThrowingException for NOT A RUN!: ", $cardCount );
-			$crReturnValue = false;
-
-			if ( !$silent ) {
-				throw new BgaUserException( self::_("Not a run. Run cards must be unique.") );
-			}
-		} else {
-			self::trace("[bmc] Number of cards is correct for a run.");
-		}
 		$countValues = array_count_values( $nonJokers );
 
 		self::dump("[bmc] countValues: ", $countValues );
+		self::dump("[bmc] array_sum(countValues): ", array_sum( $countValues ));
 
 		foreach ( $countValues as $type => $qty ) {
 			self::dump("[bmc] type:", $type );
@@ -2871,68 +3368,155 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				}
 			}
 		}
+//		$valueCount = $this->countNonJokerValues( $cards ) + $jokerCount;
+		$valueCount = array_sum( $countValues ) + $jokerCount;
+
+		self::dump("[bmc] valueCount: ", $valueCount );
+		
+		if ( $cardCount != $valueCount ) {
+			self::dump("[bmc] ThrowingException for NOT A RUN!: ", $cardCount );
+			$crReturnValue = false;
+
+			if ( !$silent ) {
+				throw new BgaUserException( self::_("Not a run. Run cards must be unique.") );
+			}
+		} else {
+			self::trace("[bmc] Number of cards is correct for a run.");
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+		// 05/09 07:17:17 [notice] [T502009]
 		
 		// If there is an ace, also create a '14' because ace can be high or low
 		
-		$aceLowCards = $cards; // PHP makes a completely new copy of an array
-		$aceHighCards = $cards; // PHP makes a completely new copy of an array
+		$aceLowCards  = $this->array_clone( $cards );
+		$aceHighCards = $this->array_clone( $cards );
+		
+		
+		// $aceLowCards = $cards; // PHP makes a completely new copy of an array, but it changes the indices
+		// $aceHighCards = $cards; // PHP makes a completely new copy of an array, but it changes the indices
+		
+		
+		
+		
+		
+		// $keys = array('foo', 5, 10, 'bar');
+		// $a = array_fill_keys($keys, 'banana');
+		// print_r($a);
+		
+		
+		
+// This getArrayCopy() throws an error:
+
+// My goal is to copy the original card array and include the indices. As it is,
+// PHP copies the array but the indices all change to be in order, 0,1,2,3,4...
+		
+		// $cardsArrayObject = new ArrayObject($aceHighCards);
+		// $aceHighCardsGAC = $cardsArrayObject->getArracyCopy();
+
+		//self::dump("[bmc] New cards (aceHighCards):", $aceHighCards);
+		//self::dump("[bmc] New cards before (aceHighCards):", $aceHighCards);
+		
+
+
+
+
+
+
+
+		$index = 0;
 		
 		foreach ( $cards as $card ) {
-//			self::dump("[bmc] card: ", $card );
+			// self::dump("[bmc] card: ", $card );
 			
-			if ( $card[ 'type_arg' ] == 1 ) {
-				$aceKey = $card[ 'id' ];
-//				self::dump("[bmc] aceKey: ", $aceKey);
+//			if ( $card[ 'type_arg' ] == 1 ) {
+			if (( $card[ 'type_arg' ] == 1 ) &&
+			    ( $card[ 'type' ] != 5 )) { // If there is an one (aka Ace) and it's not a joker
 				
-				$aceHighCards[ $card[ 'id' ]] = [
-					'id' => $card['id'],
-					'type' => $card['type'],
-					'type_arg' => "14", // Ace is considered 14
-					'location' => $card['location'],
+				// Get the index of the ace
+				
+				$aceKey = $card[ 'id' ];
+				self::dump("[bmc] aceKey: ", $aceKey);
+				self::dump("[bmc] index: ", $index);
+				// self::dump("[bmc] aceHighCards[index]: ", $aceHighCards[$index]);
+				//self::dump("[bmc] aceHighCards[index]: ", $aceHighCards[$aceKey]);
+
+//				Here need to set index [3] to change the ace to high, not low. Now it adds a card.
+
+//				Server syntax error:
+//Parse error: syntax error, unexpected '{' in /var/tournoi/release/games/liverpoolrummy/999999-9999/liverpoolrummy.game.php on line 3147
+				
+				
+				// $aceHighCards[ $index ] = {
+
+				// $aceHighCards[ $index ] = [
+				$aceHighCards[ $aceKey ] = [
+					'id'           => $card['id'],
+					'type'         => $card['type'],
+					'type_arg'     => "14", // Ace is considered 14
+					'location'     => $card['location'],
 					'location_arg' => $card['location_arg']
 				];
 			}
+			$index++;
 		}
 		
 		// self::dump("[bmc] New cards (cards):", $cards);
-		self::dump("[bmc] New cards (aceLowCards):", $aceLowCards);
-		self::dump("[bmc] New cards (aceHighCards):", $aceHighCards);
+		//self::dump("[bmc] New cards (aceLowCards):", $aceLowCards);
+		//self::dump("[bmc] New cards (aceHighCards):", $aceHighCards);
 
 		$tryAceLow  = $this->checkRunWithAce( $aceLowCards );
 		$tryAceHigh = $this->checkRunWithAce( $aceHighCards );
 		
-		self::dump("[bmc] Check Run aceLowCards",  $tryAceLow );
-		self::dump("[bmc] Check Run aceHighCards", $tryAceHigh );
+		self::dump("[bmc] Check Run 0/1 aceLowCards",  $tryAceLow );
+		self::dump("[bmc] Check Run 0/1 aceHighCards", $tryAceHigh );
 		
-		$aceCheckResult = $tryAceLow + $tryAceHigh ;
+		if (( $tryAceLow == 0 ) or ( $tryAceHigh == 0 )){ // 0 == true
+			// This is good, one of them is a run, so just fall through with default==yes
+			self::trace("[bmc] One of the combinations with the ace is a run, allow it.");
+		} else {
+			// Maybe not, so check other conditions
+			$aceCheckResult = $tryAceLow + $tryAceHigh ;
 
-		self::dump("[bmc] Check Run aceHighCards", $aceCheckResult );
-		
-		switch ( $aceCheckResult ) {
-			case 0:
-			case 1:
-				break; // With ace high or low, one is a run and all the same suit
-			case 2:
-				$crReturnValue = false;
-				if ( !$silent ) {
-					throw new BgaUserException( self::_("Not a run. It doesn't reach!") );
-				}
-				break;
-			case 10:
-			case 11:
-			case 20:
-				$crReturnValue = false;
-				if ( !$silent ) {
-					throw new BgaUserException( self::_('Not a run. Run cards must all be the same suit.') );
-				}
-				break;
-			default :
-				$crReturnValue = false;
-				if ( !$silent ) {
-					throw new BgaUserException( self::_("Ace Check error (should never happen).") );
-				}
-				break;
+			self::dump("[bmc] Check Run aceHighCards", $aceCheckResult );
+			
+			switch ( $aceCheckResult ) {
+				case 0:
+				case 1:
+					break; // With ace high or low, one is a run and all the same suit; Use default 'true'
+				case 2:
+					$crReturnValue = false;
+					if ( !$silent ) {
+						throw new BgaUserException( self::_("Not a run. It doesn't reach!") );
+					}
+					break;
+				case 10:
+				case 11:
+				case 20:
+					$crReturnValue = false;
+					if ( !$silent ) {
+						throw new BgaUserException( self::_('Not a run. Run cards must all be the same suit.') );
+					}
+					break;
+				default :
+					$crReturnValue = false;
+					if ( !$silent ) {
+						throw new BgaUserException( self::_("Ace Check error (should never happen).") );
+					}
+					break;
+			}
 		}
+
 		// self::dump("[bmc] checkRun cards: ", $cards );
 		
 		self::trace("[bmc] EXIT checkRun. Might be true or false.");
@@ -2946,12 +3530,16 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$cardType = 0;
 		$cardValueMax = 0;  // Track the larget and smallest in the group
 		$cardValueMin = 20; // Track the larget and smallest in the group
-		$jokerCount = 0; // Count the jokers to know if the cards all reach
+		// $jokerCount = 0; // Count the jokers to know if the cards all reach
+		//
+		// Don't need to count jokers since we're looking at min, max and card count
+
+		//self::dump("[bmc] checkRunWithAce: cards", $cards );
 
 		foreach ( $cards as $card ) {
 			if ( $card['type'] == "5") {
 				// Ignore Joker (type == 5)
-				$jokerCount += 1;
+				// $jokerCount += 1;
 			} else {
 				if ($card['type_arg'] > $cardValueMax) { // Find the largest card value
 					$cardValueMax = $card['type_arg'];
@@ -2961,14 +3549,14 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					$cardValueMin = $card['type_arg'];
 				}
 
-//		self::dump("[bmc] Max", $cardValueMax);
-//		self::dump("[bmc] Min", $cardValueMin);
+		// self::dump("[bmc] Max", $cardValueMax);
+		// self::dump("[bmc] Min", $cardValueMin);
 				if ( $cardType == 0 ) {
 					// Get the suit of the first card which is not a joker
 					$cardType = $card['type'];
-//					self::dump("[bmc] cardType:", $cardType);
+					// self::dump("[bmc] cardType:", $cardType);
 				} else {
-//					self::dump("[bmc] card: ", $card);
+					// self::dump("[bmc] card: ", $card);
 					if ( $card['type'] != $cardType ) {
 						self::trace("[bmc] checkRun FALSE (different suits)");
 						//throw new BgaUserException( self::_('Run cards must all be the same suit.') );
@@ -2981,26 +3569,40 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// Made it through, so the cards are all the same suit
 		// Check if they are close enough together
 		$cardCount = count( $cards );
-		// self::dump("[bmc] cardCount:", $cardCount );
-		// self::dump("[bmc] Max:", $cardValueMax );
-		// self::dump("[bmc] Min:", $cardValueMin );
+		self::dump("[bmc] cardCount:", $cardCount );
+		self::dump("[bmc] Max:", $cardValueMax );
+		self::dump("[bmc] Min:", $cardValueMin );
 		// self::dump("[bmc] jokerCount:", $jokerCount );
 
 		if ( $cardValueMax - $cardValueMin + 1  <= $cardCount ) {
 			self::trace("[bmc] checkRun TRUE");
-			return 0;
+			return 0; // 0 == true, because later we add them together
 
 		} else {
 			self::trace("[bmc] checkRun FALSE (Doesn't reach)");
 
-			return 1;
+			return 1; // 1 = false, because later we add them together
 		}
 	}
 ////
 ////
 ////
+	function array_clone($array) {
+		return array_map(function($element) {
+			return ((is_array($element))
+				? $this->array_clone($element)
+				: ((is_object($element))
+					? clone $element
+					: $element
+				)
+			);
+		}, $array);
+	}
+////
+////
+////
 	function countJokers( $cards ) {
-		self::dump("[bmc] ENTER countJokers: ", $cards);
+		//self::dump("[bmc] ENTER countJokers: ", $cards);
 		$jokerCount = 0; // Count the jokers
 		foreach ( $cards as $card ) {
 			if ( $card['type'] == "5") {
@@ -3013,7 +3615,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 	function countNonJokerValues( $cards ) {
-		self::dump("[bmc] ENTER countNonJokerValues: ", $cards );
+		//self::dump("[bmc] ENTER countNonJokerValues: ", $cards );
 		$nonJokerCount = 0; // Count the unique values of the nonJokers
 		$cardValues = [];
 		
@@ -3034,18 +3636,29 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 ////
+	// function checkForJokerIsOneCard( $card ) {
+		// self::dump("[bmc] ENTER check for joker in card: ", $card);
+		// if ( $card['type'] == "5") {
+			// self::dump("[bmc] EXIT checkforJoker with 1 card", $card);
+			// return $card;
+		// }
+		// self::trace("[bmc] EXIT check for joker is one card (none found)");
+		// return false;
+	// }
+////
+////
+////
 	function checkForJoker( $cards ) {
-		self::dump("[bmc] ENTER check for joker in cards: ", $cards);
+		//self::dump("[bmc] ENTER check for joker in cards: ", $cards);
 
-			foreach ( $cards as $card ) {
-//			self::dump("[bmc] checkForJoker card:",  $card );
-			//self::dump("[bmc] checkForJoker card type:", $card['type']);
+		foreach ( $cards as $card ) {
 			if ( $card['type'] == "5") {
 				self::dump("[bmc] EXIT checkforJoker", $card);
 				return $card;
 			}
 		}
-		self::trace("[bmc] EXIT check for joker in cards (none).");
+
+		self::trace("[bmc] EXIT check for joker in cards (none found)");
 		return false;
 	}
 ////
@@ -3055,7 +3668,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::trace("[bmc] ENTER checkSet");
 		// A set is 3 or more cards of the same number or
 		//   2 cards of the same value plus 1 joker.
-		self::dump("[bmc] checkSet Cards: ", $cards);
+		//self::dump("[bmc] checkSet Cards: ", $cards);
 		
 		if ( count( $cards ) < 3) {
 			self::trace("[bmc] EXIT checkSet: FALSE. Not enough cards.");
@@ -3104,7 +3717,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
 		$currentPlayer = $this->getActivePlayerId();
 
-		if ( $playerGoneDown[$currentPlayer] != 1 ) {
+		if ( $playerGoneDown[ $currentPlayer ] != 1 ) {
 			throw new BgaUserException( self::_('You can play only after you go down.') );
 		}
 		
@@ -3114,92 +3727,125 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			throw new BgaUserException( self::_('You cannot empty your hand.') );
 			return;
 		}
-		
+
 		$this->playCardFinish( $card_id, $player_id, $boardArea, $boardPlayer, false );
 		self::trace( "[bmc] EXIT playCard" );
+		
+		// Push the next state so that the arg gets updated (state will go back to same state)
+		$this->gamestate->nextState( 'playCard' );
 	}
 ////
 ////
 ////
 	function playCardMultiple( $card_ids, $player_id, $boardArea, $boardPlayer ) {
 		self::trace( "[bmc] ENTER playCardMultiple (from ACTION from JS)" );
-		// Validate the player has the card in hand
-		// validate the card can be played there
-		//   If the target card is a joker, take the joker & replace
-		// Move the card(s) around
-		// Notify the players
-		self::checkAction("playCardMultiple");
 
-		// Validate the player has already gone down
-		$playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
-		$currentPlayer = $this->getActivePlayerId();
+		$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' ); // 0 = false; 1 = true
+		self::dump("[bmc] liverpoolFoundYN:", $liverpoolFoundYN );
 
-		if ( $playerGoneDown[$currentPlayer] != 1 ) {
-			throw new BgaUserException( self::_('You can play only after you go down.') );
-		}
+		if ( $liverpoolFoundYN == 0 ){ // Only allow multiple if not during liverpoolFound
+//			allow only 1 card to be Played
 		
-		$cardsInHand = $this->cards->countCardsByLocationArgs( 'hand' )[$currentPlayer];
+			// The problem is, even if it's determined that the whole thing is a run, it
+			// calls PLAYCARDFINISH which tries to play each card 1 at a time. So, it fails.
+			
+			// Validate the player has the card in hand
+			// validate the card can be played there
+			//   If the target card is a joker, take the joker & replace
+			// Move the card(s) around
+			// Notify the players
+			self::checkAction("playCardMultiple");
 
-		self::dump("[bmc] cardInHand:", $cardsInHand );
-		self::dump("[bmc] card_ids:", $card_ids );
-		self::dump("[bmc] count(card_ids):", count( $card_ids ));
-		
-		if (( $cardsInHand - count( $card_ids )) < 1 ) {
-			throw new BgaUserException( self::_('You cannot empty your hand.') );
-			return;
-		}
-		
-		$boardCards = $this->cards->getCardsInLocation( $boardArea , $boardPlayer );
-		self::dump("[bmc] boardCards before:", $boardCards );
-		
-		$handCards = $this->cards->getCards( $card_ids );
-		self::dump("[bmc] handCards:", $handCards );
-		
-		$boardPlusHandCards = array_merge( $boardCards, $handCards );
-		
-		//array_push( $boardPlusHandCards, $handCards );
-		self::dump("[bmc] boardPlusHandCards After:", $boardPlusHandCards );
-		
-		// If all the cards are a run then keep trying to play them until it works
-		
-		// TODO Oct 2022: Fix this so it plays 56 onto 890*
-		// Method: Try to play them in all the orders possible and see if 1 goes through
-		
-//		$multipleCardsAreRun = $this->checkRun( $boardPlusHandCards, false );
+			// Validate the player has already gone down
+			$playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
+			$currentPlayer = $this->getActivePlayerId();
 
-// Start change for playing multiple Nov 2022.
-		if ( $this->checkRun( $boardPlusHandCards, true ) == true ) {
-			self::trace( "[bmc] Playing multiple on run." );
-			foreach( $handCards as $card ) {
-				self::dump("[bmc] PlayMultiple:", $card );
-				self::dump("[bmc] PlayMultiple:", $card['id'] );
-				$this->playCardFinish( $card['id'], $player_id, $boardArea, $boardPlayer, false );
+			if ( $playerGoneDown[$currentPlayer] != 1 ) {
+				throw new BgaUserException( self::_('You can play only after you go down.') );
 			}
-		} else if ( $this->checkSet( $boardPlusHandCards ) == true ) {
-			self::trace( "[bmc] Playing multiple on set." );
-			foreach( $handCards as $card ) {
-				self::dump("[bmc] PlayMultiple:", $card );
-				self::dump("[bmc] PlayMultiple:", $card['id'] );
-				$this->playCardFinish( $card['id'], $player_id, $boardArea, $boardPlayer, false );
+			
+			$cardsInHand = $this->cards->countCardsByLocationArgs( 'hand' )[$currentPlayer];
+
+			self::dump("[bmc] cardInHand:", $cardsInHand );
+			self::dump("[bmc] card_ids:", $card_ids );
+			self::dump("[bmc] count(card_ids):", count( $card_ids ));
+			
+			if (( $cardsInHand - count( $card_ids )) < 1 ) {
+				throw new BgaUserException( self::_('You cannot empty your hand.') );
+				return;
+			}
+			
+			$boardCards = $this->cards->getCardsInLocation( $boardArea , $boardPlayer );
+			self::dump("[bmc] boardCards before:", $boardCards );
+			
+			$handCards = $this->cards->getCards( $card_ids );
+			self::dump("[bmc] handCards:", $handCards );
+			
+//			$boardPlusHandCards = array_merge( $boardCards, $handCards );
+			
+			$boardPlusHandCards = $boardCards + $handCards ;
+
+			self::dump("[bmc] boardPlusHandCards After:", $boardPlusHandCards );
+			
+			$boardIsRun = $this->checkRun( $boardCards, true ); // cards, silent
+			$boardIsSet = $this->checkSet( $boardCards );
+			
+			$bothIsRun = $this->checkRun( $boardPlusHandCards, true ); // cards, silent
+			$bothIsSet = $this->checkSet( $boardPlusHandCards );
+			
+			// If all the cards are a run then keep trying to play them until it works
+			
+			// TODO Oct 2022: Fix this so it plays 56 onto 890*
+			// Method: Try to play them in all the orders possible and see if 1 goes through
+			
+	//		$multipleCardsAreRun = $this->checkRun( $boardPlusHandCards, false );
+
+	// Start change for playing multiple Nov 2022.
+			if ( $this->checkRun( $boardPlusHandCards, true ) == true ) {
+				self::dump("[bmc] checkRun passed as true:", $boardPlusHandCards );
+				
+				if ( count( $boardPlusHandCards ) > 14 ) { // Could have A234 up to JQKA, so 14 cards is OK
+					throw new BgaUserException( self::_('Cannot play there. That board area is full.') );
+				}
+
+				self::trace( "[bmc] Playing multiple on run." );
+				foreach( $handCards as $card ) {
+					self::dump("[bmc] PlayMultiple:", $card );
+					self::dump("[bmc] PlayMultiple:", $card['id'] );
+					// Together all cards are a run so put the hand cards each down
+					$playWeight = $this->cards->countCardInLocation($boardArea) + 100;
+					
+					$this->playOnRunAndNotify( $card['id'], $boardArea, $boardPlayer, $playWeight, $player_id, $card, true );
+
+				}
+			} else if ( $this->checkSet( $boardPlusHandCards ) == true ) {
+				self::trace( "[bmc] Playing multiple on set." );
+				foreach( $handCards as $card ) {
+					self::dump("[bmc] PlayMultiple:", $card );
+					self::dump("[bmc] PlayMultiple:", $card['id'] );
+					$this->playCardFinish( $card['id'], $player_id, $boardArea, $boardPlayer, false );
+				}
+			} else {
+				// Throw exception that it's not a set nor a run
+				throw new BgaUserException( self::_('Cannot play those cards on that meld.') );
+				return;
 			}
 		} else {
-			// Throw exception that it's not a set nor a run
-			throw new BgaUserException( self::_('Cannot play those cards on that meld.') );
-			return;
+			// Cannot play more than 1 card from a Liverpool declaration
+			throw new BgaUserException( self::_('After Liverpool, only 1 card is allowed to be played.') );
 		}
-
 		self::trace( "[bmc] EXIT playCardMultiple" );
 	}
 ////
 ////
 ////
-	function getCardNotJoker( $boardArea, $boardPlayer ) {
-		self::trace("[bmc] ENTER getCardNotJoker");
+	function findCardNotJoker( $boardArea, $boardPlayer ) {
+		self::trace("[bmc] ENTER findCardNotJoker");
 		$cardsInArea = $this->cards->getCardsInLocation( $boardArea, $boardPlayer);
 
 		foreach( $cardsInArea as $card ) {
 			if( $card['type'] != 5 ) {
-				self::dump("[bmc] EXIT getCardNotJoker:", $card);
+				self::dump("[bmc] EXIT findCardNotJoker:", $card);
 				return $card;
 			} else {
 				self::trace("[bmc] Found a joker, keep looking for a non-joker.");
@@ -3208,7 +3854,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$card = reset( $cardsInArea ); 
 		self::dump("[bmc] All Jokers! Returning one of them:", $card);
 		
-		self::trace("[bmc] EXIT getCardNotJoker");
+		self::trace("[bmc] EXIT findCardNotJoker");
 		return $card;
 	}
 ////
@@ -3220,6 +3866,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// validate the card can be played there
 		//   If the target card is a joker, take the joker & replace
 		// Move the card(s) around
+		// Keep track of number of jokers played
 		// Notify the players
 
 		$currentCard = $this->cards->getCard( $card_id );
@@ -3227,31 +3874,53 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		list($card_typeA, $card_type_argA) = $this->checkIfReallyInHand( [$currentCard], $player_id );
 
 		self::dump("[bmc] Playing card:", $card_id );
+		self::dump("[bmc] currentCard:", $currentCard );
 		self::dump("[bmc] Cards on board BOARD AREA:", $boardArea);
 		self::dump("[bmc] Cards on board BOARD PLAYER:", $boardPlayer);
 
 		$cardsInArea = $this->cards->getCardsInLocation( $boardArea, $boardPlayer);
+
+		self::dump("[bmc] Count of cards in area:", count( $cardsInArea ));	
+		self::dump("[bmc] cardsInArea:", $cardsInArea );
 		
-		self::dump("[bmc] Count of cards in area:", count( $cardsInArea ));
-		
-		if ( count( $cardsInArea ) > 14 ) { // Could have A234 up to JQKA, so 14 cards is OK
-			throw new BgaUserException( self::_('Cannot play there. That board area is full.') );
+		// If there are already 14 cards there then
+			// If the card being played is a joker then decline it
+			// If the area is a set and there is no joker there, then decline it
+			// If the area is a run and the card value is on the board, then decline it
+		// if not 14 cards there then continue
+
+		if ( count( $cardsInArea ) > 13 ) { // Could have A23 up to QKA, so 14 total is OK
+			if ( $currentCard[ 'type' ] == 5 ) {
+				throw new BgaUserException( self::_('Cannot play there. That board area is full[J].') );
+			} else if (( $this->checkSet( $cardsInArea ) == true ) &&
+				    ( countJokers( $cardsInArea ) < 1 )){
+				throw new BgaUserException( self::_('Cannot play there. That board area is full[S].') );
+			} else if (( $this->checkRun( $cardsInArea, true ) == true ) &&
+					  ( $this->checkContains( $currentCard, $cardsInArea ))){
+				self::dump("[bmc] currentCard[TA]:", $currentCard[ 'type_arg' ]);
+				
+				if ( $currentCard[ 'type_arg' ] != 1 ) { // Allow 2 aces
+					throw new BgaUserException( self::_('Cannot play there. That board area is full[R].') );
+				} else {
+					
+				}
+			}
 		}
-		
-		self::dump("[bmc] Cards on board CARDS IN AREA:", $cardsInArea );
-		self::dump("[bmc] Card being played CARD TYPE:", $card_typeA );
-		self::dump("[bmc] Card being played CARD TYPE:", $card_typeA[0] );
-		self::dump("[bmc] Card being played CARD TYPE ARG:", $card_type_argA );
+		// Try to play the card
+
+		// self::dump("[bmc] Cards on board CARDS IN AREA:", $cardsInArea );
+		// self::dump("[bmc] Card being played CARD TYPE:", $card_typeA );
+		// self::dump("[bmc] Card being played CARD TYPE:", $card_typeA[0] );
+		// self::dump("[bmc] Card being played CARD TYPE ARG:", $card_type_argA );
 		self::dump("[bmc] currentCard:", $currentCard );
 
 		// Count the jokers being played for stats
 		// self::incStat( 1, 'jokers_number', $player_id );
 		// 08/26/2023
 
-		// $jokerCount = $countJokers( $
-		// foreach ( $joker in $
-
-
+		// if ( $this->checkForJokerIsOneCard( $currentCard )) {
+			// self::incStat( 1, 'jokers_number', $player_id );
+		// }
 
 		$mightBeJoker = $this->checkForJoker( $cardsInArea );
 		self::dump("[bmc] Might Be Joker", $mightBeJoker );
@@ -3259,7 +3928,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		if ( $mightBeJoker ) {
 			$boardCard = $mightBeJoker; // Find a joker on the board if possible
 		} else { // Get a representative card from the group
-			$boardCard = $this->getCardNotJoker( $boardArea, $boardPlayer );
+			$boardCard = $this->findCardNotJoker( $boardArea, $boardPlayer );
 		}
 
 		self::dump("[bmc] boardCard:", $boardCard );
@@ -3282,14 +3951,28 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				
 				// If playing a joker then just play it
 				if ( $card_typeA[0] == 5 ) {
-					self::trace("[bmc] Play joker on set.");
-					$this->cards->moveCard( $card_id, $boardArea, $boardPlayer, $playWeight);
+					$LPcardsPlayed = self::getGameStateValue( 'LPcardsPlayed' );
+					self::dump("[bmc] LPcardsPlayed:", $LPcardsPlayed );
 
+					$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' ); // 0 = false; 1 = true
+					self::dump("[bmc] liverpoolFoundYN:", $liverpoolFoundYN );
+					
+					// Only allow multiple if not during liverpoolFound
+
+					if (( $liverpoolFoundYN == 1 ) && ( $LPcardsPlayed > 0 )){
+						throw new BgaUserException( self::_('You can play only 1 card after a Liverpool [3508]') );
+					} else {
+						self::trace("[bmc] Play joker on set.");
+						$this->cards->moveCard( $card_id, $boardArea, $boardPlayer, $playWeight);
+
+						self::incStat( 1, 'jokers_number', $player_id ); // Track joker play for stats
+						self::setGameStateValue( 'LPcardsPlayed', 1 ); // Track # of cards played; Limit to 1 for Liverpool declare
+					}
 				} else if ($mightBeJoker != false) { 
-					self::trace("[bmc] 3771: mightbejoker != false.");
+					self::trace("[bmc] 3494: mightbejoker != false.");
 
-					if ( $this->getCardNotJoker( $boardArea, $boardPlayer )['type_arg'] == $card_type_argA[ 0 ] ) {
-						self::trace("[bmc] 3774 getCardNotJoker is true");
+					if ( $this->findCardNotJoker( $boardArea, $boardPlayer )['type_arg'] == $card_type_argA[ 0 ] ) {
+						self::trace("[bmc] 3497 findCardNotJoker is true");
 						
 						// Add new option to not take jokers (uncomment the next line)
 						//if ( $this->getGameStateValue( 'allowJokerSwapping' ) == 1 ) { // 0 == No. 1 == Yes.
@@ -3307,48 +3990,64 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 							
 							
 							
-							
-							
-							
+
+						$LPcardsPlayed = self::getGameStateValue( 'LPcardsPlayed' );
+						self::dump("[bmc] LPcardsPlayed:", $LPcardsPlayed );
+
+						$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' );
+						self::dump("[bmc] liverpoolFoundYN:", $liverpoolFoundYN );
+
+						if (( $liverpoolFoundYN == 1 ) && ( $LPcardsPlayed > 0 )){
+							throw new BgaUserException( self::_('You cannot swap jokers after a Liverpool.') );
+						} else {
 							$this->takeTheJoker( $mightBeJoker, $player_id, $card_id, $boardArea, $boardPlayer );
-						//}
+						}
 					} else {
 						self::trace("[bmc] 2354: Not same values for set.");
 						throw new BgaUserException( self::_('Cannot play that card on that set.') );
 					}
 				} else {
 					// Made it this far, so play it 
-					self::trace("[bmc] Play card on set.");
-//					$playWeight = $this->cards->countCardInLocation($boardArea) + 100;
-					$this->cards->moveCard( $card_id, $boardArea, $boardPlayer, $playWeight);
+					$LPcardsPlayed = self::getGameStateValue( 'LPcardsPlayed' );
+					self::dump("[bmc] LPcardsPlayed:", $LPcardsPlayed );
+
+					$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' );
+					self::dump("[bmc] liverpoolFoundYN:", $liverpoolFoundYN );
+
+					if (( $liverpoolFoundYN == 1 ) && ( $LPcardsPlayed > 0 )){
+						throw new BgaUserException( self::_('You can play only 1 card after a Liverpool [3560]') );
+					} else {
+						self::trace("[bmc] Play card on set.");
+
+						$this->cards->moveCard( $card_id, $boardArea, $boardPlayer, $playWeight);
+
+						self::setGameStateValue( 'LPcardsPlayed', 1 ); // Track # of cards played; Limit to 1 for Liverpool declare
+					}
 				}
 
 				// And notify of the played card
 				$debug_cards = $this->cards->getCardsInLocation("hand");
-				self::dump("[bmc] Cards In Hand:", $debug_cards );
+				//self::dump("[bmc] Cards In Hand:", $debug_cards );
 
 				self::trace("[bmc] Notify of played card (set)");
 
 				if ( $currentCard[ 'type' ] == 5 ) {
-					$value_displayed = self::_(' a joker');
-					$color_displayed = '!';
+					$value_displayed = 'Joker';
+					$color_displayed = '';
+					$connector = '';
 				} else {
-					$value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
-					$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
+					$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
+					$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
+					$connector = ' of ';
 				}
 
 				$cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
-
-//082023
 				$player_name = self::getActivePlayerName();
-				$outMsgP1 = self::_(" plays ");
-				$outMsg = $player_name . $outMsgP1 . $value_displayed . $color_displayed;
 
-				self::notifyAllPlayers(
-					'cardPlayed',
-					$outMsg,
-//					self::_('${player_name} plays ${value_displayed}${color_displayed}'),
+				self::notifyAllPlayers( 'cardPlayed',
+					clienttranslate( '${player_name} Played ${value_displayed} ${connector} ${color_displayed}' ),
 					array (
+						'i18n' => array( 'color_displayed', 'value_displayed', 'connector' ), 
 						'card_id' => $card_id,
 						'player_id' => $player_id,
 						'player_name' => self::getActivePlayerName(),
@@ -3358,11 +4057,13 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 						'color_displayed' => $color_displayed,
 						'boardArea' => $boardArea,
 						'boardPlayer' => $boardPlayer,
-						'allHands' => $cardsByLocation
+						'allHands' => $cardsByLocation,
+						'connector' => $connector
 					)
 				);
+
 			} else {
-				self::trace("[bmc] 3782 not same values for set.");
+				self::trace("[bmc] 3612 not same values for set.");
 				throw new BgaUserException( self::_('Cannot play that card on that set.') );
 			}
 		} else if ( $this->checkRun( $cardsInArea, false ) == true ) {
@@ -3371,8 +4072,10 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			// If playing a joker, then just play it
 			if ( $card_typeA[0] == 5) {
 				self::trace("[bmc] Play the joker.");
-				$this->playOnRunAndNotify( $card_id, $boardArea, $boardPlayer, $playWeight, $player_id, $currentCard );
+				$this->playOnRunAndNotify( $card_id, $boardArea, $boardPlayer, $playWeight, $player_id, $currentCard, true );
 				
+				self::incStat( 1, 'jokers_number', $player_id ); // Track joker play for stats
+
 			// if there is no joker on the board, then try to play the card
 			} else if ( $mightBeJoker == false) {
 				self::trace("[bmc] No joker on board, try to play the card.");
@@ -3387,7 +4090,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				if ( $this->checkRun( $potentialNewRun, false ) == true ) {
 					self::trace("[bmc] Playing the card onto the run.");
 					
-					$this->playOnRunAndNotify( $card_id, $boardArea, $boardPlayer, $playWeight, $player_id, $currentCard );
+					$this->playOnRunAndNotify( $card_id, $boardArea, $boardPlayer, $playWeight, $player_id, $currentCard, true );
 				} else {
 					self::trace("[bmc] With that card, the cards are not a run.");
 					throw new BgaUserException( self::_('Cannot play that card on that run.') );
@@ -3396,16 +4099,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				// Plan to add option to not allow joker swapping (except when going down).
 				// Check for that and don't swap if not allowed.
 				//if ( $this->getGameStateValue( 'allowJokerSwapping' ) == 1 ) { // 0 == No. 1 == Yes.
-
-
-
-
-
-
-
-
-
-
 
 				self::trace("[bmc] YES joker on board, try to play the card.");
 				// If here, then there's a joker on the board.
@@ -3422,25 +4115,34 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					$this->checkRun( $potentialNewRun, false );
 					
 					// If we get to here then it's a run
-					self::trace("[bmc] YES can do swap.");
+					self::trace("[bmc] YES can do swap (try).");
 
 					// Play the card
-					$this->playOnRunAndNotify( $card_id, $boardArea, $boardPlayer, $playWeight, $player_id, $currentCard );
+					$this->playOnRunAndNotify( $card_id, $boardArea, $boardPlayer, $playWeight, $player_id, $currentCard, false );
 					
 					// Take the joker
-					$this->takeTheJoker( $mightBeJoker, $player_id, $card_id, $boardArea, $boardPlayer );
-					
+					$LPcardsPlayed = self::getGameStateValue( 'LPcardsPlayed' );
+					self::dump("[bmc] LPcardsPlayed(try):", $LPcardsPlayed );
+
+					$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' ); // 0 = false; 1 = true
+					self::dump("[bmc] liverpoolFoundYN(try):", $liverpoolFoundYN );
+
+					if (( $liverpoolFoundYN == 1 ) && ( $LPcardsPlayed > 0 )){
+						throw new BgaUserException( self::_('You cannot swap jokers after a Liverpool.') );
+					} else {
+						$this->takeTheJoker( $mightBeJoker, $player_id, $card_id, $boardArea, $boardPlayer );
+					}					
 				} catch ( Exception $e ) {
-					self::trace("[bmc] NO, try the new card including the board joker.");
+					self::trace("[bmc] NO, try the new card including the board joker(catch).");
 
 					// Add the card back and try it as a run
 					$potentialNewRun[ $mightBeJoker[ 'id' ]] = $mightBeJoker;
 
-					self::dump("[bmc] Added joker back:", $potentialNewRun );
+					//self::dump("[bmc] Added joker back:", $potentialNewRun );
 					self::dump("[bmc] mightbejoker:", $mightBeJoker );
 
 					if ( $this->checkRun( $potentialNewRun, false ) == true ) {
-						$this->playOnRunAndNotify( $card_id, $boardArea, $boardPlayer, $playWeight, $player_id, $currentCard );
+						$this->playOnRunAndNotify( $card_id, $boardArea, $boardPlayer, $playWeight, $player_id, $currentCard, true );
 					}
 				}
 			}
@@ -3457,46 +4159,61 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 ////
-	function playOnRunAndNotify( $card_id, $boardArea, $boardPlayer, $playWeight, $player_id, $currentCard ) {
+	function playOnRunAndNotify( $card_id, $boardArea, $boardPlayer, $playWeight, $player_id, $currentCard, $doLPCheck ) {
 		self::trace("[bmc] ENTER playOnRunAndNotify.");
-		// TODO: Fix the play weight on the board for runs:
-		$playWeight = $this->cards->countCardInLocation( $boardArea ) + 100;
-		$this->cards->moveCard( $card_id, $boardArea, $boardPlayer, $playWeight );
 		
-		$cardsByLocationHand  = $this->cards->countCardsByLocationArgs( 'hand' );
+		$LPcardsPlayed = self::getGameStateValue( 'LPcardsPlayed' );
+		self::dump("[bmc] LPcardsPlayed:", $LPcardsPlayed );
 
-		// And notify of the played card
-	
-		self::trace("[bmc] Notify of played card");
+		$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' ); // 0 = false; 1 = true
+		self::dump("[bmc] liverpoolFoundYN:", $liverpoolFoundYN );
 
-//		$color_displayed = 'the ' . $this->colors[ $currentCard[ 'type' ]][ 'name' ] . ' ';
-//		$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
-
-		if ( $currentCard[ 'type' ] == 5 ) {
-			$value_displayed = self::_(' joker');
-			$color_displayed = '';
+		if (( $liverpoolFoundYN == 1 ) && ( $LPcardsPlayed > 0 ) && $doLPCheck ){
+			throw new BgaUserException( self::_('You can play only 1 card after a Liverpool [3725]') );
 		} else {
-			$value_displayed = self::_( 'the ' . $this->values_label[ $currentCard[ 'type_arg' ]] . ' of ');
-			$color_displayed = self::_( $this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
-		}
 
-		self::notifyAllPlayers(
-			'cardPlayed',
-//			self::_('${player_name} plays the ${color_displayed} ${value_displayed} '),
-			self::_('${player_name} plays ${value_displayed}${color_displayed}'),
-			array (
-				'card_id' => $card_id,
-				'player_id' => $player_id,
-				'player_name' => self::getActivePlayerName(),
-				'value' => $currentCard ['type_arg'],
-				'value_displayed' => $value_displayed,
-				'color' => $currentCard ['type'],
-				'color_displayed' => $color_displayed,
-				'boardArea' => $boardArea,
-				'allHands' => $cardsByLocationHand,
-				'boardPlayer' => $boardPlayer
-			)
-		);
+			$playWeight = $this->cards->countCardInLocation( $boardArea ) + 100;
+			$this->cards->moveCard( $card_id, $boardArea, $boardPlayer, $playWeight );
+			
+			if ( $doLPCheck ) {
+				self::setGameStateValue( 'LPcardsPlayed', 1 ); // Track # of cards played; Limit to 1 for Liverpool declare
+			}
+			$cardsByLocationHand  = $this->cards->countCardsByLocationArgs( 'hand' );
+
+			// And notify of the played card
+		
+			self::trace("[bmc] Notify of played card");
+
+			if ( $currentCard[ 'type' ] == 5 ) {
+				$value_displayed = 'Joker';
+				$color_displayed = '';
+				$connector = '';
+			} else {
+				$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
+				$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
+				$connector = ' of ';
+			}
+
+			$player_name = self::getActivePlayerName();
+
+			self::notifyAllPlayers( 'cardPlayed',
+				clienttranslate( '${player_name} Played: ${value_displayed} ${connector} ${color_displayed}'),
+				array (
+					'i18n' => array( 'color_displayed', 'value_displayed', 'connector' ),
+					'card_id' => $card_id,
+					'player_id' => $player_id,
+					'player_name' => self::getActivePlayerName(),
+					'value' => $currentCard ['type_arg'],
+					'value_displayed' => $value_displayed,
+					'color' => $currentCard ['type'],
+					'color_displayed' => $color_displayed,
+					'boardArea' => $boardArea,
+					'allHands' => $cardsByLocationHand,
+					'boardPlayer' => $boardPlayer,
+					'connector' => $connector
+				)
+			);
+		}
 		self::trace("[bmc] EXIT playOnRunAndNotify.");
 	}
 ////
@@ -3573,8 +4290,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		$newScores = self::getCollectionFromDb("SELECT player_id, player_score FROM player", true );
 
-		self::notifyAllPlayers(
-			"newScores",
+		self::notifyAllPlayers( "newScores",
 			'',
 			array(
 				'newScores' => $newScores,
@@ -3583,25 +4299,22 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				'currentHandType' => $currentHandType
 			)
 		);
-// END MAYBE NOT INCLUDE THIS
 
-
+		// Enter into log
 		// Notify players to review their hands and click to continue
-		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
+		$currentPlayerId = $this->getCurrentPlayerId();
+		
 		$players = self::loadPlayersBasicInfos();
-		$player_name = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+		$player_name = $players[ $currentPlayerId ][ 'player_name' ];
 
-//082023
+		self::dump( "[bmc] currentPlayerId:", $currentPlayerId );
+		self::dump( "[bmc] player_name:", $player_name );
 
-		$outMsg = $player_name . self::_(" went out." );
-
-        self::notifyAllPlayers(
-			'wentOut',
-//			self::_( '${player_name} went out.' ),
-			$outMsg,
+        self::notifyAllPlayers( 'wentOut',
+			clienttranslate( '${player_name} went out' ),
 			array(
-				'player_id' => $activeTurnPlayer_id,
-				'player_name' => $players[ $activeTurnPlayer_id ][ 'player_name' ]
+				'player_id'   => $currentPlayerId,
+				'player_name' => $player_name
 			)
 		); 
 
@@ -3624,14 +4337,19 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		if ( $currentHandType >= $countHandTypes ) {
 			self::debug("[bmc] Game Over!");
-			$scoreMessage = self::_( "Game Over!" );
+			$scoreMessage = "Game Over!";
 			$this->calcDisplayScoreDialog( $scoreMessage );
-			$this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
+			
+			// TODO Nov 5 2024: Perhaps change the next line to go to endHand and not endGame:
+			// But still need to correct who went out... But this might fix the bad display
+			
+			
+			$this->gamestate->setAllPlayersNonMultiactive( 'endGame' );
 			//$this->game->playerHasReviewedHand();
-			// $this->gamestate->setAllPlayersNonMultiactive( 'endgame' );
+			// $this->gamestate->setAllPlayersNonMultiactive( 'endGame' );
 		} else {
 			self::debug("[bmc] On To The Next!");
-			$scoreMessage = self::_( "On to the next!") ;
+			$scoreMessage = "On to the next!";
 			$this->calcDisplayScoreDialog( $scoreMessage );
 			$this->gamestate->setAllPlayersMultiactive();
 		}
@@ -3658,24 +4376,24 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		foreach ( $cards as $card ) {
 			$player_id = $card[ 'location_arg' ];
-			self::dump("[bmc] Scoring: ", $card );
+			// self::dump("[bmc] Scoring: ", $card );
 			if ( $card[ 'type' ] >= 1 and $card[ 'type' ] <= 4) { // If non-Joker
 				switch ( true ) {
 					case ( $card[ 'type_arg' ] >= 2 and $card[ 'type_arg' ] <= 9 ): // 5 points
-						self::trace("[bmc] 2-9");
+						// self::trace("[bmc] 2-9");
 						$player_to_points[ $player_id ] += 5;
 						break;
 					case ( $card[ 'type_arg' ] >= 10 and $card[ 'type_arg' ] <= 13 ): // 10 points
-						self::trace("[bmc] 10,J,Q,K");
+						// self::trace("[bmc] 10,J,Q,K");
 						$player_to_points[ $player_id ] += 10;
 						break;
 					case ( $card[ 'type_arg' ] == 1 ): // 15 points	
-						self::trace("[bmc] Ace");
+						// self::trace("[bmc] Ace");
 						$player_to_points[ $player_id ] += 15;
 						break;
 				}
 			} else { // It must be a joker, 20 points
-				self::trace("[bmc] Joker");
+				// self::trace("[bmc] Joker");
 				$player_to_points [$player_id] += 20;
 			}
 		}
@@ -3687,30 +4405,25 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
                 self::DbQuery( $sql );
                 $point_number = $player_to_points[ $player_id ];
 
-//082023
 				$player_name = $players[ $player_id ][ 'player_name' ];
-				$msg1 = self::_(" gets ");
-				$msg2 = self::_(" points ");
-				$outMsg = $player_name . $msg1 . $point_number . $msg2;
 
-                self::notifyAllPlayers("points",
-    				$outMsg,
-//                self::notifyAllPlayers("points", self::_( '${player_name} gets ${nbr} points' ), array (
-					array (
-                        'player_id' => $player_id,'player_name' => $players[ $player_id ][ 'player_name' ],
-                        'nbr' => $point_number ));
-            } else {
-		        // No point lost (just notify)
-				
-				$outMsg1 = self::_( ' did not get any points');
-				$outMsg = $player_name . $outMsg1;
-				
-                self::notifyAllPlayers("points",
-					$outMsg,
-//					self::_('${player_name} did not get any points'),
+                self::notifyAllPlayers( "points",
+    				clienttranslate( '${player_name} got ${nbr} points' ),
 					array (
                         'player_id' => $player_id,
-						'player_name' => $players[ $player_id ][ 'player_name' ]
+						'player_name' => $player_name,
+                        'nbr' => $point_number
+						)
+				);
+            } else {
+		        // No points lost (just notify)
+				$player_name = $players[ $player_id ][ 'player_name' ];
+				
+                self::notifyAllPlayers( "points",
+					clienttranslate( '${player_name} got zero points'),
+					array (
+                        'player_id' => $player_id,
+						'player_name' => $player_name
 					)
 				);
             }
@@ -3725,9 +4438,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		// Show the scoring dialog box
 		
-		$firstRow = array( '' );
-		$secondRow = array( self::_( 'This Hand' ));
-		$thirdRow = array( self::_( 'Total' ));
+		$firstRow  = array( '' );
+		$secondRow = array( clienttranslate( 'This Hand' ));
+		$thirdRow  = array( clienttranslate( 'Total' ));
 
         foreach( $players as $player_id => $player ) {
             $firstRow[] = array( 'str' => '${player_name}',
@@ -3754,37 +4467,49 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$outReason = self::getGameStateValue( 'outReason' );
 			
 		if( $outReason == 1 ) {
-			$outMsg1 = self::_( "Deck has been shuffled 5 times. Ending the hand." );
-			$outMsg2 = $outMsg1;
+			$outMsg1 = clienttranslate( "Deck has been shuffled 5 times. Ending the hand." );
+			$outMsg2 = clienttranslate( $outMsg1 );
 		} else if ($outReason == 2 ) {
-			$outMsg1 = self::_( "All playable cards have been played. Ending the hand." );
-			$outMsg2 = $outMsg1;
+			$outMsg1 = clienttranslate( "All playable cards have been played. Ending the hand." );
+			$outMsg2 = clienttranslate( $outMsg1 );
 		} else { // Someone went out normally
-			$outMsg1 = self::_( "Woot! You went out! You want the most positive score." );
-			$outMsg2_player = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+			$outMsg1 = clienttranslate( "Woot! You went out! You want the most positive score." );
+			// $outMsg2_player = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+			$outMsg2_player = $players[ $player_id ][ 'player_name' ];
+			$outMsg2_msg    = clienttranslate( " went out. You want the most positive score." );
+			
+			$outMsg2 = $outMsg2_player . $outMsg2_msg;
 			
 //082023
-			$outMsg2_raw = self::_( "Bummer! " );
-			$outMsg2a_raw = self::_( " went out. You want the most positive score." );
+			// $outMsg2_raw  = self::_( "Bummer! " );
+			// $outMsg2a_raw = self::_( " went out. You want the most positive score." );
 
-			$outMsg2 = $outMsg2_raw . $outMsg2_player . $outMsg2a_raw;
+			// $outMsg2 = $outMsg2_raw . $outMsg2_player . $outMsg2a_raw;
 
 //			. $outMsg2_player . " went out! You want the most positive score:";
 //			$outMsg2 = self::_( $outMsg2_raw );
 		}
 
-		$otherMessage = $outMsg2;
+		$titleMessage = clienttranslate( $outMsg1 );
+
+
+//		$playerOut = $players[ $activeTurnPlayer_id ][ 'player_name' ];
+		$playerOut = $players[ $player_id ][ 'player_name' ];
+		// $otherMessage = $outMsg2;
+		
+		$currentPid = $this->getCurrentPlayerId();
 		
 		// Show a dialog of the scores for each player for this hand
         foreach ( $player_to_points as $player_id => $points ) {
-			if ( $player_id == $activeTurnPlayer_id ) {
+			// if ( $player_id == $activeTurnPlayer_id ) {
+			if ( $player_id == $currentPid ) {
 				$this->notifyPlayer(
 					$player_id,
 					"tableWindow", '', array(
 						"id" => 'handScoring',
 						"title" => $outMsg1,
 						"table" => $table,
-						"closing" => $scoreMessage
+						"closing" => clienttranslate( $scoreMessage )
 					)
 				); 
 			} else {
@@ -3792,9 +4517,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					$player_id,
 					"tableWindow", '', array(
 						"id" => 'handScoring',
-						"title" => $otherMessage,
+						"title" => $outMsg2,
 						"table" => $table,
-						"closing" => $scoreMessage
+						"closing" => clienttranslate( $scoreMessage )
 					)
 				); 
 			}
@@ -3811,8 +4536,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
 		 
-        self::notifyAllPlayers(
-			'wentOut',
+        self::notifyAllPlayers( 'wentOut',
 			'',
 			array(
 				'ackPlayer' => $player_id
@@ -3838,6 +4562,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		self::setGameStateValue( 'shuffleCount', 0 ); // Reset the shuffle count every hand
 
+		self::setGameStateValue( 'liverpoolFoundYN', 0 ); // Reset the liverpool status
+		self::setGameStateValue( 'liverpoolExists', 0 ); // Reset the liverpool status
+
         // Deal some cards to each players
         $players = self::loadPlayersBasicInfos();
 		
@@ -3845,26 +4572,39 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// Put 1 card in the discard pile
 		// Put the rest into the draw deck
 		// Notify players of the situation
+		self::dump( "[bmc] players:", $players );
+		
 		
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 		self::dump( "[bmc] currentHandType:", $currentHandType );
 		self::dump( "[bmc] this->handTypes[]:", $this->handTypes );
+		self::dump( "[bmc] count( this->handTypes):", count( $this->handTypes ));
 
+		//Notify all players of their cards plus the deck and the discard pile
+		$handTarget = $this->handTypes[$currentHandType]["Target"]; // Pull the description
+		
 		$alwaysDeal11 = self::getGameStateValue( 'alwaysDeal11' );
+		
+		$handNumber = $currentHandType + 1;
+		self::dump( "[bmc] handNumber:", $handNumber );
 
 		if ( $alwaysDeal11 == 1 ) {
 			$qtyToDeal = 11;
 		} else {
 			$qtyToDeal = $this->handTypes[ $currentHandType ][ "deal" ];
+
+			if (( self::getPlayersNumber() == 2 ) && ( count( $this->handTypes ) == $handNumber )){
+				$qtyToDeal++; // Deal 1 more card for 3 runs if only 2 players
+			}
 		}
 		
 		self::dump( "[bmc] qtyToDeal:", $qtyToDeal );
 
 		// If testing, use cards specifically for testing purposes
-		$setupHands = false;
-		//$setupHands = true;
+		$presetSetupHands = false;
+		//$presetSetupHands = true;
 		
-		if ( $setupHands ) { //
+		if ( $presetSetupHands ) { //
 			self::presetHands( $players, false ); // debug true or false
 		} else {
 			// Pick cards from the shuffled deck
@@ -3872,13 +4612,23 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			foreach ( $players as $player_id => $player ) {
 				$this->cards->pickCards( $qtyToDeal, 'deck', $player_id );
 				self::setPlayerGoneDown( $player_id, 0 ); /* 0 (not gone down) or 1 (gone down) */
-				$this->disableWishList( $player_id );
+				
+				if ( $this->getGameStateValue( 'enableWishList' ) == 1 ) { // 0 == No. 1 == Yes.
+					$this->disableWishList( $player_id );
+				}
+				// Clear out the prep areas in the database
+				
+				$sql = "DELETE FROM prepAreas WHERE player_id = '";
+				$sql_command = $player_id . "'";
+				self::DbQuery( $sql . $sql_command );
 			}
 		}
 		
 		// Disable everyone's wish list between hands
 		foreach ( $players as $player_id => $player ) {
-			$this->disableWishList( $player_id );
+			if ( $this->getGameStateValue( 'enableWishList' ) == 1 ) { // 0 == No. 1 == Yes.
+				$this->disableWishList( $player_id );
+			}
 		}
 
 		// Put 1 card from the deck into the discard pile and give it a starting weight of 100
@@ -3886,9 +4636,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		// The rest of the cards are in 'deck'
 
-		//Notify all players of their cards plus the deck and the discard pile
-		$handTarget = $this->handTypes[$currentHandType]["Target"]; // Pull the description
-		
 		self::dump("[bmc] currentHandType handTarget stNewHand:", $handTarget);
 		
 		$cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
@@ -3922,8 +4669,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			self::setGameStateValue( 'dealer', $playerOrder[ $dealer ]);
 		}
 		
-//TODO: This next line complains about dealer being null. I think I added the game option wrong.
-	
 		$dealer_name = '<span style="color:#' . $players[ $dealer ]["player_color"] . ';">' . $players[ $dealer ]["player_name"] . '</span>';
 
 		$this->gamestate->changeActivePlayer( $playerOrder[ $dealer ] );
@@ -3936,27 +4681,27 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$currentCard = $this->cards->getCard( reset( $dpCard )[ 'id' ] );
 
 		self::dump("[bmc] currentCardInDP:", $currentCard);
-			
+
 		if ( $currentCard[ 'type' ] == 5 ) {
-			$value_displayed = self::_(' joker');
+			$value_displayed = 'Joker';
 			$color_displayed = '';
+			$connector = '';
 		} else {
-			$value_displayed = self::_('The ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
-			$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
+			$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
+			$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
+			$connector = ' of ';
 		}
 
 		// Update the hand count number when there is a new hand
 		
-//TODO: Test hand count updates.
-
 		$updCurrentHandType = self::getGameStateValue( 'currentHandType' );
 		$updTotalHandCount = count( $this->handTypes );
-
-		self::notifyAllPlayers( // Including spectators
-			'newHand',
-//			self::_('New Hand! ${dealer} has dealt the cards. New target is ${handTarget}. ${value_displayed}${color_displayed} is in the discard pile.'),
-			self::_('New Hand! ${dealer} has dealt the cards. New target is ${handTarget}. ${value_displayed}${color_displayed} is in the discard pile.'),
+		
+		self::notifyAllPlayers( 'newHand', // Including spectators
+			clienttranslate('New Hand! ${dealer} dealt the cards. New target is ${handTarget}. In Discard Pile: ${value_displayed} ${connector} ${color_displayed}'),
 			array(
+				'i18n' => array( 'handTarget', 'color_displayed', 'value_displayed', 'connector' ), 
+
 				'deck' => array_keys($this->cards->getCardsInLocation( 'deck' )),
 				'discardPile' => $this->cards->getCardsInLocation( 'discardPile' ),
 				'discardSize' => $discardSize,
@@ -3968,7 +4713,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				'updCurrentHandType' => $updCurrentHandType,
 				'updTotalHandCount' => $updTotalHandCount,
 				'value_displayed' => $value_displayed,
-				'color_displayed' => $color_displayed
+				'color_displayed' => $color_displayed,
+				'connector' => $connector
 			)
 		);
 		
@@ -4039,9 +4785,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			// Trigger the auto-shuffle by trying to draw a card:
 			// Put 1 card from the deck into the discard pile and give it a starting weight of 100
 			
-			self::notifyAllPlayers(
-				"deckShuffled",
-				self::_( 'Discard pile shuffled into deck.' ),
+			self::notifyAllPlayers( "deckShuffled",
+				clienttranslate( 'Discard pile shuffled into deck' ),
 				array(
 					'deck' => array_keys( $this->cards->getCardsInLocation('deck'))
 				)
@@ -4063,22 +4808,11 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 ////
-	// function stBuyTry() {
-		// self::trace( "[bmc] ENTER stBuyTry:" );
-   		// self::setPlayerBuyingGS( $player_id, 2 ); // (0==unknown, 1==Not buying 2==Buying)
-
-		// self::trace( "[bmc] EXIT stBuyTry:" );
-	// }
-////
-////
-////
 	function stDrawDiscard() {
 		self::trace( "[bmc] ENTER stDrawDiscard:" );
         $this->gamestate->nextState("");
 		self::trace( "[bmc] EXIT stDrawDiscard:" );
 	}
-//	function stResolveBuyers() {
-//		self::trace( "[bmc] ENTER stResolveBuyers:" );
 ////
 ////
 ////
@@ -4094,13 +4828,13 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		$drawSourceValue = self::getGameStateValue( 'drawSourceValue' );
 
-		self::dump("[bmc] drawSourceValue:", $drawSourceValue );
+		self::dump("[bmc] drawSourceValue:", $drawSourceValue ); // 0 = deck, 1 = discard
 		
 		// Clear the variable for the next player, because this discard has been handled
 		self::setGameStateValue( 'drawSourceValue', 2 );
 		
-		$buyCount = self::getPlayersBuyCount();
-		self::dump("[bmc] buyCount:", $buyCount );
+		// $buyCount = self::getPlayersBuyCount();
+		// self::dump("[bmc] buyCount:", $buyCount );
 
 		$someoneIsBuying = false;
 		
@@ -4118,7 +4852,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			self::dump("bmc] buyChoice: ", $buyChoice);
 			
 			if ( $buyChoice == 2 ) { // 0=Not decided, 1=Not buying, 2=Buying
-				$someoneIsBuying = $player_id ;
+				$someoneIsBuying = $player_id ; // Id doesn't matter, just not false
 				$buyingPlayers[] = $players[ $player_id ][ 'player_id' ];
 				}
 		}
@@ -4131,25 +4865,21 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// 2 == Other sources (other conditions like playing a card for a joker)
 	
 		if ( $drawSourceValue == 0 ) {
-			self::trace( "[bmc] TurnPlayer Drawing from deck, so a buy will go through if it exists.");
+			self::trace( "[bmc] TurnPlayer drew from deck, so a buy will go through if it exists.");
 			
-			//self::dump("[bmc] Buyers Status(stResolveBuyers):", $buyers);
-			
-//				throw feException("Someone is buying but no one requested!");
 			if ( $someoneIsBuying != false ) {
 				
 				$playerOrder = self::getNextPlayerTable();
 
 				self::dump( "[bmc] playerOrder: ", $playerOrder );
 
-// Maybe delete these 5, moved to waitforall
-						// Find the right buyer - start with the player after the active player
-						$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
-				
-						self::dump( "[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
-						self::dump( "[bmc] findSTART:", $playerOrder[ $activeTurnPlayer_id ] );
-				
-						$buyer_id = $this->findBuyer( $buyingPlayers, $playerOrder[ $activeTurnPlayer_id ] );
+				// Find the right buyer - start with the player after the active player
+				$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
+		
+				self::dump( "[bmc] activeTurnPlayer_id(resolveBuyers):", $activeTurnPlayer_id );
+				self::dump( "[bmc] findSTART:", $playerOrder[ $activeTurnPlayer_id ] );
+		
+				$buyer_id = $this->findBuyer( $buyingPlayers, $playerOrder[ $activeTurnPlayer_id ] );
 				
 				self::setGameStateValue( 'theBuyer', $buyer_id );
 				
@@ -4164,11 +4894,12 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 					self::setGameStateValue( 'findBuyerFailsafe', 0 );
 
-					self::clearPlayersBuying();
+					$this->clearBuyers();
+					//self::clearPlayersBuying();
 
 					$buyCount = self::getPlayersBuyCount();
 
-					self::dump("bmc] 4373: ", $buyCount);
+					self::dump("bmc] 4529: ", $buyCount);
 
 					//Move the cards for the buyer (the turnPlayer will get their cards in drawCard)
 					
@@ -4187,82 +4918,75 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 					$this->drawNotify( $currentCard, $buyer_id, 'discardPile', $buyer_id, $buyer_id );
 					
 					if ( $currentCard[ 'type' ] == 5 ) {
-						$value_displayed = self::_( ' joker ' );
+						$value_displayed = 'Joker';
 						$color_displayed = '';
+						$connector = '';
 					} else {
-						$value_displayed = self::_(' the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
-						$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's');
+						$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
+						$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
+						$connector = ' of ';
 					}
-
+					
 					$cardsByLocation = $this->cards->countCardsByLocationArgs( 'hand' );
 
 					$players = self::loadPlayersBasicInfos();
-					//self::dump( "[bmc] players:", $players );
-
-//082023
-					$player_name = $players[ $buyer_id ][ 'player_name' ];
-					$outMsg1 = self::_( " bought ");
-					$outMsg = $player_name . $outMsg1 . $value_displayed . $color_displayed;
 					
-					self::notifyAllPlayers(
-						'playerBought',
-						$outMsg,
-//						self::_('(${player_name} bought ${value_displayed} ${color_displayed})'),
+					$player_name = $players[ $buyer_id ][ 'player_name' ];
+					
+					self::notifyAllPlayers( 'playerBought',
+						clienttranslate( '${player_name} Bought: ${value_displayed} ${connector} ${color_displayed}' ),
 						array (
-	//						'buyingPlayer' => $buyer_id,
+							'i18n' => array( 'color_displayed', 'value_displayed', 'connector' ), 
 							'color_displayed' => $color_displayed,
 							'value_displayed' => $value_displayed,
 							'player_id' => $buyer_id,
 							'buyCount' => $buyCount,
 							'player_name' => $players[ $buyer_id ][ 'player_name' ],
-							'allHands' => $cardsByLocation
+							'allHands' => $cardsByLocation,
+							'connector' => $connector
 						)
 					);
-					// This is usually fired from JS, but need to give the player an entry in their log that the wishlist is disabled				
-					$this->disableWishList( $buyer_id );	 
+
+					// This is usually fired from JS, but need to give the player an entry in their log that the wishlist is disabled
+					
+					if ( $this->getGameStateValue( 'enableWishList' ) == 1 ) { // 0 == No. 1 == Yes.
+						$this->disableWishList( $buyer_id );	 
+					}
 				}
 			} else {
 				// There is no buyer
+				self::trace( "[bmc] No buyer for that card.");
 				self::setGameStateValue( 'theBuyer', 0 );
 			}
 			self::setGameStateValue( 'findBuyerFailsafe', 0 );
 
-			// Drawing from deck, so make sure it's not empty
-//			$this->gamestate->nextState("checkEmptyDeck");
-
 		} else if ( $drawSourceValue == 1 ) {
-			self::trace( "[bmc] TurnPlayer Drawing from discard, so buy will NOT go through.");
+			self::trace( "[bmc] TurnPlayer drew from discard, so buy will NOT go through.");
 			
 			// Set players buy status to NOT BUY
 			$players = self::loadPlayersBasicInfos();
+			
 			foreach ( $players as $player_id => $player ) {
-				self::setPlayerBuying(   $player_id, 1 );
+				self::setPlayerBuying( $player_id, 1 ); // 0=unknown, 1=Not buy, 2=buy
 				// self::setPlayerBuyingGS( $player_id, 1 );
 			}
 
-			$buyingPlayerNames = [];
+			$players = self::loadPlayersBasicInfos();
+
 			foreach ( $buyingPlayers as  $pid ) {
-				$buyingPlayerNames[] = $players[ $pid ][ 'player_name' ];
+				if ( $someoneIsBuying != false ) {
+					self::notifyAllPlayers( 'playerDidNotBuy',
+						clienttranslate( '${buyingPlayerName} tried but could not buy' ),
+						array (
+							'buyingPlayers' => $buyingPlayers,
+							'buyingPlayerName' => $players[ $pid ][ 'player_name' ]
+						)
+					);
+				}
 			}
-
-			self::dump("bmc] buyingPlayerNames: ", $buyingPlayerNames );
-
-			if ( $someoneIsBuying != false ) {
-				$players = self::loadPlayersBasicInfos();
-				self::notifyAllPlayers(
-					'playerDidNotBuy',
-					self::_('${buyingPlayerNames} tried but could not buy the discard.'),
-					array (
-						'buyingPlayers' => $buyingPlayers,
-						'buyingPlayerNames' => $buyingPlayerNames
-					)
-				);
-			}
-			
 		} else {
-			self::trace( "[bmc] Resolve Buyers Other path" );
+			self::trace( "[bmc] Resolve Buyers Other path. drawSourceValue was 2" );
 		}
-
 		self::trace( "[bmc] EXIT (truly) ResolveBuyers:" );
 	}
 /////
@@ -4283,7 +5007,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		$discardingPlayer_id = $this->getPlayerBefore( $activeTurnPlayer_id );
 		
-		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
+		self::dump("[bmc] activeTurnPlayer_id(stShowBUYButtons):", $activeTurnPlayer_id );
 		self::dump("[bmc] discardingPlayer_id:", $discardingPlayer_id );
 
 		// If the dealer cannot buy the card, then uncomment this. If they are OK to buy then comment it out.
@@ -4348,9 +5072,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$playerIDList[] = $playerIDOnly[ "player_id" ];
 		}
 
-		self::dump("[bmc] player_id:", $player_id);
-		self::dump("[bmc] players from submitWishList:", $playerIDList);
-		self::dump("[bmc] in_array:", in_array( $player_id, $playerIDList));
+		// self::dump("[bmc] player_id:", $player_id);
+		// self::dump("[bmc] players from submitWishList:", $playerIDList);
+		// self::dump("[bmc] in_array:", in_array( $player_id, $playerIDList));
 
 		if ( in_array( $player_id, $playerIDList )) {
 			// Delete all entries for the wishList for that player
@@ -4409,7 +5133,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$this->notifyPlayer(
 				$player_id,
 				"wishListSubmitted",
-				self::_('Your wish list was received and is active.'),
+				clienttranslate( 'Your wish list was received and is active.' ),
 				array (
 					'player_id' => $player_id
 				)
@@ -4420,6 +5144,225 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 ////
+	function savePrep( $player_id, $area_A_Items, $area_B_Items, $area_C_Items, $area_J_Items ) {
+		self::trace("[bmc] ENTER savePrep");
+		self::dump("[bmc] player_id:", $player_id);
+		self::dump("[bmc] areaA:", $area_A_Items );
+		self::dump("[bmc] areaB:", $area_B_Items );
+		self::dump("[bmc] areaC:", $area_C_Items );
+		self::dump("[bmc] areaJ:", $area_J_Items );
+
+		$sql = "DELETE FROM prepAreas WHERE player_id = '";
+		$sql_command = $player_id . "'";
+		self::DbQuery( $sql . $sql_command );
+
+		$sql = "INSERT INTO prepAreas (player_id, areaA, areaB, areaC, areaJ) VALUES ";
+		$sql_command = "( " . $player_id . ", '" . 
+			implode( ",", $area_A_Items ) . "', '" . 
+			implode( ",", $area_B_Items ) . "', '" . 
+			implode( ",", $area_C_Items ) . "', '" . 
+			implode( ",", $area_J_Items ) . "' )";
+
+		self::dump( "[bmc] sql:", $sql . $sql_command );
+
+		self::DbQuery( $sql . $sql_command );
+
+		self::notifyPlayer(
+			$player_id,
+			'savePrepDone',
+			clienttranslate("Your prep areas were saved"),
+			array(
+				'player_id' => $player_id,
+			)
+		);
+		self::trace("[bmc] EXIT savePrep");
+
+	}
+////
+////
+////
+	function loadPrep( $player_id ) {
+		self::trace("[bmc] ENTER loadPrep");
+		self::dump("[bmc] player_id:", $player_id);
+	
+		$sql = "SELECT areaA areaA, areaB areaB, areaC areaC, areaJ areaJ FROM prepAreas WHERE player_id = '";
+		$sql_command = $player_id . "'";
+		
+		self::dump( "[bmc] sql:", $sql . $sql_command );
+
+		$prepListAll = self::getCollectionFromDb( $sql . $sql_command );
+
+		self::dump( "[bmc] prepListAll:", $prepListAll );
+		self::dump( "[bmc] prepListFirst:", reset( $prepListAll ));
+		
+		$allLoaded = true; // Start with true. Set false if one is skipped
+			
+		if ( reset( $prepListAll )) { // If there is something in the prep areas process it
+			
+			self::dump( "[bmc] prepListA:", reset( $prepListAll )[ 'areaA' ]);
+			self::dump( "[bmc] prepListB:", reset( $prepListAll )[ 'areaB' ]);
+			self::dump( "[bmc] prepListC:", reset( $prepListAll )[ 'areaC' ]);
+			self::dump( "[bmc] prepListJ:", reset( $prepListAll )[ 'areaJ' ]);
+
+			$prepAreaAItems = explode( ",", reset( $prepListAll )[ 'areaA' ]);
+			$prepAreaBItems = explode( ",", reset( $prepListAll )[ 'areaB' ]);
+			$prepAreaCItems = explode( ",", reset( $prepListAll )[ 'areaC' ]);
+			$prepAreaJItems = explode( ",", reset( $prepListAll )[ 'areaJ' ]);
+
+			self::dump( "[bmc] A:", $prepAreaAItems );
+			self::dump( "[bmc] B:", $prepAreaBItems );
+			self::dump( "[bmc] C:", $prepAreaCItems );
+			self::dump( "[bmc] J:", $prepAreaJItems );
+			
+			$cardsInHandNow = $this->cards->getCardsInLocation( 'hand', $player_id );
+			
+			$IDsInHandNow = array();
+			
+			self::dump( "[bmc] cardsInHandNow:", $cardsInHandNow );
+			
+			$prepAreaAItemsReal = array();
+			$prepAreaBItemsReal = array();
+			$prepAreaCItemsReal = array();
+			$prepAreaJItemsReal = array();
+			
+			foreach ( $cardsInHandNow as $card ){
+				$IDsInHandNow[] = $card[ 'id' ];
+			}
+			
+			self::dump( "[bmc] IDsInHandNow:", $IDsInHandNow );
+			
+			foreach ( $prepAreaAItems as $id ){
+				self::dump( "[bmc] Aid:", $id );
+				
+				if ( strlen( $id ) > 0) {
+					if ( in_array( $id, $IDsInHandNow )){
+						self::dump( "[bmc] FoundidinA:", $id );
+						$prepAreaAItemsReal[] = $id;
+						
+					} else {
+						$allLoaded = false;
+					}
+				}
+			}
+			
+			foreach ( $prepAreaBItems as $id ){
+				self::dump( "[bmc] Bid:", $id );
+				
+				if ( strlen( $id ) > 0) {
+					if ( in_array( $id, $IDsInHandNow )){
+						self::dump( "[bmc] FoundidinB:", $id );
+						$prepAreaBItemsReal[] = $id;
+						
+					} else {
+						$allLoaded = false;
+					}
+				}
+			}
+			
+			foreach ( $prepAreaCItems as $id ){
+				self::dump( "[bmc] Cid:", $id );
+				
+				if ( strlen( $id ) > 0) {
+					if ( in_array( $id, $IDsInHandNow )){
+						self::dump( "[bmc] FoundidinC:", $id );
+						$prepAreaCItemsReal[] = $id;
+						
+					} else {
+						$allLoaded = false;
+					}
+				}
+			}
+			
+			foreach ( $prepAreaJItems as $id ){
+				self::dump( "[bmc] Jid:", $id );
+				
+				if ( strlen( $id ) > 0) {
+					if ( in_array( $id, $IDsInHandNow )){
+						self::dump( "[bmc] FoundidinJ:", $id );
+						$prepAreaJItemsReal[] = $id;
+						
+					} else {
+						$allLoaded = false;
+					}
+				}
+			}
+
+			self::dump( "[bmc] RealA:", $prepAreaAItemsReal );
+			self::dump( "[bmc] RealB:", $prepAreaBItemsReal );
+			self::dump( "[bmc] RealC:", $prepAreaCItemsReal );
+			self::dump( "[bmc] RealJ:", $prepAreaJItemsReal );
+			
+			// getColorValueFromId doesn't get the right colors and values:
+			
+			list( $card_idsA, $card_typeA, $card_type_argA ) = $this->getColorValueFromId( $prepAreaAItemsReal );
+			list( $card_idsB, $card_typeB, $card_type_argB ) = $this->getColorValueFromId( $prepAreaBItemsReal );
+			list( $card_idsC, $card_typeC, $card_type_argC ) = $this->getColorValueFromId( $prepAreaCItemsReal );
+			list( $card_idsJ, $card_typeJ, $card_type_argJ ) = $this->getColorValueFromId( $prepAreaJItemsReal );
+
+			self::dump( "[bmc] Aids:",          $card_idsA );
+			self::dump( "[bmc] Atype:",        $card_typeA );
+			self::dump( "[bmc] Atypearg:", $card_type_argA );
+
+			self::dump( "[bmc] Bids:",          $card_idsB );
+			self::dump( "[bmc] Btype:",        $card_typeB );
+			self::dump( "[bmc] Btypearg:", $card_type_argB );
+
+			self::dump( "[bmc] Cids:",          $card_idsC );
+			self::dump( "[bmc] Ctype:",        $card_typeC );
+			self::dump( "[bmc] Ctypearg:", $card_type_argC );
+
+			self::dump( "[bmc] Jids:",          $card_idsJ );
+			self::dump( "[bmc] Jtype:",        $card_typeJ );
+			self::dump( "[bmc] Jtypearg:", $card_type_argJ );
+		} else {
+			$card_idsA	     = '';
+			$card_typeA	     = '';
+			$card_type_argA	 = '';
+			$card_idsB	     = '';
+			$card_typeB	     = '';
+			$card_type_argB	 = '';
+			$card_idsC	     = '';
+			$card_typeC	     = '';
+			$card_type_argC	 = '';
+			$card_idsJ	     = '';
+			$card_typeJ	     = '';
+			$card_type_argJ	 = '';
+		}
+
+		self::notifyPlayer(
+			$player_id,
+			'loadPrepDone',
+			clienttranslate("Your prep areas were loaded in"),
+			array(
+				'player_id'      => $player_id,
+				'card_idsA'      => $card_idsA,
+				'card_typeA'     => $card_typeA,
+				'card_type_argA' => $card_type_argA,
+				'card_idsB'      => $card_idsB,
+				'card_typeB'     => $card_typeB,
+				'card_type_argB' => $card_type_argB,
+				'card_idsC'      => $card_idsC,
+				'card_typeC'     => $card_typeC,
+				'card_type_argC' => $card_type_argC,
+				'card_idsJ'      => $card_idsJ,
+				'card_typeJ'     => $card_typeJ,
+				'card_type_argJ' => $card_type_argJ
+			)
+		);
+
+		self::dump("[bmc] allLoaded:", $allLoaded );
+
+		if ( $allLoaded != true ) {
+			self::notifyPlayer(
+				$player_id,
+				'loadPrepInfo',
+				clienttranslate("Not all cards were loaded because they are no longer in your hand."),
+				array()
+			);
+		}
+		self::trace("[bmc] EXIT loadPrep");
+	}
+	
 	function buyRequestFinish( $player_id ) {
 		self::trace("[bmc] ENTER buyRequestFinish");
 		self::dump("[bmc] player_id:", $player_id);
@@ -4427,12 +5370,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// If there aren't enough cards, don't allow it
 		$countDeck = self::getGameStateValue( 'countDeck' );
 		$countDiscardPile = self::getGameStateValue( 'countDiscardPile' );
-
-//		self::dump("[bmc] countDeckNEWWAY:", $countDeck );
-//		self::dump("[bmc] countDiscardPileNEWWAY:", $countDiscardPile );
-
-
-
 
 		$checkIfBuyingAllowed = $this->getGameStateValue( 'isBuyingAllowed' );
 		self::dump("[bmc] CHECKBUYINGALLOWED", $checkIfBuyingAllowed ); // 0 == false; 1 == true
@@ -4448,22 +5385,23 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 	
 		// Check if it's the player's turn, so no need to buy (TODO: Or buy it for free???)
 		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
-		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id);
+		self::dump("[bmc] activeTurnPlayer_id:(buyRequestFinish)", $activeTurnPlayer_id);
 		
 		$currentPlayerId = self::getCurrentPlayerId();
 		self::dump("[bmc] currentPlayerId:", $currentPlayerId);
 		
 		$nextPlayer = $this->getPlayerAfter( $currentPlayerId ); 
-		self::dump("[bmc] nextPlayer:", $nextPlayer);
+		self::dump("[bmc] nextPlayer1:", $nextPlayer);
 
-		if ( $player_id == $nextPlayer ) {
+		// if ( $player_id == $nextPlayer ) {
+		if ( $player_id == $activeTurnPlayer_id ) {
 			self::dump("[bmc] It's your turn so no need to buy:",  $player_id);
 			
 			self::trace("[bmc] Sending notif for itsYourTurn");
 			self::notifyPlayer(
 				$player_id,
 				'itsYourTurn',
-				self::_("It's your turn"),
+				clienttranslate("It's your turn. You don't need to buy it."),
 				array()
 			);
 		
@@ -4474,7 +5412,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 			$numberOfBuys =  self::getGameStateValue( 'numberOfBuys' );
 
-			if ( $numberOfBuys != 1 ) { // 0 == 3; 1 == Infinite buys
+			if ( $numberOfBuys != 1 ) { // 0 == 3 buys allowed; 1 == Infinite buys
 				$sql = "SELECT player_id, buy_count FROM player ";
 				$buy_count = self::getCollectionFromDB( $sql, true );
 
@@ -4486,6 +5424,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				}
 			} // If it > 0 then keep processing the buy
 
+			// 9/17/2023 Up to here looks good
+			
 			self::setPlayerBuying( $player_id, 2 ); // (0==unknown, 1==Not buying 2==Buying)
 			// self::setPlayerBuyingGS( $player_id, 2 ); // (0==unknown, 1==Not buying 2==Buying)
 
@@ -4496,25 +5436,40 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			
 			if ( $currentCard != null ) {
 				self::dump( "[bmc] cardToBeBought[id]:",  $currentCard['id'] );
+
+				// if ( $currentCard[ 'type' ] == 5 ) {
+					// $value_displayed = self::_(' a joker');
+					// $color_displayed = '!';
+				// } else {
+					// $value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
+					// $color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
+				// }
+
 				if ( $currentCard[ 'type' ] == 5 ) {
-					$value_displayed = self::_(' a joker');
-					$color_displayed = '!';
+					$value_displayed = 'Joker';
+					$color_displayed = '';
+					$connector = '';
 				} else {
-					$value_displayed = self::_('the ') . self::_($this->values_label[ $currentCard[ 'type_arg' ]]) . self::_(' of ');
-					$color_displayed = self::_($this->colors[ $currentCard[ 'type' ]][ 'name' ] . 's.');
+					$value_displayed = $this->values_label[ $currentCard[ 'type_arg' ]];
+					$color_displayed = $this->colors[ $currentCard[ 'type' ]][ 'name' ];
+					$connector = ' of ';
 				}
-				self::notifyAllPlayers(
-					'playerWantsToBuy',
-					self::_('${player_name} wants to buy ${value_displayed}${color_displayed}'),
+				
+				$player_name = $players[ $player_id ][ 'player_name' ];
+						
+				self::notifyAllPlayers( 'playerWantsToBuy',
+					clienttranslate( '${player_name} Wants to Buy: ${value_displayed} ${connector} ${color_displayed}'),
 					array(
+						'i18n' => array( 'color_displayed', 'value_displayed', 'connector' ), 
 						'player_id' => $player_id,
 						'activeTurnPlayer_id' => $activeTurnPlayer_id,
 						'player_name' => $players[ $player_id ][ 'player_name' ],
 						'cardToBeBought' => $currentCard,
 						'value_displayed' => $value_displayed,
-						'color_displayed' => $color_displayed
+						'color_displayed' => $color_displayed,
+						'connector' => $connector
 					)
-				);
+				);				
 			} else {
 				self::trace("[bmc] Yikes! No card was found to buy!");
 			}
@@ -4524,43 +5479,399 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 ////
-	function liverpool( $player_id ) {
-		self::trace("[bmc] ENTER liverpool");
-		// Check if there really is a liverpool or not
-		// If there is, then register the first player
-		// Store the current player
-		// Go to a state where that card can be played by the player doing liverpool
-		// After it's played, let that player discard
-		// Go back to whoever's turn it was before the liverpool
+	function liverpoolButton( $player_id ) { // From JS
+		self::trace("[bmc] ENTER liverpoolButton");
+		self::dump("[bmc] player_id:", $player_id);
 		
-		// Check the real state
-		$state = $this->gamestate->state();
-		//self::dump("[bmc] state:", $state);
+		// Get current game state (might be one of these:
+		//   playerTurnDraw
+		
+		$bmcGameState = $this->gamestate->state();
 
-		if ( $state != 'playerTurnDraw' ){
+		self::dump("[bmc] game state is :", $bmcGameState[ 'name' ]);
+		
+		// Declaring LP is possible only before the draw
+		
+		if ( $bmcGameState [ 'name' ] == 'playerTurnDraw' ) {
+			// Cannot declare LIVERPOOL on yourself
 			
-			// Check for liverpoolexist
+			$discardingPlayer = self::getGameStateValue( 'discardingPlayer');
 			
+			self::dump("[bmc] discardingPlayer :", $discardingPlayer );
+
+			$currentPlayerId = self::getCurrentPlayerId();
+			$activePlayerId = self::getActivePlayerId(); 
+			self::dump("[bmc] playerFindingLP :", $discardingPlayer );
+			self::dump("[bmc] currentPlayerId :", $currentPlayerId );
+			self::dump("[bmc] activePlayerId :", $activePlayerId );
+
+
+			if (( $player_id == $discardingPlayer )) {
+				//( $currentPlayerId == $activePlayerId )){
+					
+				throw new BgaUserException( self::_("You cannot declare Liverpool on yourself.") );
+			}
+			
+			// Maybe add these 2 lines here:
+			// $this->gamestate->checkPossibleAction('actionUnpass');
+			// $this->gamestate->setPlayersMultiactive(array ($this->getCurrentPlayerId() ), 'error', false);
+
+			// Game Option: Liverpool button plays as a penalty to the caller or discarder
+			
+			$LiverpoolConsequence =  self::getGameStateValue( 'LiverpoolConsequence' );
+			
+			if ( $LiverpoolConsequence == 1 ){ // 0=bonus; 1=penalty
+				self::trace("[bmc] Found liverpool ( penalty mode )");
+				
+				$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' );
+				$liverpoolExists  = self::getGameStateValue( 'liverpoolExists' );
+				$playerFindingLP = self::getCurrentPlayerId();
+				$playerInterrupted = self::getActivePlayerId(); 
+				
+				self::dump("[bmc] liverpoolFoundYN:", $liverpoolFoundYN);
+				self::dump("[bmc] liverpoolExists:", $liverpoolExists);
+				self::dump("[bmc] playerFindingLP:", $playerFindingLP);
+
+				self::setGameStateValue( 'playerFindingLP',   $playerFindingLP );
+				self::setGameStateValue( 'playerInterrupted', $playerInterrupted );
+
+				$players = self::loadPlayersBasicInfos();
+
+				self::trace("[bmc] Found liverpool ( penalty mode ) just before if");
+				
+				if ( $liverpoolExists == 0 ) { // There is no Liverpool condition; Declarer gets penalty
+					self::trace("[bmc] Declarer gets a penalty");
+						
+					self::notifyAllPlayers( 'liverpoolDeclared',
+						clienttranslate( '${player_name} declared Liverpool on ${discarding_name} but no Liverpool exists. ${player_name} draws a card.'),
+						array(
+							'player_id' => $player_id,
+							'discarding_name' => $players[ $discardingPlayer ][ 'player_name' ],
+							'player_name'     => $players[ $player_id ][ 'player_name' ]
+						)
+					);
+				} else { // The one who discarded it gets a card, and the discarded card
+					self::trace("[bmc] Discarder gets a penalty");
+					
+					self::notifyAllPlayers( 'liverpoolDeclared',
+						clienttranslate( '${player_name} declared Liverpool on ${discarding_name} and so ${discarding_name} pulls it back and draws a card.'),
+						array(
+							'player_id' => $player_id,
+							'discarding_name' => $players[ $discardingPlayer ][ 'player_name' ],
+							'player_name'     => $players[ $player_id ][ 'player_name' ]
+						)
+					);
+				}
+				$dpCard = $this->cards->getCardsInLocation( 'discardPile' );
+				
+				if ( isset( reset( $dpCard )[ 'id' ])) {
+					self::dump("[bmc] (5376)dpCard:", reset( $dpCard )[ 'id' ]);
+
+					$currentCard = $this->cards->getCard( reset( $dpCard )[ 'id' ] );
+					self::dump("[bmc] (5379)currentCardInDP:", $currentCard );
+
+					$this->gamestate->nextState( 'liverpoolPenalty' );
+				} else {
+					self::trace("[bmc] liverpool Error. No discard?");
+				}
+			} else { // Game Option: Liverpool button plays as a BONUS to the caller
+				self::trace("[bmc] Found liverpool(bonus)");
+
+				$playerGoneDown = self::getPlayerGoneDown(); // It's an array, one for each player.
+
+				if ( $playerGoneDown[ $player_id ] != 1 ) { // 0=not gone down; 1=gone down
+					throw new BgaUserException( self::_("You cannot declare Liverpool, you have not gone down.") );
+					
+				} else {
+
+					// Check if there really is a liverpool or not
+					// If there is, then register the first player
+					// Block out other players
+					// Store the current player
+					// Draw the card to the player
+					// Go to a state where that card can be played by the player finding liverpool
+					// After it's played, let that player discard
+					// After discard, go back to whoever's turn it was before the liverpool
+					
+					$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' );
+					$liverpoolExists  = self::getGameStateValue( 'liverpoolExists' );
+					$playerInterrupted = self::getActivePlayerId(); 
+					$playerFindingLP = self::getCurrentPlayerId();
+					
+					self::dump("[bmc] liverpoolFoundYN:", $liverpoolFoundYN);
+					self::dump("[bmc] liverpoolExists:", $liverpoolExists);
+					self::dump("[bmc] playerInterrupted:", $playerInterrupted);
+					self::dump("[bmc] playerFindingLP:", $playerFindingLP);
+
+					self::setGameStateValue( 'playerFindingLP',   $playerFindingLP );
+					self::setGameStateValue( 'playerInterrupted', $playerInterrupted );
+
+					$players = self::loadPlayersBasicInfos();
+
+					// Check for liverpoolexist
+					if ( $liverpoolExists == 1 ) { // 0 = Not exist; 1 = Exist
+						self::trace("[bmc] Liverpool Exists");
+
+						// And it was found by this Player, so make them active player
+						self::setGameStateValue( 'activeTurnPlayer_id', $playerFindingLP );
+
+						if ( $liverpoolFoundYN == 0 ){
+							// To avoid race condition check it exists and not yet found
+							// Function drawCard sets liverpoolExists == 0 quickly to avoid race condition
+
+							self::setGameStateValue( 'liverpoolFoundYN', 1 ); // 0 = false; 1 = true
+						}
+
+						self::notifyAllPlayers( 'liverpoolDeclared',
+							clienttranslate( '${player_name} found Liverpool! They drew the discarded card and can play it.'),
+							array(
+								'player_id' => $player_id,
+								'player_name' => $players[ $player_id ][ 'player_name' ]
+							)
+						);
+
+						$dpCard = $this->cards->getCardsInLocation( 'discardPile' );
+						
+						if ( isset( reset( $dpCard )[ 'id' ])) {
+							self::dump("[bmc] (5527)dpCard:", reset( $dpCard )[ 'id' ]);
+
+							$currentCard = $this->cards->getCard( reset( $dpCard )[ 'id' ] );
+
+							self::dump("[bmc] (5531)currentCardInDP:", $currentCard );
+
+							// Cannot do drawcard here because it's not this players turn. Do it after active player draws.
+			//				$this->drawCard( $currentCard, 'discardPile', $playerFindingLP );
+
+							// When drawCard finishes it goes to playCard.
+			//				After that, check if was liverpool and change players accordingly.
+
+			//				self::trace("[bmc] After LP playCard:" );
+
+							$this->gamestate->nextState( 'liverpoolBonus' );
+
+						} else {
+							self::trace("[bmc] liverpool Error. No discard?");
+							// Not supposed to happen, there's nothing in the discard!
+						}
+					} else {
+						$LiverpoolConsequence =  self::getGameStateValue( 'LiverpoolConsequence' );
+						
+						//if ( $LiverpoolConsequence == 1 ){ // 0=bonus; 1=penalty
+						if ( 0 == 1 ){ // Disable this option for now
+							$this->gamestate->nextState( 'liverpoolPenalty' );
+						} else {
+							throw new BgaUserException( self::_("No Liverpool exists (BONUS mode, so no penalty).") );
+						self::trace("[bmc] No liverpool exists, do nothing");
+						// Do nothing. They pushed the button but there is no liverpool condition
+						// I could add some penalty here...
+						}						
+					}
+				}
+			}
+		} else {
+			throw new BgaUserException( self::_("The time to declare Liverpool has passed.") );
+		}
+		self::trace("[bmc] EXIT liverpoolButton");
+	}
+////
+////
+////
+	function stLiverpoolBonus() {
+		self::trace("[bmc] ENTER stLiverpoolBonus");
+		
+		// Set the next player to be the one who clicked first
+		// Cannot draw the card here because it's a game state
+		
+		$playerFindingLP = self::getGameStateValue( 'playerFindingLP' );
+
+		$this->gamestate->changeActivePlayer( $playerFindingLP );
+
+		$this->gamestate->nextState( ); // Go to next state to draw the discarded card
+		
+
+		self::trace("[bmc] EXIT stLiverpoolBonus");
+	}
+////
+////
+////
+	function stLiverpoolPenalty() {
+//		self::trace("[bmc] ENTER stLiverpoolPenalty");
+		self::trace("'<span style='color:red'><b>[bmc] ENTER stLiverpoolPenalty</b></span>'");
+		
+		// Set the next player to be the one who clicked first
+		// Cannot draw the card here because it's a game state
+		
+		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
+
+		// Don't change player order, just give the discarder cards (in penaltyReturn)
+		// Go back 1 so nextPlayer goes to the right player
+
+		$discarder = $this->getPlayerBefore( $activeTurnPlayer_id );
+		self::dump("[bmc] discarder:", $discarder);
+
+		if ( self::getGameStateValue( 'liverpoolExists' ) == 1 ){ // If LP exists
+			$this->setGameStateValue( 'activeTurnPlayer_id', $discarder  );
+//			$this->gamestate->changeActivePlayer( $discarder );
+
+			$this->gamestate->nextState( "penalizeDiscarder" ); // Go to next state to draw the discarded card
+		} else { // else LP does not exist
+			$playerFindingLP = $this->getGameStateValue( 'playerFindingLP' );
+			self::dump("[bmc] playerFindingLP (wrongly):", $playerFindingLP);
+			
+			$this->setGameStateValue( 'activeTurnPlayer_id', $playerFindingLP  );
+//			$this->gamestate->changeActivePlayer( $playerFindingLP );
+			$this->gamestate->nextState( "penalizeCaller" ); // Go to next state to draw the discarded card
 		}
 
+//		self::trace("[bmc] EXIT stLiverpoolPenalty");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT stLiverpoolPenalty</b></span>'");
+	}
+////
+////
+////
+	function stLiverpoolDraw() {
+		self::trace("[bmc] ENTER stLiverpoolDraw");
+		
+		// Draw the discarded card to the player finding liverpool
+		// In this state we can draw it (but cannot change the player; did that in the previous state)
+		$playerFindingLP = self::getGameStateValue( 'playerFindingLP' );
 
+		$currentCard = $this->cards->getCardOnTop( 'discardPile' );
+		
+		$state = $this->gamestate->state();
+		self::dump("[bmc] state(stLiverpoolDraw):", $state);
 
+		$this->drawCard( $currentCard, 'discardPile', $playerFindingLP );
+	
+		self::trace("[bmc] drawCard within stLiverpoolDraw is finished.");
 
+		$this->gamestate->nextState( 'playCard' ); // Go to playerTurnPlay because a card was drawn
+		
+		// The discard function must check if we are in a liverpool play, then
+		// go back to the interrupted player
 
+		self::trace("[bmc] EXIT stLiverpoolDraw");
+	}
+////
+////
+////
+	function stLiverpoolDrawPenaltyDiscarder() {
+		self::trace("[bmc] ENTER stLiverpoolDrawPenaltyDiscarder");
+		
+		// Draw the discarded card to the player discarding the playable card
+		//   And give them a penalty card
+		// In this state we can draw it (but cannot change the player; did that in the previous state)
+		
+		$penalizedPlayer = self::getGameStateValue( 'activeTurnPlayer_id' );
+		self::dump("[bmc] penalizedPlayer:", $penalizedPlayer);
+//		self::dump("[bmc] penalizedPlayer:", $this->getPlayerBefore( self::getGameStateValue( 'activeTurnPlayer_id' )));
 
+		$currentDiscard = $this->cards->getCardOnTop( 'discardPile' );
+		$currentDeck    = $this->cards->getCardOnTop( 'deck' );
+				
+		$state = $this->gamestate->state();
+		self::dump("[bmc] state(stLiverpoolDrawPenaltyDiscarder):", $state);
 
+		$this->drawCard( $currentDiscard, 'discardPile', $penalizedPlayer );
+		$this->drawCard( $currentDeck, 'deck', $penalizedPlayer );
+	
+		$this->gamestate->nextState();
 
+		self::trace("[bmc] drawCard within stLiverpoolDrawPenaltyDiscarder is finished.");
+		self::trace("[bmc] EXIT stLiverpoolDrawPenaltyDiscarder");
+	}
+////
+////
+////
 
+//todo: The player order got messed up when someone calls liverpool but it doesn't exist.
+	function stLiverpoolDrawPenaltyCaller() {
+		self::trace("[bmc] ENTER stLiverpoolDrawPenaltyCaller");
+		self::trace("'<span style='color:red'><b>[bmc] ENTER stLiverpoolDrawPenaltyCaller</b></span>'");
+		
+		// Draw the discarded card to the player who called Liverpool when none existed
+		// In this state we can draw it (but cannot change the player; did that in the previous state)
+		$penalizedPlayer = self::getGameStateValue( 'playerFindingLP' );
 
+		$currentCard = $this->cards->getCardOnTop( 'deck' );
+		
+		$state = $this->gamestate->state();
 
+		self::dump("[bmc] state(stLiverpoolDrawPenaltyCaller):", $state);
 
+		$this->drawCard( $currentCard, 'deck', $penalizedPlayer );
+	
+		$this->gamestate->nextState();
 
+		self::trace("[bmc] drawCard within stLiverpoolDrawPenaltyCaller is finished.");
+//		self::trace("[bmc] EXIT stLiverpoolDrawPenaltyCaller");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT stLiverpoolDrawPenaltyCaller</b></span>'");
+	}
+////
+////
+////
+	function stLiverpoolReturn() {
+		self::trace("[bmc] ENTER stLiverpoolReturn");
+		
+		// Change the player back
+		$playerInterrupted = self::getGameStateValue( 'playerInterrupted' );
+		self::dump("[bmc] playerInterrupted:", $playerInterrupted);
 
+		// Set to player before because stNextPlayer increments it
+		
+		$this->gamestate->changeActivePlayer( $this->getPlayerBefore( $playerInterrupted ));
+		// This next is not right. It should be the one who just discarded, not the one before the interrupted one
+		
+		$playerFindingLP = self::getGameStateValue( 'playerFindingLP' );
+		
+		// self::setGameStateValue( 'activeTurnPlayer_id', $this->getPlayerBefore( $playerInterrupted ));
+		self::setGameStateValue( 'activeTurnPlayer_id', $playerFindingLP );
 
+		$state = $this->gamestate->state();
+		self::dump("[bmc] state(stLiverpoolReturn):", $state);
 
+		self::trace("[bmc] drawCard and play within stLiverpoolDraw is finished.");
 
+		$this->gamestate->nextState(); // Go back to interrupted player
+//		$this->gamestate->nextState('playerTurnDraw' ); // Go back to interrupted player
 
-		self::trace("[bmc] EXIT liverpool");
+		self::trace("[bmc] EXIT stLiverpoolReturn");
+	}
+////
+////
+////
+	function stLiverpoolReturnPenalty() {
+//		self::trace("[bmc] ENTER stLiverpoolReturnPenalty");
+		self::trace("'<span style='color:red'><b>[bmc] EXIT stLiverpoolReturnPenalty</b></span>'");
+
+//	Something in here makes the active player be the discarder. It should go to the next player.
+
+// Just print some stuff for penalty mode, since cards were draw elsewhere
+
+//		$nextPlayer = $this->getPlayerAfter( self::getGameStateValue( 'activeTurnPlayer_id' ));
+//		$nextPlayer = self::getGameStateValue( 'activeTurnPlayer_id' );
+//		self::dump("[bmc] nextPlayer2:", $nextPlayer );
+		
+		$activePlayerId = $this->getActivePlayerId();
+		self::dump("[bmc] nextPlayer2:", $activePlayerId );
+		
+		// Set to player before because stNextPlayer increments it
+		
+		$playerBefore = $this->getPlayerBefore( $activePlayerId );
+		self::dump("[bmc] nextPlayer2.1:", $playerBefore );
+
+		$this->gamestate->changeActivePlayer( $playerBefore );
+		self::setGameStateValue( 'activeTurnPlayer_id', $playerBefore );
+
+		$state = $this->gamestate->state();
+		self::dump("[bmc] state(stLiverpoolReturnPenalty):", $state);
+
+		self::trace("[bmc] drawCard and play within stLiverpoolDraw is finished.");
+
+		$this->gamestate->nextState(); // Go to next player's turn
+
+//		self::trace("[bmc] EXIT stLiverpoolReturnPenalty");
+		self::trace("'<span style='color:green'><b>[bmc] EXIT stLiverpoolReturnPenalty</b></span>'");
 	}
 ////
 ////
@@ -4575,7 +5886,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		self::notifyPlayer(
 			$player_id,
 			'wishListDisabled',
-			self::_("Your wish list is now disabled"),
+			clienttranslate("Your wish list is now disabled"),
 			array(
 				'player_id' => $player_id,
 			)
@@ -4603,69 +5914,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
 ////
-	function buyRequest_orig( $player_id ) {
-		self::trace("[bmc] ENTER buyRequest_orig");
-		//self::checkAction("buyRequest"); // Cannot do checkAction or the server blocks with "It's not your turn"
-
-		$player_id = $this->getCurrentPlayerId(); // CURRENT!!! not active
-		self::dump("[bmc] player_id:", $player_id);
-		
-		// Check if it's the player's turn, so no need to buy (TODO: Or buy it for free???)
-		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
-		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id);
-		
-		if ( $player_id == $activeTurnPlayer_id ) {
-			self::trace("[bmc] Sending notif for itsYourTurn");
-			self::notifyPlayer(
-				$player_id,
-				'itsYourTurn',
-				self::_("It's your turn"),
-				array()
-			);
-		}
-
-		// If there aren't enough cards, don't allow it
-		$countDeck = self::getGameStateValue( 'countDeck' );
-		$countDiscardPile = self::getGameStateValue( 'countDiscardPile' );
-
-		self::dump("[bmc] countDeckNEWWAY:", $countDeck );
-		self::dump("[bmc] countDiscardPileNEWWAY:", $countDiscardPile );
-
-		if (( $countDeck + $countDiscardPile ) < 2 ) {
-			throw new BgaUserException( self::_('There are not enough down cards for you to buy.') );
-		}
-
-		// Check who was first, if that game mode was chosen
-		// $buyMethod = self::getGameStateValue( 'buyMethod' );
-		// self::dump("[bmc] buyMethod:", $buyMethod);
- 
-		// if ( $buyMethod == '1' ) { // 1==Fastest player. 2==Seat order.
-			// foreach( $buyers as $buyer ) {
-				// if ( $buyer == 2 ) {
-					// throw new BgaUserException( self::_('Oops! Someone else beat you to it!') );
-				// }
-			// }
-		// } // else $buyMethod == Seat order, so just keep track and resolve later
-
-		// Check that this player can still buy this hand
-		$playersBuyCount = self::getPlayersBuyCount();
-
-		self::dump("[bmc] 4610:", $playersBuyCount);
-		
-		// $playersBuyCount = $playersBuyCountGS;
-
-		if ( $playersBuyCount[ $player_id ] < 1 ) {
-			throw new BgaUserException( self::_("You cannot buy. You already bought 3 times this hand.") );
-		}
-
-		$this->notifyPlayerWantsToBuy( $player_id );
-		self::trace("[bmc] EXIT (almost) buyRequest-NEW");
-
-		self::trace("[bmc] EXIT buyRequest-NEW");
-	}
-////
-////
-////
 	function findBuyer( $buyingPlayers, $fromPlayer ) {
 		self::trace("[bmc] ENTER findBuyer");
 		
@@ -4685,9 +5933,9 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 
-		self::dump( "[bmc] activeTurnPlayer_id: ", $activeTurnPlayer_id );
-		self::dump( "[bmc] fromPlayer: ", $fromPlayer );
-		self::dump( "[bmc] buyingPlayers: ", $buyingPlayers );
+		// self::dump( "[bmc] activeTurnPlayer_id: ", $activeTurnPlayer_id );
+		// self::dump( "[bmc] fromPlayer: ", $fromPlayer );
+		// self::dump( "[bmc] buyingPlayers: ", $buyingPlayers );
 
 		// If it has wrapped to us, end the search
 		if ( $fromPlayer == $activeTurnPlayer_id ) {
@@ -4714,8 +5962,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$players = self::loadPlayersBasicInfos();
 		foreach ( $players as $player_id => $player) {
 			// Every discard clear the buyers (0==unknown, 1==Not buying 2==Buying)
-			self::setPlayerBuying(   $player_id, 0 );
-			// self::setPlayerBuyingGS( $player_id, 0 );
+			self::setPlayerBuying( $player_id, 0 );
 		}
 		self::trace("[bmc] EXIT clearBuyers.");
 	}
@@ -4734,26 +5981,26 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		$dpCard = $this->cards->getCardOnTop( 'discardPile' );
 
-		self::dump("[bmc] waitForAll dpCard:", $dpCard);
+//		self::dump("[bmc] waitForAll dpCard:", $dpCard);
 
 		$players = self::loadPlayersBasicInfos();
 		
-		$liverpoolExists = false;
+		$localLPlExists = false;
 		
 		foreach ( $players as $player_id => $player) {
 			// Check Area A
 
 			$areaCards = $this->cards->getCardsInLocation( 'playerDown_A' , $player_id );
-			self::dump("[bmc] waitForAll areaCards:", $areaCards);
+//			self::dump("[bmc] waitForAll areaCards:", $areaCards);
 			
 			if ( count( $areaCards ) > 0 ){
 				$areaCards[ $dpCard['id'] ] = $dpCard; // Keep the index of the new potential card
-				self::dump("[bmc] waitForAll areaCards:", $areaCards);
+//				self::dump("[bmc] waitForAll areaCards:", $areaCards);
 
 				if ( $this->checkSet( $areaCards ) == true ) {
-					$liverpoolExists = true;
+					$localLPlExists = true;
 				} else if ( $this->checkRun( $areaCards, true ) == true ) {	// Check for run silently (no BGA error)
-					$liverpoolExists = true;
+					$localLPlExists = true;
 				}
 			}
 
@@ -4763,12 +6010,12 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			if ( count( $areaCards ) > 0 ){
 
 				$areaCards[ $dpCard['id'] ] = $dpCard; // Keep the index of the new potential card
-				self::dump("[bmc] waitForAll areaCards:", $areaCards);
+//				self::dump("[bmc] waitForAll areaCards:", $areaCards);
 
 				if ( $this->checkSet( $areaCards ) == true ) {
-					$liverpoolExists = true;
+					$localLPlExists = true;
 				} else if ( $this->checkRun( $areaCards, true ) == true ) {	// Check for run silently (no BGA error)
-					$liverpoolExists = true;
+					$localLPlExists = true;
 				}
 			}
 			
@@ -4778,68 +6025,105 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 			if ( count( $areaCards ) > 0 ){
 				$areaCards[ $dpCard['id'] ] = $dpCard; // Keep the index of the new potential card
-				self::dump("[bmc] waitForAll areaCards:", $areaCards);
+//				self::dump("[bmc] waitForAll areaCards:", $areaCards);
 
 				if ( $this->checkSet( $areaCards ) == true ) {
-					$liverpoolExists = true;
+					$localLPlExists = true;
 				} else if ( $this->checkRun( $areaCards, true ) == true ) {	// Check for run silently (no BGA error)
-					$liverpoolExists = true;
+					$localLPlExists = true;
 				}
 			}
 		}
-
-//TODO: STORE LIVERPOOL IN DATABASE FOR LATER.
-
-		// If made it this far then nothing matched, the discard cannot be playhed anywhere (no Liverpool)
-		return $liverpoolExists;
 		
-		self::trace( "[bmc] EXIT checkLiverpool" );
+		// If made it this far then nothing matched, the discard cannot be playhed anywhere (no Liverpool)
+		self::dump( "[bmc] EXIT checkLiverpool", $localLPlExists );
+		return $localLPlExists;
+
 	}
 ////
 ////
 ////
     function stWaitForAll() {
-		self::trace( "[bmc] ENTER stWaitForAll" );
-		
-		$buyer_id = self::getGameStateValue( 'theBuyer' );
+//		self::trace( "[bmc] ENTER stWaitForAll" );
+		self::trace("'<span style='color:red'><b>[bmc] ENTER stWaitForAll</b></span>'");
 
-		self::dump("[bmc] waitForAll buyer_id:", $buyer_id);
+		// If a Liverpool exists and is being processed then set player back to the one interrupted
+		
+		$liverpoolFoundYN = self::getGameStateValue( 'liverpoolFoundYN' ); // 0 = false; 1 = true
+		self::dump("[bmc] liverpoolFoundYN:", $liverpoolFoundYN );
+
+		if ( $liverpoolFoundYN == 1 ) {
+			self::trace( "[bmc] stWaitForAll and $ liverpoolFoundYN == 1" );
+
+			// Clear Liverpool found condition
+			self::setGameStateValue( 'liverpoolFoundYN', 0 ); // 0=false; 1=true
+		
+			$playerInterrupted = self::getGameStateValue( 'playerInterrupted' );
+
+			// Go back to the player who was interrupted
+			// It will go back to their DRAW CARD stage which is good. liverpool
+			//   cannot be declared after the player draws any card.
+			
+			$this->gamestate->changeActivePlayer( $playerInterrupted );
+
+			$this->gamestate->nextState( 'LPReturn' );
+
+		} else { //Exit by changing next player in order
+			if( self::checkLiverpool() == true ){
+				// Nofity all players there's a liverpool on the board
+				
+				self::setGameStateValue( 'liverpoolExists', 1 ); // 0=not exist; 1=exist
+				self::trace( "[bmc] LiverpoolExists=True, waiting to see if someone finds it" );
+			}
+				
+			$this->gamestate->nextState( 'fullyResolved' );
+		}
+		// $buyer_id = self::getGameStateValue( 'theBuyer' );
+
+		// self::dump("[bmc] waitForAll buyer_id:", $buyer_id);
 
 		if( self::checkLiverpool() == true ){
 			// Nofity all players there's a liverpool on the board
-			self::notifyAllPlayers(
-				'liverpoolExists',
-				'Liverpool!', // Put it in the log
-				array (
-				)
-			);
 			
-		} // or if not then just continue
-				
-		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
-		$nextTurnPlayer = $this->getPlayerAfter( $activeTurnPlayer_id );
+			self::setGameStateValue( 'liverpoolExists', 1 ); // 0=not exist; 1=exist
+			self::trace( "[bmc] Missed liverpoolExists: True, might be found" );
 			
-		// Adding clearPlayersBuying to try to fix deadlock issue.
-		self::clearPlayersBuying();
+			// Players requested to hide the notification of Liverpool! in the log.
+			// Uncomment this notifyAllPlayers command if you want that.
+			//
+			// self::notifyAllPlayers(
+				// 'liverpoolExists',
+				// 'Liverpool!', // Put it in the log
+				// array ()
+			// );
+		}
 
-		$this->gamestate->nextState( 'fullyResolved' );
-		self::trace( "[bmc] EXIT stWaitForAll" );
-	}
+		// self::setGameStateValue( 'liverpoolExists', 0 ); // 0=not exist; 1=exists
+		// self::trace( "[bmc] Stored liverpoolExists=0" );
+
+		self::processWishlist(); // Process the wishlist requests
+
+//		self::trace( "[bmc] EXIT  stWaitForAll" );
+		self::trace("'<span style='color:green'><b>[bmc] EXIT  stWaitForAll</b></span>'");
+		}
 ////
 ////
 ////
     function stNextPlayer() {
-		self::trace("[bmc] ENTER NextPlayer");
+		self::trace("[bmc] ENTER stNextPlayer");
 		
 		// Notify clients all buyers have resolved, so allow buying again
 		$activeTurnPlayer_id = self::getGameStateValue( 'activeTurnPlayer_id' );
 		$nextTurnPlayer = $this->getPlayerAfter( $activeTurnPlayer_id );
+		
+		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
+		self::dump("[bmc] nextTurnPlayer:", $nextTurnPlayer );
+
 		$buyerCount = self::getPlayersBuyCount();
 		// $buyerCount = self::getPlayersBuyCountGS();
 		
-		self::notifyAllPlayers(
-			'updateBuyers',
-			'', // Silent in the log, just update the buyers
+		self::notifyAllPlayers( 'updateBuyers',
+			'', // Silent in the log, just update the buyers' quantities
 			array (
 				'player_id' => $activeTurnPlayer_id,
 				'nextTurnPlayer' => $nextTurnPlayer,
@@ -4854,12 +6138,12 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$countCCBL = count($this->cards->countCardsByLocationArgs( 'hand' ));
 		$playersNumber = self::getPlayersNumber();
 
-		$countCCBLDeck = count($this->cards->countCardsByLocationArgs( 'deck' ));
-		$countCCBLDiscardPile = count($this->cards->countCardsByLocationArgs( 'discardPile' ));
+		// $countCCBLDeck = count($this->cards->countCardsByLocationArgs( 'deck' ));
+		//$countCCBLDiscardPile = count($this->cards->countCardsByLocationArgs( 'discardPile' ));
 		
-		//self::dump("[bmc] CCBL (hands):", $countCardsByLocation );
-		//self::dump("[bmc] CCCBL:", $countCCBL );
-		//self::dump("[bmc] PN:", $playersNumber );
+		self::dump("[bmc] CCBL (hands):", $countCardsByLocation );
+		self::dump("[bmc] CCCBL:", $countCCBL );
+		self::dump("[bmc] PN:", $playersNumber );
 		//self::dump("[bmc] CCBLDeck:", $countCCBLDeck );
 		//self::dump("[bmc] CCBLDiscardPile:", $countCCBLDiscardPile );
 
@@ -4885,45 +6169,54 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		$shuffleCount = self::getGameStateValue( 'shuffleCount' ); // Reset the shuffle count every hand
 		
-		// $outReason = 'SomeoneWentOut'; // 0
+		// $outReason = 'SomeoneWentOut';   // 0
 		// $outReason = 'DeckOverShuffled'; // 1
-		// $outReason = 'AllCardsPlayed'; // 2
+		// $outReason = 'AllCardsPlayed';   // 2
 
 		if ( $countCCBL != $playersNumber ) {  		// Someone has gone out
+			self::dump("[bmc] stNextPlayer SomeoneWentOut(countCCBL):", $countCCBL);
 			//$outReason = "SomeoneWentOut" ;
-			self::setGameStateValue( "outReason" , 0 );
+			self::setGameStateValue( "outReason" , 0 );  // Someone went out
 			$this->gamestate->nextState( "endHand" );
 		} else if ( $shuffleCount > 5 ) {	// The deck has been shuffled too much
+			self::dump("[bmc] stNextPlayer shuffleCount:", $shuffleCount);
 			//$outReason = "DeckOverShuffled" ;
-			self::setGameStateValue( "outReason" , 1 );
+			self::setGameStateValue( "outReason" , 1 ); // Shuffled more than 5 times
 			$this->gamestate->nextState( "endHand" );
-		} else if ( $this->checkPlayable() != true ) {	    // All playable cards have been played
+		} else if ( $this->checkPlayable() != true ) {	// All playable cards have been played
+			self::dump("[bmc] stNextPlayer checkPlayable not true:", 0);
 			//$outReason = "AllCardsPlayed";			
-			self:setGameStateValue( "outReason", 2 );
+			self:setGameStateValue( "outReason", 2 );   // All playable cards have been played
 			$this->gamestate->nextState( "endHand" );
 		} else {
+
+			// Clear all the buyers
+			// self::trace( "[bmc] stNextPlayer clearing buyers.");
+			$this->clearBuyers();
+
 			// Next player can draw and play etc...
 
 			// Show State
 			$state = $this->gamestate->state();
-			//self::dump("[bmc] stNextPlayer state:", $state);
+			self::dump("[bmc] stNextPlayer state:", $state);
 
 			$activePlayerId = $this->getActivePlayerId();
-			self::dump( "[bmc] activePlayerId (before change):", $activePlayerId );
+			self::dump( "[bmc] activePlayerId (before change) (stNextPlayer):", $activePlayerId );
 
 			$discardingPlayer_id = $activePlayerId;
-
 			$previous_player_id = $this->getPlayerBefore( $activePlayerId );
 			$next_player_id = $this->getPlayerAfter( $activePlayerId );
 			
-			self::dump( "[bmc] previous_player_id:", $previous_player_id );
-			self::dump( "[bmc] next_player_id:", $next_player_id );
+			self::dump( "[bmc] previous_player_id (stNextPlayer):", $previous_player_id );
+			self::dump( "[bmc] next_player_id (stNextPlayer):", $next_player_id );
+			self::dump( "[bmc] discardingPlayer_id (stNextPlayer):", $discardingPlayer_id );
+			
 			
 			//$this->gamestate->changeActivePlayer( $next_player_id );
 			$this->activeNextPlayer();
 			
 			$activePlayerId = $this->getActivePlayerId();
-			self::dump( "[bmc] activePlayerId (after change):", $activePlayerId );
+			// self::dump( "[bmc] activePlayerId (after change):", $activePlayerId );
 			
 			// Give extra time to player
 			self::giveExtraTime( $activePlayerId );
@@ -4933,10 +6226,6 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			
 			self::setGameStateValue( "previous_player_id" , $previous_player_id );
 			self::setGameStateValue( 'activeTurnPlayer_id', $activePlayerId );
-
-			// Clear all the buyers
-			self::trace( "[bmc] stNextPlayer clearing buyers.");
-			$this->clearBuyers();
 		
 			//Set above: $discardingPlayer_id = $this->getPlayerBefore( $activePlayerId );
 
@@ -4947,68 +6236,73 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			// self::setPlayerBuyingGS( $activePlayerId, 1 ); // 1 = not buying, they can get it for free
 
 			// Just make sure it stuck!
-			$activePlayerId = $this->getActivePlayerId();
-			self::dump( "[bmc] activePlayerId (exiting nextPlayer inside if):", $activePlayerId );
+			// $activePlayerId = $this->getActivePlayerId();
+			// self::dump( "[bmc] activePlayerId (exiting nextPlayer inside if):", $activePlayerId );
 
 			// Show State
-			$state = $this->gamestate->state();
+			// $state = $this->gamestate->state();
 			//self::dump("[bmc] stNextPlayer state:", $state);
 
-			// Process the wish lists
-			// $wishLists = array(
-				// 0 => array(
-					// 'player_id' => 2333744,
-					// 'card_type' => '3', // Suit
-					// 'card_type_arg' => '1' // Value
-					// ),
-				// 1 => array(
-					// 'player_id' => 2333742,
-					// 'card_type' => '2', // Suit
-					// 'card_type_arg' => '2' // Value
-					// )
-				//}
-
-			$sql = "SELECT id id, player_id, card_type, card_type_arg FROM wishList ";
+			$this->gamestate->nextState( 'nextPlayer' );					
+		}
+	self::trace("[bmc] EXIT stNextPlayer");
+	}
+////
+////
+////
+	function processWishlist(){
+		self::trace( "[bmc] ENTER processWishlist" );
+		// First fully process out the wishlist requests before changing activeplayer
 		
-			$wishLists = self::getCollectionFromDb( $sql );
+		$sql = "SELECT id id, player_id, card_type, card_type_arg FROM wishList ";
 
-			//$dpCard = $this->cards->getCardsInLocation( 'discardPile' );
-			$dpCard = $this->cards->getCardOnTop( 'discardPile' );
-			self::dump("[bmc] 5432dpCard:",  $dpCard );
-			// self::dump("[bmc] 5428dpCard:",  $this->cards->getCard( $dpCard ));
+		$wishLists = self::getCollectionFromDb( $sql );
 
-			if ( isset( $dpCard[ 'id' ])) {
+		// $discardingPlayer_id = $this->getPlayerBefore( $this->getActivePlayerId());
+		// $next_player_id = $this->getPlayerBefore( $discardingPlayer_id );
+		$discardingPlayer_id = $this->getActivePlayerId();
+		$next_player_id = $discardingPlayer_id;
+		
+		
+		// discardingPlayer_id is not right here (12/3/2023):
+		
+		self::dump("[bmc] discardingPlayer_id (processWishlist):",  $discardingPlayer_id );
+		self::dump("[bmc] next_player_id (processWishlist):",  $next_player_id );
 
-				//self::dump("[bmc] dpCard:", $dpCard[ 'id' ]);
+		//$dpCard = $this->cards->getCardsInLocation( 'discardPile' );
+		$dpCard = $this->cards->getCardOnTop( 'discardPile' );
+		self::dump("[bmc] 5863 dpCard:",  $dpCard );
 
-				//$currentCard = $this->cards->getCard( $dpCard[ 'id' ] );
+		if ( isset( $dpCard[ 'id' ])) {
 
-				//self::dump("[bmc] currentCardInDP:", $currentCard);
+			//self::dump("[bmc] dpCard:", $dpCard[ 'id' ]);
+
+			//$currentCard = $this->cards->getCard( $dpCard[ 'id' ] );
+
+			//self::dump("[bmc] currentCardInDP:", $currentCard);
+			
+			$discardColor = $dpCard[ 'type' ];
+			$discardValue = $dpCard[ 'type_arg' ];
+			
+			foreach( $wishLists as $entry ) {
+				self::dump("[bmc] wishList entry:", $entry);
+				self::dump("[bmc] wishList SQL:", $entry['player_id']);
 				
-				$discardColor = $dpCard[ 'type' ];
-				$discardValue = $dpCard[ 'type_arg' ];
-				
-				foreach( $wishLists as $entry ) {
-					self::dump("[bmc] wishList entry:", $entry);
-					self::dump("[bmc] wishList SQL:", $entry['player_id']);
-					
-					if (( $entry[ 'player_id' ] != $discardingPlayer_id ) &&
-						( $entry[ 'player_id' ] != $next_player_id )) {
-							
-						if (( $entry[ 'card_type' ] == $discardColor ) &&
-							( $entry[ 'card_type_arg' ] == $discardValue )) {
-							
-							self::trace("[bmc] BUY MATCH!");
-							// Call buyRequest with the player id
-							
-							$this->buyRequest_fromPHP( $entry[ 'player_id' ]);
-						}
+				if (( $entry[ 'player_id' ] != $discardingPlayer_id ) &&
+					( $entry[ 'player_id' ] != $next_player_id )) {
+						
+					if (( $entry[ 'card_type' ] == $discardColor ) &&
+						( $entry[ 'card_type_arg' ] == $discardValue )) {
+						
+						// self::trace("[bmc] BUY MATCH!");
+						// Call buyRequest with the player id
+						
+						$this->buyRequest_fromPHP( $entry[ 'player_id' ]);
 					}
 				}
 			}
-			$this->gamestate->nextState( 'nextPlayer' );					
 		}
-	self::trace("[bmc] EXIT NextPlayer");
+		self::trace( "[bmc] EXIT processWishlist" );
 	}
 ////
 ////
@@ -5035,7 +6329,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$this->cards->getCardsInLocation( 'playerDown_C' )
 			);
 
-		self::dump("[bmc] playedCardArray:", $playedCardArray );
+		//self::dump("[bmc] playedCardArray:", $playedCardArray );
 
 		$playedValues = array();
 		$jokersPlayed = 0;
@@ -5058,8 +6352,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$playedSuitArray[ $card[ 'type' ]] = 1;
 		}
 		
-		self::dump("[bmc] playedValues :", $playedValues );
-		self::dump("[bmc] playedSuitArray :", $playedSuitArray );
+		// self::dump("[bmc] playedValues :", $playedValues );
+		// self::dump("[bmc] playedSuitArray :", $playedSuitArray );
 			
 		$unplayedValues = array();
 		
@@ -5141,8 +6435,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		$nextPlayer = $this->getPlayerAfter( $activeTurnPlayer_id ); 
 
 		//self::dump( "[bmc] players: ", $players );
-		self::dump( "[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
-		self::dump( "[bmc] nextPlayer: ", $nextPlayer );
+		self::dump( "[bmc] activeTurnPlayer_id(nextTurnPlayer):", $activeTurnPlayer_id );
+		self::dump( "[bmc] nextPlayer3: ", $nextPlayer );
 
 		self::setGameStateValue( setGameStateValue( 'activeTurnPlayer_id', $nextPlayer ));
 		
@@ -5199,15 +6493,15 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 			self::dump("[bmc] handTypes stEndHand:", $this->handTypes );
 			$currentHandType = self::getGameStateValue( 'currentHandType' );
-			$handTarget = $this->handTypes[ $currentHandType ][ "Target" ]; // Pull the description TODO Aug03: this line throws error "array offset of value type null"
+			$handTarget = $this->handTypes[ $currentHandType ][ "Target" ];
+			
 			self::dump("[bmc] handTarget stEndHand:", $handTarget );
 			
 			// Notify players to go to the next target hand
 			
 			$newScores = self::getCollectionFromDb("SELECT player_id, player_score FROM player", true );
 
-			self::notifyAllPlayers(
-				"newScores",
+			self::notifyAllPlayers( "newScores",
 				'',
 				array(
 					'newScores' => $newScores,
@@ -5342,7 +6636,21 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 //            self::applyDbUpgradeToAllDB( $sql );
 //        }
 //        // Please add your future database scheme changes here
-//
-//
-    }    
+//        if( $from_version <= 2309042301 )
+	        if( $from_version <= 2308272254 )
+        {
+            // ! important ! Use DBPREFIX_<table_name> for all tables
+
+            $sql = "CREATE TABLE DBPREFIX_prepAreas (
+				`player_id` int(10) unsigned NOT NULL,
+				`areaA` varchar(100),
+				`areaB` varchar(100),
+				`areaC` varchar(100),
+				`areaJ` varchar(100),
+				PRIMARY KEY (`player_id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;";
+			
+			self::applyDbUpgradeToAllDB( $sql );
+        }
+	}
 }
