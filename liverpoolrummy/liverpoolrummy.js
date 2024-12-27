@@ -3321,8 +3321,8 @@ console.log("[bmc] ENTER Liverpool Missed");
 console.log(notif);
 
 			if ( this.voices ) {
-				playSound( 'MissedIt' );
-				this.disableNextMoveSound();
+				// playSound( 'MissedIt' );
+				// this.disableNextMoveSound();
 			}
 
 console.log("[bmc] EXIT Liverpool Declared");
@@ -3710,7 +3710,7 @@ console.log( this.someoneLP );
 					}
 				} else { // Someone else beat you to it
 					this.showMessage( _("Someone beat you to Liverpool!" ));
-					playSound( 'TooSlow' );
+					// playSound( 'TooSlow' );
 				}
 console.log("[bmc] EXIT onLiverpoolButton");
 		},

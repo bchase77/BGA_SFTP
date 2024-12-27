@@ -148,10 +148,6 @@
 <audio id="audiosrc_o_tutorialrumone_ItsYourTurn" src="{GAMETHEMEURL}img/tutorialrumone_ItsYourTurn.ogg" preload="none" autobuffer></audio>
 <audio id="audiosrc_Liverpool_audio"              src="{GAMETHEMEURL}img/Liverpool_audio.mp3" preload="none" autobuffer></audio>
 <audio id="audiosrc_o_Liverpool_audio"            src="{GAMETHEMEURL}img/Liverpool_audio.ogg" preload="none" autobuffer></audio>
-<audio id="audiosrc_MissedIt"                     src="{GAMETHEMEURL}img/MissedIt.mp3" preload="none" autobuffer></audio>
-<audio id="audiosrc_o_MissedIt"                   src="{GAMETHEMEURL}img/MissedIt.ogg" preload="none" autobuffer></audio>
-<audio id="audiosrc_TooSlow"                      src="{GAMETHEMEURL}img/TooSlow.mp3" preload="none" autobuffer></audio>
-<audio id="audiosrc_o_TooSlow"                      src="{GAMETHEMEURL}img/TooSlow.ogg" preload="none" autobuffer></audio>
 
 <script type="text/javascript">
 
