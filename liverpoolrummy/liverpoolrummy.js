@@ -185,27 +185,22 @@ liverpoolrummy/liverpoolrummy.css:46 => /* Note: you must not use any @import di
 
 
 
-
-
-
-// 12/8/2024: It doesn't pudate teh score until after everyone click ontothenext
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// TODO: Check all actions for public, variable type, statemachine
+// test/public/int       /states actDiscardCard
+// public/int       /states 'actPlayerHasReviewedHand'
+// testnotplayer/public/int(na)   /states 'actBuyRequest'
+// testnotplayer/public/int(na)   /states(na) 'actNotBuyRequest'
+// testnotplayer/public/int(na)   /states(na) 'actDisableWishList'
+// testnotplayer/public/int       /states(na) 'actLiverpoolButton'
+// testnotplayer/public/intarray  /states(na) 'actSubmitWishList'
+// na/public/int       /states 'actPlayCard'
+// na/public/intarray  /states 'actPlayCardMultiple'
+// testplayer/public/int       /states 'actDrawCard'
+// testplayer/public/intarray  /states 'actPlayerGoDown'
+// public/intarray  /states(na) 'actSavePrep'
+// public/int       /states(na) 'actLoadPrep'
+// 
+// 12/8/2024: It doesn't update the score until after everyone clicks on to the next
 
 //
 // 2024-11-27: WISHLIST didn't buy and something strange happened before move ~10:
@@ -1110,7 +1105,8 @@ console.log("[bmc] Wishlist was == true");
 				this.wishListHearts.create( this, $('myWishListHearts'), this.wishListCardWidth, this.wishListCardHeight );
 				this.wishListDiamonds.create( this, $('myWishListDiamonds'), this.wishListCardWidth, this.wishListCardHeight );
 				
-				this.showHideWishList = false;
+				// this.showHideWishList = false;
+				this.showHideWishList = true;
 
 				// 13 images per row in the sprite file
 				this.wishListClubs.image_items_per_row = 13;
@@ -1469,7 +1465,7 @@ console.log("[bmc] DOJO CONNECT Stuff:");
             //dojo.connect( this.discardPile,  'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
             dojo.connect( this.discardPileOne,  'onChangeSelection', this, 'onDiscardPileSelectionChanged' );
 //			dojo.connect( $('discardPile' ), 'onclick',           this, 'onDiscardPileSelectionChanged');
-			dojo.connect( $('discardPileOne' ), 'onclick',           this, 'onDiscardPileSelectionChanged');
+			dojo.connect( $('discardPileOne' ), 'onclick',           this, 'onDiscardPileSelectionChangedClick');
 			dojo.connect( $('myhand' ),      'onclick',           this, 'onMyHandAreaClick');
 			//dojo.connect( $('wantedArea' ),      'onclick',           this, 'onWantedAreaClick');
 
@@ -1613,10 +1609,6 @@ console.log("[bmc] DOWN CARD SELECT SETUP");
 // Debug CSS comment / uncomment these:
 // });
 
-
-
-
-
 			$(handNumber).innerHTML = _("Target Hand ") + currentHandNumber + _(" of ") + this.totalHandCount + ": ";
 			$(redTarget).innerHTML = this.gamedatas.handTarget;
 			console.log( $(redTarget) );
@@ -1674,6 +1666,10 @@ console.log("[bmc] Doing the window.onload");
 			this.someoneLP = false;
 			console.log( "Setting someoneLP false");
 
+			// Run through the function onDiscardPileSelectionChanged only once by checking this variable
+			this.alreadyODPSC = false;
+			this.alreadyODeckSC = false;
+			
 			// Get status of the wishList box
 			// if ( $('wishListEnabled').checked ) {
 				// console.log("WishList CHECKED");
@@ -1913,17 +1909,24 @@ console.log( '[bmc] EXIT onUpdateActionButtons: ' + stateName );
 console.log("[bmc] ENTER onPlayerReviewedHandButton");
 			this.dealMeInClicked = true;
 			this.clearButtons();
-			// this.stopActionTimer2();
-			var action = 'playerHasReviewedHand';
 
-			if (this.checkAction( action, true)) {
-				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-						player_id : this.player_id,
-						lock : true
-					}, this, function(result) {
-					}, function(is_error) {
-				});
-			}
+			// var action = 'playerHasReviewedHand';
+			
+			var newAction = 'actPlayerHasReviewedHand';
+			
+			this.bgaPerformAction( newAction, { // 'actPlayerHasReviewedHand'
+//				player_id : this.player_id,
+			});
+
+
+			// if (this.checkAction( action, true)) {
+				// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						// player_id : this.player_id,
+						// lock : true
+					// }, this, function(result) {
+					// }, function(is_error) {
+				// });
+			// }
 		},
 /////////
 /////////
@@ -1999,7 +2002,8 @@ console.log("[bmc] this.buyCount:", this.buyCount[ this.player_id ][ 'current_va
 			if ( this.discardPileOne.length != 0 ) {
 				if ( this.buyCount[ this.player_id ][ 'current_value' ] > 0 ) {
 
-					var action = 'buyRequest';
+					// var action = 'buyRequest';
+					var newAction = 'actBuyRequest';
 //console.log(this.checkPossibleActions( action, true ));
 
 					// If PHP is not resolving buyers then let the client try to buy
@@ -2012,14 +2016,21 @@ console.log("[bmc] this.buyCount:", this.buyCount[ this.player_id ][ 'current_va
 							// Keep track so the button can only be hit once
 							this.buyRequested = true;
 
-							console.log("[bmc] ajax " + action );
+							// console.log("[bmc] ajax " + action );
 
-							this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-									player_id : this.player_id,
-									lock : true
-								}, this, function(result) {
-								}, function(is_error) {
+							this.bgaPerformAction( newAction, { // 'actBuyRequest'
+								// player_id : this.player_id,
+							},{ 
+								checkAction: false,
+								checkPossibleActions: false
 							});
+							
+							// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+									// player_id : this.player_id,
+									// lock : true
+								// }, this, function(result) {
+								// }, function(is_error) {
+							// });
 						} else {
 							console.log("[bmc] Buy already requested or not allowed now");
 						}
@@ -2038,21 +2049,29 @@ console.log("[bmc] ENTER onPlayerNotBuyButton");
 			////this.stopActionTimer2();
 			// console.log(this.gamedatas);
 			
-			var action = 'notBuyRequest';
+			// var action = 'notBuyRequest';
+			var newAction = 'actNotBuyRequest';
 			
 //console.log( "[bmc] checkaction: " + this.checkPossibleActions( action, true));
 console.log( "[bmc] buyrequested: " + this.buyRequested);
 
 //			if ( this.checkPossibleActions( action, true) && ( this.buyRequested == true)) {
 			if ( this.buyRequested == true ) {
-				console.log("[bmc] ajax " + action );
+				// console.log("[bmc] ajax " + action );
 				
-				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-						player_id : this.player_id,
-						lock : true
-					}, this, function(result) {
-					}, function(is_error) {
+				this.bgaPerformAction( newAction, { // 'actNotBuyRequest'
+					player_id : this.player_id,
+				},{ 
+					checkAction: false,
+//						checkPossibleActions: true 
 				});
+
+				// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						// player_id : this.player_id,
+						// lock : true
+					// }, this, function(result) {
+					// }, function(is_error) {
+				// });
 				
 				// Clear out the buy request
 				this.buyRequested = false;
@@ -2105,30 +2124,30 @@ console.log( "[bmc] buyrequested: " + this.buyRequested);
 		sortBoard : function( ) {
 console.log( "[bmc] ENTER sortBoard" );
 			for ( var player in this.gamedatas.players ) {
-console.log("SORTBOARD player");
-console.log(player);
+// console.log("SORTBOARD player");
+// console.log(player);
 				cards = this.downArea_A_[ player ].getAllItems();
 // console.log(cards);
 //				if ( cards != null ) {
 				if ( cards.length != 0 ) {
 					weightChange = this.sortRun( cards, 'playerDown_A', player );
-console.log("[bmc] NEWRUN_board_a" );
-console.log( weightChange );
+// console.log("[bmc] NEWRUN_board_a" );
+// console.log( weightChange );
 					this.downArea_A_[ player ].items = weightChange;
 					this.downArea_A_[ player ].updateDisplay();
 					// this.downArea_A_[ player ].changeItemsWeight( weightChange );
 				}
 
 				cards = this.downArea_B_[ player ].getAllItems();
-console.log("[bmc] BOSS CARDS");
-console.log(cards);
-console.log(this.downArea_B_[ player ]);
+// console.log("[bmc] BOSS CARDS");
+// console.log(cards);
+// console.log(this.downArea_B_[ player ]);
 //				if ( cards != null ) {
 				if ( cards.length != 0 ) {
 					weightChange = this.sortRun( cards, 'playerDown_B', player );
 // console.log( weightChange );
-console.log("[bmc] NEWRUN_board_b" );
-console.log( weightChange );
+// console.log("[bmc] NEWRUN_board_b" );
+// console.log( weightChange );
 					this.downArea_B_[ player ].items = weightChange;
 					this.downArea_B_[ player ].updateDisplay();
 //					this.downArea_B_[ player ].changeItemsWeight( weightChange );
@@ -2139,8 +2158,8 @@ console.log( weightChange );
 //				if ( cards != null ) {
 				if ( cards.length != 0 ) {
 					weightChange = this.sortRun( cards, 'playerDown_C', player );
-console.log("[bmc] NEWRUN_board_c" );
-console.log( weightChange );
+// console.log("[bmc] NEWRUN_board_c" );
+// console.log( weightChange );
 					this.downArea_C_[ player ].items = weightChange;
 					this.downArea_C_[ player ].updateDisplay();
 //					this.downArea_C_[ player ].changeItemsWeight( weightChange );
@@ -2155,7 +2174,7 @@ console.log( "[bmc] EXIT sortBoard" );
 /////////
 		addJokerBorder : function( jokers ){
 console.log("[bmc] Enter addJokerBorder");
-console.log( jokers );
+// console.log( jokers );
 
 			// for ( joker of jokers ) {
 
@@ -2177,51 +2196,34 @@ console.log( jokers );
 				// }
 			// }
 
-		console.log("[bmc] Exit addJokerBorder");
+console.log("[bmc] Exit addJokerBorder");
 		},
 /////////
 /////////
 /////////
 		removeJokerBorder : function( jokers ){
 console.log("[bmc] Enter removeJokerBorder");
-console.log( jokers );
+// console.log( jokers );
 
 			for ( joker of jokers ) {
 
-console.log("[bmc] REALLY Removing GREEN BORDER1");
-console.log(joker);
-console.log($(joker));
+// console.log("[bmc] REALLY Removing GREEN BORDER1");
+// console.log(joker);
+// console.log($(joker));
 
 				if ( $(joker) != null ) {
 					dojo.removeClass( joker, 'stockitem_extraJoker' );
 				}
 			}
 
-		console.log("[bmc] Exit removeJokerBorder");
+console.log("[bmc] Exit removeJokerBorder");
 		},
 /////////
 /////////
 /////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		sortRun : function( boardCards ) {
 console.log( "[bmc] ENTER sortRunNew" );
-console.log( boardCards );
+// console.log( boardCards );
 
 			if ( boardCards.length != 0 ) {
 				var cards = new Array();
@@ -2230,9 +2232,9 @@ console.log( boardCards );
 				
 				// Reconstruct the card values from the type
 				for ( cidx in boardCards ) {
-console.log("[bmc] In The Loop");
-console.log(cidx);
-console.log(boardCards[ cidx ]);
+// console.log("[bmc] In The Loop");
+// console.log(cidx);
+// console.log(boardCards[ cidx ]);
 					cards[ cidx ] = {};
 					
 // console.log(boardCards[ cidx ][ 'type' ] );
@@ -2244,11 +2246,11 @@ console.log(boardCards[ cidx ]);
 					} else if ((boardCards[ cidx ][ 'type' ] % 13 ) == 0 ) {
 						if ( foundAnAce == false ){
 							foundAnAce = true;
-console.log("Found first ace");
+// console.log("Found first ace");
 							cards[ cidx ][ 'value' ] = 1; // Set ace to low for first one found, it still might be high
 							cards[ cidx ][ 'type' ]  = 1;
 						} else {
-console.log("Found second ace");
+// console.log("Found second ace");
 							cards[ cidx ][ 'value' ] = 14; // Set ace to high for second one found
 							cards[ cidx ][ 'type' ]  = 14;
 						}
@@ -2262,8 +2264,8 @@ console.log("Found second ace");
 	
 				cards.sort( this.compareValue );
 
-console.log("[bmc] Sorted boardcards:");
-console.log(cards);
+// console.log("[bmc] Sorted boardcards:");
+// console.log(cards);
 				// Count number of jokers and aces and track their IDs to set weights later
 				
 				var jokerCount = 0;
@@ -2284,11 +2286,11 @@ console.log(cards);
 						aceCount++;
 					}
 				}
-console.log("[bmc] jokers:");
-console.log(jokers);
-console.log(jokerCount);
-console.log(thereIsAnAce);
-console.log(aceCount);
+// console.log("[bmc] jokers:");
+// console.log(jokers);
+// console.log(jokerCount);
+// console.log(thereIsAnAce);
+// console.log(aceCount);
 				var cardValuesHard = new Array();
 				
 				for ( let i in cards ) {
@@ -2297,8 +2299,8 @@ console.log(aceCount);
 						cardValuesHard[ cards[ i ][ 'type' ]] = cards[ i ][ 'type' ];
 					}
 				}
-console.log("[bmc] cardValuesHard");
-console.log(cardValuesHard);
+// console.log("[bmc] cardValuesHard");
+// console.log(cardValuesHard);
 				var usedPositions = new Array(); // Temporary variable to track positions in the run while assigning jokers
 				
 				var jokerIndex = 0;
@@ -2308,28 +2310,28 @@ console.log(cardValuesHard);
 				
 				// Go through positions 1 through King and track 'real' cards if they exist
 				for ( let i = 2; i < 14 ; i++) {
-console.log( i );
+// console.log( i );
 // console.log(cardValuesHard[ i ]);
 // console.log(foundFirst);
 					if ( cardValuesHard[ i ] != null ) {
-console.log("Location notNull:  (cards)");
+// console.log("Location notNull:  (cards)");
 // console.log( i );
-console.log( cards );
+// console.log( cards );
 						foundFirst = true;
 						index = cards.map( function(e) { return e.type; }).indexOf( i );
-console.log("FOUND THE FIRST HARD CARD (index, value)");
-console.log(index);
-console.log(i);
+// console.log("FOUND THE FIRST HARD CARD (index, value)");
+// console.log(index);
+// console.log(i);
 						cards[ index ][ 'boardLieIndex' ] = i;
 						usedPositions.push(i);
 					} else {
-console.log("card location is Null");
-console.log( i );
+// console.log("card location is Null");
+// console.log( i );
 						if ( foundFirst ) {
-console.log("foundFirst");
-console.log(cardValuesHard.length);
-console.log("Nov2023cards");
-console.log(cards);
+// console.log("foundFirst");
+// console.log(cardValuesHard.length);
+// console.log("Nov2023cards");
+// console.log(cards);
 
 
 
@@ -2337,31 +2339,31 @@ console.log(cards);
 							// Deal with the aces later
 							// This presumes the cards which are down are indeed a valid run
 							
-console.log("[bmc] Assigning Joker!");
-console.log(i);
+// console.log("[bmc] Assigning Joker!");
+// console.log(i);
 							// if ( i < cardValuesHard.length + 1 ) {
 							if ( i < cardValuesHard.length ) {
-console.log(jokerIndex);
-console.log(jokerCount);
+// console.log(jokerIndex);
+// console.log(jokerCount);
 								if ( jokerIndex < jokerCount ) {
 
 									index = cards.map( function(e) { return e.id; }).indexOf( jokers[ jokerIndex ][ 'id' ]);
-console.log("[bmc] Assigning joker index");
-console.log(index);
+// console.log("[bmc] Assigning joker index");
+// console.log(index);
 									jokerIndex++;
 
 									cards[ index ][ 'boardLieIndex' ] = i;
 //									cards[ jokerIndex ][ 'boardLieIndex' ] = i;
 									usedPositions.push(i);
-console.log(usedPositions);
+// console.log(usedPositions);
 								} else {
-console.log("[bmc] ERROR Not enough Jokers!");
+// console.log("[bmc] ERROR Not enough Jokers!");
 //  Presume the other function did it's job and allowed only true runs.
 								}
 							} else {
-console.log("[bmc] FINISHED HARD CARDS do not put high ace, yet");
+// console.log("[bmc] FINISHED HARD CARDS do not put high ace, yet");
 							}
-console.log("[bmc] FINISHED HARD CARDS");
+// console.log("[bmc] FINISHED HARD CARDS");
 						}
 					}
 // console.log("[bmc] Spot near end of first loop");
@@ -2371,14 +2373,14 @@ console.log("[bmc] FINISHED HARD CARDS");
 
 				leftOverJokers = jokerCount - jokerIndex;
 				
-console.log("[bmc] Assess remaining jokers");
-console.log( jokerCount);
-console.log( jokerIndex );
-console.log( leftOverJokers );
-console.log( jokers );
-console.log( cards );
-console.log( usedPositions );
-console.log( aceCount );
+// console.log("[bmc] Assess remaining jokers");
+// console.log( jokerCount);
+// console.log( jokerIndex );
+// console.log( leftOverJokers );
+// console.log( jokers );
+// console.log( cards );
+// console.log( usedPositions );
+// console.log( aceCount );
 				
 // Put an ace as index 1 if any of these is true:
   // There are 2 aces
@@ -2392,31 +2394,17 @@ console.log( aceCount );
 
 				var minUsed = Math.min.apply( Math, usedPositions );
 				var maxUsed = Math.max.apply( Math, usedPositions );
-console.log( minUsed );
-console.log( maxUsed );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// console.log( minUsed );
+// console.log( maxUsed );
 
 				switch( aceCount ) {
 					case 0 : // No need to assign aces, just place the jokers properly
-console.log("[bmc] No aces.");
+// console.log("[bmc] No aces.");
 						if ( leftOverJokers > 0 ) { // Start by assigning some below the lowest hard number
 							for ( let i = minUsed - 1; i > 0; i-- ){
 								if ( jokerIndex < jokerCount ) {
 									index = cards.map( function(e) { return e.id; }).indexOf( jokers[ jokerIndex ][ 'id' ]);
-console.log( index );
+// console.log( index );
 									cards[ index ][ 'boardLieIndex' ] = i;
 									usedPositions.push(i);
 									jokerIndex++;
@@ -2434,11 +2422,11 @@ console.log( index );
 						}
 						break;
 					case 1 : // There is 1 ace. Put the ace low if min is closer to 1 and high if max is closer to 14
-console.log("[bmc] One ace.");
+// console.log("[bmc] One ace.");
 						if (( minUsed - 1) < ( 14 - maxUsed )){
 							// Put ace low
 							index = cards.map( function(e) {return e.type; }).indexOf(1);
-console.log( index );
+// console.log( index );
 							if ( index > -1 ) {
 								cards[ index ][ 'boardLieIndex' ] = 1;
 								usedPositions.push( 1 );
@@ -2449,11 +2437,11 @@ console.log( index );
 							// Now assign jokers below the lowest hard number
 						 
 							if ( leftOverJokers > 0 ) {
-	console.log( minUsed );
+	// console.log( minUsed );
 								for ( let i = minUsed - 1; i > 1; i-- ){ // Don't assign to ace
 									if ( jokerIndex < jokerCount ) {
 										index = cards.map( function(e) { return e.id; }).indexOf( jokers[ jokerIndex ][ 'id' ]);
-	console.log( index );
+	// console.log( index );
 										cards[ index ][ 'boardLieIndex' ] = i;
 										usedPositions.push(i);
 										jokerIndex++;
@@ -2474,7 +2462,7 @@ console.log( index );
 						} else {
 							// Put ace high
 							index = cards.map( function(e) {return e.type; }).indexOf(1);
-console.log( index );
+// console.log( index );
 							if ( index > -1 ) {
 								cards[ index ][ 'boardLieIndex' ] = 14;
 								usedPositions.push( 14 );
@@ -2484,11 +2472,11 @@ console.log( index );
 							// Now assign jokers above the highest hard number
 						 
 							if ( leftOverJokers > 0 ) {
-	console.log( minUsed );
+	// console.log( minUsed );
 								for ( let i = maxUsed + 1; i < 14; i++ ){ // Don't assign to ace
 									if ( jokerIndex < jokerCount ) {
 										index = cards.map( function(e) { return e.id; }).indexOf( jokers[ jokerIndex ][ 'id' ]);
-	console.log( index );
+	// console.log( index );
 										cards[ index ][ 'boardLieIndex' ] = i;
 										usedPositions.push(i);
 										jokerIndex++;
@@ -2518,11 +2506,11 @@ console.log( index );
 
 						break;
 					case 2 : // There are 2 aces. Assign 1 low and 1 high
-console.log("[bmc] Two aces.");
+// console.log("[bmc] Two aces.");
 
 						// Find the index of the ace (type == 1); Set to 1 if present
 						index = cards.map( function(e) {return e.type; }).indexOf(1);
-console.log( index );
+// console.log( index );
 						if ( index > -1 ) {
 							cards[ index ][ 'boardLieIndex' ] = 1;
 							usedPositions.push( 1 );
@@ -2533,7 +2521,7 @@ console.log( index );
 						// Set the 'other' ace to be lieIndex 14
 						// Find the index of the ace (type == 14). It was set to 14 previously:
 						index = cards.map( function(e) {return e.type; }).indexOf(14);
-console.log( index );
+// console.log( index );
 						if ( index > -1 ) {
 							cards[ index ][ 'boardLieIndex' ] = 14;
 							usedPositions.push( 14 );
@@ -2543,35 +2531,34 @@ console.log( index );
 						break;
 				}
 
-console.log( cards );
-console.log( usedPositions );
+// console.log( cards );
+// console.log( usedPositions );
 				
 				// Sort the boardcards by boardLieIndex
 				cards.sort( this.compareBoardLieIndex );
-console.log("[bmc] ALL SORTED cards:" );
-console.log( cards );
+// console.log("[bmc] ALL SORTED cards:" );
+// console.log( cards );
 
 				var newRunItems = new Array();
 				
 				for ( let i in cards ) {
 					index = boardCards.map( function(e) {return e.id; }).indexOf(cards[ i ][ 'id' ]);
-console.log("[bmc] i, cards[], index, boardCards[]:");
-console.log(i);
-console.log(cards[ i ][ 'id' ]);
-console.log(index);
-console.log(boardCards[ index ][ 'type' ]);
+// console.log("[bmc] i, cards[], index, boardCards[]:");
+// console.log(i);
+// console.log(cards[ i ][ 'id' ]);
+// console.log(index);
+// console.log(boardCards[ index ][ 'type' ]);
 					newRunItems[ i ] = {
 						id: cards[ i ][ 'id' ],
 						type: boardCards[ index ][ 'type' ]
 					};
-console.log(newRunItems);
+// console.log(newRunItems);
 				}
-console.log("[bmc] FINAL newRunItems");
-console.log(newRunItems);
+// console.log("[bmc] FINAL newRunItems");
+// console.log(newRunItems);
 
 console.log( "[bmc] EXIT sortRun2" );
 				return newRunItems;
-
 			}
 		},
 /////////
@@ -2580,7 +2567,7 @@ console.log( "[bmc] EXIT sortRun2" );
 		sortRunOld : function( boardCards, downArea, boardPlayer ) {
 console.log( "[bmc] ENTER sortRun2" );
 // console.log( boardPlayer );
-console.log( boardCards );
+// console.log( boardCards );
 
 			// let weightChange = {};
 					
@@ -2610,8 +2597,8 @@ console.log( boardCards );
 	
 				cards.sort( this.compareValue );
 
-console.log("[bmc] Sorted cards:");
-console.log(cards);
+// console.log("[bmc] Sorted cards:");
+// console.log(cards);
 // console.log(downArea);
 				
 //console.log("[bmc] UPDATING DISPLAY FOR THAT BOARDPLAYER1");
@@ -2638,11 +2625,11 @@ console.log(cards);
 						aceCount++;
 					}
 				}
-console.log("[bmc] jokers:");
-console.log(jokers);
-console.log(jokerCount);
-console.log(thereIsAnAce);
-console.log(aceCount);
+// console.log("[bmc] jokers:");
+// console.log(jokers);
+// console.log(jokerCount);
+// console.log(thereIsAnAce);
+// console.log(aceCount);
 				var cardValuesHard = new Array();
 				
 				for ( let i in cards ) {
@@ -2651,27 +2638,27 @@ console.log(aceCount);
 					}
 				}
 					
-console.log("[bmc] cardValuesHard");
-console.log(cardValuesHard);
+// console.log("[bmc] cardValuesHard");
+// console.log(cardValuesHard);
 				
 				var usedPositions = new Array(); // Temporary variable to track positions in the run while assigning jokers
 				
 				var jokerIndex = 0;
-console.log("Looping over hard cards");				
+// console.log("Looping over hard cards");				
 				var foundFirst = false;
 				
 				// Reindex cards with the IDs as the indices
 				
 				// Go through positions 1 through King and track 'real' cards if they exist
 				for ( let i = 1; i < 14 ; i++) {
-console.log( i );
-console.log(cardValuesHard[ i ]);
-console.log(foundFirst);
+// console.log( i );
+// console.log(cardValuesHard[ i ]);
+// console.log(foundFirst);
 
 					if ( cardValuesHard[ i ] != null ) {
-console.log("card location is notNull");
-console.log( i );
-console.log( cards );
+// console.log("card location is notNull");
+// console.log( i );
+// console.log( cards );
 						if ((( cardValuesHard[ i ] == 1 )    &&
 						   (( cardValuesHard.includes( 8 ))  ||
 							( cardValuesHard.includes( 9 ))  ||
@@ -2681,37 +2668,34 @@ console.log( cards );
 							( cardValuesHard.includes( 13 ))))) {
 								
 								// There is an ace and some high cards, so the ace must be high (14)
-console.log("[bmc] Moving the ace to high");
+// console.log("[bmc] Moving the ace to high");
 								cards[ i ][ 'boardLieIndex' ] = 14;
 								usedPositions.push(14);
 								usedPositions.pop(1);
-console.log( "cards" );
-console.log( i );
-console.log( cards );
+// console.log( "cards" );
+// console.log( i );
+// console.log( cards );
 //exit(0);								
 							} else {
 
 							foundFirst = true;
 						
 							index = cards.map( function(e) { return e.type; }).indexOf( i );
-console.log("index");
-console.log(index);
+// console.log("index");
+// console.log(index);
 							cards[ index ][ 'boardLieIndex' ] = i;
 							usedPositions.push(i);
 						}
 					} else {
-console.log("card location is Null");
+// console.log("card location is Null");
 						if ( foundFirst ) {
-console.log("foundFirst");
-console.log(foundFirst);
-console.log(cardValuesHard.length);
-console.log("July2021cards");
-console.log(cards);
-console.log( i );
+// console.log("foundFirst");
+// console.log(foundFirst);
+// console.log(cardValuesHard.length);
+// console.log("July2021cards");
+// console.log(cards);
+// console.log( i );
 
-//if (cards[2]['boardLieIndex'] == 11 ) {
-//	exit(0);
-//}
 							// if this is the last of the hard cards then ignore
 							// Deal with the aces later
 							// This presumes the cards which are down are indeed a valid run
@@ -2719,13 +2703,13 @@ console.log( i );
 								if ( jokerIndex < jokerCount ) {
 //console.log("index");
 //console.log(index);
-console.log("[bmc] Assigning Joker!");
-console.log(i);
-console.log(jokerIndex);
-console.log(jokerCount);
+// console.log("[bmc] Assigning Joker!");
+// console.log(i);
+// console.log(jokerIndex);
+// console.log(jokerCount);
 									cards[ jokerIndex ][ 'boardLieIndex' ] = i;
 									usedPositions.push(i);
-console.log(usedPositions);
+// console.log(usedPositions);
 									jokerIndex++;
 								} else {
 //	I used to have this assert-style check here but it sorts the cards right, and
@@ -2734,100 +2718,77 @@ console.log(usedPositions);
 //	console.log("[bmc] Yikes!! This never should have been a run.");
 								}
 							} else {
-console.log("[bmc] FINISHED HARD CARDS do not put high ace, yet");
+// console.log("[bmc] FINISHED HARD CARDS do not put high ace, yet");
 							}
-console.log("[bmc] FINISHED HARD CARDS");
+// console.log("[bmc] FINISHED HARD CARDS");
 						}
 					}
-console.log("[bmc] Spot near end of loop");
+// console.log("[bmc] Spot near end of loop");
 				}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-console.log("[bmc] DEBUG]");
-console.log(cards);
-console.log(cards[0]);
-console.log(cards[1]);
-console.log(cards[2]);
-console.log(cards[3]);
-console.log(cards[4]);
-console.log(cards[5]);
-console.log(cards[6]);
-console.log(cards[7]);
-console.log(cards[8]);
-console.log(cards[9]);
-console.log(cards[10]);
-console.log(cards[11]);
-console.log(cards[12]);
-console.log(cards[13]);
+// console.log("[bmc] DEBUG]");
+// console.log(cards);
+// console.log(cards[0]);
+// console.log(cards[1]);
+// console.log(cards[2]);
+// console.log(cards[3]);
+// console.log(cards[4]);
+// console.log(cards[5]);
+// console.log(cards[6]);
+// console.log(cards[7]);
+// console.log(cards[8]);
+// console.log(cards[9]);
+// console.log(cards[10]);
+// console.log(cards[11]);
+// console.log(cards[12]);
+// console.log(cards[13]);
 // To debug, enter a specific card and id here, then you can see the variable before it gets chenged
-if (cards[0]['id'] == 23 ) {
-	//exit(0);
-}
+// if (cards[0]['id'] == 23 ) {
+	// exit(0);
+// }
 
 // It sorts 3 jokers and 1 ace with HIGH cards correctly to here (7/11/2021)
 
 				leftOverJokers = jokerCount - jokerIndex;
 				
-console.log("[bmc] Assess remaining jokers");
-console.log( jokerCount);
-console.log( jokerIndex );
-console.log( leftOverJokers );
-console.log( jokers );
-console.log( cards );
-console.log( usedPositions );
+// console.log("[bmc] Assess remaining jokers");
+// console.log( jokerCount);
+// console.log( jokerIndex );
+// console.log( leftOverJokers );
+// console.log( jokers );
+// console.log( cards );
+// console.log( usedPositions );
 
 				// Move jokers to low if there is an ace and enough jokers to get to the next card
 				if ( thereIsAnAce ) {
-console.log("[bmc] 1");
+// console.log("[bmc] 1");
 					if ( usedPositions.includes( jokerCount + 2 )) {
-console.log("[bmc] 2");
+// console.log("[bmc] 2");
 						// Ace should be low. Assign leftover jokers as missing cards are found
 						for ( let i = 2; i < 13 ; i++) {
 							if ( !usedPositions.includes( i ) ) {
 								if ( jokerIndex < jokerCount ) {
-console.log("[bmc] 3");
-console.log( jokers[ jokerIndex ][ 'id' ] );
+// console.log("[bmc] 3");
+// console.log( jokers[ jokerIndex ][ 'id' ] );
 									index = cards.map( function(e) {return e.id; }).indexOf(jokers[ jokerIndex ][ 'id' ]);
 									jokerIndex++;
 
 									cards[ index ][ 'boardLieIndex' ] = i;
-console.log("[bmc] Assigning an ACE joker:");
-console.log( index );
-console.log( jokerIndex );
-console.log( cards );
+// console.log("[bmc] Assigning an ACE joker:");
+// console.log( index );
+// console.log( jokerIndex );
+// console.log( cards );
 								}
 							}
 						}
 					} else {
-console.log("[bmc] 4");
+// console.log("[bmc] 4");
 						// Set the ace (in 1st position) to index 14;
 						
 						// Find the index of the ace (type == 1):
 						index = cards.map( function(e) {return e.type; }).indexOf(1);
-console.log("[bmc] index finding ace:");
-console.log( index );
+// console.log("[bmc] index finding ace:");
+// console.log( index );
 //exit(0);
 						
 						cards[ index ][ 'boardLieIndex' ] = 14;
@@ -2839,8 +2800,8 @@ console.log( index );
 					}
 				}
 				
-console.log("[bmc] Final usedPositions" );
-console.log( usedPositions );
+// console.log("[bmc] Final usedPositions" );
+// console.log( usedPositions );
 
 
 // 7/11 ace high 3 jokers correct to here.
@@ -2854,17 +2815,17 @@ console.log( usedPositions );
 				// Move an ace to be high if there is a king (position 13)
 				for (let i in cards ) {
 					if ( cards[ i ][ 'type' ] == 1 ) {
-console.log("[bmc] MA1");
-console.log(i);
+// console.log("[bmc] MA1");
+// console.log(i);
 
 						if ( usedPositions.includes( 13 )) {
-console.log("[bmc] MA2");
-console.log(i);
+// console.log("[bmc] MA2");
+// console.log(i);
 							// If there is already a high ace then assign the 2nd one low
 							if ( usedPositions.includes( 14 ) &&
 							   ( cards.length > 13)) {
-console.log("[bmc] MA3");
-console.log(i);
+// console.log("[bmc] MA3");
+// console.log(i);
 								cards[ i ][ 'boardLieIndex' ] = 1;
 								usedPositions.push(1);
 							} else {
@@ -2877,9 +2838,9 @@ console.log(i);
 						}
 					}
 				}
-console.log("[bmc] cards and usedPositions");
-console.log( cards );
-console.log( usedPositions );
+// console.log("[bmc] cards and usedPositions");
+// console.log( cards );
+// console.log( usedPositions );
 //exit(0);
 if (cards[0]['id'] == 31 ) {
 	//exit(0);
@@ -2890,13 +2851,13 @@ if (cards[0]['id'] == 31 ) {
 					for ( let i = jokerIndex; i < jokerCount; i++ ) {
 						cards[ i ][ 'boardLieIndex' ] = 15;
 
-console.log("[bmc] EXTRA ON RIGHT");
+// console.log("[bmc] EXTRA ON RIGHT");
 
 					}
 				} else {
 					for ( let i = jokerIndex; i < jokerCount; i++ ) {
 						cards[ i ][ 'boardLieIndex' ] = 0;
-console.log("[bmc] EXTRA ON LEFT");
+// console.log("[bmc] EXTRA ON LEFT");
 					}
 					
 				}
@@ -2925,14 +2886,14 @@ console.log("[bmc] EXTRA ON LEFT");
 				// );
 				
 				
-console.log("[bmc] usedPositions:");
-console.log(usedPositions);
+// console.log("[bmc] usedPositions:");
+// console.log(usedPositions);
 
-console.log("[bmc] usedPositions:");
-console.log(usedPositions);
+// console.log("[bmc] usedPositions:");
+// console.log(usedPositions);
 			
-console.log("[bmc] cards:");
-console.log( cards );
+// console.log("[bmc] cards:");
+// console.log( cards );
 
 				// for ( let i = 0; i < 15 ; i++ ) {
 					// if ( cards[ i ] != null ) {
@@ -2944,26 +2905,26 @@ console.log( cards );
 
 				// Sort the boardcards by boardLieIndex
 				cards.sort( this.compareBoardLieIndex );
-console.log("[bmc] SORTED cards:" );
-console.log( cards );
+// console.log("[bmc] SORTED cards:" );
+// console.log( cards );
 				
 				var newRunItems = new Array();
 				
 				for ( let i in cards ) {
 					index = boardCards.map( function(e) {return e.id; }).indexOf(cards[ i ][ 'id' ]);
-console.log("[bmc] i, cards[], index, boardCards[]:");
-console.log(i);
-console.log(cards[ i ][ 'id' ]);
-console.log(index);
-console.log(boardCards[ index ][ 'type' ]);
+// console.log("[bmc] i, cards[], index, boardCards[]:");
+// console.log(i);
+// console.log(cards[ i ][ 'id' ]);
+// console.log(index);
+// console.log(boardCards[ index ][ 'type' ]);
 					newRunItems[ i ] = {
 						id: cards[ i ][ 'id' ],
 						type: boardCards[ index ][ 'type' ]
 					};
-console.log(newRunItems);
+// console.log(newRunItems);
 				}
-console.log("[bmc] FINAL newRunItems");
-console.log(newRunItems);
+// console.log("[bmc] FINAL newRunItems");
+// console.log(newRunItems);
 
 console.log( "[bmc] EXIT sortRun2" );
 				return newRunItems;
@@ -3435,6 +3396,7 @@ console.log("[bmc] EXIT(nothing) startActionTimerStatic");
 /////////
 /////////
 		isReadOnly: function () { // Check if spectator or not
+//		  return this.isSpectator || typeof g_replayFrom != "undefined" || g_archive_mode;
 		  return this.isSpectator || typeof g_replayFrom != "undefined" || g_archive_mode;
 		},
 /////////
@@ -3697,16 +3659,25 @@ console.log(this.wishListEnabled);
 				// Uncheck the box
 				// document.getElementById("wishListEnabled").checked = false;
 
-				var action = 'disableWishList';
-				
 console.log( "[bmc] disabling wishlist ");
-					
-				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-						player_id : this.player_id,
-						lock : true
-					}, this, function(result) {
-					}, function(is_error) {
+
+				// var action = 'disableWishList';
+				var newAction = 'actDisableWishList';
+				
+				this.bgaPerformAction( newAction, { // 'actDisableWishList'
+					player_id : this.player_id,
+				},{ 
+					checkAction: false,
+//						checkPossibleActions: true 
 				});
+
+					
+				// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						// player_id : this.player_id,
+						// lock : true
+					// }, this, function(result) {
+					// }, function(is_error) {
+				// });
 			}
 console.log("[bmc] EXIT disableWishList");
 		},
@@ -3715,7 +3686,8 @@ console.log("[bmc] EXIT disableWishList");
 /////////
 		onLiverpoolButton : function() {
 console.log("[bmc] ENTER onLiverpoolButton");
-			var action = 'liverpoolButton';
+			// var action = 'liverpoolButton';
+			var newAction = 'actLiverpoolButton';
 				
 console.log( "[bmc] Trying for Liverpool! ");
 console.log( this.player_id );
@@ -3737,16 +3709,22 @@ console.log( this.someoneLP );
 							//this.onDiscardPileSelectionChanged();
 						
 						// } else {
-	console.log( "Ajax liverpool" );
-						
-						
-						this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-								player_id : this.player_id,
-								lock : true
-							}, this, function(result) {
-							}, function(is_error) {
-								console.error( "Error Reported by LP Ajax:", is_error );
-							});	
+	// console.log( "Ajax liverpool" );
+
+						this.bgaPerformAction( newAction, { // 'actLiverpoolButton'
+							player_id : this.player_id,
+						},{ 
+							checkAction: false,
+							checkPossibleActions: false
+						});
+					
+						// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+								// player_id : this.player_id,
+								// lock : true
+							// }, this, function(result) {
+							// }, function(is_error) {
+								// console.error( "Error Reported by LP Ajax:", is_error );
+							// });	
 						// }
 					}
 				} else { // Someone else beat you to it
@@ -3808,15 +3786,26 @@ console.log("[bmc] ENTER onSubmitWishList");
 				if ( wishList_type.length != 0 ){
 	console.log( "[bmc] Submitting wishList!" );
 					
-					var action = 'submitWishList';
-					this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+					// var action = 'submitWishList';
+					var newAction = 'actSubmitWishList';
+					
+					this.bgaPerformAction( newAction, { // 'actSubmitWishList'
 						player_id : this.player_id,
 						wishList_type : this.toNumberList( wishList_type ),
 						wishList_type_arg : this.toNumberList( wishList_type_arg ),
-						lock : true
-					}, this, function(result) {
-					}, function(is_error) {
+					},{ 
+						checkAction: false,
+//						checkPossibleActions: true 
 					});
+
+					// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						// player_id : this.player_id,
+						// wishList_type : this.toNumberList( wishList_type ),
+						// wishList_type_arg : this.toNumberList( wishList_type_arg ),
+						// lock : true
+					// }, this, function(result) {
+					// }, function(is_error) {
+					// });
 				}
 			}
 console.log("[bmc] EXIT onSubmitWishList");
@@ -3966,7 +3955,8 @@ console.log(boardCard);
 console.log(boardArea);
 console.log(boardPlayer);
 
-					var action = 'playCard';
+					// var action = 'playCard';
+					var newAction = 'actPlayCard';
 
 					// do the unselects before going to the server
 //					this.playerHand.unselectAll();
@@ -3976,22 +3966,30 @@ console.log(boardPlayer);
 						this.downArea_C_[ player ].unselectAll();
 					}
 
-					if (this.checkAction( action, true)) {
-console.log("[bmc] PlayCard Action true AJAX");
-console.log("/" + this.game_name + "/" + this.game_name + "/" + action + ".html");
+					this.bgaPerformAction( newAction, { // 'actPlayCard'
+						player_id : this.player_id,
+						card_id : playerCard['id'],
+						boardArea : boardArea,
+						boardPlayer : boardPlayer,
+					});
 
-						this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-							card_id : playerCard['id'],
-							player_id : this.player_id,
-							boardArea : boardArea,
-							boardPlayer : boardPlayer,
-							lock : true
-						}, this, function(result) {
-						}, function(is_error) {
-						});
-					} else {
-						console.log("[bmc] PlayCard Action false");
-					}
+					// if (this.checkAction( action, true)) {
+// console.log("[bmc] PlayCard Action true AJAX");
+// console.log("/" + this.game_name + "/" + this.game_name + "/" + action + ".html");
+
+						
+						// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+							// card_id : playerCard['id'],
+							// player_id : this.player_id,
+							// boardArea : boardArea,
+							// boardPlayer : boardPlayer,
+							// lock : true
+						// }, this, function(result) {
+						// }, function(is_error) {
+						// });
+					// } else {
+						// console.log("[bmc] PlayCard Action false");
+					// }
 				} else {
 					console.log("[bmc] No card on board selected, do nothing (one card)");
 				}
@@ -4095,23 +4093,32 @@ console.log("mulitple");
 console.log("handItemIds");
 console.log(handItemIds);
 					
-					var action = 'playCardMultiple';
-					if (this.checkAction( action, true)) {
-console.log("[bmc] PlayCard Action true AJAX");
-console.log("/" + this.game_name + "/" + this.game_name + "/" + action + ".html");
-
-						this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-							card_ids : this.toNumberList( handItemIds ),
+					// var action = 'playCardMultiple';
+					var newAction = 'actPlayCardMultiple';
+					
+						this.bgaPerformAction( newAction, { // 'actPlayCardMultiple'
 							player_id : this.player_id,
+							card_ids : this.toNumberList( handItemIds ),
 							boardArea : boardArea,
 							boardPlayer : boardPlayer,
-							lock : true
-						}, this, function(result) {
-						}, function(is_error) {
 						});
-					} else {
-						console.log("[bmc] PlayCard Action false");
-					}
+
+					// if (this.checkAction( action, true)) {
+// console.log("[bmc] PlayCard Action true AJAX");
+// console.log("/" + this.game_name + "/" + this.game_name + "/" + action + ".html");
+
+						// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+							// card_ids : this.toNumberList( handItemIds ),
+							// player_id : this.player_id,
+							// boardArea : boardArea,
+							// boardPlayer : boardPlayer,
+							// lock : true
+						// }, this, function(result) {
+						// }, function(is_error) {
+						// });
+					// } else {
+						// console.log("[bmc] PlayCard Action false");
+					// }
 				} else {
 					console.log("[bmc] No card on board selected, do nothing (multiple cards)");
 				}
@@ -4362,6 +4369,13 @@ console.log("[bmc] Clear this.prepAreas4");
 			// Remove the borders from the deck and discard pile after the player draws
 			// var deck_items = this.deckOne.getAllItems();
 			
+console.log( this.alreadyODeckSC );
+
+			// if ( this.alreadyODeckSC == false ){
+				// this.alreadyODeckSC = true;
+				// return; // 
+			// }
+
 //			var dp_items = this.discardPile.getAllItems();
 			var dp_items = this.discardPileOne.getAllItems();
 // console.log("[bmc] ALL deckOne:");
@@ -4372,9 +4386,9 @@ console.log(dp_items);
 				// dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 			// }
 
-			for ( let i in dp_items ) {
-				dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
-			}
+			// for ( let i in dp_items ) {
+				// dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
+			// }
 			
 			// console.log( items );
 			console.log("[bmc] GAMEDATAS and this.player_id.");
@@ -4384,6 +4398,7 @@ console.log(dp_items);
 //			this.drawCard2nd(items, 'deck' ); // THIS WAS UNCOMMENTED ORIGINALLY
 
 			var itemsAll = this.deckAll.getSelectedItems();
+			
 			this.deckAll.unselectAll();
 
 			// Remove the borders from the deck and discard pile after the player draws
@@ -4406,42 +4421,69 @@ console.log( deckAllItems );
 /////////
 /////////
 		drawCard2nd : function ( items, drawSource ) {
-			console.log("[bmc] ENTER drawCard2nd.");
-			console.log( items );
-			console.log( drawSource );
+console.log("[bmc] ENTER drawCard2nd.");
+console.log( items );
+console.log( drawSource );
 			if (( items.length > 0 ) || ( drawSource == 'discardPile' )) {
-				console.log("[bmc] >0; Sending the card.");
+console.log("[bmc] >0; Sending the card.");
 				
-				var action = 'drawCard';
-				if (this.checkAction( action, true )) {
-					console.log( "[bmc] Action true. AJAX next" );
+				var card_id = items[0].id;
+console.log(card_id);
+
+				if ( isNaN( card_id ) ||   // Check for NAN
+					 ( card_id == null )){ // Also check for null
+console.log( '[bmc] Trace dc2:1' );
+					card_id = 0; // Not really 0, trying to avoid PHP error for missing ID
+					//  "Unexpected exception: Failed to get mandatory argument: id"
+				}
+
+				// var action = 'drawCard';
+				var newAction = 'actDrawCard';
+console.log( '[bmc] Trace dc2:2' );
+				
+				this.bgaPerformAction( newAction, { // 'actDrawCard' in drawCard2nd
+					player_id : this.player_id,
+					card_id : card_id,
+					drawSource : drawSource,
+				});
+				// },{ 
+					// checkAction: false,
+//					checkPossibleActions: false
+				// });
+console.log( '[bmc] Trace dc2:3' );
+					
+				// if (this.checkAction( action, true )) {
+					// console.log( "[bmc] Action true. AJAX next" );
 					// console.log( "/" + this.game_name + "/" + this.game_name + "/" + action + ".html");
 					
-					var card_id = items[0].id;
-console.log(card_id);
+					// var card_id = items[0].id;
+// console.log(card_id);
 
-					if ( isNaN( card_id ) ||   // Check for NAN
-						 ( card_id == null )){ // Also check for null
-						card_id = 0; // Not really 0, trying to avoid PHP error for missing ID
+					// if ( isNaN( card_id ) ||   // Check for NAN
+						 // ( card_id == null )){ // Also check for null
+						// card_id = 0; // Not really 0, trying to avoid PHP error for missing ID
 						//  "Unexpected exception: Failed to get mandatory argument: id"
-					}
-console.log(card_id);
+					// }
+// console.log(card_id);
 
-					this.ajaxcall( "/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-						id : card_id,
-						drawSource : drawSource,
-						player_id : this.player_id,
-						lock : true
-					}, this, function(result) {
-					}, function(is_error) {
-						console.log( "Error status reported by DRAWCARD Ajax (false=no error:", is_error );
-					});
-				} else {
-					console.log("[bmc] Cannot Draw. Action false");
-				}
+					// this.ajaxcall( "/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						// id : card_id,
+						// drawSource : drawSource,
+						// player_id : this.player_id,
+						// lock : true
+					// }, this, function(result) {
+					// }, function(is_error) {
+						// console.log( "Error status reported by DRAWCARD Ajax (false=no error:", is_error );
+					// });
+				// } else {
+					// console.log("[bmc] Cannot Draw. Action false");
+				// }
 				this.discardPileOne.unselectAll();
+console.log( '[bmc] Trace dc2:4' );
 
-
+				// Clear the checks after the unselects are done
+				this.alreadyODPSC = false;
+				
 				// this.deckOne.unselectAll();
 				
 				// Remove the borders from the deck and discard pile after the player draws
@@ -4456,33 +4498,30 @@ console.log(card_id);
 					// dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 				// }
 
-
-
-
-
-
 				this.deckAll.unselectAll();
+console.log( '[bmc] Trace dc2:5' );
+				this.alreadyODeckSC = false;
 				
 				// Remove the borders from the deck and discard pile after the player draws
 				var deckAllItems = this.deckAll.getAllItems();
+console.log( '[bmc] Trace dc2:6' );
 	// console.log("[bmc] ALL deckAll:");
 	// console.log(deckAllItems);
 
 				for ( let i in deckAllItems ) {
 	// console.log(i);
+console.log( '[bmc] Trace dc2:7' );
 					dojo.removeClass('deckAll_item_' + deckAllItems[i]['id'], 'stockitem_selected');
 				}
 
-
-
-
-
 				for ( let i in dp_items ) {
 					dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
+console.log( '[bmc] Trace dc2:8' );
 				}
 								
 			} else {
-				console.log("[bmc] No items; ignoring click on deck.");
+console.log( '[bmc] Trace dc2:9' );
+console.log("[bmc] No items; ignoring click on deck.");
 			}
 			console.log( "[bmc] EXIT drawCard2nd." );
 		},
@@ -4562,19 +4601,28 @@ console.log(selectedDiscards);
 				var card_id = card.id;                    
 
 console.log("[bmc] Discarding card!");
+console.log( card_id );
 
-				let action = 'discardCard';
+				// let action = 'discardCard';
+				var newAction = 'actDiscardCard';
 				
-				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-					id : card_id,
-					player_id: this.player_id,
-					lock : true
-				}, this, function(result) {
-				}, function(is_error) {
-				});
-console.log("[bmc] Did ajaxcall.");
-
 				this.playerHand.unselectAll();
+
+				this.bgaPerformAction( newAction, { // 'actDiscardCard'
+					player_id : this.player_id,
+					card_id : card_id,
+				});
+
+				// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+					// id : card_id,
+					// player_id: this.player_id,
+					// lock : true
+				// }, this, function(result) {
+				// }, function(is_error) {
+				// });
+// console.log("[bmc] Did ajaxcall.");
+
+				// this.playerHand.unselectAll();
 			}
 		},
 /////////
@@ -4882,16 +4930,49 @@ console.log( boardCardId );
 			handItems
 			) {
 			console.log("[bmc] action_playerGoDown");
-            this.sendAction('playerGoDown', {
-                cardGroupA: this.toNumberList( cardGroupA ),
-                cardGroupB: this.toNumberList( cardGroupB ),
-                cardGroupC: this.toNumberList( cardGroupC ),
-				boardCardId: boardCardId,
-				boardArea: boardArea,
-				boardPlayer: boardPlayer,
-				handItems: this.toNumberList( handItems )
-            });
-			
+
+            // var params = {};
+            // if (args) {
+                // for (var key in args) {
+                    // params[key] = args[key];
+                // }
+            // }
+            // params.lock = true;
+// console.log("[bmc] params: ");
+// console.log(params);
+
+console.log( cardGroupA );
+
+			var newAction = 'actPlayerGoDown';
+						
+			this.bgaPerformAction( newAction, { // 'actPlayerGoDown'
+			  cardIDGroupA: cardGroupA.join(','),
+			  cardIDGroupB: cardGroupB.join(','),
+			  cardIDGroupC: cardGroupC.join(','),
+			  boardCardId: boardCardId,
+			  boardArea: boardArea,
+			  boardPlayer: boardPlayer,
+			  handItemIds: handItems.join(','),
+			});
+
+			// this.bgaPerformAction( newAction, {
+                // cardGroupA: this.toNumberList( cardGroupA ),
+                // cardGroupB: this.toNumberList( cardGroupB ),
+                // cardGroupC: this.toNumberList( cardGroupC ),
+				// boardCardId: boardCardId,
+				// boardArea: boardArea,
+				// boardPlayer: boardPlayer,
+				// handItems: this.toNumberList( handItems )
+            // });
+            // this.sendAction('playerGoDown', {
+                // cardGroupA: this.toNumberList( cardGroupA ),
+                // cardGroupB: this.toNumberList( cardGroupB ),
+                // cardGroupC: this.toNumberList( cardGroupC ),
+				// boardCardId: boardCardId,
+				// boardArea: boardArea,
+				// boardPlayer: boardPlayer,
+				// handItems: this.toNumberList( handItems )
+            // });
 		},
 /////////
 /////////
@@ -4904,38 +4985,23 @@ console.log("[bmc] numberedList: " + numberedList);
 /////////
 /////////
 /////////
-        sendAction: function ( action, args ) {
-console.log("[bmc] ENTER sendAction: " + action + " : " );
-console.log(args);
-            var params = {};
-            if (args) {
-                for (var key in args) {
-                    params[key] = args[key];
-                }
-            }
-            params.lock = true;
-console.log("[bmc] params: ");
-console.log(params);
-            this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" +action+'.html', params, this, function (result) { });
-console.log("[bmc] EXIT sendAction: " + action + " : " );
-        },
+        // sendAction: function ( action, args ) {
+// console.log("[bmc] ENTER sendAction: " + action + " : " );
+// console.log(args);
+            // var params = {};
+            // if (args) {
+                // for (var key in args) {
+                    // params[key] = args[key];
+                // }
+            // }
+            // params.lock = true;
+// console.log("[bmc] params: ");
+// console.log(params);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            // this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" +action+'.html', params, this, function (result) { });
+// console.log("[bmc] EXIT sendAction: " + action + " : " );
+        // },
 /////////
 /////////
 /////////
@@ -5264,6 +5330,13 @@ console.log( '[bmc] C' );
 /////////
 /////////
 /////////
+		onDiscardPileSelectionChangedClick: function() {
+console.log( '[bmc] onDiscardPileSelectionChangedClick' );
+			this.onDiscardPileSelectionChanged();
+		},
+/////////
+/////////
+/////////
 		onDiscardPileSelectionChanged: function() {
 console.log( "[bmc] ENTER onDiscardPileSelectionChanged." );
 console.log( "[bmc] GAMEDATAS and this.player_id" );
@@ -5271,56 +5344,177 @@ console.log( "[bmc] GAMEDATAS and this.player_id" );
 console.log( this.gamedatas );
 console.log( this.player_id );
 console.log( this.someoneLP );
+// console.log( this.alreadyODPSC );
 
-			// If the gamestate is play, then treat it as a discard.
+			// If hand has 1 card selected, and state is play, then try to discard (no need for player check).
+			// If hand has no selections and state is draw, and DP has 1 card selected, and it's not my turn, then try to buy it.
+			// If hand has no selections and state is draw, and DP has 1 card selected, and it's my turn, then draw it.
 
-            var handCards = this.playerHand.getSelectedItems();
+			var dpSelectedItems = this.discardPileOne.getSelectedItems();
+console.log( dpSelectedItems );
+console.log( dpSelectedItems.length );
+			
+			var dp_items = this.discardPileOne.getAllItems();
+			for ( let i in dp_items ) {
+				dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
+			}
 
-			if (( this.gamedatas.gamestate.name == 'playerTurnPlay' ) &&
-				( handCards.length == 1)) {
-					
-				this.onPlayerDiscardButton();
-	
-			// If the gamestate is draw, then draw the top of discard pile (chosen in php).
-			} else if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ) {
-				
-				// If there was a LP event just prior then ignore clicking of the discard PILE
-				
-				if ( this.someoneLP == false ){
-					// Remove the borders from the deck and discard pile after the player draws
-					// var deck_items = this.deckOne.getAllItems();
-					var dp_items = this.discardPileOne.getAllItems();
+			var handCards = this.playerHand.getSelectedItems();
+console.log( handCards );
+console.log( handCards.length );
 
-					// for ( let i in deck_items ) {
-						// dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
-					// }
+			var deckAllItems = this.deckAll.getAllItems();
 
-					for ( let i in dp_items ) {
-						dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
+			for ( let i in deckAllItems ) {
+				dojo.removeClass('deckAll_item_' + deckAllItems[i]['id'], 'stockitem_selected');
+			}
+
+console.log( '[bmc] Trace 1' );
+			if ( handCards.length === 1 ){
+console.log( '[bmc] Trace 2' );
+				if ( this.gamedatas.gamestate.name == 'playerTurnPlay' ){
+console.log( '[bmc] Trace 3' );
+					this.onPlayerDiscardButton();
+				}
+			} else {
+console.log( '[bmc] Trace 4' );
+				if ( handCards.length === 0 ){
+console.log( '[bmc] Trace 5' );
+					if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ){
+console.log( '[bmc] Trace 6' );
+						if ( dpSelectedItems.length === 1 ){
+console.log( '[bmc] Trace 7' );
+							if ( this.gamedatas.gamestate.active_player != this.player_id ){
+console.log( '[bmc] Trace 8' );
+								this.onPlayerBuyButton();
+							} else { // It is my turn, check if dp has anything Selected
+console.log( '[bmc] Trace 9' );
+								var items = new Array();
+								items[0] = {id: "0", type: 0 }; // "Fake" card just used for discarding (i.e. we need to send *something* but
+								// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
+									
+								this.drawCard2nd( items, 'discardPile' );
+							}
+						}
 					}
-
-					var deckAllItems = this.deckAll.getAllItems();
-
-					for ( let i in deckAllItems ) {
-						dojo.removeClass('deckAll_item_' + deckAllItems[i]['id'], 'stockitem_selected');
-					}
-
-					var items = new Array();
-					
-					items[0] = {id: "0", type: 0 }; // "Fake" card just used for discarding (i.e. we need to send *something* but
-					// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
-
-					this.drawCard2nd( items, 'discardPile' );
 				}
 			}
+								
+				
 
-			// Click the BUY button if it's not our turn and it's DRAW state
-//			if (( this.gamedatas.gamestate.active_player != this.player_id ) &&
-			// Click the BUY button if it's not our turn, in any state
-//				( this.gamedatas.gamestate.name == 'playerTurnDraw' )) {
-			if ( this.gamedatas.gamestate.active_player != this.player_id ) {
-				this.onPlayerBuyButton();
+
+
+
+
+
+/*					
+				}
+			} else {
+console.log( '[bmc] Trace 3' );
+				if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ){
+console.log( '[bmc] Trace 4' );
+					if ( typeof dpSelectedItems !== "undefined" ){
+console.log( '[bmc] Trace 5' );
+						if ( this.dpSelectedItems.length === 1 ){
+console.log( '[bmc] Trace 6' );
+							if ( this.gamedatas.gamestate.active_player != this.player_id ){
+console.log( '[bmc] Trace 7' );
+								this.onPlayerBuyButton();
+							}
+						} else { // It is my turn, check if dp has anything Selected
+console.log( '[bmc] Trace 8' );
+							var items = new Array();
+							items[0] = {id: "0", type: 0 }; // "Fake" card just used for discarding (i.e. we need to send *something* but
+							// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
+								
+							this.drawCard2nd( items, 'discardPile' );
+						}		
+					}
+				}
 			}
+*/			
+			// Change the discard pile and player hand only at the end
+			this.discardPileOne.unselectAll();
+			this.playerHand.unselectAll();
+
+/*
+
+
+
+
+
+
+
+
+
+
+			
+			
+
+			// if ( this.alreadyODPSC == false ){
+				// this.alreadyODPSC = true;
+				// else run the function; But this clears the discard selections
+				// If the gamestate is play, then treat it as a discard.
+
+				// var handCards = this.playerHand.getSelectedItems();
+
+				// if (( this.gamedatas.gamestate.name == 'playerTurnPlay' ) &&
+					// ( handCards.length == 1)) {
+
+						
+					// this.onPlayerDiscardButton();
+		
+				// If the gamestate is draw, then draw the top of discard pile (chosen in php).
+				// Or someone is trying to buy the discard.
+				} else if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ) {
+	console.log( '[bmc] Trace 2' );
+					
+					// If there was a LP event just prior then ignore clicking of the discard PILE
+					
+					if ( this.someoneLP == false ){
+						// Remove the borders from the deck and discard pile after the player draws
+						// var deck_items = this.deckOne.getAllItems();
+	console.log( '[bmc] Trace 3' );
+
+						var dp_items = this.discardPileOne.getAllItems();
+
+						for ( let i in dp_items ) {
+							dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
+						}
+	console.log( '[bmc] Trace 4' );
+
+						var deckAllItems = this.deckAll.getAllItems();
+
+						for ( let i in deckAllItems ) {
+							dojo.removeClass('deckAll_item_' + deckAllItems[i]['id'], 'stockitem_selected');
+						}
+	console.log( '[bmc] Trace 5' );
+
+						var items = new Array();
+						
+						items[0] = {id: "0", type: 0 }; // "Fake" card just used for discarding (i.e. we need to send *something* but
+						// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
+
+						if ( this.gamedatas.gamestate.active_player != this.player_id ) {
+							// Click the BUY button if it's not our turn and it's DRAW state
+	console.log( '[bmc] Trace 6' );
+							this.onPlayerBuyButton();
+						} else {
+	console.log( '[bmc] Trace 7' );
+							this.drawCard2nd( items, 'discardPile' );
+							this.discardPileOne.unselectAll(); // Clear the selection here to avoid double trigger of ODPSC
+						}
+					}
+	console.log( '[bmc] Trace 8' );
+
+					if ( this.gamedatas.gamestate.active_player != this.player_id ) {
+						// Click the BUY button if it's not our turn, in any state
+	console.log( '[bmc] Trace 9' );
+						this.onPlayerBuyButton();
+					}
+				}
+			}
+*/
 		},
 /////////
 /////////
@@ -5368,19 +5562,33 @@ console.log( this.someoneLP );
 					  pA_B_ids.length + 
 					  pA_C_ids.length + 
 					  pA_J_ids.length ) != 0 ){
-	console.log( "[bmc] Saving prep areas." );
+console.log( "[bmc] Saving prep areas." );
 					
-					var action = 'savePrep';
-					this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+					// var action = 'savePrep';
+					var newAction = 'actSavePrep';
+
+					this.bgaPerformAction( newAction, { // 'actSavePrep'
 						player_id : this.player_id,
 						area_A_Items : this.toNumberList( pA_A_ids ),
 						area_B_Items : this.toNumberList( pA_B_ids ),
 						area_C_Items : this.toNumberList( pA_C_ids ),
 						area_J_Items : this.toNumberList( pA_J_ids ),
-						lock : true
-					}, this, function(result) {
-					}, function(is_error) {
+					},{ 
+						checkAction: false,
+//						checkPossibleActions: true 
 					});
+
+
+					// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+						// player_id : this.player_id,
+						// area_A_Items : this.toNumberList( pA_A_ids ),
+						// area_B_Items : this.toNumberList( pA_B_ids ),
+						// area_C_Items : this.toNumberList( pA_C_ids ),
+						// area_J_Items : this.toNumberList( pA_J_ids ),
+						// lock : true
+					// }, this, function(result) {
+					// }, function(is_error) {
+					// });
 				}
 			}
 		},
@@ -5393,17 +5601,22 @@ console.log( this.someoneLP );
 			// Move them from hand to prep areas
 
 			if ( this.goneDown[ this.player_id ] != 1 ) { // If player has not gone down allow the prep save
-				var action = 'loadPrep';
-				this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+				// var action = 'loadPrep';
+				var newAction = 'actLoadPrep';
+
+				this.bgaPerformAction( newAction, { // 'actLoadPrep'
 					player_id : this.player_id,
-					// area_A_Items : this.toNumberList( pA_A_ids ),
-					// area_B_Items : this.toNumberList( pA_B_ids ),
-					// area_C_Items : this.toNumberList( pA_C_ids ),
-					// area_J_Items : this.toNumberList( pA_J_ids ),
-					lock : true
-				}, this, function(result) {
-				}, function(is_error) {
+				},{ 
+					checkAction: false,
+//						checkPossibleActions: true 
 				});
+
+				// this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
+					// player_id : this.player_id,
+					// lock : true
+				// }, this, function(result) {
+				// }, function(is_error) {
+				// });
 			}
 		},
 /////////
