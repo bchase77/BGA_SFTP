@@ -164,25 +164,6 @@ More than 10 MB of images (did you try https://tinypng.com?) Please try to optim
 Actions detected on .action.php file. You can now use Auto-wired actions to avoid pass-through functions in .action.php file.
 If you transform your project to use only auto-wired actions, you can then delete the .action.php file.
 
-The ajaxcall function is deprecated, check the bgaPerformAction function.
-liverpoolrummy/liverpoolrummy.js:1710 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-liverpoolrummy/liverpoolrummy.js:1801 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-liverpoolrummy/liverpoolrummy.js:1834 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-liverpoolrummy/liverpoolrummy.js:3470 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-liverpoolrummy/liverpoolrummy.js:3509 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-liverpoolrummy/liverpoolrummy.js:3578 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-liverpoolrummy/liverpoolrummy.js:3749 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-liverpoolrummy/liverpoolrummy.js:3869 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-liverpoolrummy/liverpoolrummy.js:4178 => this.ajaxcall( "/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-liverpoolrummy/liverpoolrummy.js:4293 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-liverpoolrummy/liverpoolrummy.js:4300 => console.log("[bmc] Did ajaxcall.");
-liverpoolrummy/liverpoolrummy.js:4644 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" +action+'.html', params, this, function (result) { });
-liverpoolrummy/liverpoolrummy.js:5020 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-liverpoolrummy/liverpoolrummy.js:5043 => this.ajaxcall("/" + this.game_name + "/" + this.game_name + "/" + action + ".html", {
-
-@import should not be used in CSS files. If it's the line @import url(../../../css/csslayer.css);, you can delete it.
-liverpoolrummy/liverpoolrummy.css:46 => /* Note: you must not use any @import directive */
-
 
 
 // TODO: Check all actions for public, variable type, statemachine
