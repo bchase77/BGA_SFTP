@@ -1660,7 +1660,7 @@ console.log("[bmc] Doing the window.onload");
 					break;
 				case 'playerTurnPlay':
 					console.log("[bmc] FOUND PlayerTurnPlay");
-					this.showHideButtons();
+					//this.showHideButtons();
 					break;
 				case 'nextPlayer':
 					console.log("[bmc] FOUND nextPlayer");
@@ -4434,7 +4434,7 @@ console.log("[bmc] No items; ignoring click on deck.");
 /////////
 /////////
 		clearButtons : function () {
-// console.log( "[bmc] ENTER clearButtons" );
+console.log( "[bmc] ENTER clearButtons" );
 		    this.removeActionButtons(); // Remove the button because they discarded
 			// dojo.replaceClass( 'buttonBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
 			// dojo.replaceClass( 'buttonNotBuy', "bgabutton_gray", "bgabutton_blue" ); // item, add, remove
@@ -4962,6 +4962,7 @@ console.log(deckAllItems);
 //				dojo.replaceClass( 'buttonLiverpool', "bgabutton_gray", "bgabutton_red" ); // item, add, remove
 				dojo.replaceClass( 'buttonLiverpool', "bgabutton_blue", "bgabutton_red" ); // item, add, remove
 				this.gamedatas.liverpoolExists = false;
+				this.showHideButtons();
 			}
 
 
@@ -5238,8 +5239,11 @@ console.log( this.someoneLP );
 // console.log( this.alreadyODPSC );
 
 			// If hand has 1 card selected, and state is play, then try to discard (no need for player check).
-			// If hand has no selections and state is draw, and DP has 1 card selected, and it's not my turn, then try to buy it.
-			// If hand has no selections and state is draw, and DP has 1 card selected, and it's my turn, then draw it.
+			// If state is draw, and it's not my turn, then try to buy it.
+			// If state is draw, and DP has 1 card selected, and it's my turn, then draw it.
+			
+			// If it's not my turn then try to buy it.
+			// If it is my turn and if 
 
 			var dpSelectedItems = this.discardPileOne.getSelectedItems();
 console.log( dpSelectedItems );
@@ -5261,36 +5265,36 @@ console.log( handCards.length );
 			}
 
 console.log( '[bmc] Trace 1' );
-			if ( handCards.length === 1 ){
+			if ( this.gamedatas.gamestate.active_player != this.player_id ){ // It's not my turn, so try to buy it
 console.log( '[bmc] Trace 2' );
-				if ( this.gamedatas.gamestate.name == 'playerTurnPlay' ){
+				if ( dpSelectedItems.length === 1 ){
 console.log( '[bmc] Trace 3' );
-					this.onPlayerDiscardButton();
+					this.onPlayerBuyButton();
 				}
-			} else {
+			} else { // It is my turn
 console.log( '[bmc] Trace 4' );
-				if ( handCards.length === 0 ){
+				if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ){
 console.log( '[bmc] Trace 5' );
-					if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ){
+					if ( dpSelectedItems.length === 1 ){
 console.log( '[bmc] Trace 6' );
-						if ( dpSelectedItems.length === 1 ){
+						var items = new Array();
+						items[0] = {id: "0", type: 0 }; // "Fake" card just used for the API (i.e. we need to send *something* but
+						// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
+							
+						this.drawCard2nd( items, 'discardPile' );
+					}
+				} else {
 console.log( '[bmc] Trace 7' );
-							if ( this.gamedatas.gamestate.active_player != this.player_id ){
+					if ( this.gamedatas.gamestate.name == 'playerTurnPlay' ){
 console.log( '[bmc] Trace 8' );
-								this.onPlayerBuyButton();
-							} else { // It is my turn, check if dp has anything Selected
+						if ( handCards.length === 1 ){
 console.log( '[bmc] Trace 9' );
-								var items = new Array();
-								items[0] = {id: "0", type: 0 }; // "Fake" card just used for discarding (i.e. we need to send *something* but
-								// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
-									
-								this.drawCard2nd( items, 'discardPile' );
-							}
+							this.onPlayerDiscardButton();
 						}
 					}
 				}
 			}
-								
+console.log( '[bmc] Trace 10' );
 					
 			// Change the discard pile and player hand only at the end
 			this.discardPileOne.unselectAll();
@@ -5605,7 +5609,7 @@ console.log("[bmc] cardIds: " + cardIds);
 /////////
 /////////
 		showHideButtons : function() {
-// console.log("[bmc] ENTER ShowHideButtons");
+console.log("[bmc] ENTER ShowHideButtons");
 			let buyButtonID = 'buttonBuy';
 			// let notBuyButtonID = 'buttonNotBuy';
 // console.log( "[bmc] BUTTONIDs:" );
@@ -6235,6 +6239,7 @@ console.log("[bmc] ENTER notif_drawcard");
 console.log( notif );
 
 			if ( notif.args.drawsource == 'discardPile' ) {
+console.log("[bmc] drew from discardPile");
 				this.clearButtons();
 			}
 
