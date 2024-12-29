@@ -739,20 +739,20 @@ class LiverpoolRummy extends Table
 			);
 		$testPlayerHandArray[1] = array(
 			0 => array(
-				'type' => '1', // Suit
-				'type_arg' => '5' // Value
+				'type' => '2', // Suit
+				'type_arg' => '10' // Value
 				),
 			1 => array(
-				'type' => '5', // Suit
-				'type_arg' => '1' // Value
+				'type' => '2', // Suit
+				'type_arg' => '11' // Value
 				),
 			2 => array(
-				'type' => '1', // Suit
-				'type_arg' => '7' // Value
+				'type' => '2', // Suit
+				'type_arg' => '12' // Value
 				),
 			3 => array(
-				'type' => '1', // Suit
-				'type_arg' => '6' // Value
+				'type' => '5', // Suit
+				'type_arg' => '1' // Value
 				),
 			4 => array(
 				'type' => '1', // Suit
@@ -760,15 +760,15 @@ class LiverpoolRummy extends Table
 				),
 			5 => array(
 				'type' => '1', // Suit
-				'type_arg' => '9' // Value
+				'type_arg' => '8' // Value
 				),
 			6 => array(
 				'type' => '3', // Suit
-				'type_arg' => '4' // Value
+				'type_arg' => '8' // Value
 				),
 			7 => array(
 				'type' => '3', // Suit
-				'type_arg' => '5' // Value
+				'type_arg' => '8' // Value
 				),
 			8 => array(
 				'type' => '3', // Suit

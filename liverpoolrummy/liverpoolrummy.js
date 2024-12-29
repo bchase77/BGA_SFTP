@@ -154,7 +154,7 @@ console.log("[bmc] Clear this.prepAreas2");
 // 12/8/2024: It doesn't update the score until after everyone clicks on to the next
 //
 // try to replay 607604242 (I played it)
-// TODO: AFter play A on 10,J,Q,Joker it didn't sort right. It sorts after refresh.
+// TODO: AFter play A on 10,J,Q,Joker it didn't sort right. It sorts right after refresh.
 //
 // 2024-11-27: WISHLIST didn't buy and something strange happened before move ~10:
 //     https://boardgamearena.com/archive/replay/230921-1000/?table=420280348&player=94627511&comments=86675870;
@@ -169,6 +169,11 @@ console.log("[bmc] Clear this.prepAreas2");
 //  times the game doesn't load right away or takes you to the "click here to start" 
 //  screen and other people have already played.  
 // 
+// Drawn card doesn't always slide
+// Cannot always buy by clicking DISCARDED card
+// Board doesn't always sort until CTRL-F5
+
+//
 //
 // 2024-12-27: These tables totally hang the browser and are unrecoverable:
 //   Pegs 1x CPU at 100%: https://boardgamearena.com/archive/replay/241211-1034/?table=600467831
@@ -908,7 +913,8 @@ console.log( this.gamedatas.enableWishList );
 console.log("[bmc] spectatorMode:");
 console.log( isReadOnly );
 
-			if ( isReadOnly ) { // If spectator then hide wishlist (spectators are readOnly)
+			// if ( isReadOnly ) { // If spectator then hide wishlist (spectators are readOnly)
+			if ( this.isSpectator ) { // If spectator then hide wishlist (spectators are readOnly)
 				
 console.log("[bmc] spectator mode is true");
 				var obj = { display: "none" };
@@ -916,12 +922,13 @@ console.log("[bmc] spectator mode is true");
 				dojo.setAttr("wishListAreaS",          "style", obj );
 				dojo.setAttr("wishListAreaH",          "style", obj );
 				dojo.setAttr("wishListAreaD",          "style", obj );
-				dojo.setAttr("myhand_wrap",            "style", obj );
 				dojo.setAttr("wishListAreaWrap",       "style", obj );
+				dojo.setAttr("myhand_wrap",            "style", obj );
 				dojo.setAttr("TLeftBox",               "style", obj );
 				dojo.setAttr("myHandArea",             "style", obj );
 				dojo.setAttr("MYHANDTRANSLATED",       "style", obj );
 				dojo.setAttr("myHandSize",             "style", obj );
+				dojo.setAttr("myhand",                 "style", obj );
 				dojo.setAttr("buttonPlayerSortBySet",  "style", obj );
 				dojo.setAttr("SORTSETSTRANSLATED",     "style", obj );
 				dojo.setAttr("buttonPlayerSortByRun",  "style", obj );
@@ -937,7 +944,6 @@ console.log("[bmc] spectator mode is true");
 				dojo.setAttr("buttonLoadPrep",         "style", obj );
 				dojo.setAttr("voice",                  "style", obj );
 				dojo.setAttr("LIVERPOOL",              "style", obj );
-				dojo.setAttr("myhand",                 "style", obj );
 				dojo.setAttr("myPrepA",                "style", obj );
                 dojo.setAttr("myPrepB",                "style", obj );
                 dojo.setAttr("myPrepC",                "style", obj );
