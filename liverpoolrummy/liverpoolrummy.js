@@ -136,36 +136,6 @@ console.log("[bmc] Clear this.prepAreas2");
 // Diamonds: 346Q
 // Jokers: 1
 
-
-/* 2024-12-07: Complaints from the BGA checker-inner thing:
-
-Deprecated images have been detected on the project, can you remove them? They should be in the Game Metadata Manager now
-game_icon.png,
-// game_icon.webp,
-// game_icon.png.worksgomoku,
-// game_display1.jpg,
-// game_boxWithText.png,
-// game_display2.jpg,
-// game_icon, game_icon.jpg,
-// game_display3.jpg,
-// game_box75.png,
-// game_box.jpg,
-// game_box180.png,
-// game_icon.png.webp,
-// game_boxWOText.png,
-// game_banner.jpg,
-// game_box.png,
-// publisher.png,
-// game_display0.jpg,
-// game_icon - Copy.png
-More than 20 image files. Did you think about using CSS sprites, Dave?
-More than 10 MB of images (did you try https://tinypng.com?) Please try to optimize your images to stay below 10Mo.
-
-Actions detected on .action.php file. You can now use Auto-wired actions to avoid pass-through functions in .action.php file.
-If you transform your project to use only auto-wired actions, you can then delete the .action.php file.
-
-
-
 // TODO: Check all actions for public, variable type, statemachine
 // test/public/int       /states actDiscardCard
 // public/int       /states 'actPlayerHasReviewedHand'
@@ -182,7 +152,9 @@ If you transform your project to use only auto-wired actions, you can then delet
 // public/int       /states(na) 'actLoadPrep'
 // 
 // 12/8/2024: It doesn't update the score until after everyone clicks on to the next
-
+//
+// try to replay 607604242 (I played it)
+// TODO: AFter play A on 10,J,Q,Joker it didn't sort right. It sorts after refresh.
 //
 // 2024-11-27: WISHLIST didn't buy and something strange happened before move ~10:
 //     https://boardgamearena.com/archive/replay/230921-1000/?table=420280348&player=94627511&comments=86675870;
@@ -198,20 +170,26 @@ If you transform your project to use only auto-wired actions, you can then delet
 //  screen and other people have already played.  
 // 
 //
+// 2024-12-27: These tables totally hang the browser and are unrecoverable:
+//   Pegs 1x CPU at 100%: https://boardgamearena.com/archive/replay/241211-1034/?table=600467831
+//   Also table: 568800147 (https://boardgamearena.com/bug?id=140186)
+//
 // 112624: 2024-04-14: https://boardgamearena.com/table?table=467776865
 //       HANG. Pegs the CPU to high %.
-
 //       endacot drew a card but then could not discard.
 //       Options for the game 3 decks, no jokers, unlimited buys
 //       endacot hand: Spades: AA24. Clubs: 210J Hearts: 510 Diamonds: 2. Drew the AH
 //
-// 115666: 2024-04-14: https://boardgamearena.com/table?table=479420597
-//       HANG. Pegs the CPU to high %.
+// Tables:
+// 446864256
+// 485302497
 //
+// 115666: 2024-04-14: https://boardgamearena.com/table?table=479420597
+//       HANG. After Joyeous went down. Move 247. Pegs the CPU to high %.
 //       2nd hand of 7. Someone went down and the whole game hung.
 //
 // 2024-04-14: https://boardgamearena.com/table?table=480704288
-//       HANG. 
+//       HANG. Move 17.
 //       Derusian tried to go down with 3J and 3Jokers and the game just hung.
 // 
 // 118484: 2024-04-14: https://boardgamearena.com/table?table=490903234
@@ -228,6 +206,20 @@ If you transform your project to use only auto-wired actions, you can then delet
 // 2 Runs and 1 set: 2345, 10QKJ, 10c,10s,10D
 // Extra: 3c, 7s, js, 7h, 9h, kh
 // 
+// Advice on avioding deadlocks:
+// Do you have any for () or while () loops without super explicit ending conditions?  Are there any such loops that MIGHT have their condition variable modified mid-loop?
+// Do you use any recursive function calls?
+// (the browser maxing the CPU could indicate a JS bug instead of PHP -- similar questions would then apply, but it should be much easier to use a browser debugger in this case) 
+// if(leftOverJokers>0){for(let e=h-1;e>1;e--)
+// @SevronOaks it appears you have an unbounded loop due to "h" being infinite / not defined, possibly 
+// I waited until Firefox offered me the Debug Script button, and it immediately brought me to the loop.  Good luck!  Feel free to ask in Discord/javascript if you have further issues with it.
+// SevronOaks — Today at 1:38 PM
+// Oh wow good catch!! You found this with Firefox? I use Chrome alot but can try FF.  And yeah that joker analysis code is a ratsnest of terrible memories and many re-attempts, trying to get it to work right. I've spent dozens of hours in there... I wouldn't be surprised if that's it.
+// GTSchemer — Today at 1:39 PM
+// Yeah, normally you can type "debugger" in the console, but in this case it was stuck...but fortunately if you let it sit like 30 seconds, it gives a warning about the script slowing the browser, and let me click Debug Script.
+
+//
+//
 // 12/9/2023:
 // Transition from LIVERPOOLPENATLY in 2 states.
 // [06-Dec-2023 23:28:07 Europe/London] PHP Warning:  array_count_values(): Can only count STRING and INTEGER values! in
@@ -804,39 +796,11 @@ console.log(this.gamedatas.hand);
 
 			this.playerHand.setSelectionAppearance( 'class' );
 
-			// this.deck = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
-            //this.deck.create( this, $('deck'), this.cardwidth, this.cardheight );            
-
-			// this.deck.image_items_per_row = 13;
-			// this.deck.setOverlap( 0.1, 0 );
-//			this.deck.setOverlap( 100, 0 );
-			// this.item_margin = 0;
-
-			// Item 54, color 5, value 3 is red back of the card
-			// this.deck.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
-			// this.deck.addItemType( 2, 2, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
-//EXP Start 11/8			
-			// Create a single card to represent the card back
-			// this.deckOne = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
-            // this.deckOne.create( this, $('deckOne'), this.cardwidth, this.cardheight );            
-			// this.deckOne.image_items_per_row = 13;
-
-			// Item 54, color 5, value 3 is red back of the card
-			// this.deckOne.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
-			// this.deckOne.addToStockWithId(1, this.gamedatas.deckTopCard );
-//EXP End 11/8
-
-// console.log( "this.deckOne" );
-// console.log( this.deckOne );
-
-
-
 			this.deckAll = new ebg.stock(); // New stock for the draw pile (the rest of the deck)
             this.deckAll.create( this, $('deckAll'), this.cardwidth, this.cardheight );            
 			this.deckAll.image_items_per_row = 13;
 
 			// Item 54, color 5, value 3 is red back of the card
-//			this.deckAll.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54);
 			this.deckAll.addItemType( 1, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 54); // Red back
 			this.deckAll.addItemType( 2, 1, g_gamethemeurl + 'img/4ColorCardsx5.png', 55); // Blue back
 //			this.deckAll.addToStockWithId(1, this.gamedatas.deckTopCard );
@@ -874,93 +838,8 @@ console.log(this.gamedatas.hand);
 					}
 				}
 				
-				// var el = {};
-				// var thisDeckAll = new Array();
-				// var thisDeckAllEnt = Object.entries( this.gamedatas.deckIDsFull );
-				//var thisDeckAllKey = Object.entries( this.gamedatas.deckIDsFull );
-				//var thisDeckAllVal = Object.entries( this.gamedatas.deckIDsFull );
-
-				// console.log( thisDeckAllEnt );
-				// console.log( thisDeckAllKey );
-				// console.log( thisDeckAllVal );
-				
-//				for ( let i = 0; i < this.gamedatas.cardIDsInDeck.length; i++ ){
-
-				// console.log( this.gamedatas.deckIDsFull );
-				// console.log( this.gamedatas.deckIDsFull[0] );
-				// console.log( this.gamedatas.deckIDsFull.length );
-
-				// let idx = 0;
-				
-				
-//				TODO: Neitehr one of these below is right. Need to put the deckAll in order from next card back to the bottom card in the deck.
-				
-				
-				
-				// for ( let i = 0; i < thisDeckAllEnt.length; i++ ){
-					// let locArg = thisDeckAllEnt[ i ][ 1 ][ 'location_arg' ];
-					// let locArg = thisDeckAllEnt[ i ][ 0 ];
-					// console.log( locArg );
-					// thisDeckAll[ i ] = parseInt( locArg );
-				// }
-
-//				console.log( thisDeckAll );
-				
-//				thisDeckAll.sort((a, b) => a - b); 
-				
-//				console.log( thisDeckAll );
-				
-				// this.deckAll.sort((a, b) => a.id.localeCompare(b.id)); 
-
-/*
-				var thisDeckIDs = this.deckAll.getAllItems();
-
-				var el = {};
-				var thisDeckAll = new Array();
-				
-				for ( let i in thisDeckIDs ) {
-					//console.log(i);
-					
-					var [ color, value ] = this.getColorValue( thisDeckIDs[ i ]['type'] );
-
-					el = {
-						'id' : thisDeckIDs[i]['id'],
-						'unique_id' : this.getCardUniqueId(color, value),
-						'type' : color,
-						'type_arg' : value,
-						'location' : 'hand',
-						'location_arg' : this.player_id
-					}
-					thisDeckAll[thisDeckIDs[i]['id']] = el;
-				}
-console.log( "thisDeckAll:" );
-console.log( thisDeckAll );
-
-				thisDeckAll.sort( this.compareTypeArg ) ;
-
-				let weightChange = {};
-
-				for ( let i in thisDeckAll ) {
-					if ( thisDeckAll[i].type == 5 ) {
-						weightChange[ thisDeckAll[ i ].unique_id ] = 100; // Keep jokers on the right
-					} else {
-						weightChange[ thisDeckAll[ i ].unique_id ] = parseInt( thisDeckAll[ i ].type_arg );
-					}
-				}
-console.log("weightChange");
-console.log(weightChange);
-				this.deckAll.changeItemsWeight(weightChange);
-*/
-
-
-
-
 console.log("[bmc] this.deckAll(2)");
 console.log( this.deckAll );
-
-
-
-
 
 			}
 
@@ -969,9 +848,6 @@ console.log( this.deckAll );
 			this.deckAll.autowidth = true;
 			this.deckAll.horizontal_overlap  = -1; // current bug in stock - this is needed to enable z-index on overlapping items
 			this.deckAll.use_vertical_overlap_as_offset = false; // this is to use normal vertical_overlap
-
-
-
 
 			// Create the images for the fronts of all the cards
 			this.discardPileOne = new ebg.stock(); // New stock for the top of the discard pile
@@ -2204,6 +2080,17 @@ console.log("[bmc] Exit removeJokerBorder");
 /////////
 		sortRun : function( boardCards ) {
 console.log( "[bmc] ENTER sortRunNew" );
+
+/*
+Dec 27 2024
+todo: CAn return early but if 2089 is returned then nothing is drawn on the board. Then not sure how to go down (cannot play joker onto a meld.
+
+It worked when the board sort was there. Maybe becuase then the variabl is not empty?!?!
+*/
+			if ( this.gamedatas.runsNeeded == 0 ) {
+console.log( "[bmc] No runs needed, return." );
+				return boardCards;
+			}
 // console.log( boardCards );
 
 			if ( boardCards.length != 0 ) {
@@ -2267,11 +2154,11 @@ console.log( "[bmc] ENTER sortRunNew" );
 						aceCount++;
 					}
 				}
-// console.log("[bmc] jokers:");
-// console.log(jokers);
-// console.log(jokerCount);
-// console.log(thereIsAnAce);
-// console.log(aceCount);
+console.log("[bmc] jokers:");
+console.log(jokers);
+console.log(jokerCount);
+console.log(thereIsAnAce);
+console.log(aceCount);
 				var cardValuesHard = new Array();
 				
 				for ( let i in cards ) {
@@ -2280,8 +2167,8 @@ console.log( "[bmc] ENTER sortRunNew" );
 						cardValuesHard[ cards[ i ][ 'type' ]] = cards[ i ][ 'type' ];
 					}
 				}
-// console.log("[bmc] cardValuesHard");
-// console.log(cardValuesHard);
+console.log("[bmc] cardValuesHard");
+console.log(cardValuesHard);
 				var usedPositions = new Array(); // Temporary variable to track positions in the run while assigning jokers
 				
 				var jokerIndex = 0;
@@ -2291,28 +2178,28 @@ console.log( "[bmc] ENTER sortRunNew" );
 				
 				// Go through positions 1 through King and track 'real' cards if they exist
 				for ( let i = 2; i < 14 ; i++) {
-// console.log( i );
-// console.log(cardValuesHard[ i ]);
-// console.log(foundFirst);
+console.log( i );
+console.log(cardValuesHard[ i ]);
+console.log(foundFirst);
 					if ( cardValuesHard[ i ] != null ) {
-// console.log("Location notNull:  (cards)");
-// console.log( i );
-// console.log( cards );
+console.log("Location notNull:  (cards)");
+console.log( i );
+console.log( cards );
 						foundFirst = true;
 						index = cards.map( function(e) { return e.type; }).indexOf( i );
-// console.log("FOUND THE FIRST HARD CARD (index, value)");
-// console.log(index);
-// console.log(i);
+console.log("FOUND THE FIRST HARD CARD (index, value)");
+console.log(index);
+console.log(i);
 						cards[ index ][ 'boardLieIndex' ] = i;
 						usedPositions.push(i);
 					} else {
-// console.log("card location is Null");
-// console.log( i );
+console.log("card location is Null");
+console.log( i );
 						if ( foundFirst ) {
-// console.log("foundFirst");
-// console.log(cardValuesHard.length);
-// console.log("Nov2023cards");
-// console.log(cards);
+console.log("foundFirst");
+console.log(cardValuesHard.length);
+console.log("Nov2023cards");
+console.log(cards);
 
 
 
@@ -2320,48 +2207,48 @@ console.log( "[bmc] ENTER sortRunNew" );
 							// Deal with the aces later
 							// This presumes the cards which are down are indeed a valid run
 							
-// console.log("[bmc] Assigning Joker!");
-// console.log(i);
+console.log("[bmc] Assigning Joker!");
+console.log(i);
 							// if ( i < cardValuesHard.length + 1 ) {
 							if ( i < cardValuesHard.length ) {
-// console.log(jokerIndex);
-// console.log(jokerCount);
+console.log(jokerIndex);
+console.log(jokerCount);
 								if ( jokerIndex < jokerCount ) {
 
 									index = cards.map( function(e) { return e.id; }).indexOf( jokers[ jokerIndex ][ 'id' ]);
-// console.log("[bmc] Assigning joker index");
-// console.log(index);
+console.log("[bmc] Assigning joker index");
+console.log(index);
 									jokerIndex++;
 
 									cards[ index ][ 'boardLieIndex' ] = i;
-//									cards[ jokerIndex ][ 'boardLieIndex' ] = i;
+
 									usedPositions.push(i);
-// console.log(usedPositions);
+console.log(usedPositions);
 								} else {
-// console.log("[bmc] ERROR Not enough Jokers!");
+console.log("[bmc] ERROR Not enough Jokers!");
 //  Presume the other function did it's job and allowed only true runs.
 								}
 							} else {
-// console.log("[bmc] FINISHED HARD CARDS do not put high ace, yet");
+console.log("[bmc] FINISHED HARD CARDS do not put high ace, yet");
 							}
-// console.log("[bmc] FINISHED HARD CARDS");
+console.log("[bmc] FINISHED HARD CARDS");
 						}
 					}
-// console.log("[bmc] Spot near end of first loop");
+console.log("[bmc] Spot near end of first loop");
 				}
 
 // All holes have been filled with jokers. Now figure out where to put the jokers (depends on ace and distance).
 
 				leftOverJokers = jokerCount - jokerIndex;
 				
-// console.log("[bmc] Assess remaining jokers");
-// console.log( jokerCount);
-// console.log( jokerIndex );
-// console.log( leftOverJokers );
-// console.log( jokers );
-// console.log( cards );
-// console.log( usedPositions );
-// console.log( aceCount );
+console.log("[bmc] Assess remaining jokers");
+console.log( jokerCount);
+console.log( jokerIndex );
+console.log( leftOverJokers );
+console.log( jokers );
+console.log( cards );
+console.log( usedPositions );
+console.log( aceCount );
 				
 // Put an ace as index 1 if any of these is true:
   // There are 2 aces
@@ -2375,17 +2262,32 @@ console.log( "[bmc] ENTER sortRunNew" );
 
 				var minUsed = Math.min.apply( Math, usedPositions );
 				var maxUsed = Math.max.apply( Math, usedPositions );
-// console.log( minUsed );
-// console.log( maxUsed );
+console.log( minUsed );
+console.log( maxUsed );
+
+				if ( !isFinite( minUsed )){
+					minUsed = 0;
+				}
+				if ( !isFinite( maxUsed )){
+					maxUsed = 0;
+				}
+
+console.log( minUsed );
+console.log( maxUsed );
 
 				switch( aceCount ) {
 					case 0 : // No need to assign aces, just place the jokers properly
-// console.log("[bmc] No aces.");
+console.log("[bmc] No aces.");
+
+// 2024/12/27: This next if and for loop is causing the hung browser, because minUsed and/or maxUsed was Infinity:
+
 						if ( leftOverJokers > 0 ) { // Start by assigning some below the lowest hard number
 							for ( let i = minUsed - 1; i > 0; i-- ){
+console.log( i );
+								
 								if ( jokerIndex < jokerCount ) {
 									index = cards.map( function(e) { return e.id; }).indexOf( jokers[ jokerIndex ][ 'id' ]);
-// console.log( index );
+console.log( index );
 									cards[ index ][ 'boardLieIndex' ] = i;
 									usedPositions.push(i);
 									jokerIndex++;
@@ -2403,11 +2305,11 @@ console.log( "[bmc] ENTER sortRunNew" );
 						}
 						break;
 					case 1 : // There is 1 ace. Put the ace low if min is closer to 1 and high if max is closer to 14
-// console.log("[bmc] One ace.");
+console.log("[bmc] One ace.");
 						if (( minUsed - 1) < ( 14 - maxUsed )){
 							// Put ace low
 							index = cards.map( function(e) {return e.type; }).indexOf(1);
-// console.log( index );
+console.log( index );
 							if ( index > -1 ) {
 								cards[ index ][ 'boardLieIndex' ] = 1;
 								usedPositions.push( 1 );
@@ -2419,6 +2321,8 @@ console.log( "[bmc] ENTER sortRunNew" );
 						 
 							if ( leftOverJokers > 0 ) {
 	// console.log( minUsed );
+// 2024/12/27: This next if and for loop should be checked to not go infinite:
+
 								for ( let i = minUsed - 1; i > 1; i-- ){ // Don't assign to ace
 									if ( jokerIndex < jokerCount ) {
 										index = cards.map( function(e) { return e.id; }).indexOf( jokers[ jokerIndex ][ 'id' ]);
@@ -2469,21 +2373,14 @@ console.log( "[bmc] ENTER sortRunNew" );
 								 
 								if ( leftOverJokers > 0 ) {
 									// Put extra jokers on the left but above the ace
+// Dec 2024: This for loop will certainly end:
 									for ( let i = jokerIndex; i < jokerCount; i++ ) {
 										cards[ i ][ 'boardLieIndex' ] = 1.5;
 										usedPositions.push(i);
 									}
 								}
 							}
-						
-						
-						
-						
-						
 						}
-
-						
-						
 
 						break;
 					case 2 : // There are 2 aces. Assign 1 low and 1 high
@@ -2513,7 +2410,7 @@ console.log( "[bmc] ENTER sortRunNew" );
 				}
 
 // console.log( cards );
-// console.log( usedPositions );
+console.log( usedPositions );
 				
 				// Sort the boardcards by boardLieIndex
 				cards.sort( this.compareBoardLieIndex );
@@ -2536,7 +2433,7 @@ console.log( "[bmc] ENTER sortRunNew" );
 // console.log(newRunItems);
 				}
 // console.log("[bmc] FINAL newRunItems");
-// console.log(newRunItems);
+console.log(newRunItems);
 
 console.log( "[bmc] EXIT sortRun2" );
 				return newRunItems;
@@ -3558,9 +3455,17 @@ console.log("[bmc] EXIT showBuyButton");
 			var boardArea = ''; // Empty string
 			var boardPlayer = ''; // Empty string
 			
+
+//todo: Can no longer play jokers onto melds, not sure why.
+			
+			// var selc_A_ = new Array();
+			
 			for ( var player in this.gamedatas.players) {
 console.log( 'Cards in areas: playerDown_A_, _B_, and _C_' + player);
 				
+				// selc_A_[ player ] = this.playerDown_A_[player].getSelectedItems();
+// console.log(selc_A_[player]);
+
 				selectedCards_A_[ player ] = this.downArea_A_[player].getSelectedItems();
 console.log(selectedCards_A_[player]);
 				
@@ -3608,6 +3513,14 @@ console.log("[bmc] FOUND C");
 console.log("[bmc] ENTER onMyHandAreaClick");
 			this.playerHand.unselectAll();
 			this.someoneLP = false;
+			
+			var handCards = this.playerHand.getAllItems();
+console.log( handCards );
+console.log( handCards.length );
+
+			for ( let i in handCards ) {
+				dojo.removeClass('myhand_item_' + handCards[i]['id'], 'stockitem_newcard');
+			}
 console.log("[bmc] EXIT onMyHandAreaClick");
 		},
 /////////
@@ -5025,11 +4938,6 @@ console.log(dp_items);
 				// dojo.removeClass('deckOne_item_' + deck_items[i]['id'], 'stockitem_selected');
 			// }
 
-
-
-
-
-
 			var deckAllItems = this.deckAll.getAllItems();
 console.log("[bmc] ALL deckAll:");
 console.log(deckAllItems);
@@ -5037,10 +4945,6 @@ console.log(deckAllItems);
 			for ( let i in deckAllItems ) {
 				dojo.removeClass('deckAll_item_' + deckAllItems[i]['id'], 'stockitem_selected');
 			}
-
-
-
-
 
 			for ( let i in dp_items ) {
 				dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
@@ -5092,7 +4996,7 @@ console.log("[bmc] Yikes!! Color or value is null! Need to fix this, this is fat
 				var addTo = 'myhand';
 
 				this.playerHand.addToStockWithId( this.getCardUniqueId(color, value), card_id );
-
+				dojo.addClass('myhand_item_' + card_id, 'stockitem_newcard');
 
 				//var addTo = $('myhand');
 				// var addTo = 'myhand';
@@ -5381,121 +5285,10 @@ console.log( '[bmc] Trace 9' );
 				}
 			}
 								
-				
-
-
-
-
-
-
-/*					
-				}
-			} else {
-console.log( '[bmc] Trace 3' );
-				if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ){
-console.log( '[bmc] Trace 4' );
-					if ( typeof dpSelectedItems !== "undefined" ){
-console.log( '[bmc] Trace 5' );
-						if ( this.dpSelectedItems.length === 1 ){
-console.log( '[bmc] Trace 6' );
-							if ( this.gamedatas.gamestate.active_player != this.player_id ){
-console.log( '[bmc] Trace 7' );
-								this.onPlayerBuyButton();
-							}
-						} else { // It is my turn, check if dp has anything Selected
-console.log( '[bmc] Trace 8' );
-							var items = new Array();
-							items[0] = {id: "0", type: 0 }; // "Fake" card just used for discarding (i.e. we need to send *something* but
-							// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
-								
-							this.drawCard2nd( items, 'discardPile' );
-						}		
-					}
-				}
-			}
-*/			
+					
 			// Change the discard pile and player hand only at the end
 			this.discardPileOne.unselectAll();
 			this.playerHand.unselectAll();
-
-/*
-
-
-
-
-
-
-
-
-
-
-			
-			
-
-			// if ( this.alreadyODPSC == false ){
-				// this.alreadyODPSC = true;
-				// else run the function; But this clears the discard selections
-				// If the gamestate is play, then treat it as a discard.
-
-				// var handCards = this.playerHand.getSelectedItems();
-
-				// if (( this.gamedatas.gamestate.name == 'playerTurnPlay' ) &&
-					// ( handCards.length == 1)) {
-
-						
-					// this.onPlayerDiscardButton();
-		
-				// If the gamestate is draw, then draw the top of discard pile (chosen in php).
-				// Or someone is trying to buy the discard.
-				} else if ( this.gamedatas.gamestate.name == 'playerTurnDraw' ) {
-	console.log( '[bmc] Trace 2' );
-					
-					// If there was a LP event just prior then ignore clicking of the discard PILE
-					
-					if ( this.someoneLP == false ){
-						// Remove the borders from the deck and discard pile after the player draws
-						// var deck_items = this.deckOne.getAllItems();
-	console.log( '[bmc] Trace 3' );
-
-						var dp_items = this.discardPileOne.getAllItems();
-
-						for ( let i in dp_items ) {
-							dojo.removeClass('discardPileOne_item_' + dp_items[i]['id'], 'stockitem_selected');
-						}
-	console.log( '[bmc] Trace 4' );
-
-						var deckAllItems = this.deckAll.getAllItems();
-
-						for ( let i in deckAllItems ) {
-							dojo.removeClass('deckAll_item_' + deckAllItems[i]['id'], 'stockitem_selected');
-						}
-	console.log( '[bmc] Trace 5' );
-
-						var items = new Array();
-						
-						items[0] = {id: "0", type: 0 }; // "Fake" card just used for discarding (i.e. we need to send *something* but
-						// when drawing from the discard it is ignored by the PHP and the top of the pile is chosen)
-
-						if ( this.gamedatas.gamestate.active_player != this.player_id ) {
-							// Click the BUY button if it's not our turn and it's DRAW state
-	console.log( '[bmc] Trace 6' );
-							this.onPlayerBuyButton();
-						} else {
-	console.log( '[bmc] Trace 7' );
-							this.drawCard2nd( items, 'discardPile' );
-							this.discardPileOne.unselectAll(); // Clear the selection here to avoid double trigger of ODPSC
-						}
-					}
-	console.log( '[bmc] Trace 8' );
-
-					if ( this.gamedatas.gamestate.active_player != this.player_id ) {
-						// Click the BUY button if it's not our turn, in any state
-	console.log( '[bmc] Trace 9' );
-						this.onPlayerBuyButton();
-					}
-				}
-			}
-*/
 		},
 /////////
 /////////
@@ -5976,6 +5769,14 @@ console.log("[bmc] EXIT onWishListCardClick");
         onPlayerHandSelectionChanged : function() {
 			console.log("[bmc] ENTER onPlayerHandSelectionChanged");
 			var items = this.playerHand.getSelectedItems();
+
+			var handCards = this.playerHand.getAllItems();
+console.log( handCards );
+// console.log( handCards.length );
+
+			for ( let i in handCards ) {
+				dojo.removeClass('myhand_item_' + handCards[i]['id'], 'stockitem_newcard');
+			}
 
 console.log( myhand );
 

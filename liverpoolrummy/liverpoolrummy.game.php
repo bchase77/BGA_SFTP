@@ -666,6 +666,9 @@ class LiverpoolRummy extends Table
 
 		$result[ 'liverpoolExists' ] = self::getGameStateValue( 'liverpoolExists' );
 
+		$result[ 'setsNeeded' ] = $this->handTypes[ $currentHandType ][ "QtySets" ];
+		$result[ 'runsNeeded' ] = $this->handTypes[ $currentHandType ][ "QtyRuns" ];
+
 //		self::trace("[bmc] EXIT GETALLDATAS");
 		self::trace("'<span style='color:green'><b>[bmc] EXIT GETALLDATAS</b></span>'");
 
@@ -682,65 +685,57 @@ class LiverpoolRummy extends Table
 
 		$testPlayerHandArray[0] = array(
 			0 => array(
-				'type' => '1', // Suit
-				'type_arg' => '12' // Value
-				),
-			1 => array(
-				'type' => '1', // Suit
-				'type_arg' => '12' // Value
-				),
-			2 => array(
 				'type' => '2', // Suit
-				'type_arg' => '12' // Value
-				),
-			3 => array(
-				'type' => '3', // Suit
-				'type_arg' => '1' // Value
-				),
-			4 => array(
-				'type' => '3', // Suit
 				'type_arg' => '3' // Value
 				),
-			5 => array(
-				'type' => '3', // Suit
-				'type_arg' => '4' // Value
-				),
-			6 => array(
-				'type' => '3', // Suit
-				'type_arg' => '5' // Value
-				),
-			7 => array(
-				'type' => '3', // Suit
-				'type_arg' => '6' // Value
-				),
-			8 => array(
+			1 => array(
 				'type' => '3', // Suit
 				'type_arg' => '7' // Value
 				),
-			9 => array(
+			2 => array(
+				'type' => '1', // Suit
+				'type_arg' => '8' // Value
+				),
+			3 => array(
 				'type' => '3', // Suit
 				'type_arg' => '8' // Value
 				),
-			10 => array(
-				'type' => '4', // Suit
-				'type_arg' => '3' // Value
+			4 => array(
+				'type' => '2', // Suit
+				'type_arg' => '9' // Value
 				),
-			11 => array(
-				'type' => '4', // Suit
-				'type_arg' => '4' // Value
+			5 => array(
+				'type' => '3', // Suit
+				'type_arg' => '11' // Value
 				),
-			12 => array(
-				'type' => '4', // Suit
-				'type_arg' => '6' // Value
-				),
-			13 => array(
-				'type' => '4', // Suit
-				'type_arg' => '12' // Value
-				),
-			14 => array(
+			6 => array(
 				'type' => '5', // Suit
 				'type_arg' => '1' // Value
-				)
+				),
+			7 => array(
+				'type' => '4', // Suit
+				'type_arg' => '11' // Value
+				),
+			8 => array(
+				'type' => '5', // Suit
+				'type_arg' => '2' // Value
+				),
+			9 => array(
+				'type' => '5', // Suit
+				'type_arg' => '2' // Value
+				),
+			10 => array(
+				'type' => '1', // Suit
+				'type_arg' => '11' // Value
+				),
+			11 => array(
+				'type' => '1', // Suit
+				'type_arg' => '11' // Value
+				),
+			12 => array(
+				'type' => '1', // Suit
+				'type_arg' => '9' // Value
+				),
 			);
 		$testPlayerHandArray[1] = array(
 			0 => array(
@@ -796,7 +791,7 @@ class LiverpoolRummy extends Table
 				'type_arg' => '13' // Value
 				)
 			);
-/*
+
 		$testPlayerHandArray[2] = array(
 			0 => array(
 				'type' => '5', // Suit
@@ -859,7 +854,7 @@ class LiverpoolRummy extends Table
 				'type_arg' => '6' // Value
 				)
 			);
-
+/*
 		$testPlayerHandArray[0] = array(
 			0 => array(
 				'type' => '5', // Suit
@@ -4026,7 +4021,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		// }
 
 		$mightBeJoker = $this->checkForJoker( $cardsInArea );
-		self::dump("[bmc] Might Be Joker", $mightBeJoker );
+		self::dump("[bmc] 4024: Might Be Joker", $mightBeJoker );
 		
 		if ( $mightBeJoker ) {
 			$boardCard = $mightBeJoker; // Find a joker on the board if possible
@@ -4071,28 +4066,19 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 						self::incStat( 1, 'jokers_number', $player_id ); // Track joker play for stats
 						self::setGameStateValue( 'LPcardsPlayed', 1 ); // Track # of cards played; Limit to 1 for Liverpool declare
 					}
-				} else if ($mightBeJoker != false) { 
-					self::trace("[bmc] 3494: mightbejoker != false.");
+				} else if ( $mightBeJoker != false ) { 
+					self::trace("[bmc] 4070: mightbejoker != false.");
 
-					if ( $this->findCardNotJoker( $boardArea, $boardPlayer )['type_arg'] == $card_type_argA[ 0 ] ) {
-						self::trace("[bmc] 3497 findCardNotJoker is true");
+					$getANonJokerMaybe = $this->findCardNotJoker( $boardArea, $boardPlayer );
+					
+//					if ( $this->findCardNotJoker( $boardArea, $boardPlayer )['type_arg'] == $card_type_argA[ 0 ] ) {
+					if ( $getANonJokerMaybe['type_arg'] == $card_type_argA[ 0 ] ) {
+						self::trace("[bmc] 4073: findCardNotJoker is true");
 						
 						// Add new option to not take jokers (uncomment the next line)
 						//if ( $this->getGameStateValue( 'allowJokerSwapping' ) == 1 ) { // 0 == No. 1 == Yes.
 							
-							
-							
-							
-							
-							
-							
 						// Need to also add this in the RUN check area	
-							
-							
-							
-							
-							
-							
 
 						$LPcardsPlayed = self::getGameStateValue( 'LPcardsPlayed' );
 						self::dump("[bmc] LPcardsPlayed:", $LPcardsPlayed );
@@ -4105,8 +4091,12 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 						} else {
 							$this->takeTheJoker( $mightBeJoker, $player_id, $card_id, $boardArea, $boardPlayer );
 						}
-					} else {
-						self::trace("[bmc] 2354: Not same values for set.");
+					} else if ( $getANonJokerMaybe['type'] == 5 ) { // If set is all jokers then function returns one, so play the card
+							self::trace("[bmc] Play card onto a set of all jokers.");
+							$this->cards->moveCard( $card_id, $boardArea, $boardPlayer, $playWeight);
+							
+					} else { // It cannot be played there
+						self::trace("[bmc] 4104: Not same values for set.");
 						throw new BgaUserException( self::_('Cannot play that card on that set.') );
 					}
 				} else {
@@ -4166,7 +4156,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				);
 
 			} else {
-				self::trace("[bmc] 3612 not same values for set.");
+				self::trace("[bmc] 4164 not same values for set.");
 				throw new BgaUserException( self::_('Cannot play that card on that set.') );
 			}
 		} else if ( $this->checkRun( $cardsInArea, false ) == true ) {
@@ -4710,7 +4700,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 
 		// If testing, use cards specifically for testing purposes
 		$presetSetupHands = false;
-		//$presetSetupHands = true;
+		// $presetSetupHands = true;
 		
 		if ( $presetSetupHands ) { //
 			self::presetHands( $players, false ); // debug true or false
