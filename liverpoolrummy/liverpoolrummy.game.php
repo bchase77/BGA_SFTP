@@ -1768,10 +1768,12 @@ class LiverpoolRummy extends Table
 			$this->handTypes = $this->handTypesThree;
 		} else if ( $gameLengthOption == 10 ) {
 			$this->handTypes = $this->handTypesShort;
+		} else if ( $gameLengthOption == 11 ) {
+			$this->handTypes = $this->handTypesFull;
 		} else if ( $gameLengthOption == 12 ) {
 			$this->handTypes = $this->handTypesMayI;
 		} else {
-			$this->handTypes = $this->handTypesFull;
+			$this->handTypes = $this->handTypesFull; // Anything else is full game, but should never happen
 		}
 	}
 /////
@@ -1910,7 +1912,7 @@ class LiverpoolRummy extends Table
 		self::dump("[bmc] activeTurnPlayer_id:", $activeTurnPlayer_id );
 
     	// Turns played statistics, match it to number of discards
-    	self::incStat( 1, 'turns_number' );
+    	self::incStat( 1, 'turns_number' ); // 3rd term is null here, tracking turns for all players
 		
 		$currentHandType = $this->getGameStateValue( 'currentHandType' );
 
@@ -3439,7 +3441,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				$nonJokers[] = $card[ 'type_arg' ];
 			}
 		}
-		self::dump("[bmc] nonJokers: ", $nonJokers );
+		// self::dump("[bmc] nonJokers: ", $nonJokers );
 		// self::dump("[bmc] Jokers: ", $jokerCount );
 		
 		$countValues = array_count_values( $nonJokers );
@@ -4552,7 +4554,7 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 			$secondRow,
 			$thirdRow
 		);
-		self::dump( "[bmc] table: ", $table );
+		// self::dump( "[bmc] table: ", $table );
 		$player_id = $this->getCurrentPlayerId();
 
 		$activeTurnPlayer_id = $this->getGameStateValue( 'activeTurnPlayer_id' );
@@ -6597,7 +6599,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 ////
 ////
     function stEndHand() {
-		self::trace("[bmc] ENTER stEndHand");
+		// self::trace("[bmc] ENTER stEndHand");
+		self::trace("'<span style='color:red'><b>[bmc] ENTER stEndHand</b></span>'");
 		
 		// Notify players and wait for them to confirm to move to the next hand		
 		
@@ -6606,29 +6609,33 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 		
 		self::setGameLength(); // This sets this->handTypes, not sure why it gets removed.
 
-		self::dump("[bmc] currentHandType stEndHand:", $currentHandType );
-		self::dump("[bmc] this->handTypes stEndHand:", $this->handTypes );
+		self::dump("[bmc] 6610 currentHandType stEndHand:", $currentHandType );
+		self::dump("[bmc] 6611 this->handTypes stEndHand:", $this->handTypes );
 		
 //		if ( $currentHandType > 6 ) { // The 7 hand numbers are 0 through 6
 
 		$countHandTypes = count( $this->handTypes );
-		self::dump("[bmc] countHandTypes stEndHand:", $countHandTypes );
+		self::dump("[bmc] 6616 countHandTypes stEndHand:", $countHandTypes );
 		
 		if ( $currentHandType >= $countHandTypes ) {
+			self::trace( "[bmc] 6619" );
 			$this->gamestate->nextState("endGame");
 		} else {
+			self::trace( "[bmc] 6622" );
 
 			$gameLengthOption = self::getGameStateValue( 'gameLengthOption' );
 			self::dump( "[bmc] gameLengthOption:", $gameLengthOption );
-			
-			if ( $gameLengthOption == 1 ) {
-				// $this->setsRuns = $this->setsRunsFull;
+/*			
+			if ( $gameLengthOption == 11 ) {
+				self::trace( "[bmc] 6628" );
+
 				$this->handTypes = $this->handTypesFull;
 			} else {
-				// $this->setsRuns = $this->setsRunsShort;
+				self::trace( "[bmc] 6632" );
+
 				$this->handTypes = $this->handTypesShort;
 			}
-
+*/
 			self::dump("[bmc] handTypes stEndHand:", $this->handTypes );
 			$currentHandType = self::getGameStateValue( 'currentHandType' );
 			$handTarget = $this->handTypes[ $currentHandType ][ "Target" ];
@@ -6648,7 +6655,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				)
 			);
 
-			self::trace("[bmc] EXIT (almost) stEndHand");
+			// self::trace("[bmc] EXIT (almost) stEndHand");
+			self::trace("'<span style='color:green'><b>[bmc] EXIT stEndHand</b></span>'");
 			$this->gamestate->nextState("newHand");
 		}
     }

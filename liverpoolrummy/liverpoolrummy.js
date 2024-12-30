@@ -115,6 +115,29 @@ console.log("[bmc] Clear this.prepAreas2");
 //     [In upper middle bar] "${player_name} went out!!" without the quotes
 //     [Slinkster cards show as NaN]
 
+// TODO 12/29/2024:
+
+// [28-Dec-2024 19:32:01 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 1634
+
+// [29-Dec-2024 21:07:09 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497			
+
+			
+// 29/12 15:40:39 [error] [T607825961] [126.60.172.101] [97104249/osorairo] Unexpected exception: Can't manage zombie player in this game state (40)
+// #0 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(256): Table->checkReturnState()
+// #1 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(249): APP_GameAction->ajaxResponseWithResult(NULL)
+// #2 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(195): APP_GameAction->ajaxResponse()
+// #3 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(602): APP_GameAction->wakeup()
+// #4 /var/tournoi/release/tournoi-241223-1616-gs/www/include/webActionCore.inc.php(198): APP_GameAction->performServerAction('...')
+// #5 /var/tournoi/release/tournoi-241223-1616-gs/www/index.php(356): launchWebAction('...', '...', '...', false, false, NULL, true, false)
+// #6 {main}
+// http://boardgamearena.com/8/liverpoolrummy/liverpoolrummy/wakeup.html?myturnack=true&table=607825961		
+
+
+
+
+
+
+
 // From the browser F12: Invalid or missing substitution argument for log message: ${player_name} went out!!: Cannot read properties of null (reading 'toString')
 
 //2024-11-23: Player discarded, next player tried to buy that discard. But it didn't say "IT'S YOUR TURN" it gave MOVE RECORDED and seems stuck after argPlayerTurnDraw in stPlayerTurnDraw
@@ -4995,7 +5018,6 @@ console.log("[bmc] Yikes!! Color or value is null! Need to fix this, this is fat
 			var cardUniqueId = this.getCardUniqueId( color, value );
 			console.log(cardUniqueId);
 
-//			if ( player_id == this.player_id ) {
 			if ( drawingPlayer == this.player_id ) {
 				console.log("[bmc] player_id is me");
 
@@ -5005,32 +5027,6 @@ console.log("[bmc] Yikes!! Color or value is null! Need to fix this, this is fat
 				this.playerHand.addToStockWithId( this.getCardUniqueId(color, value), card_id );
 				dojo.addClass('myhand_item_' + card_id, 'stockitem_newcard');
 
-				//var addTo = $('myhand');
-				// var addTo = 'myhand';
-				// let cardUniqueId = this.getCardUniqueId( color, value );
-// console.log("BMC 082723: Trying to make it slide");	
-
-				// let slideDestination = 'overall_player_board_' + drawingPlayer;
-				
-// console.log( slideDestination );
-				
-				// this.slideTemporaryObject( '<div id="deckbox"></div>', 'deckOne', 'myhand', slideDestination );
-
-// It does make it slide but it also empties the deckOne of cards and removes the image of the card, which is not what I want			
-				//this.playerHand.addToStockWithId( cardUniqueId, $('myhand') ); // Add the card to my hand
-//				this.playerHand.addToStockWithId( cardUniqueId, card_id, $('myhand') ); // Add the card to my hand from the 
-				// this.playerHand.addToStockWithId( cardUniqueId, card_id, 'myhand' ); // Add the card to my hand from the board
-				//this.deckOne.removeFromStockById( cardUniqueId, addTo );
-//				this.playerHand.addToStockWithId( cardUniqueId, $('deck'), ); // Add the card to my hand from the board
-
-// console.log(this.drawCounter)
-				
-				// let weightChange = {};
-				// weightChange[ cardUniqueId ] = this.drawCounter;
-// console.log(weightChange);
-
-				// this.playerHand.changeItemsWeight( weightChange );
-
 			} else {
 				console.log("[bmc] player_id is NOT me");
 				var addTo = 'overall_player_board_' + drawPlayer;
@@ -5039,69 +5035,9 @@ console.log("[bmc] Yikes!! Color or value is null! Need to fix this, this is fat
 console.log( '[bmc] addTo: ' + addTo );
 				
 			if ( drawSource == 'deck' ) {
-
-				// These 3 lines slide a card from playerboard to downArea_B_:
-				//
-				// var from = 'overall_player_board_' + player_id;
-				// this.downArea_B_[boardPlayer].addToStockWithId(
-					// cardUniqueId,
-					// card_id,
-					// from );
-				// this.playerHand.removeFromStockById( card_id );
-
-				// Try just the remove
-				//this.playerHand.addToStockWithId( cardUniqueId, this.gamedatas.cardIDsInDeck[ 0 ], 'myhand' );
 				console.log(this.gamedatas.cardIDsInDeck[ 0 ]);
 
-//				this.deckAll.removeFromStockById( cardUniqueId, addTo );
-//				this.deckAll.removeFromStockById( this.gamedatas.cardIDsInDeck[ 0 ], addTo );
 				this.deckAll.removeFromStockById( card_id, addTo );
- 
-			
-// TODO FIX FROM HERE
-
-// Should copy how cards are play from hand to the discard pile. They conme from the player board or hand.
-
-				// this.deckOne.addToStockWithId(1, this.gamedatas.deckTopCard );
-				// this.deckAll.removeFromStockById( cardUniqueId, addTo );
-
-				// var deck_items = this.deckOne.getAllItems();
-
-// console.log("[bmc] ALL deckOne:");
-// console.log( deck_items );
-// console.log("[bmc] The deck to be turned red:");
-				// let deckTopCardImage = 'deckOne_item_' + deck_items[0]['id'];
-// console.log( deckTopCardImage );
-
-				// let thingToSlide = '<div id="' + deckTopCardImage + '"></div>';
-// console.log( thingToSlide );
-
-				// let slideDestination = 'overall_player_board_' + drawingPlayer;
-				
-// console.log( slideDestination );
-				
-//				this.slideTemporaryObject( '<div id="deckOne"></div>', 'deckOne', 'myhand', slideDestination );
-//				this.slideTemporaryObject( thingToSlide, 'deckOne', 'myhand', slideDestination );
-				
-//TODO: This sliding still doesn't work. Now it slides *TO* the deck instead of away. Also there is only 1 card in the Deck so it dissapears when it's drawn.
-				
-// console.log( '[bmc] Deck' );
-// There is always only 1 card on the draw deck so just leave it there
-				// this.deckOne.removeFromStockById(card_id, addTo );
-				
-// console.log("BMC 082723: Trying to make it slide");
-			// this.deckOne.addToStockWithId(1, this.gamedatas.deckTopCard );
-			
-			// This makes a new card slide onto the deck, which is interesting but doesn't make sense:
-			//this.deckOne.addToStockWithId(1, this.gamedatas.deckTopCard, 'myhand' );
-			//this.deckOne.removeFromStockById( card_id, addTo ); // Add the card to my hand from the board
-			// TODO Nov 10 2024: Add this after the slide away to draw another card???
-			//this.deckOne.slideToObject(
-			// this.deckOne.unselectAll();
-
-
-// TODO FIX TO HERE
-
 			}
 			if ( drawSource == 'discardPile' ) {
 console.log( '[bmc] from DP' );
@@ -5156,7 +5092,9 @@ console.log(discardSize);
 console.log(drawDeckSize);
 
 			// This is only for spectators
-			
+/*			
+TODO: Fix this so the drawn-card slides for spectator mode
+*/	
 			var isReadOnly = this.isReadOnly();
 			console.log("isReadOnly");
 			console.log(isReadOnly);
@@ -5166,7 +5104,7 @@ console.log(drawDeckSize);
 					this.handCount[ p_id ].setValue( allHands[ p_id ] );
 				}
 
-	console.log(this.handCount);
+console.log(this.handCount);
 
 				if ( drawSource.match(/playerDown/g) ) {
 					var from = drawSource + '_' + drawPlayer;
@@ -5195,10 +5133,11 @@ console.log(this.playerHand)
 				
 console.log( '[bmc] addTo: ' + addTo );
 				
-				// if ( drawSource == 'deck' ) {
-// console.log( '[bmc] Deck' );
+				if ( drawSource == 'deck' ) {
+console.log( '[bmc] Deck' );
+					this.deckAll.removeFromStockById( card_id, addTo );
 					// this.deck.removeFromStockById(card_id, addTo );
-				// }
+				}
 				if ( drawSource == 'discardPile' ) {
 console.log( '[bmc] DP' );
 //					this.discardPile.removeFromStockById( card_id, addTo );
