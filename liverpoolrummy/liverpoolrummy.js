@@ -133,7 +133,7 @@ console.log("[bmc] Clear this.prepAreas2");
 // http://boardgamearena.com/8/liverpoolrummy/liverpoolrummy/wakeup.html?myturnack=true&table=607825961		
 
 
-
+// TODO 12/29/2024: Joker replacements go to the wrong player.
 
 
 
@@ -2116,6 +2116,7 @@ todo: CAn return early but if 2089 is returned then nothing is drawn on the boar
 
 It worked when the board sort was there. Maybe becuase then the variabl is not empty?!?!
 */
+console.log( this.gamedatas.runsNeeded );
 			if ( this.gamedatas.runsNeeded == 0 ) {
 console.log( "[bmc] No runs needed, return." );
 				return boardCards;
@@ -5039,19 +5040,23 @@ console.log( '[bmc] addTo: ' + addTo );
 
 				this.deckAll.removeFromStockById( card_id, addTo );
 			}
+			
 			if ( drawSource == 'discardPile' ) {
 console.log( '[bmc] from DP' );
 //					this.discardPile.removeFromStockById( card_id, addTo );
 				this.discardPileOne.removeFromStockById( card_id, addTo );
 			}
+			
 			if ( drawSource == 'playerDown_A' ) {
 console.log( '[bmc] from A' );
 				this.downArea_A_[ drawPlayer ].removeFromStockById( card_id, addTo );
 			}
+			
 			if ( drawSource == 'playerDown_B' ) {
 console.log( '[bmc] from B' );
 				this.downArea_B_[ drawPlayer ].removeFromStockById( card_id, addTo );
 			}
+			
 			if ( drawSource == 'playerDown_C' ) {
 console.log( '[bmc] from C' );
 				this.downArea_C_[ drawPlayer ].removeFromStockById( card_id, addTo );
@@ -5092,9 +5097,7 @@ console.log(discardSize);
 console.log(drawDeckSize);
 
 			// This is only for spectators
-/*			
-TODO: Fix this so the drawn-card slides for spectator mode
-*/	
+
 			var isReadOnly = this.isReadOnly();
 			console.log("isReadOnly");
 			console.log(isReadOnly);
@@ -5138,25 +5141,29 @@ console.log( '[bmc] Deck' );
 					this.deckAll.removeFromStockById( card_id, addTo );
 					// this.deck.removeFromStockById(card_id, addTo );
 				}
+				
 				if ( drawSource == 'discardPile' ) {
 console.log( '[bmc] DP' );
 //					this.discardPile.removeFromStockById( card_id, addTo );
 					this.discardPileOne.removeFromStockById( card_id, addTo );
 				}
+				
 				if ( drawSource == 'playerDown_A' ) {
 console.log( '[bmc] A' );
 					this.downArea_A_[ drawPlayer ].removeFromStockById( card_id, addTo );
 				}
+				
 				if ( drawSource == 'playerDown_B' ) {
 console.log( '[bmc] B' );
 					this.downArea_B_[ drawPlayer ].removeFromStockById( card_id, addTo );
 				}
+				
 				if ( drawSource == 'playerDown_C' ) {
 console.log( '[bmc] C' );
 					this.downArea_C_[ drawPlayer ].removeFromStockById( card_id, addTo );
 				}
 			}
-		console.log("[bmc] EXIT drawCardSpect");
+console.log("[bmc] EXIT drawCardSpect");
 		},
 /////////
 /////////
@@ -6010,7 +6017,15 @@ console.log("[bmc] ENTER notif_newHand");
 console.log(notif);
 			
 			this.gamedatas.liverpoolExists = false;
+
 			this.dealMeInClicked = false;
+
+			if ( notif.args.setsNeeded != null ){ // Set the targets, if there are values there
+console.log("Save Sets and Runs");
+				this.gamedatas.setsNeeded = notif.args.setsNeeded;
+				this.gamedatas.runsNeeded = notif.args.runsNeeded;
+			}
+
 			if ( notif.args.hand == undefined ) {
 console.log("Hand is undefined");
 				this.clearTable();
@@ -6100,7 +6115,7 @@ console.log("Set up players new hand");
 			this.currentHandType = notif.args.updCurrentHandType;
 			this.totalHandCount = notif.args.updTotalHandCount;
 			this.currentHandNumber = parseInt (this.currentHandType) + 1;
-
+			
 			$(handNumber).innerHTML = _("Target Hand ") + this.currentHandNumber + _(" of ") + this.totalHandCount + ": ";
 
 			console.log( $(handNumber) );
@@ -6108,6 +6123,9 @@ console.log("Set up players new hand");
 			$(redTarget).innerHTML = notif.args.handTarget;
 
 			console.log( $(redTarget) );
+
+			console.log( this.gamedatas.setsNeeded );
+			console.log( this.gamedatas.runsNeeded );
 
 			console.log("[bmc] EXIT notif_newHand");
         },

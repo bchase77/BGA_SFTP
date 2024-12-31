@@ -4812,6 +4812,8 @@ self::dump("[bmc] cardGroupC", $cardGroupC);
 				'drawDeckSize' => $drawDeckSize,
 				'updCurrentHandType' => $updCurrentHandType,
 				'updTotalHandCount' => $updTotalHandCount,
+				'setsNeeded' => $this->handTypes[ $currentHandType ][ "QtySets" ],
+				'runsNeeded' => $this->handTypes[ $currentHandType ][ "QtyRuns" ],
 				'value_displayed' => $value_displayed,
 				'color_displayed' => $color_displayed,
 				'connector' => $connector
