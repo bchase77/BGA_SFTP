@@ -108,379 +108,272 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 ////////
 // Bugs / TODO:
-// 2024-11-05: Table https://boardgamearena.com/8/liverpoolrummy?table=585081665
-//     Slinkster went Down
-//     Slinkster discard 8 of Hearts
-//     Slinkster went out
-//     [In upper middle bar] "${player_name} went out!!" without the quotes
-//     [Slinkster cards show as NaN]
-
-// TODO 12/29/2024:
-
-// [28-Dec-2024 19:32:01 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 1634
-
-// [29-Dec-2024 21:07:09 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497			
-
-			
-// 29/12 15:40:39 [error] [T607825961] [126.60.172.101] [97104249/osorairo] Unexpected exception: Can't manage zombie player in this game state (40)
+//
+// 2025-01-19: I am at table 618031393
+//
+// 2025-01-19: Down card doesn't slide after go DOWN nor joker swap?
+//
+// 2025-01-19: Make the wishlist buy after the person draws
+// 
+// Card backs: maybe grapes or beach or palm trees... Not winter because it's summer in Australia 
+//
+// 19/01 12:29:57 [error] [T617611414] [1.159.82.180] [91612041/Lindajak] Error with notification service
+// (code: 0, "cURL error 28: Connection timed out after 1001 milliseconds (see
+//  https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://ws.boardgamearena.com/bgamsg") first
+//  error (message length = 825). Automatic retry - /player/p89557171 - 65703dba0f1665eca0e87129089903af
+//  - drawCard","log":"","....  
+// 2025-01-19: Add delay between draw and discard. Reason: Derusian and others are able to quickly
+//     draw and discard, not giving others a chance to buy.
+//
+// 29/12 15:40:39 [error] [T607825961] [126.60.172.101] [97104249/osorairo] Unexpected exception:
+//     Can't manage zombie player in this game state (40)
 // #0 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(256): Table->checkReturnState()
-// #1 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(249): APP_GameAction->ajaxResponseWithResult(NULL)
+// #1 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(249):
+//     APP_GameAction->ajaxResponseWithResult(NULL)
 // #2 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(195): APP_GameAction->ajaxResponse()
 // #3 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(602): APP_GameAction->wakeup()
-// #4 /var/tournoi/release/tournoi-241223-1616-gs/www/include/webActionCore.inc.php(198): APP_GameAction->performServerAction('...')
-// #5 /var/tournoi/release/tournoi-241223-1616-gs/www/index.php(356): launchWebAction('...', '...', '...', false, false, NULL, true, false)
+// #4 /var/tournoi/release/tournoi-241223-1616-gs/www/include/webActionCore.inc.php(198):
+//     APP_GameAction->performServerAction('...')
+// #5 /var/tournoi/release/tournoi-241223-1616-gs/www/index.php(356):
+//     launchWebAction('...', '...', '...', false, false, NULL, true, false)
 // #6 {main}
 // http://boardgamearena.com/8/liverpoolrummy/liverpoolrummy/wakeup.html?myturnack=true&table=607825961		
-
-
+//
 // TODO 12/29/2024: Joker replacements go to the wrong player.
-
-
-
-
-// From the browser F12: Invalid or missing substitution argument for log message: ${player_name} went out!!: Cannot read properties of null (reading 'toString')
-
-//2024-11-23: Player discarded, next player tried to buy that discard. But it didn't say "IT'S YOUR TURN" it gave MOVE RECORDED and seems stuck after argPlayerTurnDraw in stPlayerTurnDraw
-
-// 2024-12-07: Momma_BearLike make sure you don't have in the prep area all the cards that could go down       04:01 PM
-// And just to be clear, you clicked GO DOWN and then it also discarded a card into the discard pile, right?       04:01 PM
-// Momma_BearIt can't be playable for when you hit go down       04:01 PM
-// It didn't go down, it just discarded my card because my cards were not complete without it       04:02 PM
-// Without the joker       04:02 PM
-// I was trying to add it to my prep but it didn't go, so it was highlighted in my hand       04:02 PM
-// Then hit go down and it discarded        04:02 PM
-// Oh it didn't go down? I see. And you clicked GO DOWN but it discarded instead?       04:02 PM
-// Momma_BearYes       04:02 PM
-
-// In MB's hand is:
-// Clubs: QQ
-// Spades: Q
-// Hearts: A345678
-// Diamonds: 346Q
-// Jokers: 1
-
-// TODO: Check all actions for public, variable type, statemachine
-// test/public/int       /states actDiscardCard
-// public/int       /states 'actPlayerHasReviewedHand'
-// testnotplayer/public/int(na)   /states 'actBuyRequest'
-// testnotplayer/public/int(na)   /states(na) 'actNotBuyRequest'
-// testnotplayer/public/int(na)   /states(na) 'actDisableWishList'
-// testnotplayer/public/int       /states(na) 'actLiverpoolButton'
-// testnotplayer/public/intarray  /states(na) 'actSubmitWishList'
-// na/public/int       /states 'actPlayCard'
-// na/public/intarray  /states 'actPlayCardMultiple'
-// testplayer/public/int       /states 'actDrawCard'
-// testplayer/public/intarray  /states 'actPlayerGoDown'
-// public/intarray  /states(na) 'actSavePrep'
-// public/int       /states(na) 'actLoadPrep'
 // 
 // 12/8/2024: It doesn't update the score until after everyone clicks on to the next
-//
-// try to replay 607604242 (I played it)
-// TODO: AFter play A on 10,J,Q,Joker it didn't sort right. It sorts right after refresh.
 //
 // 2024-11-27: WISHLIST didn't buy and something strange happened before move ~10:
 //     https://boardgamearena.com/archive/replay/230921-1000/?table=420280348&player=94627511&comments=86675870;
 //     Should add to the game log which cards are in the wishList.
 //
-// 2024-10-27: Reports wrong person went out at top, not in log(?). See Screenshot. https://boardgamearena.com/bug?id=101319
-// 2024-10-27: Could not LIVERPOOL on the Q diamonds. https://boardgamearena.com/bug?id=133855
-// 2024-10-27: Unable to play https://boardgamearena.com/bug?id=106295
-
 // 2024-10-14: is it possible to add a "i'm here" or "i'm ready" button that
 //  everyonbe has to click when they've arrived at the actual play screen? several
 //  times the game doesn't load right away or takes you to the "click here to start" 
 //  screen and other people have already played.  
-// 
-// Drawn card doesn't always slide
-// Cannot always buy by clicking DISCARDED card
-// Board doesn't always sort until CTRL-F5
-
-//
-//
-// 2024-12-27: These tables totally hang the browser and are unrecoverable:
-//   Pegs 1x CPU at 100%: https://boardgamearena.com/archive/replay/241211-1034/?table=600467831
-//   Also table: 568800147 (https://boardgamearena.com/bug?id=140186)
-//
-// 112624: 2024-04-14: https://boardgamearena.com/table?table=467776865
-//       HANG. Pegs the CPU to high %.
-//       endacot drew a card but then could not discard.
-//       Options for the game 3 decks, no jokers, unlimited buys
-//       endacot hand: Spades: AA24. Clubs: 210J Hearts: 510 Diamonds: 2. Drew the AH
-//
-// Tables:
-// 446864256
-// 485302497
-//
-// 115666: 2024-04-14: https://boardgamearena.com/table?table=479420597
-//       HANG. After Joyeous went down. Move 247. Pegs the CPU to high %.
-//       2nd hand of 7. Someone went down and the whole game hung.
-//
-// 2024-04-14: https://boardgamearena.com/table?table=480704288
-//       HANG. Move 17.
-//       Derusian tried to go down with 3J and 3Jokers and the game just hung.
-// 
-// 118484: 2024-04-14: https://boardgamearena.com/table?table=490903234
-//       HANG after go down
-//
-// 118145: 2024-04-214: https://boardgamearena.com/table?table=489669547
-//       HANG: Shortest replay of a hang. After starshinep went down.
 //       
-// Clubs(9): 233451010QK
-// Spades(3): 710J
-// Hearts(3): 79K
-// Diamonds(1): 10
-// Joker(1): Red Text
-// 2 Runs and 1 set: 2345, 10QKJ, 10c,10s,10D
-// Extra: 3c, 7s, js, 7h, 9h, kh
-// 
-// Advice on avioding deadlocks:
-// Do you have any for () or while () loops without super explicit ending conditions?  Are there any such loops that MIGHT have their condition variable modified mid-loop?
-// Do you use any recursive function calls?
-// (the browser maxing the CPU could indicate a JS bug instead of PHP -- similar questions would then apply, but it should be much easier to use a browser debugger in this case) 
-// if(leftOverJokers>0){for(let e=h-1;e>1;e--)
-// @SevronOaks it appears you have an unbounded loop due to "h" being infinite / not defined, possibly 
-// I waited until Firefox offered me the Debug Script button, and it immediately brought me to the loop.  Good luck!  Feel free to ask in Discord/javascript if you have further issues with it.
-// SevronOaks — Today at 1:38 PM
-// Oh wow good catch!! You found this with Firefox? I use Chrome alot but can try FF.  And yeah that joker analysis code is a ratsnest of terrible memories and many re-attempts, trying to get it to work right. I've spent dozens of hours in there... I wouldn't be surprised if that's it.
-// GTSchemer — Today at 1:39 PM
-// Yeah, normally you can type "debugger" in the console, but in this case it was stuck...but fortunately if you let it sit like 30 seconds, it gives a warning about the script slowing the browser, and let me click Debug Script.
-
-//
-//
-// 12/9/2023:
-// Transition from LIVERPOOLPENATLY in 2 states.
-// [06-Dec-2023 23:28:07 Europe/London] PHP Warning:  array_count_values(): Can only count STRING and INTEGER values! in
-// /var/tournoi/release/games/liverpoolrummy/231204-0045/liverpoolrummy.game.php on line 3122
-// 
-// 12/9/2023:
-// Something to do with discard card:
-//
-// 08/12 00:01:41 [error] [T447579387] [47.133.208.13] [94915480/Hope5539] Unexpected exception: BGA main website do not respond
-// #0 /var/tournoi/release/tournoi-231110-1001-gs/www/game/module/table/gamestate.game.php(649): APP_DbObject->masterNodeRequest()
-// #1 /var/tournoi/release/tournoi-231110-1001-gs/www/game/module/table/table.game.php(3607): Gamestate->sendAsyncTableMove()
-// #2 /var/tournoi/release/tournoi-231110-1001-gs/www/include/APP_GameAction.inc.php(251): Table->checkActivePlayersChange()
-// #3 /var/tournoi/release/tournoi-231110-1001-gs/www/include/APP_GameAction.inc.php(245): APP_GameAction->ajaxResponseWithResult()
-// #4 /var/tournoi/release/games/liverpoolrummy/231204-0045/liverpoolrummy.action.php(72): APP_GameAction->ajaxResponse()
-// #5 /var/tournoi/release/tournoi-231110-1001-gs/www/include/webActionCore.inc.php(189): action_liverpoolrummy->discardCard()
-// #6 /var/tournoi/release/tournoi-231110-1001-gs/www/index.php(315): launchWebAction()
-// #7 {main}
-// http://boardgamearena.com/6/liverpoolrummy/liverpoolrummy/discardCard.html?id=77&player_id=94915480&lock=7db4e2cc-2002-4626-86ab-6bd624285d65&table=447579387&noerrortracking=true&dojo.preventCache=1701990092994
-
-// 12/9/2023: Table hung and players must quit. https://boardgamearena.com/archive/replay/231110-1001/?table=446864256&player=94605816&comments=86675870;#
-// katten Mjau  went down 3 sets: *66, 888, 10101010
-// discard 5S
-// bouledogue1957 drew the discarded 5S
-// clicking NEXT causes the game to hang!
-// 
-// 11/11/2023: Run sorted wrong. Ajoker3456joker89 but displayed as A3456joker89joker.
-// 10/22/2023: Should not be able to declare LIVERPOOL on yourself, thus emptying out with 6 playable cards while it's not your turn.
-// 24/09 01:48:43 [error] [T421028219] [173.94.184.233] [88197647/LisaKRich] Error (1213) while processing SQL request: Deadlock found when trying to get lock; try restarting transaction - Request: SELECT player_id, player_is_multiactive FROM player 
-
-// X 10/28/2023 Wrong player designated "WENT OUT" after liverpool go out
-// kriskeith tried to buy but it didn't go through (filed bug)
-//
-// Person went down, discarded and went out and handcount reports as NAN
-// TODO: 8/13/2023: Chrissy NZ says she was not able to put 2 5s onto table 5s, no joker
-// 
 // 10/28/2023: if you refresh before selecting deal me in, it shows the previous round person going out.    
+// 10/28/2023: On a phone: When on the phone and it's more than 2 rows and someone else goes down it
+//     covers a row. But refresh fixes it.
+// Make it more playable on phone screens.
+// Display "You bought X" from wishlist buy (not sure how to display it)
+// 09/10/2022: Add a sound "It fits right there!" when your buy goes through.
+// 08/13/2022: Don't allow zombie to buy (or draw).
+// 08/09/2022: Chat window doesn't launch auto after SORT buttons are pressed.
+// 08/08/2022: Player reported they type and the chat you can usually type and the chat box will just
+//     do its thing. However, after clicking the SORT button, you have to click back to the chat window.
+//      normallly you just type and the chat comes up, but if you click to sort sets or runs anf then start
+//     typing it doesnt work.
+// 08/06/2022: update the player boards first before doing the final score.
+// 07/30/2022: In JS, when you have 2 identical cards they cannot be sorted unless one is put into a PREP area.
+// 1/29/2022: When a player takes a joker, show a message they can put the joker anywhere.
+// 1/29/2022: Make the message to select joker FIRST so it's easier to see.
+// 1/29/2022: Request to make buyers anonymous if they didn't win. "Someone wants to buy..."
+// 8/21/2021: 4 people played with 2 decks and the discard pile didn't reshuffle
+// 7/24/2021: 6 people played with 2 decks and discard pile was not shuffled back into deck.
+// 7/24/2021: Need to cover when both deck and discard pile run out of cards. Need to change to bypass
+//    the requirement to draw if cards are left in draw deck + discard pile.
+// 4/24: SCORING: I think this functional form is a perfectly great alternative - there are likely many
+//  many ways to go about implementing this scoring feature. 
+//Is there one numPlayerTurns value for all players, or does each player have a potentially unique one? 
+//I think it is important each player has a unique multiplier instead of heavily discounting everyone’s
+//   score when someone goes out early - I highly value the relative discounting between players within a round.
 
-// 10/28/2023: On a phone: When on the phone and it's more than 2 rows and someone else goes down it covers a row. But refresh fixes it.
+
+// X TODO: Check all actions for public, variable type, statemachine
+// X test/public/int       /states actDiscardCard
+// X public/int       /states 'actPlayerHasReviewedHand'
+// X testnotplayer/public/int(na)   /states 'actBuyRequest'
+// X testnotplayer/public/int(na)   /states(na) 'actNotBuyRequest'
+// X testnotplayer/public/int(na)   /states(na) 'actDisableWishList'
+// X testnotplayer/public/int       /states(na) 'actLiverpoolButton'
+// X testnotplayer/public/intarray  /states(na) 'actSubmitWishList'
+// X na/public/int       /states 'actPlayCard'
+// X na/public/intarray  /states 'actPlayCardMultiple'
+// X testplayer/public/int       /states 'actDrawCard'
+// X testplayer/public/intarray  /states 'actPlayerGoDown'
+// X public/intarray  /states(na) 'actSavePrep'
+// X public/int       /states(na) 'actLoadPrep'
+// X 2024-12-07: Move the discard pile to the other side of the deck
+// X Momma_BearLike make sure you don't have in the prep area all the cards that could go down       04:01 PM
+// X And just to be clear, you clicked GO DOWN and then it also discarded a card into the discard pile, right?       04:01 PM
+// X Momma_BearIt can't be playable for when you hit go down       04:01 PM
+// X It didn't go down, it just discarded my card because my cards were not complete without it       04:02 PM
+// X Without the joker       04:02 PM
+// X I was trying to add it to my prep but it didn't go, so it was highlighted in my hand       04:02 PM
+// X Then hit go down and it discarded        04:02 PM
+// X Oh it didn't go down? I see. And you clicked GO DOWN but it discarded instead?       04:02 PM
+// X Momma_BearYes       04:02 PM
+// X 2024-10-27: Reports wrong person went out at top, not in log(?). See Screenshot. https://boardgamearena.com/bug?id=101319
+// X 2024-10-27: Could not LIVERPOOL on the Q diamonds. https://boardgamearena.com/bug?id=133855
+// X 2024-10-27: Unable to play https://boardgamearena.com/bug?id=106295
+// X Drawn card doesn't always slide
+// X Cannot always buy by clicking DISCARDED card
+// X Board doesn't always sort until CTRL-F5
+// X 2024-12-27: These tables totally hang the browser and are unrecoverable:
+// X   Pegs 1x CPU at 100%: https://boardgamearena.com/archive/replay/241211-1034/?table=600467831
+// X   Also table: 568800147 (https://boardgamearena.com/bug?id=140186)
+// X 
+// X 112624: 2024-04-14: https://boardgamearena.com/table?table=467776865
+// X       HANG. Pegs the CPU to high %.
+// X       endacot drew a card but then could not discard.
+// X       Options for the game 3 decks, no jokers, unlimited buys
+// X       endacot hand: Spades: AA24. Clubs: 210J Hearts: 510 Diamonds: 2. Drew the AH
+// X 
+// X Tables:
+// X 446864256
+// X 485302497
+// X 
+// X 115666: 2024-04-14: https://boardgamearena.com/table?table=479420597
+// X       HANG. After Joyeous went down. Move 247. Pegs the CPU to high %.
+// X       2nd hand of 7. Someone went down and the whole game hung.
+// X 
+// X 2024-04-14: https://boardgamearena.com/table?table=480704288
+// X       HANG. Move 17.
+// X       Derusian tried to go down with 3J and 3Jokers and the game just hung.
+// X 
+// X 118484: 2024-04-14: https://boardgamearena.com/table?table=490903234
+// X       HANG after go down
+// X 
+// X 118145: 2024-04-214: https://boardgamearena.com/table?table=489669547
+// X       HANG: Shortest replay of a hang. After starshinep went down.
+// X Condition of invalid draw:
+// X 1) Cards exist in discard PILE
+// X 2) someone discards a playable CARD
+// X 3) someone declares liverpool
+// X 4) the card gets picked up
+// X 5) someone tries to buy the next card but should not
+// X 
+// X Order:
+// X 1. Player 1: Discard a card
+// X    a. Check action is OK and player is ALLOWED
+// X    b. ResolveBuyers()
+// X       i.   Check empty deck
+// X       ii.  getPlayerBuying()
+// X       iii. findthebuyer and increment buy count
+// X       iv.  clearplayersbuying()
+// X       v.   move a deck card to buyer's hand
+// X       vi.  notifyPlayers
+// X       vii. move a discarded card to buyer's hand
+// X       viii.notifyplayers
+// X       ix.  disable the buyer's wishlist
+// X    c. ClearPlayersBuying & notify cleared buyers
+// X    d. Put card on discard pile
+// X    e. If Liverpool Found then set players for Liverpool processing; Else normal
+// X    f. Check empty deck
+// X    g. Notify of discard
+// X    h. nextState discardCard
+// X       i. stWaitForAll
+// X      
+// X 2. Player 3: I'll buy it
+// X 3. Player 2: Draw deck
+// X 4. Player 2: discard
+// X 5. Player 3: Execute buy
 //
-// 10/28/2023: Unexpected error: Error while processing database request (reference: VO 29/10 02:17:07)
-
-// Now:
-// Turn is kds1 (43); Discards playable. Good.
-// Turn is now ks3 (45). But ks3 (45) is interrupted by ks0 (42).
-// ks0 (42) picked it up. Good.
-// ks0 (42) discards. Good.
-// it should now be ks3(45)'s turn. Good.
-//
-// Correct order is:
-// ks1 (43)
-// ks3 (45)
-// ks0 (42)
-// ks2 (44)
-
-// Condition of invalid draw:
-// 1) Cards exist in discard PILE
-// 2) someone discards a playable CARD
-// 3) someone declares liverpool
-// 4) the card gets picked up
-// 5) someone tries to buy the next card but should not
-
-// Liverpool penalty method seems to work. However, someone was able to draw a deep discard.
-
-// Order:
-// 1. Player 1: Discard a card
-//    a. Check action is OK and player is ALLOWED
-//    b. ResolveBuyers()
-//       i.   Check empty deck
-//       ii.  getPlayerBuying()
-//       iii. findthebuyer and increment buy count
-//       iv.  clearplayersbuying()
-//       v.   move a deck card to buyer's hand
-//       vi.  notifyPlayers
-//       vii. move a discarded card to buyer's hand
-//       viii.notifyplayers
-//       ix.  disable the buyer's wishlist
-//    c. ClearPlayersBuying & notify cleared buyers
-//    d. Put card on discard pile
-//    e. If Liverpool Found then set players for Liverpool processing; Else normal
-//    f. Check empty deck
-//    g. Notify of discard
-//    h. nextState discardCard
-//       i. stWaitForAll
-//      
-// 2. Player 3: I'll buy it
-// 3. Player 2: Draw deck
-// 4. Player 2: discard
-// 5. Player 3: Execute buy
-
-// GTSchemer — 09/19/2023 7:31 AM
-// That might be tough then.  Best I can think of would be:
-
-// X Add the $this->bSelectGlobalsForUpdate = true; code to your PHP constructor, which should cause a lock before an AJAX transaction runs.
-
-// In your transaction handler, check if the card still exists.  If it was taken, throw an exception which will give the player a red bar error at the top ("Another player took that card first" or similar).
-
-// Liverpool stays turned on (at least visually) when someone goes out with a card. If you click, it assumes you want to buy at the start of next round.
-
-// 9/23/2023: tim183: The discard pile and Prep A are really close together...
-// I meant to add a card to Prep A and ended up discarding it instead... 
-//yeah, I should be more precise, but... a little distance would be nice
-
-// DrKarotte 9/23/2023 regading Solo:
-// I think it had to be on PHP side; normally at the beginning of an PHP action function there is a line like "self::checkAction("drawCard");"
-//For solo in the play card action function I have replaced it by the following: $this->gamestate->checkPossibleAction( "playCard" );
-// Probably this reduces the procedure to the bare check if an action is allowed, without further built-in checks (is it the player's turn?)
-// hope that helps
-// Side note: There seems to be a rare bug in Solo which I could never fix that might be related to this change, so it is probably not without risk; on the other side the site founders had given their ok to that    
-// End message from DrKarotte
-// 
-// Studio doc on checkPossibleAction:
-// $this->gamestate->checkPossibleAction( $action )
-// (rarely used)
-// This works exactly like "checkAction" (above), except that it does NOT check if the current player is active.
-// Note: This does NOT check either spectator or eliminated status, so those checks must be done manually.
-// This is used specifically in certain game states when you want to authorize additional actions for players that are not active at the moment.
-// Example: in Libertalia, you want to authorize players to change their mind about the card played. They are of course not active at the time they change their mind, so you cannot use "checkAction"; use "checkPossibleAction" instead.
-// This is how PHP action looks that returns player to active state (only for multiplayeractive states). To be able to execute this on client do not call checkAction on js side for this specific action.
-
-  // function actionUnpass() {
-       // $this->gamestate->checkPossibleAction('actionUnpass'); // player changed mind about passing while others were thinking
-       // $this->gamestate->setPlayersMultiactive(array ($this->getCurrentPlayerId() ), 'error', false);
-   // }
-   
-//
-// Don't allow the discarder to get their own discard
-// If it's that player's turn, let them play liverpool
-// RED LIVERPOOL 
-// 	
-// CARDS ARE NOT MOVED OUT OF HAND AFTER LP PLAY.
+// X Advice on avoiding deadlocks:
+// X Do you have any for () or while () loops without super explicit ending conditions?  Are there any such
+// X    loops that MIGHT have their condition variable modified mid-loop?
+// X Do you use any recursive function calls?
+// X (the browser maxing the CPU could indicate a JS bug instead of PHP -- similar questions would then 
+// X apply, but it should be much easier to use a browser debugger in this case) 
+// X if(leftOverJokers>0){for(let e=h-1;e>1;e--)
+// X @SevronOaks it appears you have an unbounded loop due to "h" being infinite / not defined, possibly 
+// X I waited until Firefox offered me the Debug Script button, and it immediately brought me to the loop.
+// X    Good luck!  Feel free to ask in Discord/javascript if you have further issues with it.
+// X SevronOaks — Today at 1:38 PM
+// X Oh wow good catch!! You found this with Firefox? I use Chrome alot but can try FF.  And yeah that
+// X    joker analysis code is a ratsnest of terrible memories and many re-attempts, trying to get it to work
+// X    right. I've spent dozens of hours in there... I wouldn't be surprised if that's it.
+// X GTSchemer — Today at 1:39 PM
+// X Yeah, normally you can type "debugger" in the console, but in this case it was stuck...but fortunately
+// X  if you let it sit like 30 seconds, it gives a warning about the script slowing the browser, and let me
+// X   click Debug Script.
+// X 12/9/2023: Transition from LIVERPOOLPENATLY in 2 states.
+// X 12/9/2023: Table hung and players must quit. 
+// X 10/22/2023: Should not be able to declare LIVERPOOL on yourself
+// X 10/28/2023 Wrong player designated "WENT OUT" after liverpool go out
+// X kriskeith tried to buy but it didn't go through (filed bug)
+// X Person went down, discarded and went out and handcount reports as NAN
+// X TODO: 8/13/2023: Chrissy NZ says she was not able to put 2 5s onto table 5s, no joker
+// X Add the $this->bSelectGlobalsForUpdate = true; code to PHP constructor, will cause lock before an AJAX transaction runs.
+// X 9/23/2023: tim183: The discard pile and Prep A are really close together...
+// X DrKarotte 9/23/2023 regading Solo:
+// X I think it had to be on PHP side; normally at the beginning of an PHP action function there is a line
+// X    like "self::checkAction("drawCard");"
+// X For solo in the play card action function I have replaced it by the following:
+//      $this->gamestate->checkPossibleAction( "playCard" );
+// X Probably this reduces the procedure to the bare check if an action is allowed, without further
+//      built-in checks (is it the player's turn?)
+// X hope that helps
+// X Side note: There seems to be a rare bug in Solo which I could never fix that might be related to this
+//     change, so it is probably not without risk; on the other side the site founders had given their ok to that    
+// X End message from DrKarotte
 // X CANNOT BUY - this is expected behavior.
 // X After someone draws it makes them draw again
 // X Check for Liverpool on refresh and light up the but9iton
-// Remove wishlist and buttons for Spectator mode (Submit wish list) and clear wish list)
-// so i tried playing the 5, 6, 7 of clubs on my A-4 meld and that's what it told me was illegal 
-//
-// Add option for penalty for Liverpool, or benefit.
-// TODO: 8/5/2023:
-// Add TOOLTIPS for SAVE PREP and LOAD PREP and WISHLIST
-// In JS: When some kind of joker swap happened the table showed 234578* when it SHOULD
-//    have shown: 2345*78. Once someone played a card, it moved to the correct position.
-// When someone draws from deck the card animation doesn't   and should. but when they draw from discard pile it shows.
-// TODO: 101569962
+// X Add option for penalty for Liverpool, or benefit.
+// X 2023-08-05 When someone draws from deck  card animation doesn't. but when they draw from discard pile it shows.
 // X Add extra PREP area just for storing cards to get rid of later.
-// Make it more playable on phone screens.
-// 9/28/2022: Trying to add 89 to *JQKA diamonds. but they don't go 2 at a time. Must do 8 and 9 1 card at a time. Error is "Not a run. It doesn't reach!'
-//
-// Joker placement: it’s a two in a run from ace to 5, but it will show up like it was the 6
-// Turn off the wishlist after a player goes down.
-// Display "You bought X" from wishlist buy (not sure how to display it)
-// 09/10/2022: K could not go down with 9C replacing a joker, and 2 runs, and her 2 melds each needed a joker. She had to put only the right number of cards then go down, then play the rest.
-// 09/10/2022: Add "you" to the wish list logs
-// 09/10/2022: without wishlist option, notifcation "WISH LIST DISABLED" appeared in the log and should not have
-// 09/10/2022: Add a sound "It fits right there!" when your buy goes through.
-// 09/10/2022: Konni had gone down. had a card in her wishist and the person before discarded it. Her browser froze with MOVE RECORDED. She could not pick up the discard. She refreshed her browser. Then she clicked on NOT BUY, she might have clicked on CLEAR WISHLIST. Then che clicked on the discard to pick it up and it recorded it as a buy.
-// 09/10/2022: 789 onto 10*QK gives "NOT A RUN DOESNT REACH" but it should reach.
-// 09/10/2022: Konni's WL still tried to buy after she went down and disable swishlist.
-// 09/05/2022: Cannot play on low end of run with joker. 567* won't allow 3 to play.
-// 09/05/2022: I usually wait until someone draws their card to try to buy something, so that I don't influence them
-// 09/05/0222: it didn't tell me WISH LIST CLEARED when I clicked clear button (after I went down).
-// 09/05/2022: Spectators aren't supposed to see the wish list controls.  
-// 08/22/2022: Remove wishlist from spectator area
-// After the buy, take it off the list.
-// 08/13/2022: Don't allow zombie to buy (or draw).
-// 08/13/2022: I clicked BUY right when someone else drew... I think... "when i buy but same times a persone Draw the cards it s block for me"
-// 08/09/2022: Chat window doesn't launch auto after SORT buttons are pressed.
-// 08/08/2022: Spectator, the WANTS TO BUY lights up very quickly, then disappears.
-// 08/08/2022: Player reported they type and the chat you can usually type and the chat box will just do its thing. However, after clicking the SORT button, you have to click back to the chat window. normallly you just type and the chat comes up, but if you click to sort sets or runs anf then start typing it doesnt work.
-// 08/06/2022: update the player boards first before doing the final score.
-// 08/06/2022: Sorting wrong: **A10* should be 10***A
-// 07/30/2022: Don't unlight the BUY button when a player draws from the deck. Only when they discard
-// 07/30/2022: In JS, when you have 2 identical cards they cannot be sorted unless one is put into a PREP area.
-// 07/16/2022: Replays keep cards in hand when they go down.
-// 07/14/2022: Upon replay, the cards still show in the hand (except the jokers). Card count is right.
-// 1/29/2022: Mark Fong got a Syntax error by drawing a card. Server syntax error:
-//Sorry, an unexpected error has occurred... Sorry, another player made the same action at the same time: please retry. (reference: GS6 30/01 07:40:19)
-// 1/29/2022: When a player takes a joker, show a message they can put the joker anywhere.
-// 1/29/2022: Request to make buyers anonymous if they didn't win. "Someone wants to buy..."
-// 1/29/2022: Make the message to select joker FIRST so it's easier to see.
-// 1/29/2022: Make BUY IT not unlight when someone draws and player can still buy.
-// 1/29/2022: Disable buys in a 2 player game. Deal out the right number of cards.
-// 9/15/2021: Spectator Draw card doesn't show. See drawCardSpect line ~1227.
-// 8/21/2021: 4 people played with 2 decks and the discard pile didn't reshuffle
-// 8/16/2021: Spectator doesn't log the drawing of the card and doesn't hear the swoosh sound when drawing
+// X Joker placement: it’s a two in a run from ace to 5, but it will show up like it was the 6
+// X Turn off the wishlist after a player goes down.
+// X 09/10/2022: K could not go down with 9C replacing a joker, and 2 runs, and her 2 melds each needed a joker.
+// X 09/10/2022: Add "you" to the wish list logs
+// X 09/10/2022: without wishlist option, notifcation "WISH LIST DISABLED" appeared in the log and should not have
+// X 09/10/2022: 789 onto 10*QK gives "NOT A RUN DOESNT REACH" but it should reach.
+// X 09/10/2022: Konni's WL still tried to buy after she went down and disable swishlist.
+// X 09/05/2022: Cannot play on low end of run with joker. 567* won't allow 3 to play.
+// X 09/05/2022: I usually wait until someone draws their card to try to buy something, so that I don't influence them
+// X 09/05/0222: it didn't tell me WISH LIST CLEARED when I clicked clear button (after I went down).
+// X 09/05/2022: Spectators aren't supposed to see the wish list controls.  
+// X 08/22/2022: Remove wishlist from spectator area
+// X 08/13/2022: I clicked BUY right when someone else drew
+// X 08/08/2022: Spectator, the WANTS TO BUY lights up very quickly, then disappears.
+// X 08/06/2022: Sorting wrong: **A10* should be 10***A
+// X 07/30/2022: Don't unlight the BUY button when a player draws from the deck. Only when they discard
+// X 07/16/2022: Replays keep cards in hand when they go down.
+// X 07/14/2022: Upon replay, the cards still show in the hand (except the jokers). Card count is right.
+// X 1/29/2022: Mark Fong got a Syntax error by drawing a card.
+// X 1/29/2022: Make BUY IT not unlight when someone draws and player can still buy.
+// X 1/29/2022: Disable buys in a 2 player game. Deal out the right number of cards. No.
+// X 9/15/2021: Spectator Draw card doesn't show. See drawCardSpect line ~1227.
+// X 8/16/2021: Spectator doesn't log the drawing of the card and doesn't hear the swoosh sound when drawing
+// X 8/4/2021: Spectators don't see message log when someone draws a card.
+// X 7/21/2021: 2 player game, someone could not go down with 3 runs, had to quit.
+// X 7/18/21: Run with 6-Q does not allow 45 to be added "Not a run doesn't reach"
 
-// 8/4/2021: Spectators don't see message log when someone draws a card.
-// 7/21/2021: 2 player game, someone could not go down with 3 runs, had to quit.
-// 7/24/2021: 6 people played with 2 decks and discard pile was not shuffled back into deck.
-// 7/24/2021: Need to cover when both deck and discard pile run out of cards. Need to change to bypass the requirement to draw if cards are left in draw deck + discard pile.
-// 7/18/2021: Unhandled Promise Rejection: NotAllowedError: The request is not allowed by the user agent or the platform in the current context, possibly because the user denied permission. (doPlayFile) It won't play sounds on SAFARI.
-// 7/18/21: Run with 6-Q does not allow 45 to be added "Not a run doesn't reach"
-//  4/24: SCORING: I think this functional form is a perfectly great alternative - there are likely many many ways to go about implementing this scoring feature. 
-//Is there one numPlayerTurns value for all players, or does each player have a potentially unique one? 
-//I think it is important each player has a unique multiplier instead of heavily discounting everyone’s score when someone goes out early - I highly value the relative discounting between players within a round.
-
-//  2/13: When someone wants to buy, light-up the DISCARD card so people can see it has a buyer.
 //  2/13: Everyone should get at least 1 turn
+// 11/26: Get everyone at least 2 turns, or half points
 //  2/13: Scale the points by the number of turns the person had.
 //  2/13: Order the player table by score.
 //  2/13: Have an option where jokers on the table could not be replaced
+//  1/16: Allow players to specify where each joker plays
+// 12/26: Hover-over a joker shows what cards can be substituted.
 //  2/13: Having an option where bids to buy aren't revealed until they are successful would be appreciated
 //  2/13: Make the board FLASH when a person has 1 card
 //  2/13: Change the player board color to RED when player has 1 card
+// 11/10: Add KNOCK requirement feature, or you can't go down next turn
 //  2/6: Sort meld box as run and place joker properly
-// 12/26: When drawing a card, if the same card is in player hand they both go to the right. Only the new card should move.
-//  1/16: Allow players to specify where each joker plays
-//  1/15: If discarded card is playable, allow players to call RUMMY, play it, and discard a card
-//  1/3/2021: Why so many "Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first"? Seems coming from the history log.
-//
+//  1/3/2021: Reduce  "Uncaught (in promise) DOMException: play() failed because the user didn't interact with the document first"? Seems coming from the history log.
 // 12/26: Show the options in the message log when the game starts.
-// 12/26 Marc's board did not light up when I went to buy, but it did after he drew a card. It should have lit up when I clicked the BUY, and not waited until he drew.
-// 12/26: Hover-over a joker shows what cards can be substituted.
-// 11/26: Get everyone at least 2 turns, or half points
 // 11/26: For early hands, make 4 cards needed for a set
 // 11/27: With expelled players, the active turn player's table did not turn green.
-// 
-// 11/26: Let all players have at least 1 turn
-// 11/10: Add KNOCK requirement feature, or you can't go down next turn
 // 11/10: IT'S NOT YOUR TURN is not needed
 // 11/1:  [forum] If 2 of same card (e.g. 2x 6 of hearts) is in hand cannot move just one of them
-//
-// 12/26: MAYBE Should not be able to buy own discard (or if double-click then CONFIRM)
 // 11/7:  MAYBE Limit the set size???
 // 11/10: MAYBE In 2 sets with many players, allow every other player one more play
 // 11/14: MAYBE: Player should not be able to buy their own discard
-// 11/2:  Maybe Not: Ask group: Call Liverpool on another player?
-// 11/8:  Maybe Not: (it's loading the deck cards) In JS code between 244 and 340 takes ~12 seconds (slow!)
-// 11/7:  Maybe not: Add a table with the players in an oval.
 // 11/10: Maybe not: Get bonus if you go out? NO.
-// 11/10/2020: Maybe not: Notify players are prepping cards
 //
 // Resolved Bugs:
 // --------------
+//  X 2/13: When someone wants to buy, light-up the DISCARD card so people can see it has a buyer (lit up player)
+// X 12/26: When drawing a card, if the same card is in player hand they both go to the right. Highlight new cards.
+//  X 1/15: If discarded card is playable, allow players to call RUMMY, play it, and discard a card
+// X 12/26: MAYBE Should not be able to buy own discard (or if double-click then CONFIRM). Leave it
+// X 11/7:  Maybe not: Add a table with the players in an oval.
+// X 11/10/2020: Maybe not: Notify players are prepping cards. No.
+// X 2024-11-05: Inconsistent & wrong info regading who went down in the ribbon and log.
+// X 12/29/2024: PHP Warning:  Trying to access array offset on value of type null in .../liverpoolrummy.game.php on line 1634
 // X 555, 888, 5*5, QQQ, JJJ, AAAAA, 22222, QQQ
 // X and then 4H and 10H were able to be picked up.
 // X AC and LK both clicked. it was LK's turn. LK got the discarded card BUT
@@ -491,7 +384,8 @@ console.log("[bmc] Clear this.prepAreas2");
 // X Also when someone does liverpool their board does not light up green.
 // X 1/16: When I have enough melds prepped to go down and it becomes my turn, the GO DOWN button doesn't light up but should
 // X 1/16: When someone clicks BUY IT and someone clicks the card there can be a race condition?
-// X 12/26/2020: Konni discarded at same time as I clicked BUY it. It was my turn. Game thought i wanted to buy Konni's discard. I drew, but now it won't let me discard: "You cannot buy any more this hand(decPlayerBuyCount)."
+// X 12/26/2020: Konni discarded at same time as I clicked BUY it. It was my turn. Game thought i wanted to buy
+//     Konni's discard. I drew, but now it won't let me discard: "You cannot buy any more this hand(decPlayerBuyCount)."
 // X 9/4/2023: 3 new bugs added (some translations)
 //    Translations:
 //      Xboard: "Voices"
@@ -4948,7 +4842,7 @@ console.log(color);
 console.log(value);
 console.log(drawSource);
 console.log("[bmc] drawPlayer is next:");
-console.log(drawPlayer);
+console.log(drawPlayer); // drawPlayer is the player number of the board area where it comes from
 console.log(allHands);
 console.log(discardSize);
 console.log(drawDeckSize);
@@ -5030,7 +4924,8 @@ console.log("[bmc] Yikes!! Color or value is null! Need to fix this, this is fat
 
 			} else {
 				console.log("[bmc] player_id is NOT me");
-				var addTo = 'overall_player_board_' + drawPlayer;
+//				var addTo = 'overall_player_board_' + drawPlayer;
+				var addTo = 'overall_player_board_' + player_id; // make it slide to the active player
 			}
 				
 console.log( '[bmc] addTo: ' + addTo );
@@ -5131,7 +5026,8 @@ console.log(this.playerHand)
 					exit(0);
 				}
 				console.log("[bmc] player_id is NOT me");
-				var addTo = 'overall_player_board_' + drawPlayer;
+//				var addTo = 'overall_player_board_' + drawPlayer;
+				var addTo = 'overall_player_board_' + player_id; // make it slide to the active player
 //			}
 				
 console.log( '[bmc] addTo: ' + addTo );
