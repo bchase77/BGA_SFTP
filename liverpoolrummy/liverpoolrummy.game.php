@@ -2705,6 +2705,8 @@ self::trace("[bmc] Deadlock:2179");
 
 //09/02/2023
 
+// TODO Jan 25 2025: Comment this notify out after I change the JS for drawcard.
+
 		self::notifyAllPlayers( 'drawCardSpect',
 			// WHY IS NEXT LINE COMMENTED OUT???
 			// It was commented out because 2 entries appear in the log if it's not blank. Now I commented out the per-player one above.

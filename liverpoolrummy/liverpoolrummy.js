@@ -1897,6 +1897,23 @@ console.log( "[bmc] buyrequested: " + this.buyRequested);
 /////////
 /////////
 /////////
+		findHighestZIndex: function (container) {
+			const elements = container.querySelectorAll('*');
+			let highestZ = 0;
+			let highestElement = null;
+
+			elements.forEach(element => {
+				const zIndex = parseInt(window.getComputedStyle(element).zIndex) || 0;
+				if (zIndex > highestZ) {
+					highestZ = zIndex;
+					highestElement = element;
+				}
+			});
+			return highestElement;
+		},
+/////////
+/////////
+/////////
 
 //11/3 TODO:  Validate this can go through the board areas properly.
 //Maybe just do it after a card is played onto a run and after someone goes down.
@@ -2887,8 +2904,7 @@ console.log( this.playerHand );
 
 console.log( "this.discardPileOne" );
 console.log( this.discardPileOne );
-			
-			
+
 			// Remove any cards already in the discard pile
 			this.discardPileOne.removeAll();
 			
@@ -4933,7 +4949,22 @@ console.log( '[bmc] addTo: ' + addTo );
 			if ( drawSource == 'deck' ) {
 				console.log(this.gamedatas.cardIDsInDeck[ 0 ]);
 
-				this.deckAll.removeFromStockById( card_id, addTo );
+				const myDiv = document.getElementById('deckAll');
+				const topElement = this.findHighestZIndex(myDiv);
+
+				if (topElement) {
+					console.log('Element with highest z-index:', topElement);
+					console.log('z-index value:', window.getComputedStyle(topElement).zIndex);
+				} else {
+					console.log('No elements with z-index found in the container.');
+				}
+
+				console.log( topElement.id );
+				topCardId = topElement.id.split('_');
+				console.log( topCardId[ 2 ] );
+				
+				this.deckAll.removeFromStockById( topCardId[ 2 ], addTo );
+//				this.deckAll.removeFromStockById( card_id, addTo );
 			}
 			
 			if ( drawSource == 'discardPile' ) {
@@ -4996,6 +5027,14 @@ console.log(drawDeckSize);
 			var isReadOnly = this.isReadOnly();
 			console.log("isReadOnly");
 			console.log(isReadOnly);
+			
+			// If I am a player then do nothing and return else, do the regular function
+			// (do nothing because players were notified individually)
+		
+			// jan 25 2025
+			// Why is color and value == null???
+			
+			// Me wathcing live game 1/27: Down card did not slide after a buy.			
 			
 			if ( isReadOnly ) {
 				for ( var p_id in allHands ) {
