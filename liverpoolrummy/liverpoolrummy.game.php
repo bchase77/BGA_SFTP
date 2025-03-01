@@ -94,6 +94,7 @@ class LiverpoolRummy extends Table
 			"enableWishList" => 108,
 			"allowJokerSwapping" => 109,
 			"drawStamp" => 110,
+			"tabletop" => 111,
 
 			"LPMissed" => 125,
 			"liverpoolExists" => 126,
@@ -680,6 +681,9 @@ class LiverpoolRummy extends Table
 
 //		self::trace("[bmc] EXIT GETALLDATAS");
 		self::trace("'<span style='color:green'><b>[bmc] EXIT GETALLDATAS</b></span>'");
+
+		// Determine the type of tabletop
+        $result['tabletop'] = $this->getGameStateValue( 'tabletop' );
 
         return $result;
     }

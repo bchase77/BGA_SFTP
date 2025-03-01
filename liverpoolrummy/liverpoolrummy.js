@@ -109,12 +109,11 @@ console.log("[bmc] Clear this.prepAreas2");
 ////////
 // Bugs / TODO:
 //
-// 2025-01-19: I am at table 618031393
-//
-// 2025-01-19: Down card doesn't slide after go DOWN nor joker swap?
-//
-// 2025-01-19: Make the wishlist buy after the person draws
+// 2025-03-01: There are ZERO PHP syntax errors and ZERO UNEXPECTED ERRORS on the game servers!! Yay!
 // 
+// 2025-01-19: I am at table 618031393
+// 2025-01-19: Down card doesn't slide after go DOWN nor joker swap?
+// 2025-01-19: Make the wishlist buy after the person draws (not before)
 // Card backs: maybe grapes or beach or palm trees... Not winter because it's summer in Australia 
 //
 // 19/01 12:29:57 [error] [T617611414] [1.159.82.180] [91612041/Lindajak] Error with notification service
@@ -122,24 +121,6 @@ console.log("[bmc] Clear this.prepAreas2");
 //  https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://ws.boardgamearena.com/bgamsg") first
 //  error (message length = 825). Automatic retry - /player/p89557171 - 65703dba0f1665eca0e87129089903af
 //  - drawCard","log":"","....  
-// 2025-01-19: Add delay between draw and discard. Reason: Derusian and others are able to quickly
-//     draw and discard, not giving others a chance to buy.
-//
-// 29/12 15:40:39 [error] [T607825961] [126.60.172.101] [97104249/osorairo] Unexpected exception:
-//     Can't manage zombie player in this game state (40)
-// #0 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(256): Table->checkReturnState()
-// #1 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(249):
-//     APP_GameAction->ajaxResponseWithResult(NULL)
-// #2 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(195): APP_GameAction->ajaxResponse()
-// #3 /var/tournoi/release/tournoi-241223-1616-gs/www/include/APP_GameAction.inc.php(602): APP_GameAction->wakeup()
-// #4 /var/tournoi/release/tournoi-241223-1616-gs/www/include/webActionCore.inc.php(198):
-//     APP_GameAction->performServerAction('...')
-// #5 /var/tournoi/release/tournoi-241223-1616-gs/www/index.php(356):
-//     launchWebAction('...', '...', '...', false, false, NULL, true, false)
-// #6 {main}
-// http://boardgamearena.com/8/liverpoolrummy/liverpoolrummy/wakeup.html?myturnack=true&table=607825961		
-//
-// TODO 12/29/2024: Joker replacements go to the wrong player.
 // 
 // 12/8/2024: It doesn't update the score until after everyone clicks on to the next
 //
@@ -180,6 +161,8 @@ console.log("[bmc] Clear this.prepAreas2");
 //   score when someone goes out early - I highly value the relative discounting between players within a round.
 
 
+// X 2025-01-19: Add delay between draw and discard. Reason: Derusian able to give others a chance to buy.
+// X 12/29/2024: Joker replacements go to the wrong player.
 // X TODO: Check all actions for public, variable type, statemachine
 // X test/public/int       /states actDiscardCard
 // X public/int       /states 'actPlayerHasReviewedHand'
@@ -1486,6 +1469,17 @@ console.log("[bmc] Doing the window.onload");
 			$(BUTSAVEPREPTRANSLATED).innerHTML = _('Save Prep');
 			$(BUTLOADPREPTRANSLATED).innerHTML = _('Load Prep');
 			$(VOICESTRANSLATED).innerHTML = _('Voices');
+
+console.log( this.gamedatas.tabletop );
+
+			// Draw the tabletop, based on selected option
+			if (  this.gamedatas.tabletop == 0 ){ // 1 = Yellow ; 0 = Sky
+				dojo.removeClass( 'goDownArea_wrap', 'goDownWrapYellowTable' );
+				dojo.addClass(    'goDownArea_wrap', 'goDownWrapSkyOverField' );
+			} else {
+				dojo.removeClass( 'goDownArea_wrap', 'goDownWrapSkyOverField' );
+				dojo.addClass(    'goDownArea_wrap', 'goDownWrapYellowTable' );
+			}
 
             console.log( "[bmc] EXIT game setup" );
         },
@@ -4949,22 +4943,22 @@ console.log( '[bmc] addTo: ' + addTo );
 			if ( drawSource == 'deck' ) {
 				console.log(this.gamedatas.cardIDsInDeck[ 0 ]);
 
-				const myDiv = document.getElementById('deckAll');
-				const topElement = this.findHighestZIndex(myDiv);
+				// const myDiv = document.getElementById('deckAll');
+				// const topElement = this.findHighestZIndex(myDiv);
 
-				if (topElement) {
-					console.log('Element with highest z-index:', topElement);
-					console.log('z-index value:', window.getComputedStyle(topElement).zIndex);
-				} else {
-					console.log('No elements with z-index found in the container.');
-				}
+				// if (topElement) {
+					// console.log('Element with highest z-index:', topElement);
+					// console.log('z-index value:', window.getComputedStyle(topElement).zIndex);
+				// } else {
+					// console.log('No elements with z-index found in the container.');
+				// }
 
-				console.log( topElement.id );
-				topCardId = topElement.id.split('_');
-				console.log( topCardId[ 2 ] );
+				// console.log( topElement.id );
+				// topCardId = topElement.id.split('_');
+				// console.log( topCardId[ 2 ] );
 				
-				this.deckAll.removeFromStockById( topCardId[ 2 ], addTo );
-//				this.deckAll.removeFromStockById( card_id, addTo );
+				// this.deckAll.removeFromStockById( topCardId[ 2 ], addTo );
+				this.deckAll.removeFromStockById( card_id, addTo );
 			}
 			
 			if ( drawSource == 'discardPile' ) {
@@ -5073,8 +5067,24 @@ console.log( '[bmc] addTo: ' + addTo );
 				
 				if ( drawSource == 'deck' ) {
 console.log( '[bmc] Deck' );
+
+
+					// const myDiv = document.getElementById('deckAll');
+					// const topElement = this.findHighestZIndex(myDiv);
+
+					// if (topElement) {
+						// console.log('Element with highest z-index:', topElement);
+						// console.log('z-index value:', window.getComputedStyle(topElement).zIndex);
+					// } else {
+						// console.log('No elements with z-index found in the container.');
+					// }
+
+					// console.log( topElement.id );
+					// topCardId = topElement.id.split('_');
+					// console.log( topCardId[ 2 ] );
+					// this.deckAll.removeFromStockById( topCardId[ 2 ], addTo );
+
 					this.deckAll.removeFromStockById( card_id, addTo );
-					// this.deck.removeFromStockById(card_id, addTo );
 				}
 				
 				if ( drawSource == 'discardPile' ) {

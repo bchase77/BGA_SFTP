@@ -283,7 +283,18 @@ individually display or hide the element.
 .checkboxWL { position: absolute; bottom: 50px; right: 70px; }
 
 
-.goDownWrap {
+.goDownWrapSkyOverField {
+	float: Left;
+    background-image: url('img/SkyOverField.png');
+	background-size: cover;
+	background-repeat: no-repeat;
+	margin: 10px;
+	border: 10px;
+	padding: 10px;
+	width: 95%;
+}
+
+.goDownWrapYellowTable {
 	float: Left;
     background-image: url('img/YellowTable.png');
 	background-size: cover;

@@ -75,5 +75,12 @@
 				 "1": { "name": "Yes" }
 			 },
 			 "default": 1
+	},
+	"111": { "name": "Tabletop",
+			 "values": {
+				 "0": { "name": "Sky Over Field" },
+				 "1": { "name": "Gramma's Yellow Vinyl" }
+			 },
+			 "default": 0
 	}
 }

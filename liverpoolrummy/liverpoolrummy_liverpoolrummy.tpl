@@ -94,7 +94,7 @@
 <div>
 </div>
 
-<div id="goDownArea_wrap" class="goDownWrap whiteblock">
+<div id="goDownArea_wrap" class="whiteblock">
 	<div id="boxes">
 		<div id = "discardbox" class="discardbox">
 			<h3><span id="DISCARDPILETRANSLATED"></span> (<span id="discardSize"></span>)</h3>
