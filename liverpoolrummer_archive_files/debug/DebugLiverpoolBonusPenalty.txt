@@ -1,0 +1,70 @@
+liverpool()
+If (penalty){ // Penalty
+  if exists = no {
+    notifyAll()
+  } else {
+    notifyAll()
+  }
+  verify dpCard exists, then go to liverpoolPenalty
+} else { // Bonus
+  Verify have gone down
+  if exists == yes {
+    if notFound then set to found and set the players (5405)
+	notifyAll()
+      verify dpCard exists, then go to liverpool
+  } else { // LP not exist
+    now it's (0==1) but should be:
+    // Have caller draw a card, because no LP exists
+  }
+}
+
+
+FLOW:
+Deal cards
+create deck
+Put 1 in discard
+Go to player turn draw to wait for the player to draw a card
+  Player 2: load page and go to argPTD
+  Player 3: load page and go to argPTD
+  ...
+
+stLiverpool:
+  Change active player to playerfindingLP
+  Next state (51 stLiverpoolDraw)
+  
+stLiverpoolDraw:
+  Draw a card to playerfindingLP
+  Next state 'playCard' or should it be 'drawCard'?
+  
+
+When there is a valid LPpenalty:
+
+[30] playerTurnDraw:
+  => 50 (liverpoolBonus)
+  => 60 (liverpoolPenalty)
+[60] liverpoolPenalty:
+  => 61 (discarder) => 62 (caller)
+[61] liverpoolDrawPenaltyDiscarder
+  => 63 (liverpoolReturnPenalty)
+[62] liverpoolDrawPenaltyCaller
+  => 63
+[63] liverpoolReturnPenalty
+  => 37 (nextPlayer)
+
+[50] liverpoolBonus
+  Change player to playerfindingLP
+  Go to next state
+  => 51 (liverpoolDraw)
+[51] liverpoolDraw
+  Draw the discarded card to playerfindingLP
+  go to next state (playcard)
+  => 35 (drawCard)
+[52] liverpoolReturn
+  => 37 (nextPlayer)
+
+
+
+playerTurnPlay:
+  => 
+
+

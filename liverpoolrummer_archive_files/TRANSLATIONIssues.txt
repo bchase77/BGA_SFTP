@@ -1,0 +1,83 @@
+On board: Voices
+On board: Target Hand...(and following text
+On board: Prep A, Prep B and Prep C
+In log: "the 3 of diamonds" or whatever card was discarded
+In log: "a joker" should now be only "joker"
+In log: No more exclamation points.
+In log: "... draws a card from the..."
+In log: "It's your draw"
+Gameplay: Can play 2x cards at same time onto a set or a run
+
+
+CHECKGoDodyGo obtient 15 points
+CHECKMadde-SWE obtient 20 points
+CHECKbcts08 n'a reçu aucun point
+Xbcts08 went out.
+Xbcts08 défausse the 3 of clubs.
+Xbcts08 joue the Ace of clubs.
+Xbcts08 joue the 2 of hearts.
+bcts08 a posé.
+Xbcts08 draws a card from the deck.
+XGoDodyGo défausse the 5 of hearts.
+XGoDodyGo draws a card from the deck.
+XVous piochez the 5 of hearts du deck
+
+"Deal Me in!"
+
+
+It's Your Draw!
+XMadde-SWE défausse the King of clubs.
+XMadde-SWE draws a card from the deck.
+Nouvelle main ! bcts08 a distribué les cartes. Le nouvel objectif est 1 Set and 2 Runs; No more no less (Set is 3 any suit of same value; Run is 4 in sequence of same suit. Ace can play as high or low.). The Queen of diamonds est dans la défausse.
+XVotre liste de souhaits est maintenant désactivée
+XVotre liste de souhaits est maintenant désactivée
+
+X"Du måste discard or go down (must go down to play on other melds)"   
+
+END SCREEN:
+XBummer! Madde-SWE went out! You want the most positive score:
+bcts08	Madde-SWE	GoDodyGo
+This Hand:	-110	0	-130
+Total:	-110	-20	-145
+
+LOG:
+XGoDodyGo défausse the Queen of hearts.
+X(bcts08 a acheté the King of hearts)
+bcts08 draws a card from the discard pile.
+bcts08 draws a card from the deck.
+bcts08 veut acheter the King of hearts.
+GoDodyGo draws a card from the deck.
+Vous piochez the Queen of hearts du deck.
+It's Your Draw!
+Madde-SWE défausse the King of hearts.
+Madde-SWE draws a card from the deck.
+bcts08 défausse the Ace of hearts.
+
+TOP:
+Madde-SWE doit discard or go down (must go down to play on other melds).    
+GoDodyGo doit piocher à partir de la pioche ou de la défausse. Les autres joueurs peuvent acheter.   
+Vous devez discard or go down (must go down to play on other melds).
+Madde-SWE doit discard or go down (must go down to play on other melds). 
+bcts08 doit discard or go down (must go down to play on other melds). 
+GoDodyGo doit piocher à partir de la pioche ou de la défausse. Les autres joueurs peuvent acheter. 
+
+TO TRANSLATE:
+1) "Target Hand 3 of 3"
+   <span id="handNumber" style="color:Black">Target Hand 3 of 3: </span>
+   
+2) "3 Runs; No more no less..."
+   <span id="redTarget" style="color:Blue">"3 Runs...low.)"</span>
+   
+3) "Voices"
+   <spand id="VOICESTRANSLATED">Voices</span>
+
+Good ones:
+1) "Ma Main (12):"
+   <span id="MYHANDTRANSLATED">Ma Main</span>
+   
+DONE:
+1) Bummer X went out. You want the most positive score.
+2) gets X points.
+3) Voices
+4) X went out.
+5) 

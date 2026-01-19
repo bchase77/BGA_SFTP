@@ -1,0 +1,153 @@
+Unexpected errors
+------- GAMESERVER 1: LOG START -------
+
+
+
+------- GAMESERVER 1: LOG END -------
+
+------- GAMESERVER 2: LOG START -------
+
+
+
+------- GAMESERVER 2: LOG END -------
+
+------- GAMESERVER 4: LOG START -------
+
+24/11 07:48:14 [error] [T593061102] [50.69.41.40] [86738337/sockmonkey] Error with notification service (TIMEOUT) first error (message length = 835). Automatic retry - /player/p85386688 - 5b0b3317b23f13186defcb3904e06c25 - drawCard","log":"","...  
+25/11 05:14:41 [error] [T593486747] [64.99.195.211] [85778328/Momma_Bear] Error with notification service (TIMEOUT) first error (message length = 1827). Automatic retry - /player/p91393394 - e4a913decaf3b07a37b6998fcadb2414 - drawCard","log":"You...  
+25/11 07:58:48 [error] [T593528230] [222.154.34.195] [91340375/Chrissy NZ] Error with notification service (TIMEOUT) first error (message length = 1385). Automatic retry - /table/t593528230 - 1983fb6e00684c32dd60018840de0bc2 - cardPlayed","log":"$...  
+26/11 01:54:43 [error] [T593888833] [68.77.51.93] [84160462/sewrig01] Error with notification service (TIMEOUT) first error (message length = 989). Automatic retry - /player/p84160462 - 35ad45910465a72bfc0d3bccff759453 - drawCard","log":"You...  
+26/11 06:54:57 [error] [T593943719] [75.163.34.210] [92565166/corbbes1] Error with notification service (TIMEOUT) first error (message length = 1033). Automatic retry - /player/p92565166 - a09ae10c475a4b2b4ec02e6a4208a015 - drawCard","log":"You...  
+
+
+------- GAMESERVER 4: LOG END -------
+
+------- GAMESERVER 5: LOG START -------
+
+24/11 02:38:36 [error] [T592994535] [99.116.217.192] [88087147/edward1943] Error with notification service (TIMEOUT) first error (message length = 2819). Automatic retry - /table/t592994535 - 6adbad6e5f5951294bf63b8297ab2cf6 - clearBuyers","log":"...  
+24/11 07:15:20 [error] [T593055291] [66.31.178.50] [86589799/Young Gravy] Error with notification service (TIMEOUT) first error (message length = 842). Automatic retry - /player/p92565166 - 4bc7b8e5e79205fe98c0287ebcfeefd5 - drawCard","log":"","...  
+24/11 11:49:23 [error] [T593120716] [79.161.174.245] [92188835/Luchi] Error with notification service (TIMEOUT) first error (message length = 830). Automatic retry - /player/p91612041 - 6af9ed66ca6899c2e9d445e6fc862a6c - drawCard","log":"","...  
+26/11 14:14:06 [error] [T594052246] [108.73.111.87] [93561802/awi0g] Error with notification service (Connection timed out after 1000 milliseconds) first error (message length = 830). Automatic retry - /player/p93890657 - b40f9cbedd198995bc337958d9338286 - drawCard","log":"","...  
+
+
+------- GAMESERVER 5: LOG END -------
+
+------- GAMESERVER 6: LOG START -------
+
+
+
+------- GAMESERVER 6: LOG END -------
+
+------- GAMESERVER 7: LOG START -------
+
+24/11 00:23:33 [error] [T592955053] [1.159.82.180] [91612041/Lindajak] Error with notification service (TIMEOUT) first error (message length = 2077). Automatic retry - /table/t592955053 - 0f0880b1949cac93a71d21558dd628d6 - playerGoDown","log":...  
+
+
+------- GAMESERVER 7: LOG END -------
+
+------- GAMESERVER 8: LOG START -------
+
+24/11 02:46:07 [error] [T592995028] [38.250.154.228] [88708178/la chicho] Error with notification service (TIMEOUT) first error (message length = 1827). Automatic retry - /player/p91205663 - a9bb9cddb90be2342c68592b13670436 - drawCard","log":"You...  
+24/11 05:53:21 [error] [T593036238] [24.63.249.209] [91833186/jagov1990] Error with notification service (TIMEOUT) first error (message length = 254). Automatic retry - /table/t593036238 - 94afff0876aa7c0bce298974ed207d1d - yourturnack","log":"...  
+24/11 19:36:33 [error] [T593302681] [108.180.26.47] [91476662/averagecat] Error with notification service (TIMEOUT) first error (message length = 833). Automatic retry - /player/p85709213 - 81e33649f4a8c2cccb7291bb4baed6cf - drawCard","log":"","...  
+24/11 19:56:03 [error] [T593302681] [90.240.60.56] [85709213/SusieRose496] Error with notification service (TIMEOUT) first error (message length = 616). Automatic retry - /table/t593302681 - 03383b1ce40d3d58fd48bf4d7eff421c - wentOut","log":"","a...  
+25/11 01:57:07 [error] [T593443602] [24.202.74.11] [87527864/Jackmtl] Error with notification service (TIMEOUT) first error (message length = 794). Automatic retry - /player/p85338253 - f970882fc1add21de8fc258108d16e2f - drawCard","log":"","...  
+25/11 05:20:49 [error] [T593497404] [76.238.191.42] [93890657/angelahowe] Error with notification service (TIMEOUT) first error (message length = 2692). Automatic retry - /table/t593497404 - b55c71d025530ee1a7a0573ccf1d8214 - clearBuyers","log":"...  
+25/11 06:41:46 [warning] [T593504720] [75.163.34.210] [92565166/corbbes1] Slow notification service warning (LONGREQUEST) 258.77499580383 ms - /table/t593504720 - a79122bd26e402a0818258a3e73e6b18 - yourturnack","log":"...  
+25/11 20:37:30 [error] [T593763508] [108.73.111.87] [93561802/awi0g] Error with notification service (TIMEOUT) first error (message length = 1021). Automatic retry - /player/p93561802 - b8365f8c1fce8981aacc696845c39cf9 - drawCard","log":"You...  
+25/11 20:37:31 [error] [T593763508] [108.73.111.87] [93561802/awi0g] Error with notification service (TIMEOUT) first error (message length = 822). Automatic retry - /player/p92007747 - 451404e1bc4b5e0c9469d0c04c65f6f0 - drawCard","log":"","...  
+25/11 21:47:08 [error] [T593770418] [98.97.118.131] [91476500/starshinep] Error with notification service (TIMEOUT) first error (message length = 841). Automatic retry - /player/p94216986 - 657f32cee735033dffb3cdeb908e5af0 - drawCard","log":"","...  
+26/11 14:11:47 [error] [T594050243] [1.140.8.233] [86429312/Zephyrgirl] Error with notification service (TIMEOUT) first error (message length = 1478). Automatic retry - /table/t594050243 - 2acde5879d0522ae6348842e95310f94 - cardPlayed","log":"$...  
+
+
+------- GAMESERVER 8: LOG END -------
+
+------- GAMESERVER 9: LOG START -------
+
+25/11 03:25:25 [error] [T587810950] [67.188.124.235] [93755655/PuppyBruin] Unexpected exception: BGA main website do not respond
+#0 /var/tournoi/release/tournoi-241121-1458-gs/www/view/common/game.view.php(264): APP_DbObject->masterNodeRequest('...', Array)
+#1 /var/tournoi/release/tournoi-241121-1458-gs/www/view/common/ebg.view.php(19): game_view->generate_content(Array)
+#2 /var/tournoi/release/tournoi-241121-1458-gs/www/include/webActionCore.inc.php(301): ebg_view->generate(Array)
+#3 /var/tournoi/release/tournoi-241121-1458-gs/www/index.php(356): launchWebAction('...', '...', '...', false, false, NULL, true, false)
+#4 {main}
+http://boardgamearena.com/9/liverpoolrummy?table=587810950  
+25/11 03:25:28 [error] [T587810950] [67.188.124.235] [93755655/PuppyBruin] Unexpected exception: BGA main website do not respond
+#0 /var/tournoi/release/tournoi-241121-1458-gs/www/view/common/game.view.php(264): APP_DbObject->masterNodeRequest('...', Array)
+#1 /var/tournoi/release/tournoi-241121-1458-gs/www/view/common/ebg.view.php(19): game_view->generate_content(Array)
+#2 /var/tournoi/release/tournoi-241121-1458-gs/www/include/webActionCore.inc.php(301): ebg_view->generate(Array)
+#3 /var/tournoi/release/tournoi-241121-1458-gs/www/index.php(356): launchWebAction('...', '...', '...', false, false, NULL, true, false)
+#4 {main}
+http://boardgamearena.com/9/liverpoolrummy?table=587810950  
+25/11 07:59:48 [error] [T591045595] [92.184.124.124] [4528678/TAO 1] Error with notification service (TIMEOUT) first error (message length = 253). Automatic retry - /table/t591045595 - 7fe7a47df8639cf95e76ec16c2e31b99 - yourturnack","log":"...  
+
+
+------- GAMESERVER 9: LOG END -------
+
+------- GAMESERVER 10: LOG START -------
+
+25/11 04:03:10 [error] [T593471830] [67.188.124.235] [93755655/PuppyBruin] Error (3024) while processing SQL request: Query execution was interrupted, maximum statement execution time exceeded - Request: SELECT global_id, global_value FROM global WHERE 1 FOR UPDATE  
+25/11 04:03:10 [error] [T593471830] [67.188.124.235] [93755655/PuppyBruin] Unexpected exception: Maximum execution time exceeded (mysql via TCP/IP) (BGA service error 1732503790)
+#0 /var/tournoi/release/tournoi-241121-1458-gs/www/include/APP_DbObject.inc.php(35): Bga\Services\Db->query('...')
+#1 /var/tournoi/release/tournoi-241121-1458-gs/www/game/module/table/tableinfos.game.php(118): APP_DbObject::DbQuery('...')
+#2 /var/tournoi/release/tournoi-241121-1458-gs/www/game/module/table/tableinfos.game.php(87): TableInfos->getGlobalsFromDB(true)
+#3 /var/tournoi/release/tournoi-241121-1458-gs/www/game/module/table/tableinfos.game.php(68): TableInfos->db_load(true)
+#4 /var/tournoi/release/tournoi-241121-1458-gs/www/include/APP_GameAction.inc.php(73): TableInfos->get(true)
+#5 /var/tournoi/release/tournoi-241121-1458-gs/www/include/APP_GameAction.inc.php(24): APP_GameAction->initGameTableObjects()
+#6 /var/tournoi/release/tournoi-241121-1458-gs/vendor/php-di/php-di/src/Definition/Resolver/ObjectCreator.php(129): APP_GameAction->__construct()
+#7 /var/tournoi/release/tournoi-241121-1458-gs/vendor/php-di/php-di/src/Definition/Resolver/ObjectCreator.php(56): DI\Definition\Resolver\ObjectCreator->createInstance(Object(DI\Definition\ObjectDefinition), Array)
+#8 /var/tournoi/release/tournoi-241121-1458-gs/vendor/php-di/php-di/src/Definition/Resolver/ResolverDispatcher.php(60): DI\Definition\Resolver\ObjectCreator->resolve(Object(DI\Definition\ObjectDefinition), Array)
+#9 /var/tournoi/release/tournoi-241121-1458-gs/vendor/php-di/php-di/src/Container.php(354): DI\Definition\Resolver\ResolverDispatcher->resolve(Object(DI\Definition\ObjectDefinition), Array)
+#10 /var/tournoi/release/tournoi-241121-1458-gs/vendor/php-di/php-di/src/Container.php(184): DI\Container->resolveDefinition(Object(DI\Definition\ObjectDefinition), Array)
+#11 /var/tournoi/release/tournoi-241121-1458-gs/www/include/webActionCore.inc.php(191): DI\Container->make('...')
+#12 /var/tournoi/release/tournoi-241121-1458-gs/www/index.php(356): launchWebAction('...', '...', '...', false, false, NULL, true, false)
+#13 {main}
+http://boardgamearena.com/10/liverpoolrummy/liverpoolrummy/discardCard.html?id=89&player_id=93755655&lock=5319be16-f86a-43bb-8e11-7c0a8fdad3b3&table=593471830&noerrortracking=true&dojo.preventCache=1732503786271  
+
+
+------- GAMESERVER 10: LOG END -------
+
+------- GAMESERVER 11: LOG START -------
+
+24/11 06:24:19 [error] [T593036699] [107.135.146.97] [87381646/The Cat Princess] Error with notification service (TIMEOUT) first error (message length = 2759). Automatic retry - /table/t593036699 - 419665b55e9fd937a75fcbad8c3da645 - clearBuyers","log":"...  
+24/11 16:33:46 [error] [T593204749] [76.238.191.42] [93890657/angelahowe] Error with notification service (TIMEOUT) first error (message length = 835). Automatic retry - /player/p91476500 - c3bc6c7b37c2120058bbba131fdbce1e - drawCard","log":"","...  
+24/11 23:16:25 [error] [T593389302] [74.56.62.240] [89826199/bouledogue1957] Error with notification service (TIMEOUT) first error (message length = 927). Automatic retry - /table/t593389302 - f9da95fe6253dccd4741efcaf082b7df - playerWantsToBuy","l...  
+25/11 05:17:41 [error] [T593492803] [75.163.34.210] [92565166/corbbes1] Error with notification service (TIMEOUT) first error (message length = 2676). Automatic retry - /table/t593492803 - 397e6764d2db1064462b9c5984fc678b - clearBuyers","log":"...  
+25/11 05:39:43 [error] [T593492803] [75.163.34.210] [92565166/corbbes1] Error with notification service (TIMEOUT) first error (message length = 833). Automatic retry - /player/p91979520 - fdfa4aa08d5f088889f5b8116b424f82 - drawCard","log":"","...  
+25/11 10:31:10 [error] [T593541792] [1.140.8.233] [86429312/Zephyrgirl] Error with notification service (TIMEOUT) first error (message length = 836). Automatic retry - /player/p84552258 - 409a8bef1967590f49dc4e64ec50b749 - drawCard","log":"","...  
+
+
+------- GAMESERVER 11: LOG END -------
+
+------- GAMESERVER 12: LOG START -------
+
+24/11 04:15:49 [warning] [T593011724] [172.56.218.239] [91979520/nicki1] Slow notification service warning (LONGREQUEST) 253.36599349976 ms - /table/t593011724 - 72090b3f8fa6984c4396d78aef0f490d - clearBuyers","log":"...  
+25/11 00:46:01 [error] [T593414489] [188.88.37.210] [84330527/bigblind] Error with notification service (TIMEOUT) first error (message length = 254). Automatic retry - /table/t593414489 - eff4348458ce968952c2b4a7b1b8e293 - yourturnack","log":"...  
+25/11 02:31:58 [error] [T593450700] [174.175.41.153] [88086997/SneakyTurtle40] Error with notification service (TIMEOUT) first error (message length = 2748). Automatic retry - /table/t593450700 - 92857ec92597ab8c0c62144755a5f3fd - clearBuyers","log":"...  
+25/11 20:38:54 [warning] [T593763421] [108.147.94.133] [87402673/MelNeeKuj] Slow notification service warning (LONGREQUEST) 275.73800086975 ms - /table/t593763421 - ca661326435dac1f4031d720b9adfd39 - clearBuyers","log":"...  
+25/11 23:05:59 [warning] [T593820663] [176.20.199.4] [85362818/TinaTurpin] Slow notification service warning (LONGREQUEST) 270.30205726624 ms - /table/t593820663 - d2ac1fc29c29766cd338117077677427 - clearBuyers","log":"...  
+25/11 23:57:26 [error] [T593853044] [66.66.156.237] [92093656/Waldo227] Error with notification service (TIMEOUT) first error (message length = 1902). Automatic retry - /table/t593853044 - e596a8bbf375db3f1200100c73ae40b5 - playerGoDown","log":...  
+26/11 03:21:30 [error] [T593905384] [73.35.135.247] [85219046/lolastacy] Error with notification service (TIMEOUT) first error (message length = 850). Automatic retry - /player/p85848755 - a81f6981fe1d332091a9efda450dbc4e - drawCard","log":"","...  
+26/11 03:30:26 [error] [T593905384] [70.83.8.8] [85848755/Lili Rose] Error with notification service (TIMEOUT) first error (message length = 254). Automatic retry - /table/t593905384 - 2906d9ecff7506897e6a5127e13a5414 - yourturnack","log":"...  
+26/11 20:52:56 [error] [T594215109] [217.149.174.100] [89574530/Heidi1963] Error with notification service (TIMEOUT) first error (message length = 2763). Automatic retry - /table/t594215109 - d91c13162a2ad31ede0b84ce77889b0b - clearBuyers","log":"...  
+
+
+------- GAMESERVER 12: LOG END -------
+
+------- GAMESERVER 13: LOG START -------
+
+24/11 08:47:38 [error] [T593075851] [104.195.135.233] [86480757/Chipati] Error with notification service (TIMEOUT) first error (message length = 831). Automatic retry - /player/p91612041 - df12091de4122a318c4047b1a8785ced - drawCard","log":"","...  
+25/11 01:57:01 [error] [T593442042] [98.97.118.131] [91476500/starshinep] Error with notification service (TIMEOUT) first error (message length = 2671). Automatic retry - /table/t593442042 - b9480ed04fdb4a1c73ef72827875d8e3 - clearBuyers","log":"...  
+25/11 16:35:44 [error] [T593669761] [90.240.60.56] [85709213/SusieRose496] Error with notification service (TIMEOUT) first error (message length = 2722). Automatic retry - /table/t593669761 - 6d227851316c17e7c209cc11c0e25249 - clearBuyers","log":"...  
+25/11 23:16:48 [error] [T593837859] [90.240.60.56] [85709213/SusieRose496] Error with notification service (TIMEOUT) first error (message length = 853). Automatic retry - /player/p91374916 - b1f7ad456cdd765e8f657cbc4bfe02aa - drawCard","log":"","...  
+26/11 18:17:19 [error] [T594142654] [108.147.94.133] [87402673/MelNeeKuj] Error with notification service (TIMEOUT) first error (message length = 2724). Automatic retry - /table/t594142654 - edf1e2e066ed6d47577312e54eba7e91 - clearBuyers","log":"...  
+26/11 18:38:21 [error] [T594152054] [90.240.60.56] [85709213/SusieRose496] Error with notification service (TIMEOUT) first error (message length = 2719). Automatic retry - /table/t594152054 - 0f1af18579a78c262e9a05af3d4499c4 - clearBuyers","log":"...  
+26/11 19:32:21 [error] [T594173812] [78.73.169.199] [91374916/carin55] Error with notification service (TIMEOUT) first error (message length = 2716). Automatic retry - /table/t594173812 - 41fe8ba030ec693adaa2287b2df4b4d8 - clearBuyers","log":"...  
+
+
+------- GAMESERVER 13: LOG END -------
+
+------- GAMESERVER 14: LOG START -------
+
+
+
+------- GAMESERVER 14: LOG END -------

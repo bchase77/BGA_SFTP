@@ -1,0 +1,338 @@
+Syntax errors
+------- GAMESERVER 1: LOG START -------
+
+[28-Dec-2024 21:39:00 America/Los_Angeles] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:39:00 America/Los_Angeles] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+
+
+------- GAMESERVER 1: LOG END -------
+
+------- GAMESERVER 2: LOG START -------
+
+
+
+------- GAMESERVER 2: LOG END -------
+
+------- GAMESERVER 3: LOG START -------
+
+
+
+------- GAMESERVER 3: LOG END -------
+
+------- GAMESERVER 4: LOG START -------
+
+[28-Dec-2024 16:22:05 America/Phoenix] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 16:22:05 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 16:26:28 America/Phoenix] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 16:26:28 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 16:30:13 America/Phoenix] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 16:30:13 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:35:26 America/Chicago] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:35:26 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 18:46:16 America/Los_Angeles] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 18:46:16 America/Los_Angeles] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:58:32 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:58:32 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:25:41 America/Phoenix] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:25:41 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:32:42 America/New_York] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:32:42 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:44:03 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:44:03 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 10:59:37 America/New_York] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 10:59:37 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 11:10:58 America/New_York] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 11:10:58 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 11:26:56 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 11:26:56 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 14:34:16 America/Chicago] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 14:34:16 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:41:24 Europe/London] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:41:24 Europe/London] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+
+
+------- GAMESERVER 4: LOG END -------
+
+------- GAMESERVER 5: LOG START -------
+
+[29-Dec-2024 10:59:09 Australia/Sydney] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 10:59:09 Australia/Sydney] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 16:07:01 America/Los_Angeles] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 16:07:01 America/Los_Angeles] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:11:52 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:11:52 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:59:36 America/New_York] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:59:36 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:03:03 America/New_York] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:03:03 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:05:48 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:05:48 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:06:52 America/Chicago] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:06:52 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:13:36 America/Chicago] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:13:36 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:24:38 America/Chicago] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:24:38 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:59:41 America/New_York] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:59:41 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 18:02:57 Pacific/Auckland] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 18:02:57 Pacific/Auckland] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 18:05:36 Pacific/Auckland] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 18:05:36 Pacific/Auckland] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:33:09 America/Anchorage] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2304/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:33:09 America/Anchorage] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2304/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 00:42:17 America/Phoenix] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-2304/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 00:42:17 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2304/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 00:49:08 America/Phoenix] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 00:49:08 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 14:27:13 Europe/Paris] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 4733
+[29-Dec-2024 14:27:13 Europe/Paris] PHP Warning:  Trying to access array offset on value of type bool in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 4777
+[29-Dec-2024 14:27:13 Europe/Paris] PHP Warning:  Trying to access array offset on value of type bool in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 4779
+[29-Dec-2024 14:27:13 Europe/Paris] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 4783
+[29-Dec-2024 14:27:13 Europe/Paris] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 4788
+[29-Dec-2024 14:27:13 Europe/Paris] PHP Warning:  Undefined array key "" in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 4788
+[29-Dec-2024 14:27:13 Europe/Paris] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 4789
+[29-Dec-2024 14:27:13 Europe/Paris] PHP Warning:  Undefined array key "" in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 4789
+[29-Dec-2024 14:27:13 Europe/Paris] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 4789
+[29-Dec-2024 22:27:13 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:13 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:14 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:14 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:14 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:14 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:14 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:14 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:14 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:14 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:14 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:14 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:14 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 22:27:41 Asia/Tokyo] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 09:21:51 America/New_York] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 09:21:51 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 09:27:51 America/New_York] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 09:27:51 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 09:37:52 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 09:37:52 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[30-Dec-2024 06:51:59 Australia/Sydney] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[30-Dec-2024 06:51:59 Australia/Sydney] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 19:57:07 Europe/London] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 19:57:07 Europe/London] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[30-Dec-2024 07:04:20 Australia/Sydney] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[30-Dec-2024 07:04:20 Australia/Sydney] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+
+3pm Sunday 747 FoodHD  DDD Guys grocery games S36E2
+7:15pm Sunday The Dirty Dozen 1755 TCMHD
+8:00pm Sunday Worst Cooks 747 FoodHD
+8:00pm Monday Below Deck Saling yacht 733 BravoHD Never Before Scene 513
+9:00pm Monday Below Deck Saling yacht 733 BravoHD Rules of En-rage-ment
+8:00pm Tuesday Chopped Name your price Battle two 747 FoodHD
+8:00pm Tuesday Will Trent: Sunny-side up 707 KGODT
+
+NEXT: Wed 7:00pm GGG
+Wed 8:00pm Special Forces
+Wed 8:00pm GGG DDD, 9pm and 10pm
+
+
+------- GAMESERVER 5: LOG END -------
+
+------- GAMESERVER 6: LOG START -------
+
+
+
+------- GAMESERVER 6: LOG END -------
+
+------- GAMESERVER 7: LOG START -------
+
+[28-Dec-2024 20:40:27 America/New_York] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:40:27 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:45:36 America/Chicago] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:45:36 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:53:43 America/Chicago] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:53:43 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 19:02:45 Europe/Berlin] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 19:02:45 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 13:09:00 America/New_York] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 13:09:00 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 13:17:46 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 13:17:46 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+
+
+------- GAMESERVER 7: LOG END -------
+
+------- GAMESERVER 8: LOG START -------
+
+[28-Dec-2024 20:54:47 America/New_York] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:54:47 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:59:25 America/New_York] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:59:25 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:08:41 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:08:41 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:26:47 America/New_York] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:26:47 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 15:34:47 Australia/Sydney] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 15:34:47 Australia/Sydney] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 15:38:56 Australia/Sydney] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 15:38:56 Australia/Sydney] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 12:03:27 America/New_York] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 12:03:27 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 12:06:36 America/New_York] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 12:06:36 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 12:13:15 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 12:13:15 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 22:17:37 Europe/Berlin] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241229-1313/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 22:17:37 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241229-1313/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 22:20:59 Europe/Berlin] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241229-1313/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 22:20:59 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241229-1313/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 15:28:27 America/Chicago] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241229-1313/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 15:28:27 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241229-1313/liverpoolrummy.game.php on line 6634
+
+
+------- GAMESERVER 8: LOG END -------
+
+------- GAMESERVER 9: LOG START -------
+
+[29-Dec-2024 18:24:49 Europe/Berlin] PHP Warning:  Undefined array key -1000950798 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 1634
+[29-Dec-2024 18:24:49 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 1634
+
+
+------- GAMESERVER 9: LOG END -------
+
+------- GAMESERVER 10: LOG START -------
+
+[29-Dec-2024 01:05:59 America/New_York] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 01:05:59 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 01:12:11 America/New_York] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 01:12:11 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 18:03:17 Europe/London] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 18:03:17 Europe/London] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+
+
+------- GAMESERVER 10: LOG END -------
+
+------- GAMESERVER 11: LOG START -------
+
+[28-Dec-2024 21:06:45 America/Bogota] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:06:45 America/Bogota] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:08:23 America/Bogota] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:08:23 America/Bogota] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:12:12 America/Bogota] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:12:12 America/Bogota] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 00:15:51 America/Los_Angeles] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 00:15:51 America/Los_Angeles] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 00:22:28 America/Los_Angeles] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 00:22:28 America/Los_Angeles] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 19:28:17 Australia/Sydney] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 19:28:17 Australia/Sydney] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 01:54:05 America/Phoenix] PHP Warning:  Undefined array key 94743843 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 1634
+[29-Dec-2024 01:54:05 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 1634
+[29-Dec-2024 22:00:54 Pacific/Auckland] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 22:00:54 Pacific/Auckland] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:13:35 Australia/Sydney] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:13:35 Australia/Sydney] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:26:05 Australia/Sydney] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:26:05 Australia/Sydney] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 21:36:33 Europe/Berlin] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 21:36:33 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 21:42:59 Europe/Berlin] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 21:42:59 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 21:53:41 Europe/Berlin] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 21:53:41 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 16:49:55 America/New_York] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241229-1313/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 16:49:55 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241229-1313/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 16:59:02 America/New_York] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241229-1338/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 16:59:02 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241229-1338/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 17:04:56 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241229-1338/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 17:04:56 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241229-1338/liverpoolrummy.game.php on line 6634
+
+
+------- GAMESERVER 11: LOG END -------
+
+------- GAMESERVER 12: LOG START -------
+
+[28-Dec-2024 15:37:11 America/Los_Angeles] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 15:37:11 America/Los_Angeles] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 18:47:01 America/New_York] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 18:47:01 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 18:56:13 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 18:56:13 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:08:23 America/Chicago] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:08:23 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:12:35 America/Phoenix] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:12:35 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:21:19 America/Phoenix] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:21:19 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 18:55:04 Pacific/Auckland] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 18:55:04 Pacific/Auckland] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 18:57:54 Pacific/Auckland] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 18:57:54 Pacific/Auckland] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 19:03:18 Pacific/Auckland] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 19:03:18 Pacific/Auckland] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 19:41:38 Pacific/Auckland] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 19:41:38 Pacific/Auckland] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 19:47:10 Pacific/Auckland] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 19:47:10 Pacific/Auckland] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:00:31 Pacific/Auckland] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:00:31 Pacific/Auckland] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 21:07:09 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 21:07:09 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+[29-Dec-2024 21:07:14 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 497
+
+
+------- GAMESERVER 12: LOG END -------
+
+------- GAMESERVER 13: LOG START -------
+
+[28-Dec-2024 20:34:11 America/New_York] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:34:11 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:39:43 America/New_York] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:39:43 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:46:41 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 20:46:41 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:13:06 America/New_York] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:13:06 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:21:45 America/Phoenix] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:21:45 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:28:13 America/New_York] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 21:28:13 America/New_York] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:42:17 America/Los_Angeles] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:42:17 America/Los_Angeles] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:47:59 America/Los_Angeles] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:47:59 America/Los_Angeles] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:57:50 America/Los_Angeles] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 19:57:50 America/Los_Angeles] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:17:25 America/Bogota] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:17:25 America/Bogota] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:22:46 America/Bogota] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 23:22:46 America/Bogota] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:27:45 America/Chicago] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:27:45 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:05:21 Australia/Sydney] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:05:21 Australia/Sydney] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:15:59 Australia/Sydney] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:15:59 Australia/Sydney] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:00:49 Europe/Berlin] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:00:49 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:07:19 Europe/Berlin] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 20:07:19 Europe/Berlin] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 13:17:07 America/Chicago] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 13:17:07 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 13:06:33 America/Los_Angeles] PHP Warning:  Undefined array key 4 in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 13:06:33 America/Los_Angeles] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-2344/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 13:16:47 America/Los_Angeles] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241229-1313/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 13:16:47 America/Los_Angeles] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241229-1313/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 15:32:46 America/Chicago] PHP Warning:  Undefined array key 6 in /var/tournoi/release/games/liverpoolrummy/241229-1313/liverpoolrummy.game.php on line 6634
+[29-Dec-2024 15:32:46 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241229-1313/liverpoolrummy.game.php on line 6634
+
+
+------- GAMESERVER 13: LOG END -------
+
+------- GAMESERVER 14: LOG START -------
+
+[28-Dec-2024 19:32:01 America/Phoenix] PHP Warning:  Undefined array key 94743843 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 1634
+[28-Dec-2024 19:32:01 America/Phoenix] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 1634
+[28-Dec-2024 22:01:22 America/Chicago] PHP Warning:  Undefined array key 5 in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+[28-Dec-2024 22:01:22 America/Chicago] PHP Warning:  Trying to access array offset on value of type null in /var/tournoi/release/games/liverpoolrummy/241228-1432/liverpoolrummy.game.php on line 6634
+
+
+------- GAMESERVER 14: LOG END -------

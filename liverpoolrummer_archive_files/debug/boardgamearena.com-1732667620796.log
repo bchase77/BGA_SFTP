@@ -1,0 +1,494 @@
+dojo.js:1 
+        
+        
+       GET https://boardgamearena.com/8/liverpoolrummy/liverpoolrummy/liverpool.html?player_id=86675870&lock=8c80ad83-5c03-4c09-8f59-919f7cc6067f&table=594260906&noerrortracking=true&dojo.preventCache=1732658085653 500 (Internal Server Error)
+h @ dojo.js:1
+e.xhr @ dojo.js:1
+e.xhrGet @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+l @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+onLiverpoolButton @ liverpoolrummy.js:1
+(anonymous) @ liverpoolrummy?table=594260906:2360
+(anonymous) @ dojo.js:1
+ly_studio.js:1 HTTP code 500 liverpoolrummy/liverpoolrummy/liverpool.html
+(anonymous) @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+(anonymous) @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+(anonymous) @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+g.reject @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+g.reject @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+g.reject @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+g.reject @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+g.reject @ dojo.js:1
+l @ dojo.js:1
+i @ dojo.js:1
+load
+s @ dojo.js:1
+h @ dojo.js:1
+e.xhr @ dojo.js:1
+e.xhrGet @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+l @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+onLiverpoolButton @ liverpoolrummy.js:1
+(anonymous) @ liverpoolrummy?table=594260906:2360
+(anonymous) @ dojo.js:1
+dojo.js:1 i {message: 'Unable to load liverpoolrummy/liverpoolrummy/liver…=true&dojo.preventCache=1732658085653 status: 500', response: {…}, status: 500, responseText: '', xhr: XMLHttpRequest, …}message: "Unable to load liverpoolrummy/liverpoolrummy/liverpool.html?player_id=86675870&lock=8c80ad83-5c03-4c09-8f59-919f7cc6067f&table=594260906&noerrortracking=true&dojo.preventCache=1732658085653 status: 500"response: data: ""getHeader: ƒ f(e)arguments: nullcaller: nulllength: 1name: "f"prototype: {}[[FunctionLocation]]: dojo.js:1[[Prototype]]: ƒ ()[[Scopes]]: Scopes[3]options: ehandleAs: "text"headers: {X-Request-Token: 'fLHLgEjoRpjNoi8'}ioArgs: {args: {…}, url: 'liverpoolrummy/liverpoolrummy/liverpool.html?playe…rrortracking=true&dojo.preventCache=1732658085653', query: null, handleAs: 'json'}timeout: 20000[[Prototype]]: Objectstatus: 500text: ""url: "liverpoolrummy/liverpoolrummy/liverpool.html?player_id=86675870&lock=8c80ad83-5c03-4c09-8f59-919f7cc6067f&table=594260906&noerrortracking=true&dojo.preventCache=1732658085653"xhr: XMLHttpRequestonabort: nullonerror: nullonload: nullonloadend: nullonloadstart: nullonprogress: nullonreadystatechange: nullontimeout: nullreadyState: 4response: ""responseText: ""responseType: ""responseURL: "https://boardgamearena.com/8/liverpoolrummy/liverpoolrummy/liverpool.html?player_id=86675870&lock=8c80ad83-5c03-4c09-8f59-919f7cc6067f&table=594260906&noerrortracking=true&dojo.preventCache=1732658085653"responseXML: nullstatus: 500statusText: ""timeout: 0upload: XMLHttpRequestUpload {onloadstart: null, onprogress: null, onabort: null, onerror: null, onload: null, …}withCredentials: false[[Prototype]]: XMLHttpRequest[[Prototype]]: Objectconstructor: ƒ Object()hasOwnProperty: ƒ hasOwnProperty()isPrototypeOf: ƒ isPrototypeOf()propertyIsEnumerable: ƒ propertyIsEnumerable()toLocaleString: ƒ toLocaleString()toString: ƒ toString()valueOf: ƒ valueOf()__defineGetter__: ƒ __defineGetter__()__defineSetter__: ƒ __defineSetter__()__lookupGetter__: ƒ __lookupGetter__()__lookupSetter__: ƒ __lookupSetter__()__proto__: (...)get __proto__: ƒ __proto__()set __proto__: ƒ __proto__()responseText: ""status: 500xhr: XMLHttpRequestonabort: nullonerror: nullonload: nullonloadend: nullonloadstart: nullonprogress: nullonreadystatechange: nullontimeout: nullreadyState: 4response: ""responseText: ""responseType: ""responseURL: "https://boardgamearena.com/8/liverpoolrummy/liverpoolrummy/liverpool.html?player_id=86675870&lock=8c80ad83-5c03-4c09-8f59-919f7cc6067f&table=594260906&noerrortracking=true&dojo.preventCache=1732658085653"responseXML: nullstatus: 500statusText: ""timeout: 0upload: XMLHttpRequestUploadonabort: nullonerror: nullonload: nullonloadend: nullonloadstart: nullonprogress: nullontimeout: null[[Prototype]]: XMLHttpRequestUploadconstructor: ƒ XMLHttpRequestUpload()arguments: nullcaller: nulllength: 0name: "XMLHttpRequestUpload"prototype: XMLHttpRequestUpload {Symbol(Symbol.toStringTag): 'XMLHttpRequestUpload'}[[Prototype]]: ƒ XMLHttpRequestEventTarget()[[Scopes]]: Scopes[0]Symbol(Symbol.toStringTag): "XMLHttpRequestUpload"onabort: (...)onerror: (...)onload: (...)onloadend: (...)onloadstart: (...)onprogress: (...)ontimeout: (...)[[Prototype]]: XMLHttpRequestEventTargetwithCredentials: false[[Prototype]]: XMLHttpRequestDONE: 4HEADERS_RECEIVED: 2LOADING: 3OPENED: 1UNSENT: 0abort: ƒ abort()getAllResponseHeaders: ƒ getAllResponseHeaders()length: 0name: "getAllResponseHeaders"arguments: (...)caller: (...)[[Prototype]]: ƒ ()[[Scopes]]: Scopes[0]getResponseHeader: ƒ getResponseHeader()length: 1name: "getResponseHeader"arguments: (...)caller: (...)[[Prototype]]: ƒ ()[[Scopes]]: Scopes[0]onreadystatechange: (...)open: ƒ open()overrideMimeType: ƒ overrideMimeType()readyState: (...)response: (...)responseText: (...)responseType: (...)responseURL: (...)responseXML: (...)send: ƒ send()setAttributionReporting: ƒ setAttributionReporting()setPrivateToken: ƒ setPrivateToken()setRequestHeader: ƒ setRequestHeader()status: (...)statusText: (...)timeout: (...)upload: (...)withCredentials: (...)constructor: ƒ XMLHttpRequest()Symbol(Symbol.toStringTag): "XMLHttpRequest"onabort: (...)onerror: (...)onload: (...)onloadend: (...)onloadstart: (...)onprogress: (...)ontimeout: (...)get onreadystatechange: ƒ onreadystatechange()set onreadystatechange: ƒ onreadystatechange()get readyState: ƒ readyState()get response: ƒ response()get responseText: ƒ responseText()get responseType: ƒ responseType()set responseType: ƒ responseType()get responseURL: ƒ responseURL()get responseXML: ƒ responseXML()get status: ƒ status()get statusText: ƒ statusText()get timeout: ƒ timeout()set timeout: ƒ timeout()get upload: ƒ upload()get withCredentials: ƒ withCredentials()set withCredentials: ƒ withCredentials()[[Prototype]]: XMLHttpRequestEventTargetstack: "Error: Unable to load liverpoolrummy/liverpoolrummy/liverpool.html?player_id=86675870&lock=8c80ad83-5c03-4c09-8f59-919f7cc6067f&table=594260906&noerrortracking=true&dojo.preventCache=1732658085653 status: 500\n    at new i (https://x.boardgamearena.net/data/themereleases/241126-0953/js/dojoroot/dojo/dojo.js:1:60579)\n    at f.l [as handleResponse] (https://x.boardgamearena.net/data/themereleases/241126-0953/js/dojoroot/dojo/dojo.js:1:96000)\n    at XMLHttpRequest.i (https://x.boardgamearena.net/data/themereleases/241126-0953/js/dojoroot/dojo/dojo.js:1:96200)"[[Prototype]]: Errorconstructor: ƒ (e)name: "RequestError"[[Prototype]]: Objectconstructor: ƒ Error()stackTraceLimit: 10captureStackTrace: ƒ captureStackTrace()length: 2name: "captureStackTrace"arguments: (...)caller: (...)[[Prototype]]: ƒ ()[[Scopes]]: Scopes[0]length: 1name: "Error"prototype: {name: 'Error', message: '', toString: ƒ}arguments: (...)caller: (...)[[Prototype]]: ƒ ()[[Scopes]]: Scopes[0]message: ""name: "Error"toString: ƒ toString()length: 0name: "toString"arguments: (...)caller: (...)[[Prototype]]: ƒ ()[[Scopes]]: Scopes[0][[Prototype]]: Objectconstructor: ƒ Object()hasOwnProperty: ƒ hasOwnProperty()isPrototypeOf: ƒ isPrototypeOf()propertyIsEnumerable: ƒ propertyIsEnumerable()toLocaleString: ƒ toLocaleString()toString: ƒ toString()valueOf: ƒ valueOf()__defineGetter__: ƒ __defineGetter__()__defineSetter__: ƒ __defineSetter__()__lookupGetter__: ƒ __lookupGetter__()__lookupSetter__: ƒ __lookupSetter__()__proto__: (...)get __proto__: ƒ __proto__()set __proto__: ƒ __proto__()
+b @ dojo.js:1
+(anonymous) @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+(anonymous) @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+g.reject @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+g.reject @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+g.reject @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+g.reject @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+g.reject @ dojo.js:1
+l @ dojo.js:1
+i @ dojo.js:1
+load
+s @ dojo.js:1
+h @ dojo.js:1
+e.xhr @ dojo.js:1
+e.xhrGet @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+l @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+onLiverpoolButton @ liverpoolrummy.js:1
+(anonymous) @ liverpoolrummy?table=594260906:2360
+(anonymous) @ dojo.js:1
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] Forced reflow while executing JavaScript took <N>ms
+[Violation] 'setInterval' handler took <N>ms
+[Violation] 'setInterval' handler took <N>ms
+[Violation] 'setInterval' handler took <N>ms
+[Violation] 'setInterval' handler took <N>ms
+[Violation] 'setInterval' handler took <N>ms
+[Violation] 'setInterval' handler took <N>ms
+dojo.js:1 [Violation] 'setTimeout' handler took 51ms
+ly_studio.js:1 [Deprecation] The keyword 'slider-vertical' specified to an 'appearance' property is not standardized. It will be removed in the future. Use <input type=range style="writing-mode: vertical-lr; direction: rtl"> instead.
+end @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+(anonymous) @ dojo.js:1
+i @ dojo.js:1
+_fire @ dojo.js:1
+play @ dojo.js:1
+play @ ly_studio.js:1
+addToLog @ ly_studio.js:1
+advice @ dojo.js:1
+i @ dojo.js:1
+showMessage @ ly_studio.js:1
+(anonymous) @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+(anonymous) @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+resolve.callback @ dojo.js:1
+(anonymous) @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+i @ dojo.js:1
+load
+s @ dojo.js:1
+h @ dojo.js:1
+e.xhr @ dojo.js:1
+e.xhrGet @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+l @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+resynchronizeNotifications @ ly_studio.js:1
+onReconnect @ ly_studio.js:1
+(anonymous) @ liverpoolrummy?table=594260906:2360
+(anonymous) @ dojo.js:1
+i @ dojo.js:1
+onSocketIoConnectionStatusChanged @ ly_studio.js:1
+(anonymous) @ ly_studio.js:1
+l.emit @ centrifuge.js:1
+_disconnect @ centrifuge.js:6
+disconnect @ centrifuge.js:6
+inactivityTimerIncrement @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+ly_studio.js:1 [Deprecation] The keyword 'slider-vertical' specified to an 'appearance' property is not standardized. It will be removed in the future. Use <input type=range style="writing-mode: vertical-lr; direction: rtl"> instead.
+end @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+(anonymous) @ dojo.js:1
+i @ dojo.js:1
+_fire @ dojo.js:1
+play @ dojo.js:1
+play @ ly_studio.js:1
+addToLog @ ly_studio.js:1
+advice @ dojo.js:1
+i @ dojo.js:1
+showMessage @ ly_studio.js:1
+(anonymous) @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+(anonymous) @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+resolve.callback @ dojo.js:1
+(anonymous) @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+i @ dojo.js:1
+load
+s @ dojo.js:1
+h @ dojo.js:1
+e.xhr @ dojo.js:1
+e.xhrGet @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+l @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+resynchronizeNotifications @ ly_studio.js:1
+onReconnect @ ly_studio.js:1
+(anonymous) @ liverpoolrummy?table=594260906:2360
+(anonymous) @ dojo.js:1
+i @ dojo.js:1
+onSocketIoConnectionStatusChanged @ ly_studio.js:1
+(anonymous) @ ly_studio.js:1
+l.emit @ centrifuge.js:1
+_disconnect @ centrifuge.js:6
+disconnect @ centrifuge.js:6
+inactivityTimerIncrement @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+ly_studio.js:1 [Deprecation] The keyword 'slider-vertical' specified to an 'appearance' property is not standardized. It will be removed in the future. Use <input type=range style="writing-mode: vertical-lr; direction: rtl"> instead.
+end @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+(anonymous) @ dojo.js:1
+i @ dojo.js:1
+_fire @ dojo.js:1
+play @ dojo.js:1
+play @ ly_studio.js:1
+addToLog @ ly_studio.js:1
+advice @ dojo.js:1
+i @ dojo.js:1
+showMessage @ ly_studio.js:1
+(anonymous) @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+(anonymous) @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+resolve.callback @ dojo.js:1
+(anonymous) @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+i @ dojo.js:1
+load
+s @ dojo.js:1
+h @ dojo.js:1
+e.xhr @ dojo.js:1
+e.xhrGet @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+l @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+resynchronizeNotifications @ ly_studio.js:1
+onReconnect @ ly_studio.js:1
+(anonymous) @ liverpoolrummy?table=594260906:2360
+(anonymous) @ dojo.js:1
+i @ dojo.js:1
+onSocketIoConnectionStatusChanged @ ly_studio.js:1
+(anonymous) @ ly_studio.js:1
+l.emit @ centrifuge.js:1
+_disconnect @ centrifuge.js:6
+disconnect @ centrifuge.js:6
+inactivityTimerIncrement @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+ly_studio.js:1 Server syntax error: liverpoolrummy/liverpoolrummy/notificationHistory.html SyntaxError: Unexpected token '<' / <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:og="http://ogp.me/ns#"
+      xmlns:fb="http://www.facebook.com/2008/fbml"
+      xml:lang="en" lang="en" dir="ltr" >
+<head>
+<meta name="google-site-verification" content="Ivf-1tjdnxzEmiiOZckrx9oIHUeVoUW0LYC3K4WtKP8" />
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<meta http-equiv="Content-Language" content="en" /> 
+<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+<meta name="description" content="° BinDFW ( pts)
+° GoDodyGo ( pts)
+° StrawberryBlonde ( pts)" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta property="og:title" content="Liverpool (Cozy Oaks) Rummy:  victory!"/>
+<meta property="og:type" content="game"/>
+<meta property="og:url" content="https://boardgamearena.com/table?table=594260906"/>
+<meta property="og:locale" content="en_US"/>
+<meta property="og:image" content="https://x.boardgamearena.net/data/gamemedia/liverpoolrummy/box/en_280.png?h=1651658573"/>
+<meta property="og:site_name" content="Board Game Arena"/>
+<meta property="fb:admins" content="653096428" />
+<meta property="fb:app_id" content="180422645455864"/>
+<meta property="og:description" content="° BinDFW ( pts)
+° GoDodyGo ( pts)
+° StrawberryBlonde ( pts)"/>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="application-name" content="Board Game Arena"/>
+
+      
+<link rel="image_src" href="https://x.boardgamearena.net/data/themereleases/241126-0953/img/logo/logo.png" />
+<link rel="canonical" href="https://en.boardgamearena.com/table?table=594260906" />
+<link rel="alternate" href="https://ar.boardgamearena.com/table?table=594260906" hreflang="ar" />
+<link rel="alternate" href="https://be.boardgamearena.com/table?table=594260906" hreflang="be" />
+<link rel="alternate" href="https://bg.boardgamearena.com/table?table=594260906" hreflang="bg" />
+<link rel="alternate" href="https://br.boardgamearena.com/table?table=594260906" hreflang="br" />
+<link rel="alternate" href="https://ca.boardgamearena.com/table?table=594260906" hreflang="ca" />
+<link rel="alternate" href="https://cs.boardgamearena.com/table?table=594260906" hreflang="cs" />
+<link rel="alternate" href="https://da.boardgamearena.com/table?table=594260906" hreflang="da" />
+<link rel="alternate" href="https://de.boardgamearena.com/table?table=594260906" hreflang="de" />
+<link rel="alternate" href="https://el.boardgamearena.com/table?table=594260906" hreflang="el" />
+<link rel="alternate" href="https://en.boardgamearena.com/table?table=594260906" hreflang="en" />
+<link rel="alternate" href="https://en.boardgamearena.com/table?table=594260906" hreflang="x-default" />
+<link rel="alternate" href="https://es.boardgamearena.com/table?table=594260906" hreflang="es" />
+<link rel="alternate" href="https://et.boardgamearena.com/table?table=594260906" hreflang="et" />
+<link rel="alternate" href="https://fa.boardgamearena.com/table?table=594260906" hreflang="fa" />
+<link rel="alternate" href="https://fi.boardgamearena.com/table?table=594260906" hreflang="fi" />
+<link rel="alternate" href="https://fr.boardgamearena.com/table?table=594260906" hreflang="fr" />
+<link rel="alternate" href="https://gl.boardgamearena.com/table?table=594260906" hreflang="gl" />
+<link rel="alternate" href="https://he.boardgamearena.com/table?table=594260906" hreflang="he" />
+<link rel="alternate" href="https://hr.boardgamearena.com/table?table=594260906" hreflang="hr" />
+<link rel="alternate" href="https://hu.boardgamearena.com/table?table=594260906" hreflang="hu" />
+<link rel="alternate" href="https://it.boardgamearena.com/table?table=594260906" hreflang="it" />
+<link rel="alternate" href="https://id.boardgamearena.com/table?table=594260906" hreflang="id" />
+<link rel="alternate" href="https://ja.boardgamearena.com/table?table=594260906" hreflang="ja" />
+<link rel="alternate" href="https://ko.boardgamearena.com/table?table=594260906" hreflang="ko" />
+<link rel="alternate" href="https://lt.boardgamearena.com/table?table=594260906" hreflang="lt" />
+<link rel="alternate" href="https://lv.boardgamearena.com/table?table=594260906" hreflang="lv" />
+<link rel="alternate" href="https://ms.boardgamearena.com/table?table=594260906" hreflang="ms" />
+<link rel="alternate" href="https://nl.boardgamearena.com/table?table=594260906" hreflang="nl" />
+<link rel="alternate" href="https://no.boardgamearena.com/table?table=594260906" hreflang="no" />
+<link rel="alternate" href="https://pl.boardgamearena.com/table?table=594260906" hreflang="pl" />
+<link rel="alternate" href="https://pt.boardgamearena.com/table?table=594260906" hreflang="pt" />
+<link rel="alternate" href="https://ro.boardgamearena.com/table?table=594260906" hreflang="ro" />
+<link rel="alternate" href="https://ru.b
+(anonymous) @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+(anonymous) @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+resolve.callback @ dojo.js:1
+(anonymous) @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+i @ dojo.js:1
+load
+s @ dojo.js:1
+h @ dojo.js:1
+e.xhr @ dojo.js:1
+e.xhrGet @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+l @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+resynchronizeNotifications @ ly_studio.js:1
+onReconnect @ ly_studio.js:1
+(anonymous) @ liverpoolrummy?table=594260906:2360
+(anonymous) @ dojo.js:1
+i @ dojo.js:1
+onSocketIoConnectionStatusChanged @ ly_studio.js:1
+(anonymous) @ ly_studio.js:1
+l.emit @ centrifuge.js:1
+_disconnect @ centrifuge.js:6
+disconnect @ centrifuge.js:6
+inactivityTimerIncrement @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+dojo.js:1 SyntaxError: Unexpected token '<'
+    at dojo.fromJson (dojo.js:1:63894)
+    at Object.json (dojo.js:1:84419)
+    at y (dojo.js:1:86436)
+    at y (dojo.js:1:56690)
+    at v (dojo.js:1:56477)
+    at resolve.callback (dojo.js:1:57296)
+    at dojo.js:1:87930
+    at u (dojo.js:1:58646)
+    at s (dojo.js:1:58572)
+    at f.resolve (dojo.js:1:59580)
+b @ dojo.js:1
+(anonymous) @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+reject.errback @ dojo.js:1
+y @ dojo.js:1
+v @ dojo.js:1
+resolve.callback @ dojo.js:1
+(anonymous) @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+u @ dojo.js:1
+s @ dojo.js:1
+resolve @ dojo.js:1
+l @ dojo.js:1
+i @ dojo.js:1
+load
+s @ dojo.js:1
+h @ dojo.js:1
+e.xhr @ dojo.js:1
+e.xhrGet @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+l @ dojo.js:1
+ajaxcall @ ly_studio.js:1
+resynchronizeNotifications @ ly_studio.js:1
+onReconnect @ ly_studio.js:1
+(anonymous) @ liverpoolrummy?table=594260906:2360
+(anonymous) @ dojo.js:1
+i @ dojo.js:1
+onSocketIoConnectionStatusChanged @ ly_studio.js:1
+(anonymous) @ ly_studio.js:1
+l.emit @ centrifuge.js:1
+_disconnect @ centrifuge.js:6
+disconnect @ centrifuge.js:6
+inactivityTimerIncrement @ ly_studio.js:1
+(anonymous) @ dojo.js:1
+dojo.js:1 [Violation] 'load' handler took 1024ms
+liverpoolrummy?table=594260906:1 <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">

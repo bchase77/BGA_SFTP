@@ -1,0 +1,9 @@
+{
+    "100": {
+		"name": "Game Length",
+		"values": {
+			"1": "3 periods; 9, 6 & 6 Rounds",
+			"2": "3 periods; 6, 3 & 3 Rounds"
+		}
+	}
+}
